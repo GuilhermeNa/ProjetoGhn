@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_comissoes"
+    app:startDestination="@id/navComissoes">
+
+
+    <fragment
+        android:id="@+id/navComissoes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesFragment"
+        android:label="Comissoes Fragment"
+        tools:layout="@layout/fragment_comissoes" >
+        <action
+            android:id="@+id/action_navComissoes_to_navComissoesDetalhes"
+            app:destination="@id/navComissoesDetalhes"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/navComissoesDetalhes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment"
+        android:label="Comissoes Detalhes Fragment"
+        tools:layout="@layout/fragment_comissoes_detalhes" >
+        <argument
+            android:name="cavaloId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/navComissoesPagas"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasFragment"
+        android:label="Comissoes Pagas"
+        tools:layout="@layout/fragment_comissoes_pagas" >
+        <action
+            android:id="@+id/action_navComissoesPagas_to_navComissoesPagasDetalhes"
+            app:destination="@id/navComissoesPagasDetalhes"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/navComissoesPagasDetalhes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment"
+        android:label="Comissoes Pagas Detalhes"
+        tools:layout="@layout/fragment_comissoes_pagas_detalhes" >
+        <argument
+            android:name="salarioId"
+            app:argType="long" />
+    </fragment>
+</navigation>

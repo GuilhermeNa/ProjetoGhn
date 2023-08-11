@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_despesas"
+    app:startDestination="@id/navDespesasDiretas">
+
+    <fragment
+        android:id="@+id/navDespesasDiretas"
+        android:name="br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmDiretasFragment"
+        android:label="Despesas Adm Diretas"
+        tools:layout="@layout/fragment_despesas_adm" />
+    <fragment
+        android:id="@+id/navDespesasIndiretas"
+        android:name="br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmIndiretasFragment"
+        android:label="Despesas Adm Indiretas"
+        tools:layout="@layout/fragment_despesas_adm_indiretas" />
+</navigation>

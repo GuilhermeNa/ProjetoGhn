@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_background_tema_app"
+    tools:context=".ui.fragment.home.GerenciamentoFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_formularios" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_frete_receber"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                app:layout_constraintEnd_toStartOf="@+id/frag_gerenciamento_manutencao"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_frete_receber_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/receita"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_frete_receber_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_frete_receber_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Frete a receber"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_frete_receber_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_salarios"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toStartOf="@id/frag_gerenciamento_impostos"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_frete_receber">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_salarios_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/salario"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_comissoes_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_comissoes_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Comissões"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_salarios_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_impostos"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/frag_gerenciamento_salarios"
+                app:layout_constraintTop_toTopOf="@id/frag_gerenciamento_salarios">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_impostos_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/imposto"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_impostos_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_impostos_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Impostos"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_impostos_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_certificados"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toStartOf="@id/frag_gerenciamento_provisionamento"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_salarios">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_certificados_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/certificado"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_certificados_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_certificados_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Certificados"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_certificados_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_provisionamento"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/frag_gerenciamento_certificados"
+                app:layout_constraintTop_toTopOf="@id/frag_gerenciamento_certificados">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_seguros_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/seguros"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_provisionamento_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_provisionamento_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Seguros"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_seguros_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_manutencao"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/frag_gerenciamento_frete_receber"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_manutencao_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/manutencao"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_manutencao_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_manutencao_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Manutenção"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_manutencao_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_despesa"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_marginVertical="16dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toStartOf="@id/frag_gerenciamento_desempenho"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_certificados">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_despesa_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/despesas"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_despesa_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_despesa_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Despesas"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_despesa_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_desempenho"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/frag_gerenciamento_despesa"
+                app:layout_constraintTop_toTopOf="@id/frag_gerenciamento_despesa">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_desempenho_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/desempenho"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_desempenho_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_desempenho_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Desempenho"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_desempenho_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/frag_gerenciamento_media"
+                android:layout_width="0dp"
+                android:layout_height="130dp"
+                app:cardBackgroundColor="@color/midnightblue"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="5dp"
+                android:layout_marginVertical="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintStart_toStartOf="@id/frag_gerenciamento_despesa"
+                app:layout_constraintEnd_toEndOf="@id/frag_gerenciamento_desempenho"
+                app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_desempenho"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/frag_gerenciamento_media_img"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        app:srcCompat="@drawable/media"
+                        app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_media_txt"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/frag_gerenciamento_media_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:paddingHorizontal="20dp"
+                        android:text="Média"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/frag_gerenciamento_media_img" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

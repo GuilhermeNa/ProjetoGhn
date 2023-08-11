@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navSeguroFrota"
+        android:icon="@drawable/ic_frete"
+        android:title="Frota" />
+
+    <item
+        android:id="@+id/navSeguroVida"
+        android:icon="@drawable/ic_baseline_shield_24"
+        android:title="Demais ramos" />
+</menu>

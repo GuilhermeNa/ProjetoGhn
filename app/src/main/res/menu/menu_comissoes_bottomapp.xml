@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navComissoes"
+        android:icon="@drawable/ic_ampulheta_24"
+        android:title="Em Aberto" />
+
+    <item
+        android:id="@+id/navComissoesPagas"
+        android:icon="@drawable/ic_baseline_done_24"
+        android:title="Pagamentos" />
+
+</menu>

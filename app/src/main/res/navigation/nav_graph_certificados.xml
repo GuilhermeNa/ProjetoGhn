@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_certificados"
+    app:startDestination="@id/navCertificadosDiretos">
+
+    <fragment
+        android:id="@+id/navCertificadosDiretos"
+        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment"
+        android:label="Certificados Diretos Fragment"
+        tools:layout="@layout/fragment_certificados_diretos">
+        <action
+            android:id="@+id/action_navCertificadosDiretos_to_navCertificadosDiretosDetalhes"
+            app:destination="@id/navCertificadosDiretosDetalhes" />
+    </fragment>
+    <fragment
+        android:id="@+id/navCertificadosDiretosDetalhes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment"
+        android:label="Certificados Diretos Detalhes"
+        tools:layout="@layout/fragment_certificados_diretos_detalhes">
+        <argument
+            android:name="cavaloId"
+            app:argType="long" />
+    </fragment>
+    <fragment android:id="@+id/navCertificadosIndiretos"
+        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment"
+        android:label="Certificados Indiretos"
+        tools:layout="@layout/fragment_certificados_indiretos" />
+</navigation>

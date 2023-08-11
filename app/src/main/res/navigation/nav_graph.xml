@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    android:label="Nav Graph"
+    app:startDestination="@id/navLogin">
+
+    <fragment
+        android:id="@+id/navLogin"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.LoginFragment"
+        android:label="Login Fragment"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/login_action_home"
+            app:destination="@id/navHome"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/navHome"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.HomeFragment"
+        android:label="Home Fragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/home_action_motoristas"
+            app:destination="@id/navMotoristas"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/home_action_frota"
+            app:destination="@id/navFrota"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/home_action_gerenciamento"
+            app:destination="@id/navGerenciamento"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_navHome_to_navSelecionaCavalo"
+            app:destination="@id/navSelecionaCavalo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/navMotoristas"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.FuncionariosFragment"
+        android:label="Motoristas Fragment"
+        tools:layout="@layout/fragment_funcionarios" />
+    <fragment
+        android:id="@+id/navFrota"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.FrotaFragment"
+        android:label="Frota Fragment"
+        tools:layout="@layout/fragment_frota" />
+    <fragment
+        android:id="@+id/navGerenciamento"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.GerenciamentoFragment"
+        android:label="Gerenciamento Fragment"
+        tools:layout="@layout/fragment_gerenciamento" >
+        <action
+            android:id="@+id/action_navGerenciamento_to_navImpostosFragment"
+            app:destination="@id/navImpostosFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_navGerenciamento_to_navSelecionaCavaloFragment"
+            app:destination="@id/navSelecionaCavalo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_navGerenciamento_to_nav_graph_frete_receber"
+            app:destination="@id/nav_graph_frete_receber" />
+        <action
+            android:id="@+id/action_navGerenciamento_to_nav_graph_comissoes"
+            app:destination="@id/nav_graph_comissoes" />
+        <action
+            android:id="@+id/action_navGerenciamento_to_nav_graph_seguros"
+            app:destination="@id/nav_graph_seguros" />
+        <action
+            android:id="@+id/action_navGerenciamento_to_navDesempenho"
+            app:destination="@id/navDesempenho" />
+        <action
+            android:id="@+id/action_navGerenciamento_to_nav_graph_certificados"
+            app:destination="@id/nav_graph_certificados" />
+        <action
+            android:id="@+id/action_navGerenciamento_to_navMedia"
+            app:destination="@id/navMedia" />
+    </fragment>
+    <fragment android:id="@+id/navImpostosFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.ImpostosFragment"
+        android:label="Impostos Fragment"
+        tools:layout="@layout/fragment_impostos" />
+    <fragment
+        android:id="@+id/navSelecionaCavalo"
+        android:name="br.com.transporte.AppGhn.ui.fragment.SelecionaCavalo"
+        android:label="Seleciona Cavalo"
+        tools:layout="@layout/fragment_seleciona_cavalo">
+        <action
+            android:id="@+id/actionNavSelecionaCavaloFragmentToNavManutencaoDetalhes"
+            app:destination="@id/navManutencaoDetalhes"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <argument
+            android:name="tipoDirection"
+            app:argType="br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo" />
+    </fragment>
+    <fragment
+        android:id="@+id/navManutencaoDetalhes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.ManutencaoDetalhesFragment"
+        android:label="Manutencao Detalhes"
+        tools:layout="@layout/fragment_manutencao_detalhes" >
+        <argument
+            android:name="cavaloId"
+            app:argType="long" />
+    </fragment>
+    <include app:graph="@navigation/nav_graph_frete_receber" />
+    <include app:graph="@navigation/nav_graph_comissoes" />
+    <include app:graph="@navigation/nav_graph_seguros" />
+    <fragment android:id="@+id/navDesempenho"
+        android:name="br.com.transporte.AppGhn.ui.fragment.desempenho.DesempenhoFragment"
+        android:label="Desempenho"
+        tools:layout="@layout/fragment_desempenho"/>
+    <include app:graph="@navigation/nav_graph_certificados" />
+    <fragment
+        android:id="@+id/navMedia"
+        android:name="br.com.transporte.AppGhn.ui.fragment.media.MediaFragment"
+        android:label="Media"
+        tools:layout="@layout/fragment_media" />
+</navigation>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_seguros"
+    app:startDestination="@id/navSeguroFrota">
+
+    <fragment
+        android:id="@+id/navSeguroFrota"
+        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment"
+        android:label="Seguros Fragment"
+        tools:layout="@layout/fragment_seguro_frota" >
+        <action
+            android:id="@+id/action_navSegurosFragment_to_SeguroResumoFragment"
+            app:destination="@id/navSeguroInformacoes"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/navSeguroInformacoes"
+        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.SegurosInformacoesGeraisFragment"
+        android:label="Seguro Resumo"
+        tools:layout="@layout/fragment_seguros_informacoes_gerais">
+        <argument
+            android:name="seguroId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/navSeguroVida"
+        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.SeguroVidaFragment"
+        android:label="Seguro Outros"
+        tools:layout="@layout/fragment_seguro_vida" >
+        <action
+            android:id="@+id/action_navSeguroOutros_to_SeguroResumoFragment"
+            app:destination="@id/navSeguroInformacoes"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+</navigation>

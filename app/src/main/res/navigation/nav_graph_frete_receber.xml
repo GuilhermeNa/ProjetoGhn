@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_frete_receber"
+    app:startDestination="@id/navFreteReceber">
+
+    <fragment
+        android:id="@+id/navFreteReceber"
+        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberFragment"
+        android:label="Frete Receber"
+        tools:layout="@layout/fragment_frete_a_receber" >
+        <action
+            android:id="@+id/action_navFreteReceber_to_navFreteAReceberResumo"
+            app:destination="@id/navFreteAReceberResumo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/navFreteReceberPago"
+        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberPagosFragment"
+        android:label="Frete Receber Pago"
+        tools:layout="@layout/fragment_frete_a_receber_pagos" >
+        <action
+            android:id="@+id/action_navFreteReceberPago_to_navFreteAReceberResumo"
+            app:destination="@id/navFreteAReceberResumo"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/navFreteAReceberResumo"
+        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberResumoFragment"
+        android:label="Frete a Receber Resumo"
+        tools:layout="@layout/fragment_frete_a_receber_resumo" >
+        <argument
+            android:name="freteId"
+            app:argType="long" />
+    </fragment>
+</navigation>

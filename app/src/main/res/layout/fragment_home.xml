@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_background_tema_app">
+
+    <TextView
+        android:id="@+id/categorias_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="@string/text_categorias"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageView
+        android:id="@+id/frag_motoristas_logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_logout"/>
+
+    <View
+        android:id="@+id/categorias_view"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <ImageView
+        android:id="@+id/categorias_banner"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="30dp"
+        android:src="@drawable/img_categorias"
+        app:layout_constraintBottom_toTopOf="@id/categorias_view"
+        app:layout_constraintTop_toBottomOf="@id/categorias_titulo" />
+
+    <LinearLayout
+        android:id="@+id/categorias_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_categorias_container"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingTop="15dp"
+        app:cornerRadius="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categorias_view">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_areaDoMotorista"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    app:cardBackgroundColor="@color/cor_motorista"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingHorizontal="20dp"
+                        android:text="@string/text_area_do_motorista"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/img_motorista" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_cadastro_motoristas"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    app:cardBackgroundColor="@color/cor_documentos"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingHorizontal="20dp"
+                        android:text="@string/funcionarios"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/img_documentos" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_frota"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    app:cardBackgroundColor="@color/cor_caminhao"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingHorizontal="20dp"
+                        android:text="@string/text_frota"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/img_caminhao" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_gerenciamento"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    app:cardBackgroundColor="@color/cor_gerenciamento"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="5dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingHorizontal="20dp"
+                        android:text="@string/text_gerenciamento"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="end"
+                        android:padding="10dp"
+                        android:src="@drawable/img_gerenciamento" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp" />
+
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

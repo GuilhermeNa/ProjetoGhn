@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="areaDoMotoristaFaB1" type="id"/>
+    <item name="defineMotorista" type="id"/>
+    <item name="concedeAdiantamento" type="id"/>
+    <item name="editarDesconto" type="id"/>
+    <item name="desconta_adiantamento_txt" type="id" />
+    <item name="FechaFrete" type="id" />
+    <item name="editarComissao" type="id" />
+    <item name="renovarCertificado" type="id" />
+    <item name="visualizaParcelas" type="id" />
+    <item name="renovarSeguro" type="id" />
+
+</resources>
