@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 

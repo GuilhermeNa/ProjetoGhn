@@ -55,7 +55,7 @@ import br.com.transporte.AppGhn.databinding.FragmentImpostosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ImpostosAdapter;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 
@@ -106,8 +106,8 @@ public class ImpostosFragment extends Fragment {
         super.onCreate(savedInstanceState);
         impostoDao = new DespesasImpostoDAO();
 
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
     }
 
@@ -178,8 +178,8 @@ public class ImpostosFragment extends Fragment {
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;

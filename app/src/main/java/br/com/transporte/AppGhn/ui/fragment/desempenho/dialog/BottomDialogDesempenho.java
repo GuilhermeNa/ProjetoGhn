@@ -32,6 +32,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.BottomLayoutDesempenhoBinding;
@@ -39,7 +40,7 @@ import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.ui.adapter.viewpager.ViewPagerDesempenhoAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.util.AnimationUtil;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class BottomDialogDesempenho {
@@ -145,7 +146,7 @@ public class BottomDialogDesempenho {
         });
     }
 
-    private void configuraVisualizacao(TextInputLayout placaLayout, int visibilidade) {
+    private void configuraVisualizacao(@NonNull TextInputLayout placaLayout, int visibilidade) {
         placaLayout.setVisibility(visibilidade);
         autoComplete.setVisibility(visibilidade);
 
@@ -178,7 +179,7 @@ public class BottomDialogDesempenho {
         ImageView direitaImg = binding.direita;
         TextView anoTxt = binding.ano;
 
-        int anoAtual = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
         configuraAno(anoAtual, anoTxt);
 
         clickEsquerda(anoTxtParaAnimacao, esquerdaImg, anoTxt);
@@ -186,7 +187,7 @@ public class BottomDialogDesempenho {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void clickDireita(TextView anoTxtParaAnimacao, ImageView direitaImg, TextView anoTxt, int anoAtual) {
+    private void clickDireita(TextView anoTxtParaAnimacao, @NonNull ImageView direitaImg, TextView anoTxt, int anoAtual) {
         direitaImg.setOnClickListener(v -> {
             if (ano < anoAtual) {
                 anoTxtParaAnimacao.setText(String.valueOf(ano));
@@ -206,7 +207,7 @@ public class BottomDialogDesempenho {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void clickEsquerda(TextView anoTxtParaAnimacao, ImageView esquerdaImg, TextView anoTxt) {
+    private void clickEsquerda(TextView anoTxtParaAnimacao, @NonNull ImageView esquerdaImg, TextView anoTxt) {
         esquerdaImg.setOnClickListener(v -> {
             anoTxtParaAnimacao.setText(String.valueOf(ano));
             anoTxtParaAnimacao.setVisibility(VISIBLE);
@@ -221,13 +222,13 @@ public class BottomDialogDesempenho {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void configuraAno(int ano, TextView anoTxt) {
+    private void configuraAno(int ano, @NonNull TextView anoTxt) {
         this.ano = ano;
         String anoEmString = Integer.toString(this.ano);
         anoTxt.setText(anoEmString);
     }
 
-    private void configuraViewPager(Dialog dialog) {
+    private void configuraViewPager(@NonNull Dialog dialog) {
         ViewPager2 viewPager = dialog.findViewById(R.id.pager);
         TabLayout tabLayout = dialog.findViewById(R.id.tab_layout);
 
@@ -253,9 +254,9 @@ public class BottomDialogDesempenho {
                 }).attach();
     }
 
-    private void configuraParametrosDeExibicaoDoDialog(Dialog dialog) {
+    private void configuraParametrosDeExibicaoDoDialog(@NonNull Dialog dialog) {
         dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        Objects.requireNonNull(dialog.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);

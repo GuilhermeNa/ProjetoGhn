@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.Salario;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
@@ -27,7 +27,7 @@ import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHolder> {
     private final ComissoesPagasFragment context;
-    private final List<Salario> lista;
+    private final List<CustosDeSalario> lista;
     private final FreteDAO freteDao;
     private final AdiantamentoDAO adiantamentoDao;
     private final CustosDePercursoDAO custosDePercursoDao;
@@ -35,7 +35,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
     private OnItemClickListener onItemClickListener;
     private BigDecimal totalAdiantamentos, totalReembolsos, totalFretes;
 
-    public SalariosAdapter(ComissoesPagasFragment context, List<Salario> lista) {
+    public SalariosAdapter(ComissoesPagasFragment context, List<CustosDeSalario> lista) {
         this.context = context;
         this.lista = lista;
         freteDao = new FreteDAO();
@@ -76,7 +76,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull SalariosAdapter.ViewHolder holder, int position) {
-        Salario salario = lista.get(position);
+        CustosDeSalario salario = lista.get(position);
         configuraUi(holder);
         vincula(holder, salario);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(salario));
@@ -93,14 +93,14 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         holder.comissaoPagaTituloTxtView.setText("Comissão Paga");
     }
 
-    public void atualiza(List<Salario> listaDeSalariosPagos) {
+    public void atualiza(List<CustosDeSalario> listaDeSalariosPagos) {
         this.lista.clear();
         this.lista.addAll(listaDeSalariosPagos);
         notifyDataSetChanged();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, Salario salario) {
+    private void vincula(ViewHolder holder, CustosDeSalario salario) {
         calculaValoresParaExibir(salario);
 
         String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
@@ -118,7 +118,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void calculaValoresParaExibir(Salario salario) {
+    private void calculaValoresParaExibir(CustosDeSalario salario) {
         BigDecimal valorEncontrado;
 
         List<BigDecimal> listaAdiantamentos = new ArrayList<>();

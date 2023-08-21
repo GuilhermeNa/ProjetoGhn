@@ -5,7 +5,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_C
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -25,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAbastecimentoBinding;
 import br.com.transporte.AppGhn.exception.DataInvalida;
 import br.com.transporte.AppGhn.exception.MarcacaoKmInvalida;
@@ -32,7 +31,6 @@ import br.com.transporte.AppGhn.exception.RegistroDuplicado;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioBaseFragment;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
@@ -65,7 +63,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -117,7 +114,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     @Override
     public void alteraUiParaModoCriacao() {}
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         dataEdit.setText(FormataDataUtil.dataParaString(abastecimento.getData()));
@@ -133,7 +129,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         MascaraDataUtil.MascaraData(dataEdit);
@@ -145,7 +140,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void verificaSeCamposEstaoPreenchidos(View view) {
         verificaCampoComData(dataEdit, view);
@@ -260,7 +254,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
         abastecimento.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
@@ -275,9 +268,11 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     private void defineTipo() {
         if (totalBox.isChecked()) {
             abastecimento.setTipo(TipoAbastecimento.TOTAL);
+            abastecimento.setFlagAbastecimentoTotal(true);
             tipoAbastecimentoTxt.setError(null);
         } else if (parcialBox.isChecked()) {
             abastecimento.setTipo(TipoAbastecimento.PARCIAL);
+            abastecimento.setFlagAbastecimentoTotal(false);
             tipoAbastecimentoTxt.setError(null);
         }
     }

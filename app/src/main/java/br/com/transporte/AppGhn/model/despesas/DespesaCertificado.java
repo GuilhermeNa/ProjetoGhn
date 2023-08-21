@@ -8,13 +8,11 @@ import br.com.transporte.AppGhn.model.enums.TipoCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 public class DespesaCertificado extends Despesas {
-    private LocalDate dataDeEmissao;
-    private LocalDate dataDeVencimento;
+    private LocalDate dataDeEmissao, dataDeVencimento;
     private String ano;
     private TipoCertificado tipoCertificado;
     private long numeroDoDocumento;
     private boolean valido;
-    private int refCavalo;
     private int id;
 
     public DespesaCertificado(TipoCertificado tipoCertificado, String ano, long numeroDoDocumento, LocalDate dataDeEmissao,
@@ -26,7 +24,7 @@ public class DespesaCertificado extends Despesas {
         this.dataDeEmissao = dataDeEmissao;
         this.dataDeVencimento = dataDeVencimento;
         super.setValorDespesa(valorDespesa);
-        this.refCavalo = refCaminhao;
+        super.setRefCavalo(refCaminhao);
         super.setTipoDespesa(tipoDespesa);
         this.valido = valido;
     }
@@ -65,6 +63,13 @@ public class DespesaCertificado extends Despesas {
 
     public void setDataDeEmissao(LocalDate dataDeEmissao) {
         this.dataDeEmissao = dataDeEmissao;
+        super.setData(dataDeEmissao);
+    }
+
+    @Override
+    public void setData(LocalDate data){
+        this.dataDeEmissao = data;
+        super.setData(data);
     }
 
     public LocalDate getDataDeVencimento() {
@@ -73,14 +78,6 @@ public class DespesaCertificado extends Despesas {
 
     public void setDataDeVencimento(LocalDate dataDeVencimento) {
         this.dataDeVencimento = dataDeVencimento;
-    }
-
-    public int getRefCavalo() {
-        return refCavalo;
-    }
-
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
     }
 
     public boolean temIdValido() {

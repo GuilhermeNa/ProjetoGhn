@@ -10,10 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.ui.fragment.media.MediaFragment;
 
 public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cavalos.ViewHolder> {
 
@@ -63,7 +65,7 @@ public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cava
     public void onBindViewHolder(@NonNull MediaAdapter_Cavalos.ViewHolder holder, int position) {
         Cavalo cavalo = dataSet.get(position);
         vincula(holder, cavalo);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo, position));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo, holder.getAdapterPosition()));
     }
 
     private void vincula(ViewHolder holder, Cavalo cavalo) {
@@ -79,39 +81,32 @@ public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cava
         return dataSet.size();
     }
 
-    public void atualiza(List<Cavalo> dataSet) {
+    public void atualiza(List<Cavalo> dataSetRecebido) {
         this.dataSet.clear();
-        this.dataSet.addAll(dataSet);
+        this.dataSet.addAll(dataSetRecebido);
         notifyDataSetChanged();
     }
 
-    public void teste(int posicao) {
-        Log.d("Teste", "posicao recebida para alterar -> "+posicao);
-        if (cavaloArmazenado == null) {
-            cavaloArmazenado = dataSet.get(posicao);
-            dataSet.remove(posicao);
-            notifyItemRemoved(posicao);
-        } else {
-            dataSet.add(cavaloArmazenado);
-            notifyItemInserted(getItemCount());
+    public void atualizaRecyclerACadaNovaBusca(int posicaoRecebida) {
 
-            cavaloArmazenado = dataSet.get(posicao);
-            dataSet.remove(posicao);
-            notifyItemRemoved(posicao);
-        }
+        dataSet.add(cavaloArmazenado);
+        notifyItemInserted(dataSet.size() - 1);
 
-        Log.d("teste", "Cavalo armazenado ->"+cavaloArmazenado);
-        Log.d("teste", "dataSet -> "+ ""+dataSet);
-        Log.d("teste", " ");
-
-
-
+        cavaloArmazenado = dataSet.get(posicaoRecebida);
+        dataSet.remove(posicaoRecebida);
+        notifyItemRemoved(posicaoRecebida);
     }
 
+    public void setCavaloArmazenado(Cavalo cavalo) {
+        this.cavaloArmazenado = cavalo;
+    }
+
+    public List<Cavalo> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
 
     public interface OnItemClickListener {
         void onItemClick(Cavalo cavalo, int posicao);
     }
-
 
 }

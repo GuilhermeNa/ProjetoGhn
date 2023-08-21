@@ -13,15 +13,15 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.temporarios.DetalhesDesempenho;
+import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriodoAdapter.ViewHolder>{
 
     private final Context context;
-    private final List<DetalhesDesempenho> dataSet;
+    private final List<ObjetoTemporario_representaCavalo> dataSet;
 
-    public DetalhesPeriodoAdapter(Context context, List<DetalhesDesempenho> dataSet) {
+    public DetalhesPeriodoAdapter(Context context, List<ObjetoTemporario_representaCavalo> dataSet) {
         this.context = context;
         this.dataSet = dataSet;
     }
@@ -61,11 +61,11 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
 
     @Override
     public void onBindViewHolder(@NonNull DetalhesPeriodoAdapter.ViewHolder holder, int position) {
-        DetalhesDesempenho detalhes = dataSet.get(position);
+        ObjetoTemporario_representaCavalo detalhes = dataSet.get(position);
         vincula(holder, detalhes);
     }
 
-    private void vincula(ViewHolder holder, DetalhesDesempenho detalhes) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull ObjetoTemporario_representaCavalo detalhes) {
         holder.placaTxt.setText(detalhes.getPlaca());
         holder.valorTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(detalhes.getValor()));
         holder.motoristaTxt.setText(detalhes.getNome());
@@ -74,7 +74,8 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
         holder.percentualTxt.setText(percentual);
     }
 
-    private String formataPercentual(BigDecimal valor) {
+    @NonNull
+    private String formataPercentual(@NonNull BigDecimal valor) {
         String percentual = valor.toPlainString();
         percentual = percentual.replace(".00", " %");
         return percentual;
@@ -85,7 +86,7 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
         return dataSet.size();
     }
 
-    public void atualiza (List<DetalhesDesempenho> dataSet){
+    public void atualiza (List<ObjetoTemporario_representaCavalo> dataSet){
         this.dataSet.clear();
         this.dataSet.addAll(dataSet);
         notifyDataSetChanged();

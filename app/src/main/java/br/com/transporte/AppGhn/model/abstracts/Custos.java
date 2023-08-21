@@ -1,13 +1,12 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public abstract class Custos extends CustosEDespesas {
     private BigDecimal valorCusto;
-    private LocalDate data;
     private int id;
     private int refCavalo;
+    private boolean apenasAdmEdita;
 
     public BigDecimal getValorCusto() {
         return valorCusto;
@@ -15,16 +14,6 @@ public abstract class Custos extends CustosEDespesas {
 
     public void setValorCusto(BigDecimal valorCusto) {
         this.valorCusto = valorCusto;
-    }
-
-    @Override
-    public LocalDate getData() {
-        return data;
-    }
-
-    @Override
-    public void setData(LocalDate data) {
-        this.data = data;
     }
 
     public int getId() {
@@ -41,6 +30,14 @@ public abstract class Custos extends CustosEDespesas {
 
     public void setRefCavalo(int refCavalo) {
         this.refCavalo = refCavalo;
+    }
+
+    public boolean isApenasAdmEdita() {
+        return apenasAdmEdita;
+    }
+
+    public void setApenasAdmEdita(boolean apenasAdmEdita) {
+        this.apenasAdmEdita = apenasAdmEdita;
     }
 
 }

@@ -7,9 +7,7 @@ import br.com.transporte.AppGhn.model.abstracts.Custos;
 import br.com.transporte.AppGhn.model.enums.TipoCustoManutencao;
 
 public class CustosDeManutencao extends Custos {
-    private String empresa;
-    private String descricao;
-    private String nNota;
+    private String empresa, descricao, nNota;
     private TipoCustoManutencao tipoCustoManutencao;
 
     public CustosDeManutencao(LocalDate data, BigDecimal valor, String empresa, String descricao, String nNota) {
@@ -21,7 +19,6 @@ public class CustosDeManutencao extends Custos {
     }
 
     public CustosDeManutencao() {
-
     }
 
     public String getEmpresa() {
@@ -46,10 +43,6 @@ public class CustosDeManutencao extends Custos {
 
     public void setnNota(String nNota) {
         this.nNota = nNota;
-    }
-
-    public boolean temIdValido() {
-        return super.getId() > 0;
     }
 
     public TipoCustoManutencao getTipoCustoManutencao() {

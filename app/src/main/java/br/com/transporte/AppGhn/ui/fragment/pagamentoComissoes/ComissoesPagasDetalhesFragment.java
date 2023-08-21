@@ -44,7 +44,7 @@ import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBindin
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.Salario;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.AdiantamentoPagoAdapter;
 import br.com.transporte.AppGhn.ui.adapter.FretePagoAdapter;
@@ -63,7 +63,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
     private List<Adiantamento> listaDeAdiantamentos;
     private List<CustosDePercurso> listaDeReembolsos;
     private List<Frete> listaDeFretes;
-    private Salario salario;
+    private CustosDeSalario salario;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

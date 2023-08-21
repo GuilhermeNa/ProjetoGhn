@@ -4,10 +4,9 @@ public enum TipoDeRequisicao {
     FRETE_BRUTO("Frete bruto"),
     FRETE_LIQUIDO("Frete a receber"),
     COMISSAO("Comissões pagas"),
+    LUCRO_LIQUIDO("Lucro Líquido"),
 
-    KM_RODADO("Km rodado"),
     LITRAGEM("Litragem abastecida"),
-
 
     CUSTOS_PERCURSO("Custos de Percurso"),
     CUSTOS_ABASTECIMENTO("Custos de abastecimento"),
@@ -16,19 +15,8 @@ public enum TipoDeRequisicao {
     DESPESAS_ADM("Despesas administrativas"),
     DESPESAS_IMPOSTOS("Despesas de impostos"),
     DESPESA_CERTIFICADOS("Despesas de certificados"),
-
     DESPESA_SEGUROS_DIRETOS("Despesas de Seguros Diretos"),
-    DESPESA_SEGUROS_INDIRETOS("Despesas de Seguros Indiretos"),
-
-    LUCRO_LIQUIDO("Lucro Líquido"),
-
-    MEDIA("Média"),
-    LUCRO_PERCENTUAL( "Lucro Percentual")
-
-    ;
-
-
-
+    DESPESA_SEGUROS_INDIRETOS("Despesas de Seguros Indiretos");
 
     private final String descricao;
 

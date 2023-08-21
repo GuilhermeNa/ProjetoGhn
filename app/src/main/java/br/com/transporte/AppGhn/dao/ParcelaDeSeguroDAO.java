@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 
 public class ParcelaDeSeguroDAO {
     private static final List<ParcelaDeSeguro> dao = new ArrayList<>();
@@ -30,7 +30,7 @@ public class ParcelaDeSeguroDAO {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public void delete(int parcelaId){
         Optional<ParcelaDeSeguro> parcelaOptional = localizaPeloId(parcelaId);
         parcelaOptional.ifPresent(dao::remove);
@@ -39,6 +39,8 @@ public class ParcelaDeSeguroDAO {
     public List<ParcelaDeSeguro> listaTodos() {
         return new ArrayList<>(dao);
     }
+
+    //---------------------------------- Outros Metodos ---------------------------------------------
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public List<ParcelaDeSeguro> listaParcelasDoSeguro(int id) {

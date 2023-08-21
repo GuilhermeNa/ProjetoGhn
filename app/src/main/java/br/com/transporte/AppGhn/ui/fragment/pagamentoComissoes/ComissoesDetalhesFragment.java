@@ -55,7 +55,7 @@ import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.Salario;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.DetalhesAdiantamentoAdapter;
@@ -69,7 +69,7 @@ import br.com.transporte.AppGhn.dao.SalarioDAO;
 import br.com.transporte.AppGhn.ui.dialog.AlteraComissao;
 import br.com.transporte.AppGhn.ui.dialog.DescontaAdiantamento;
 import br.com.transporte.AppGhn.util.CentralSalariosEComissoes;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
@@ -216,7 +216,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                         .setTitle("Fechamento")
                         .setMessage(FormataNumerosUtil.formataMoedaPadraoBr(liquidoAFechar))
                         .setPositiveButton("Confirmar", (dialog, which) -> {
-                            Salario salario = new Salario();
+                            CustosDeSalario salario = new CustosDeSalario();
 
                             for (Frete f : listaFreteRecycler) {
                                 f.getAdmFrete().setComissaoJaFoiPaga(true);
@@ -247,7 +247,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                                 salario.listaReembolsosAdiciona(c.getId());
                             }
 
-                            LocalDate dataDoPagamento = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+                            LocalDate dataDoPagamento = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
                             salario.setData(dataDoPagamento);
                             salario.setRefCavalo(cavalo.getId());
                             salario.setValorCusto(liquidoAFechar);

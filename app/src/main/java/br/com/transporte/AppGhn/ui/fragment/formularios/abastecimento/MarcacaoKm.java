@@ -17,7 +17,7 @@ import br.com.transporte.AppGhn.exception.MarcacaoKmInvalida;
 import br.com.transporte.AppGhn.exception.RegistroDuplicado;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 
 public abstract class MarcacaoKm {
     private static final CustosDeAbastecimentoDAO abastecimentoDao = new CustosDeAbastecimentoDAO();
@@ -69,7 +69,7 @@ public abstract class MarcacaoKm {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static boolean verificaSeADataEhValida(LocalDate dataASalvar)
             throws DataInvalida {
-        LocalDate dataDeHoje = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        LocalDate dataDeHoje = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         if (dataASalvar.isAfter(dataDeHoje)) {
             throw new DataInvalida("Data X");
         }

@@ -12,10 +12,7 @@ import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGU
 import static br.com.transporte.AppGhn.model.enums.TipoDespesa.DIRETA;
 import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,27 +20,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
+import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
+import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
+import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
+import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
+import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
+import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
+import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.dao.SalarioDAO;
+import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.abstracts.Parcela;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
-import br.com.transporte.AppGhn.model.abstracts.Parcela;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.dao.SalarioDAO;
 
 public class BarCharCalculosExtension {
     private static final FreteDAO freteDao = new FreteDAO();
@@ -61,8 +58,8 @@ public class BarCharCalculosExtension {
     public static final int NAO_ESPECIFICA_BUSCA_POR_ID = 0;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static HashMap<Integer, BigDecimal> getHashMap_ChaveMes_ValorResultado(int ano, TipoDeRequisicao tipo, int id) {
+    @NonNull
+    public static HashMap<Integer, BigDecimal> getHashMap_ChaveMes_ValorResultado(int ano, @NonNull TipoDeRequisicao tipo, int id) {
 
         HashMap<Integer, BigDecimal> hashMap = new HashMap<>();
 
@@ -256,7 +253,7 @@ public class BarCharCalculosExtension {
                             .map(custoPercurso -> ((CustosDePercurso) custoPercurso).getValorCusto())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -272,7 +269,7 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(frete -> ((Frete) frete).getAdmFrete().getComissaoAoMotorista())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -288,7 +285,7 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(manutencao -> ((CustosDeManutencao) manutencao).getValorCusto())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -304,7 +301,7 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(abastecimento -> ((CustosDeAbastecimento) abastecimento).getValorCusto())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -320,7 +317,7 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(adm -> ((DespesaAdm) adm).getValorDespesa())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -336,7 +333,7 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(certificado -> ((DespesaCertificado) certificado).getValorDespesa())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -352,30 +349,28 @@ public class BarCharCalculosExtension {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
                 }
 
                 // ---------
-                if(id == 0){
-                    listaDeObjetos.clear();
-                    listaDeListas_Meses.clear();
-                    listaDeListas_Meses = criaListaDeListas();
-                    listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGUROS_INDIRETOS, id);
-                    separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGUROS_INDIRETOS);
-                    for (int i = 0; i < 12; i++) {
-                        BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                                .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        if(soma != null){
-                            BigDecimal resultado = hashMap.get(i).subtract(soma);
-                            hashMap.put(i, resultado);
-                        }
+
+                listaDeObjetos.clear();
+                listaDeListas_Meses.clear();
+                listaDeListas_Meses = criaListaDeListas();
+                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGUROS_INDIRETOS, id);
+                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGUROS_INDIRETOS);
+                for (int i = 0; i < 12; i++) {
+                    BigDecimal soma = listaDeListas_Meses.get(i).stream()
+                            .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    if (soma != null) {
+                        BigDecimal resultado = hashMap.get(i).subtract(soma);
+                        hashMap.put(i, resultado);
                     }
                 }
-
 
                 // ---------
                 listaDeObjetos.clear();
@@ -385,9 +380,9 @@ public class BarCharCalculosExtension {
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESAS_IMPOSTOS);
                 for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(imposto -> ((DespesasDeImposto) imposto).getValor())
+                            .map(imposto -> ((DespesasDeImposto) imposto).getValorDespesa())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    if(soma != null){
+                    if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
@@ -409,15 +404,14 @@ public class BarCharCalculosExtension {
         return listaSeparadaPorMeses;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static void separaOsDadosEmSeusRespectivosMeses(List<Object> listaDeObjetos, List<List<Object>> listaDeListas_Meses, TipoDeRequisicao tipo) {
+    private static void separaOsDadosEmSeusRespectivosMeses(List<Object> listaDeObjetos, List<List<Object>> listaDeListas_Meses, @NonNull TipoDeRequisicao tipo) {
 
         switch (tipo) {
             case FRETE_BRUTO:
             case FRETE_LIQUIDO:
             case COMISSAO:
             case LUCRO_LIQUIDO:
-                
+
                 for (Object frete : listaDeObjetos) {
                     int mes = ((Frete) frete).getData().getMonthValue();
 
@@ -520,9 +514,9 @@ public class BarCharCalculosExtension {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
     @NonNull
-    private static List<Object> getListaDeDadosFiltradaPeloAnoDesejado(int ano, TipoDeRequisicao tipo, int id) {
+    private static List<Object> getListaDeDadosFiltradaPeloAnoDesejado(int ano, @NonNull TipoDeRequisicao tipo, int id) {
 
         switch (tipo) {
             case FRETE_BRUTO:

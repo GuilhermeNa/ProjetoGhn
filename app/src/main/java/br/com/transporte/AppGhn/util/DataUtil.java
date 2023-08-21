@@ -1,14 +1,8 @@
 package br.com.transporte.AppGhn.util;
 
-import android.os.Build;
-import android.widget.LinearLayout;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.util.Pair;
-import androidx.fragment.app.FragmentManager;
+import androidx.annotation.NonNull;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -17,11 +11,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-import br.com.transporte.AppGhn.ui.dialog.AlteraSemiReboqueDoCavalo;
+public class DataUtil {
 
-public class DatePickerUtil{
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static LocalDate formataDataParaPadraoPtBr(LocalDate data) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy", new Locale("pt-br"));
         String dataFormatadaEmString = formato.format(data);
@@ -29,7 +20,6 @@ public class DatePickerUtil{
         return dataEmFormatoPtBr;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static LocalDate capturaDataDeHojeParaConfiguracaoinicial() {
         LocalDate data = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
                 .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
@@ -39,7 +29,6 @@ public class DatePickerUtil{
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static LocalDate capturaPrimeiroDiaDoMesParaConfiguracaoInicial() {
         LocalDate data = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.thisMonthInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
                 .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
@@ -48,5 +37,12 @@ public class DatePickerUtil{
         return data;
     }
 
+    public static boolean capturaRange(
+            @NonNull LocalDate dataDoObjeto,
+            LocalDate dataInicial,
+            LocalDate dataFinal
+    ) {
+        return !dataDoObjeto.isBefore(dataInicial) && !dataDoObjeto.isAfter(dataFinal);
+    }
 
 }

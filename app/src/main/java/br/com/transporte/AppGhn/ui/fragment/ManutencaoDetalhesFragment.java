@@ -57,7 +57,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ManutencaoDetalhesAdapter;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 
@@ -112,8 +112,8 @@ public class ManutencaoDetalhesFragment extends Fragment {
         CavaloDAO cavaloDao = new CavaloDAO();
         cavalo = recebeReferenciaExternaDeCavalo(cavaloDao);
 
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
     }
 
@@ -195,8 +195,8 @@ public class ManutencaoDetalhesFragment extends Fragment {
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;

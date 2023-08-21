@@ -29,7 +29,7 @@ import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.Motorista;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
@@ -257,7 +257,6 @@ public class GhnApplication extends Application {
         despesaFinanceiraDao.adiciona(despesaAdm2);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaCustosDemanutencao() {
         CustosDeManutencao manutencao = new CustosDeManutencao(FormataDataUtil.stringParaData("01/07/23"), new BigDecimal("500.00"),
                 "Cebolão", "Manutenção no filtro do ar", "1234586");
@@ -283,7 +282,6 @@ public class GhnApplication extends Application {
         manutencaoDao.adiciona(manutencao3);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaCertificado() {
         DespesaCertificado certificado = new DespesaCertificado(TipoCertificado.CRLV, "2023", 1234345567,
                 FormataDataUtil.stringParaData("14/06/23"), FormataDataUtil.stringParaData("13/07/23")
@@ -317,7 +315,6 @@ public class GhnApplication extends Application {
         certificadoDAO.adiciona(certificado5);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaAdiantamentos() {
         Adiantamento a1 = new Adiantamento(FormataDataUtil.stringParaData("09/06/23"),
                 new BigDecimal("100.00"), "blablablablablalba", 1, 1);
@@ -390,7 +387,6 @@ public class GhnApplication extends Application {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaDespesas() {
         despesa1 = new CustosDePercurso(FormataDataUtil.stringParaData("01/07/23"), new BigDecimal("23"), "Oleo hidraulico", TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO, 1);
         despesa2 = new CustosDePercurso(FormataDataUtil.stringParaData("02/07/23"), new BigDecimal("70"), "Guarda entre Pará e Ceará", TipoCustoDePercurso.NAO_REEMBOLSAVEL, 1);
@@ -402,7 +398,6 @@ public class GhnApplication extends Application {
         despesaDao.adiciona(despesa4);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaAbastecimentos() {
         CustosDeAbastecimento abastecimento1 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("01/01/23"), "Dito", new BigDecimal("10000.00"), new BigDecimal("665.5"),
                 new BigDecimal("5.20"), new BigDecimal("3460.60"), TipoAbastecimento.TOTAL, 1, true);
@@ -411,7 +406,7 @@ public class GhnApplication extends Application {
                 new BigDecimal("5.39"), new BigDecimal("1935.02"), TipoAbastecimento.PARCIAL, 1, false);
 
         CustosDeAbastecimento abastecimento3 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("05/03/23"), "Boiadeiro", new BigDecimal("16000.00"), new BigDecimal("470.32"),
-                new BigDecimal("5.39"), new BigDecimal("2795.02"), TipoAbastecimento.PARCIAL, 1, false);
+                new BigDecimal("5.39"), new BigDecimal("2795.02"), TipoAbastecimento.TOTAL, 1, true);
 
         CustosDeAbastecimento abastecimento4 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/04/23"), "Boiadeiro", new BigDecimal("20000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("5035.02"), TipoAbastecimento.TOTAL, 1, true);

@@ -32,7 +32,6 @@ public class DespesaComSeguroDeVida extends DespesaComSeguro {
 
     }
 
-
     public BigDecimal getCoberturaSocios() {
         return coberturaSocios;
     }

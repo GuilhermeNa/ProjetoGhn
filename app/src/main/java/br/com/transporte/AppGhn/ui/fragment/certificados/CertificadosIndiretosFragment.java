@@ -64,7 +64,7 @@ import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoIndiretoAdapter;
 import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class CertificadosIndiretosFragment extends Fragment {
@@ -269,7 +269,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         switchExibicao.setChecked(true);
         String dataEmString = data.getText().toString();
         ano = Integer.parseInt(dataEmString);
-        int anoAtual = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
 
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 

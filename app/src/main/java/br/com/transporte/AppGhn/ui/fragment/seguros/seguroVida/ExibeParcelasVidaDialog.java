@@ -30,7 +30,7 @@ import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;

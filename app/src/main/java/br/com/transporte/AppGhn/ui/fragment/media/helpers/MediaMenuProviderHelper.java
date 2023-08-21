@@ -1,4 +1,4 @@
-package br.com.transporte.AppGhn.ui.fragment.media;
+package br.com.transporte.AppGhn.ui.fragment.media.helpers;
 
 import android.annotation.SuppressLint;
 import android.view.Menu;
@@ -16,19 +16,24 @@ import java.util.List;
 import java.util.Locale;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.ui.adapter.MediaAdapter_Cavalos;
+import br.com.transporte.AppGhn.ui.fragment.media.MediaFragment;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class MenuProviderHelperMedia implements MenuProvider {
+public class MediaMenuProviderHelper implements MenuProvider {
 
+    private final List<Cavalo> dataSet;
     private final MediaFragment fragment;
-    private final MediaAdapter_Cavalos adapter;
+    private MenuProviderCallback menuProviderCallback;
 
-    public MenuProviderHelperMedia(MediaFragment fragment, MediaAdapter_Cavalos adapter) {
+    public void setMenuProviderCallback(MenuProviderCallback menuProviderCallback) {
+        this.menuProviderCallback = menuProviderCallback;
+    }
+
+    public MediaMenuProviderHelper(MediaFragment fragment, List<Cavalo> listaDoAdapter) {
         this.fragment = fragment;
-        this.adapter = adapter;
+        this.dataSet = new ArrayList<>(listaDoAdapter);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -46,18 +51,18 @@ public class MenuProviderHelperMedia implements MenuProvider {
     }
 
     private void configuraBuscaNoBancoDeDados(SearchView busca) {
-        CavaloDAO cavaloDao = new CavaloDAO();
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<Cavalo> dataSet = new ArrayList<>();
+                List<Cavalo> dataSet_searchView = new ArrayList<>();
 
-                for (Cavalo c : cavaloDao.listaTodos()) {
+                for (Cavalo c : dataSet) {
                     if (c.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
-                        dataSet.add(c);
+                        dataSet_searchView.add(c);
                     }
-                    adapter.atualiza(dataSet);
                 }
+
+                menuProviderCallback.realizaBusca(dataSet_searchView);
 
                 return false;
             }
@@ -73,6 +78,7 @@ public class MenuProviderHelperMedia implements MenuProvider {
         MenuItem itemLogout = menu.findItem(R.id.menu_padrao_logout);
 
         busca.setOnSearchClickListener(v -> itemLogout.setVisible(false));
+
         busca.setOnCloseListener(() -> {
             itemLogout.setVisible(true);
             return false;
@@ -103,5 +109,17 @@ public class MenuProviderHelperMedia implements MenuProvider {
         return false;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                       Metodos Publicos                                     ||
+    //----------------------------------------------------------------------------------------------
+
+    public void atualizaDataSet(List<Cavalo> novaListaDoAdapter){
+        this.dataSet.clear();
+        this.dataSet.addAll(novaListaDoAdapter);
+    }
+
+    public interface MenuProviderCallback {
+        void realizaBusca(List<Cavalo> dataSet_searchView);
+    }
 
 }

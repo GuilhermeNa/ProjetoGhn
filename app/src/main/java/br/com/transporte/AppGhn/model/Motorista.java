@@ -5,16 +5,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Motorista implements Serializable {
-    private LocalDate dataNascimento;
-    private String img;
-    private String nome;
-    private String cpf;
-    private String cnh;
-    private LocalDate cnhValidade;
-    private LocalDate dataContratacao;
-    private BigDecimal salarioBase;
-    private BigDecimal percentualComissao;
-    private BigDecimal salarioRecebido;
+    private String img, nome, cpf, cnh;
+    private LocalDate cnhValidade, dataContratacao, dataNascimento;
+    private BigDecimal salarioBase, percentualComissao, salarioRecebido;
     private int id;
 
     public Motorista(LocalDate dataNascimento, String img, String nome, String cpf, String cnh, LocalDate cnhValidade, LocalDate dataContratacao, BigDecimal salarioBase) {

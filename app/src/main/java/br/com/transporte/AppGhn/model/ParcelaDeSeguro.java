@@ -1,4 +1,4 @@
-package br.com.transporte.AppGhn.model.despesas;
+package br.com.transporte.AppGhn.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,7 +19,6 @@ public class ParcelaDeSeguro extends Parcela {
         super.setTipoDespesa(tipo);
         super.setRefCavalo(refCavalo);
     }
-
 
     public ParcelaDeSeguro() {
 

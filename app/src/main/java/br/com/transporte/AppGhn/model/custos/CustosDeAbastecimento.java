@@ -11,14 +11,8 @@ public class CustosDeAbastecimento extends Custos implements Serializable {
 
     private boolean flagAbastecimentoTotal;
     private TipoAbastecimento tipo;
-
-    private boolean apenasAdmEdita;
-    private BigDecimal quantidadeLitros;
-    private BigDecimal marcacaoKm;
-    private BigDecimal valorLitro;
-
+    private BigDecimal quantidadeLitros, marcacaoKm, valorLitro;
     private String posto;
-
 
     public CustosDeAbastecimento(LocalDate data, String posto, BigDecimal marcacaoKm, BigDecimal quantidadeLitros,
                                  BigDecimal valorLitro, BigDecimal totalAbastecimento, TipoAbastecimento tipo, int refCavalo, boolean flagAbastecimentoTotal) {
@@ -68,24 +62,12 @@ public class CustosDeAbastecimento extends Custos implements Serializable {
         this.valorLitro = valorLitro;
     }
 
-    public boolean temIdValido() {
-        return super.getId() > 0;
-    }
-
     public TipoAbastecimento getTipo() {
         return tipo;
     }
 
     public void setTipo(TipoAbastecimento tipo) {
         this.tipo = tipo;
-    }
-
-    public boolean isApenasAdmEdita() {
-        return apenasAdmEdita;
-    }
-
-    public void setApenasAdmEdita(boolean apenasAdmEdita) {
-        this.apenasAdmEdita = apenasAdmEdita;
     }
 
     public boolean isFlagAbastecimentoTotal() {

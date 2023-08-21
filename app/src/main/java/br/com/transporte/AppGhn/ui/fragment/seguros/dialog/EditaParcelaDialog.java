@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.databinding.DialogSeguroParcelaBinding;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;

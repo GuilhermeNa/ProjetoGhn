@@ -55,6 +55,7 @@ public class CustosDeAbastecimentoDAO {
         return new ArrayList<>(dao);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public List<CustosDeAbastecimento> listaCriaFlag(int cavaloId){
         return dao.stream()
                 .filter(a -> a.getTipo() == TOTAL)
@@ -109,7 +110,6 @@ public class CustosDeAbastecimentoDAO {
         return abastecimentoLocalizado;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public BigDecimal calculaKmPercorrido(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
         List<CustosDeAbastecimento> listaTodos = listaPorCavalo(cavaloId);
         List<CustosDeAbastecimento> listaFiltrada = listaFiltradaPorCavaloEData(cavaloId, dataInicial, dataFinal);
@@ -140,9 +140,7 @@ public class CustosDeAbastecimentoDAO {
         return dMais1.getMarcacaoKm().subtract(dMenos1.getMarcacaoKm());
     }
 
-
     //----------------------------------------------------------------------------------------------
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean getMarcacaoKmDoUltimoAbastecimento(BigDecimal marcacaoAtual, int cavaloId, LocalDate novaData)

@@ -1,6 +1,11 @@
 package br.com.transporte.AppGhn.ui.fragment.media;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+import static br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterAbastecimentoHelper.NULL_FLAG;
+import static br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterAbastecimentoHelper.PRIMEIRA_FLAG_SELECIONADA;
+import static br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterAbastecimentoHelper.SEGUNDA_FLAG_SELECIONADA;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -10,46 +15,53 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.core.view.MenuProvider;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentMediaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
-import br.com.transporte.AppGhn.ui.adapter.MediaAdapter_Abastecimentos;
-import br.com.transporte.AppGhn.ui.adapter.MediaAdapter_Cavalos;
+import br.com.transporte.AppGhn.ui.fragment.media.dialog.MediaBottomDialog;
+import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterAbastecimentoHelper;
+import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterCavaloHelper;
+import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaMenuProviderHelper;
 import br.com.transporte.AppGhn.util.AnimationUtil;
+import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class MediaFragment extends Fragment {
-    public static final int CAVALO_ID_PARA_PRIMEIRA_BUSCA = 1;
     private FragmentMediaBinding binding;
-    private CustosDeAbastecimentoDAO abastecimentoDao;
-    private MediaAdapter_Abastecimentos adapterDeAbastecimentos;
-    private TextView placaTxt;
-    private CavaloDAO cavaloDao;
+    public static final int POSICAO_CAVALO_EXIBIDO_NA_ABERTURA = 0;
+    private MediaAdapterAbastecimentoHelper adapterDeAbastecimentoHelper;
+    private MediaAdapterCavaloHelper adapterDeCavaloHelper;
+    private MediaMenuProviderHelper menuProvider;
+    private TextView placaTxt, dataCard1, kmCard1, dataCard2, kmCard2;
     private RecyclerView recyclerDeAbastecimentos;
+    private ConstraintLayout constraintLayout;
+    private CardView card1, card2;
+    private Button btnFiltrar;
+    private CavaloDAO cavaloDao;
+    private List<Cavalo> listaDeCavalosDoAdapter;
+    private Cavalo cavaloExibido;
+    private Runnable runnable;
     private Handler handler;
-    private MediaAdapter_Cavalos adapterDeCavalos;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -58,8 +70,21 @@ public class MediaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        abastecimentoDao = new CustosDeAbastecimentoDAO();
         cavaloDao = new CavaloDAO();
+        handler = new Handler();
+
+        cavaloExibido = getListaDeCavalosDoAdapter().get(POSICAO_CAVALO_EXIBIDO_NA_ABERTURA);
+        listaDeCavalosDoAdapter = configuracaListaParaExibicao(getListaDeCavalosDoAdapter());
+    }
+
+    @NonNull
+    private List<Cavalo> configuracaListaParaExibicao(@NonNull List<Cavalo> lista) {
+        lista.remove(POSICAO_CAVALO_EXIBIDO_NA_ABERTURA);
+        return lista;
+    }
+
+    private List<Cavalo> getListaDeCavalosDoAdapter() {
+        return cavaloDao.listaTodos();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -77,26 +102,46 @@ public class MediaFragment extends Fragment {
     //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        configuraUi();
         configuraToolbar();
-        configuraRecyclerDeCavalos();
-        configuraRecyclerDeAbastecimentos();
-        configuraMenuProvider(adapterDeCavalos);
+        configuraAdapterDeCavaloHelper();
+        configuraAdapterDeAbastecimentoHelper();
+        configuraMenuProvider();
+        configuraCLickRemoveCardDaViewEInsereNovamenteNaLista();
+        configuraVisibilidadeDoBtnFiltrar();
+        configuraUi_cavaloSelecionado(cavaloExibido.getPlaca());
+        configuraBtnFiltrar();
     }
 
-    private void inicializaCamposDaView() {
-        placaTxt = binding.cavaloPlaca;
-        recyclerDeAbastecimentos = binding.recycler;
+    private void configuraBtnFiltrar() {
+        btnFiltrar.setOnClickListener(v -> {
+            CustosDeAbastecimento flag1 = adapterDeAbastecimentoHelper.getFlagAbastecimento1();
+            CustosDeAbastecimento flag2 = adapterDeAbastecimentoHelper.getFlagAbastecimento2();
+
+            MediaBottomDialog dialog = new MediaBottomDialog(requireContext(), flag1, flag2, cavaloExibido);
+            dialog.showBottomDialog();
+
+        });
     }
 
-    private void configuraUi() {
-        String placa = cavaloDao.listaTodos().get(1).getPlaca();
-        placaTxt.setText(placa);
+    private void configuraVisibilidadeDoBtnFiltrar() {
+        if (card1.getVisibility() == VISIBLE && card2.getVisibility() == VISIBLE) {
+            runnable = () -> {
+                btnFiltrar.setVisibility(VISIBLE);
+                AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_bottom, btnFiltrar);
+            };
+
+        } else {
+            runnable = () -> {
+                btnFiltrar.setVisibility(GONE);
+                AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_out_bottom, btnFiltrar);
+            };
+        }
+
+        handler.postDelayed(runnable, 450);
     }
 
     private void configuraToolbar() {
@@ -106,116 +151,173 @@ public class MediaFragment extends Fragment {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Média");
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-
     }
 
-    private void configuraMenuProvider(MediaAdapter_Cavalos adapterDeCavalos) {
-        MenuProvider menuProvider = new MenuProviderHelperMedia(this, adapterDeCavalos);
+    private void inicializaCamposDaView() {
+        constraintLayout = binding.constraintItens;
+        card1 = binding.cardItem1;
+        card2 = binding.cardItem2;
+        dataCard1 = binding.item1MediaData;
+        kmCard1 = binding.item1MediaKm;
+        dataCard2 = binding.item2MediaData;
+        kmCard2 = binding.item2MediaKm;
+        btnFiltrar = binding.btnFiltrar;
+        placaTxt = binding.cavaloPlaca;
+        recyclerDeAbastecimentos = binding.recycler;
+    }
+
+    private void configuraMenuProvider() {
+        menuProvider = new MediaMenuProviderHelper(this, listaDeCavalosDoAdapter);
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+
+        menuProvider.setMenuProviderCallback(dataSet_searchView ->
+                adapterDeCavaloHelper.atualizaAdapterDataSetPorSearch(dataSet_searchView));
     }
 
-    //----------------------------------------------
-    // -> Recycler de Cavalos <- |||||||||||||||||||
-    //----------------------------------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void configuraRecyclerDeCavalos() {
-        CardView cardCavaloSelecionado = binding.cavaloSelecionado;
-        RecyclerView recyclerDeCavalos = binding.recyclerCavalos;
-
-        configuraAdapter(recyclerDeCavalos);
-        configuraLayoutManager(recyclerDeCavalos);
-        configuraAdapterClickListener(cardCavaloSelecionado);
+    private void configuraUi_cavaloSelecionado(String placa) {
+        placaTxt.setText(placa);
     }
 
-    private void configuraAdapter(RecyclerView recyclerDeCavalos) {
-        adapterDeCavalos = new MediaAdapter_Cavalos(this.requireContext(), getListaDeCavalos());
-        recyclerDeCavalos.setAdapter(adapterDeCavalos);
-    }
+    //-------------------------------------------------------------------------
+    // -> UI - Click que remove Card                                         ||
+    //-------------------------------------------------------------------------
 
-    private void configuraLayoutManager(RecyclerView recyclerDeCavalos) {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerDeCavalos.setLayoutManager(layoutManager);
-    }
+    private void configuraCLickRemoveCardDaViewEInsereNovamenteNaLista() {
+        card1.setOnClickListener(v -> {
+            escondeCardView(card1, R.anim.slide_out_left);
+            configuraVisibilidadeDoBtnFiltrar();
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void configuraAdapterClickListener(CardView cardCavaloSelecionado) {
-        adapterDeCavalos.setOnItemClickListener((cavalo, posicao) -> {
-            adapterDeCavalos.teste(posicao);
+        });
 
-            handler = new Handler();
-            animacaoExibeNovoCavaloSelecionado(cardCavaloSelecionado, cavalo);
-            animacaoExibeNovaListaDeAbastecimentos(cavalo.getId());
+        card2.setOnClickListener(v -> {
+            escondeCardView(card2, R.anim.slide_out_right);
+            configuraVisibilidadeDoBtnFiltrar();
 
         });
     }
 
-    private void animacaoExibeNovoCavaloSelecionado(CardView cardCavaloSelecionado, Cavalo cavalo) {
+    private void escondeCardView(CardView card, int animId) {
+        card.setVisibility(INVISIBLE);
+        AnimationUtil.defineAnimacao(this.requireContext(), animId, card);
+        if (card == card1) {
+            adapterDeAbastecimentoHelper.removeCardDaViewEInsereNovamenteNaLista(PRIMEIRA_FLAG_SELECIONADA);
+        } else {
+            adapterDeAbastecimentoHelper.removeCardDaViewEInsereNovamenteNaLista(SEGUNDA_FLAG_SELECIONADA);
+        }
+    }
+
+    //----------------------------------------------------
+    // -> Adapter Abastecimento                         ||
+    //----------------------------------------------------
+
+    private void configuraAdapterDeAbastecimentoHelper() {
+        adapterDeAbastecimentoHelper = new MediaAdapterAbastecimentoHelper(cavaloExibido, this.requireContext(), recyclerDeAbastecimentos);
+        adapterDeAbastecimentoHelper.configuraAdapter();
+        adapterDeAbastecimentoHelper.setAdapterCallback(this::configuraCLickListener);
+    }
+
+    private void configuraCLickListener(String flagSelecinada, CustosDeAbastecimento abastecimento) {
+        switch (flagSelecinada) {
+
+            case PRIMEIRA_FLAG_SELECIONADA:
+                if (constraintLayout.getVisibility() != VISIBLE) {
+                    constraintLayout.setVisibility(VISIBLE);
+                    AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_bottom, constraintLayout);
+                    runnable = () -> {
+                        card1.setVisibility(VISIBLE);
+                        AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_left, card1);
+                        vinculaDadosNaView(abastecimento, dataCard1, kmCard1);
+                    };
+                    handler.postDelayed(runnable, 450);
+
+                } else {
+                    card1.setVisibility(VISIBLE);
+                    AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_left, card1);
+                    vinculaDadosNaView(abastecimento, dataCard1, kmCard1);
+                }
+                configuraVisibilidadeDoBtnFiltrar();
+                break;
+
+            case SEGUNDA_FLAG_SELECIONADA:
+                card2.setVisibility(VISIBLE);
+                AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_right, card2);
+                vinculaDadosNaView(abastecimento, dataCard2, kmCard2);
+                configuraVisibilidadeDoBtnFiltrar();
+                break;
+
+            case NULL_FLAG:
+                MensagemUtil.toast(this.requireContext(), "Exclua um item antes de adicionar");
+        }
+    }
+
+    private void vinculaDadosNaView(CustosDeAbastecimento abastecimento, TextView dataTxt, TextView kmTxt) {
+        String data = FormataDataUtil.dataParaString(abastecimento.getData());
+        dataTxt.setText(data);
+
+        String km = FormataNumerosUtil.formataNumero(abastecimento.getMarcacaoKm());
+        String kmFormatado = "KM " + km;
+        kmTxt.setText(kmFormatado);
+    }
+
+    //----------------------------------------------------
+    // -> Adapter Cavalo                                ||
+    //----------------------------------------------------
+
+    private void configuraAdapterDeCavaloHelper() {
+        RecyclerView recyclerDeCavalos = binding.recyclerCavalos;
+
+        adapterDeCavaloHelper = new MediaAdapterCavaloHelper(this.requireContext(), listaDeCavalosDoAdapter, cavaloExibido, recyclerDeCavalos);
+        adapterDeCavaloHelper.configuraRecyclerDeCavalos();
+
+        adapterDeCavaloHelper.setAdapterCallback((cavaloClicado) -> {
+            this.cavaloExibido = cavaloClicado;
+
+            ui_animacaoExibeNovoCavaloSelecionado(cavaloClicado);
+            ui_animacaoExibeNovaListaDeAbastecimentos();
+            menuProvider.atualizaDataSet(adapterDeCavaloHelper.getAdapterDataSet());
+
+            adapterDeAbastecimentoHelper.atualizaAdapterDeAbastecimentosAoSelecionarNovoCavalo(cavaloClicado.getId());
+            removeVisibilidadeDoFiltro(btnFiltrar, GONE);
+            removeVisibilidadeDoFiltro(card1, INVISIBLE);
+            removeVisibilidadeDoFiltro(card2, INVISIBLE);
+            removeVisibilidadeDoFiltro(constraintLayout, INVISIBLE);
+        });
+    }
+
+    private void removeVisibilidadeDoFiltro(View view, int visibilidade) {
+        if (view.getVisibility() == VISIBLE) {
+            view.setVisibility(visibilidade);
+            AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_out_bottom, view);
+        }
+    }
+
+    private void ui_animacaoExibeNovoCavaloSelecionado(Cavalo cavalo) {
+        CardView cardCavaloSelecionado = binding.cavaloSelecionado;
+
         cardCavaloSelecionado.setVisibility(INVISIBLE);
-        placaTxt.setText(cavalo.getPlaca());
-        cardCavaloSelecionado.setVisibility(View.VISIBLE);
+        configuraUi_cavaloSelecionado(cavalo.getPlaca());
+        cardCavaloSelecionado.setVisibility(VISIBLE);
         AnimationUtil.defineAnimacao(this.requireContext(), R.anim.item_animation_slide_in_left, cardCavaloSelecionado);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void animacaoExibeNovaListaDeAbastecimentos(int cavaloId) {
-        final LayoutAnimationController animController = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_controller_animation_slide_out_down);
+    private void ui_animacaoExibeNovaListaDeAbastecimentos() {
+        final LayoutAnimationController animSlideOut = AnimationUtils.loadLayoutAnimation(this.requireContext(), R.anim.layout_controller_animation_slide_out_down);
+        final LayoutAnimationController animSlideIn = AnimationUtils.loadLayoutAnimation(this.requireContext(), R.anim.layout_controller_animation_slide_in_left);
 
-        recyclerDeAbastecimentos.setLayoutAnimation(animController);
-        Runnable runnable = () -> {
-            recyclerDeAbastecimentos.setVisibility(INVISIBLE);
-            atualizaAdapterDeAbastecimentos(cavaloId);
+        recyclerDeAbastecimentos.setVisibility(INVISIBLE);
+        recyclerDeAbastecimentos.setLayoutAnimation(animSlideOut);
+
+        runnable = () -> {
+            recyclerDeAbastecimentos.setVisibility(VISIBLE);
+            recyclerDeAbastecimentos.setLayoutAnimation(animSlideIn);
+            recyclerDeAbastecimentos.scheduleLayoutAnimation();
         };
         handler.postDelayed(runnable, 200);
     }
 
-    private List<Cavalo> getListaDeCavalos() {
-        return cavaloDao.listaTodos();
-    }
-
-    //----------------------------------------------------
-    // -> Recycler de Abastecimentos <- ||||||||||||||||||
-    //----------------------------------------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void configuraRecyclerDeAbastecimentos() {
-        configuraAdapter();
-        configuraTouchHelper();
-    }
-
-    private void configuraTouchHelper() {
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelperCallbackAbastecimentos(adapterDeAbastecimentos));
-        itemTouchHelper.attachToRecyclerView(recyclerDeAbastecimentos);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void configuraAdapter() {
-        adapterDeAbastecimentos = new MediaAdapter_Abastecimentos(getListaDeAbastecimentosComFlags(CAVALO_ID_PARA_PRIMEIRA_BUSCA), this.requireContext());
-        recyclerDeAbastecimentos.setAdapter(adapterDeAbastecimentos);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void atualizaAdapterDeAbastecimentos(int cavaloId) {
-        final LayoutAnimationController animController = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_controller_animation_slide_in_left);
-
-        devolveVisibilidadeAoRecycler();
-        adapterDeAbastecimentos.atualiza(getListaDeAbastecimentosComFlags(cavaloId));
-        recyclerDeAbastecimentos.setLayoutAnimation(animController);
-        recyclerDeAbastecimentos.scheduleLayoutAnimation();
-    }
-
-    private void devolveVisibilidadeAoRecycler() {
-        if (recyclerDeAbastecimentos.getVisibility() == INVISIBLE) {
-            recyclerDeAbastecimentos.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private List<CustosDeAbastecimento> getListaDeAbastecimentosComFlags(int cavaloId) {
-        return abastecimentoDao.listaTodos().stream()
-                .filter(c -> c.getRefCavalo() == cavaloId)
-                .filter(CustosDeAbastecimento::isFlagAbastecimentoTotal)
-                .collect(Collectors.toList());
-    }
-
 }
+
+
+

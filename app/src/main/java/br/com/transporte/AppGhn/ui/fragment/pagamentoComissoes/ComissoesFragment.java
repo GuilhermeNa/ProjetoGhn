@@ -61,7 +61,7 @@ import br.com.transporte.AppGhn.ui.adapter.ComissoesAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.util.CentralSalariosEComissoes;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
@@ -111,8 +111,8 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         cavaloDao = new CavaloDAO();
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaCavalos = cavaloDao.listaTodos();
     }
 
@@ -166,8 +166,8 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;

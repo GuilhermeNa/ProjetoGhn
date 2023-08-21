@@ -50,7 +50,7 @@ import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.DespesasAdmAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
@@ -70,8 +70,8 @@ public class DespesasAdmDiretasFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         despesaDao = new DespesasAdmDAO();
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaDeDespesasDiretas = getListaDespesasDiretasFiltradaPorData(dataInicial, dataFinal);
     }
 

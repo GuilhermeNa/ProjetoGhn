@@ -12,7 +12,7 @@ public class Cavalo extends Frota {
     private Motorista motorista;
     private BigDecimal comissaoBase;
     private boolean valido;
-    private List<SemiReboque> listaSemiReboque = new ArrayList<>();
+    private final List<SemiReboque> listaSemiReboque = new ArrayList<>();
 
     //@Ignore
     public Cavalo(String placa, String renavam, String chassi, String ano, String modelo,

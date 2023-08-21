@@ -1,17 +1,15 @@
 package br.com.transporte.AppGhn.model.temporarios;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
-public class DetalhesDesempenho {
+public class ObjetoTemporario_representaCavalo {
 
     private int id;
     private static BigDecimal valorAcumulado = BigDecimal.ZERO;
-
-    private String placa;
-    private BigDecimal valor;
-    private String nome;
-    private BigDecimal percentual;
+    private String placa, nome;
+    private BigDecimal valor, percentual;
 
 
     public String getPlaca() {
@@ -59,21 +57,19 @@ public class DetalhesDesempenho {
     }
 
     public static void setValorAcumulado(BigDecimal valorAcumulado) {
-        DetalhesDesempenho.valorAcumulado = valorAcumulado;
+        ObjetoTemporario_representaCavalo.valorAcumulado = valorAcumulado;
     }
 
-    public void adicionaAoSaldoAcumulado(BigDecimal valor) {
-        setValorAcumulado(valorAcumulado.add(valor));
-    }
+ //------------------------------------- Outros Metodos --------------------------------------------
 
     public void definePercentual() {
         BigDecimal ONE_HUNDRED = new BigDecimal("100.00");
         BigDecimal divide;
 
-        try{
+        try {
             divide = getValor().divide(getValorAcumulado(), 2, RoundingMode.HALF_EVEN)
                     .multiply(ONE_HUNDRED).setScale(2, RoundingMode.HALF_EVEN);
-        } catch (ArithmeticException e){
+        } catch (ArithmeticException e) {
             e.printStackTrace();
             divide = BigDecimal.ZERO;
         }
@@ -81,9 +77,25 @@ public class DetalhesDesempenho {
         setPercentual(divide);
     }
 
-    public static void resetaAcumulado(){
+    public static void resetaAcumulado() {
         setValorAcumulado(BigDecimal.ZERO);
     }
 
+    public void adicionaValor(BigDecimal valor) {
+        if (this.valor == null) this.valor = new BigDecimal(BigInteger.ZERO);
+        setValor(this.valor.add(valor));
+    }
 
+    public void removeValor(BigDecimal valor) {
+        if (this.valor == null) this.valor = new BigDecimal(BigInteger.ZERO);
+        setValor(this.valor.subtract(valor));
+    }
+
+    public void adicionaAoSaldoAcumulado(BigDecimal valor) {
+        setValorAcumulado(valorAcumulado.add(valor));
+    }
+
+    public void removeDoSaldoAcumulado(BigDecimal valor) {
+        setValorAcumulado(valorAcumulado.subtract(valor));
+    }
 }

@@ -8,15 +8,10 @@ import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 
 public class Adiantamento implements Serializable {
     private LocalDate data;
-    private BigDecimal valorTotal;
-    private BigDecimal saldoRestituido;
-    private BigDecimal ultimoValorAbatido;
+    private BigDecimal valorTotal, saldoRestituido, ultimoValorAbatido;
     private String descricao;
-    private int refCavalo;
-    private int refMotorista;
-    private int id;
+    private int refCavalo, refMotorista, id;
     private boolean adiantamentoJaFoiPago;
-
 
     public Adiantamento(LocalDate data, BigDecimal valorTotal, String descricao, int refCavalo, int refMotorista) {
         this.data = data;
@@ -104,9 +99,7 @@ public class Adiantamento implements Serializable {
         this.ultimoValorAbatido = ultimoValorAbatido;
     }
 
-
     // ------------------------------ Outros Metodos -----------------------------------------------
-
 
     public void restituirValorPagoComoAdiantamento(BigDecimal valorARestituir) throws ValorInvalidoException {
         BigDecimal previsaoFuturaDeSaldoRestituidoAposNovaBaixa = this.saldoRestituido.add(valorARestituir);

@@ -40,17 +40,17 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasBinding;
-import br.com.transporte.AppGhn.model.Salario;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.adapter.SalariosAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.SalarioDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 
 public class ComissoesPagasFragment extends Fragment {
     private FragmentComissoesPagasBinding binding;
     private SalarioDAO salarioDao;
-    private List<Salario> listaDeSalariosPagos;
+    private List<CustosDeSalario> listaDeSalariosPagos;
     private LocalDate dataInicial, dataFinal;
     private TextView dataInicialTxtView;
     private TextView dataFinalTxtView;
@@ -64,13 +64,13 @@ public class ComissoesPagasFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         salarioDao = new SalarioDAO();
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaDeSalariosPagos = getListaDeSalariosPagos(dataInicial, dataFinal);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Salario> getListaDeSalariosPagos(LocalDate dataInicial, LocalDate dataFinal) {
+    private List<CustosDeSalario> getListaDeSalariosPagos(LocalDate dataInicial, LocalDate dataFinal) {
         return salarioDao.listaFiltradaPorData(dataInicial, dataFinal);
     }
 
@@ -117,8 +117,8 @@ public class ComissoesPagasFragment extends Fragment {
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;
@@ -150,7 +150,7 @@ public class ComissoesPagasFragment extends Fragment {
 
         adapter.setOnItemClickListener(salario -> {
             NavController controlador = Navigation.findNavController(this.requireView());
-            NavDirections direction = ComissoesPagasFragmentDirections.actionNavComissoesPagasToNavComissoesPagasDetalhes(((Salario) salario).getId());
+            NavDirections direction = ComissoesPagasFragmentDirections.actionNavComissoesPagasToNavComissoesPagasDetalhes(((CustosDeSalario) salario).getId());
             controlador.navigate(direction);
         });
     }
@@ -212,10 +212,10 @@ public class ComissoesPagasFragment extends Fragment {
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        List<Salario> listaFiltrada = new ArrayList<>();
+                        List<CustosDeSalario> listaFiltrada = new ArrayList<>();
                         CavaloDAO cavaloDao = new CavaloDAO();
 
-                        for (Salario s : salarioDao.listaTodos()) {
+                        for (CustosDeSalario s : salarioDao.listaTodos()) {
                             String placa = cavaloDao.localizaPeloId(s.getRefCavalo()).getPlaca();
                             if (placa.toLowerCase().contains(newText.toLowerCase())) {
                                 listaFiltrada.add(s);

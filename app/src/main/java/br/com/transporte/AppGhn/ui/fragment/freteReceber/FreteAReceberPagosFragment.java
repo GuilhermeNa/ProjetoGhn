@@ -45,7 +45,7 @@ import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.adapter.FreteAReceberPagoAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -78,8 +78,8 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
         inicializaCamposDaView();
         freteDao = new FreteDAO();
 
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
         listaFiltrada = getListaPagos();
 
         configuraToolbar();
@@ -123,8 +123,8 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;

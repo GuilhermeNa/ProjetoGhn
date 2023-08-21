@@ -15,9 +15,8 @@ public enum TipoMeses {
     NOVREMBO(11,"Novembro"),
     DEZEMBRO(12,"Dezembro");
 
-    private String descricao;
-    private int ref;
-
+    private final String descricao;
+    private final int ref;
 
     TipoMeses(int ref, String descricao) {
         this.descricao = descricao;

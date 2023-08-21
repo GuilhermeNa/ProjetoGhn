@@ -55,7 +55,7 @@ public class DespesasAdmDAO {
         List<DespesaAdm> lista = new ArrayList<>();
 
         for (DespesaAdm d : listaDespesaDireta) {
-            if (!d.getData().isBefore(dataInicial) && !d.getData().isAfter(dataFinal)) {
+            if (d.getData().isAfter(dataInicial) && d.getData().isBefore(dataFinal)) {
                 lista.add(d);
             }
         }

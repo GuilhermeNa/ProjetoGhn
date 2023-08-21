@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 abstract class CustosEDespesas {
     private LocalDate data;
+    private int refCavalo;
 
     public LocalDate getData() {
         return data;
@@ -13,4 +14,11 @@ abstract class CustosEDespesas {
         this.data = data;
     }
 
+    public int getRefCavalo() {
+        return refCavalo;
+    }
+
+    public void setRefCavalo(int refCavalo) {
+        this.refCavalo = refCavalo;
+    }
 }

@@ -39,7 +39,7 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.util.DatePickerUtil;
+import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
@@ -73,8 +73,8 @@ public class AreaMotoristaResumoFragment extends Fragment {
         int cavaloId = getArguments().getInt(CHAVE_ID_CAVALO);
         cavalo = cavaloDao.localizaPeloId(cavaloId);
 
-        dataInicial = DatePickerUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DatePickerUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
 
         listaDeFretes = getListaDeFretes(cavalo);
         listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
@@ -118,14 +118,12 @@ public class AreaMotoristaResumoFragment extends Fragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onResume() {
         super.onResume();
         configuraUiMutavel();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUiMutavel() {
         listaDeFretes = getListaDeFretes(cavalo);
         listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
@@ -278,8 +276,8 @@ public class AreaMotoristaResumoFragment extends Fragment {
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
 
-                dataInicialAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DatePickerUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
+                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
+                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
 
                 this.dataInicial = dataInicialAtualizada;
                 this.dataFinal = dataFinalAtualizada;

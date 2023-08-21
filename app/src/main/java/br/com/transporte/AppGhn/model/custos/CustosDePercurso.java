@@ -10,7 +10,6 @@ import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 public class CustosDePercurso extends Custos implements Serializable {
     private String descricao;
     private TipoCustoDePercurso tipo;
-    private boolean apenasAdmEdita;
 
     public CustosDePercurso(LocalDate data, BigDecimal valorCusto, String descricao, TipoCustoDePercurso tipo, int refCavalo) {
         super.setData(data);
@@ -18,7 +17,6 @@ public class CustosDePercurso extends Custos implements Serializable {
         this.descricao = descricao;
         this.tipo = tipo;
         super.setRefCavalo(refCavalo);
-
     }
 
     public CustosDePercurso() {}
@@ -31,10 +29,6 @@ public class CustosDePercurso extends Custos implements Serializable {
         this.descricao = descricao;
     }
 
-    public boolean temIdValido() {
-        return super.getId() > 0;
-    }
-
     public TipoCustoDePercurso getTipo() {
         return tipo;
     }
@@ -43,11 +37,4 @@ public class CustosDePercurso extends Custos implements Serializable {
         this.tipo = tipo;
     }
 
-    public boolean isApenasAdmEdita() {
-        return apenasAdmEdita;
-    }
-
-    public void setApenasAdmEdita(boolean apenasAdmEdita) {
-        this.apenasAdmEdita = apenasAdmEdita;
-    }
 }

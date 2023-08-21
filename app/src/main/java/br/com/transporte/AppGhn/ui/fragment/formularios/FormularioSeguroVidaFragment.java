@@ -38,7 +38,7 @@ import java.util.Objects;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroVidaBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.model.despesas.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;

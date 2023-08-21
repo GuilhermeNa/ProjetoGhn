@@ -1,9 +1,6 @@
 package br.com.transporte.AppGhn.ui.fragment.desempenho.extensions;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -52,7 +49,6 @@ public abstract class BarChartExtension {
             return listaDeMeses;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.O)
         @NonNull
         public static List<BigDecimal> filtraListaParaExibicao ( int ano, TipoDeRequisicao tipo, int id){
             List<BigDecimal> listaInterna = new ArrayList<>();

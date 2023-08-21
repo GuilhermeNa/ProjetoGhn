@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.model.abstracts;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.model.abstracts.CustosEDespesas;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 public abstract class Despesas extends CustosEDespesas {
