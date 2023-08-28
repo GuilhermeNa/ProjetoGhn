@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.SelecionaCavalo;
 
 public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCavaloAdapter.ViewHolder>{
-    private final List<Cavalo> lista;
+    private final List<Cavalo> dataSet;
     private final SelecionaCavalo context;
     private OnItemClickListener onItemClickListener;
 
@@ -28,9 +28,13 @@ public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCaval
     }
 
     public SelecionaCavaloAdapter(SelecionaCavalo context, List<Cavalo> lista) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView placaTxtView;
@@ -43,6 +47,10 @@ public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCaval
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public SelecionaCavaloAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,9 +58,13 @@ public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCaval
         return new ViewHolder(viewCriada);
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull SelecionaCavaloAdapter.ViewHolder holder, int position) {
-        Cavalo cavalo = lista.get(position);
+        Cavalo cavalo = dataSet.get(position);
         configuraUi(holder);
         vincula(holder, cavalo);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo));
@@ -64,16 +76,20 @@ public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCaval
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
+    private void vincula(@NonNull ViewHolder holder, @NonNull Cavalo cavalo){
+        holder.placaTxtView.setText(cavalo.getPlaca());
+    }
+
+    //-------------------------------------- Metodos Publicos ----------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<Cavalo> lista){
-        this.lista.clear();
-        this.lista.addAll(lista);
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
         notifyDataSetChanged();
     }
 
-    private void vincula(ViewHolder holder, Cavalo cavalo){
-        holder.placaTxtView.setText(cavalo.getPlaca());
-    }
 }

@@ -2,6 +2,9 @@ package br.com.transporte.AppGhn.ui.fragment.seguros;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.EDITANDO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -13,7 +16,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGU
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,7 +31,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
@@ -41,18 +42,19 @@ import androidx.navigation.Navigation;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.databinding.FragmentSegurosInformacoesGeraisBinding;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
-import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.databinding.FragmentSegurosInformacoesGeraisBinding;
+import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
+import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class SegurosInformacoesGeraisFragment extends Fragment {
+
+
     private FragmentSegurosInformacoesGeraisBinding binding;
     private TextView tituloTxtView, subTxtView, dataInicioTxtView, dataFinalTxtView, valorTotalTxtView, parcelasQntTxtView, parcelaValorTxtView,
             companhiaTxtView, nContratoTxtView, coberturaCascoTxtView, coberturaRcfMateriaisTxtView, coberturaRcfCorporaisTxtView, coberturaAppMorteTxtView,
@@ -71,26 +73,25 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
 
                     switch (codigoResultado) {
                         case RESULT_DELETE:
-                            Toast.makeText(requireContext(), "Registro apagado", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
                             controlador.popBackStack();
                             callback.atualizaFrotaAdapter();
                             break;
 
                         case RESULT_EDIT:
-                            atualizaUiAposRetornoResult("Registro editado");
+                            atualizaUiAposRetornoResult();
                             break;
 
                         case RESULT_CANCELED:
-                            Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                             break;
                     }
                 });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void atualizaUiAposRetornoResult(String msg) {
+    private void atualizaUiAposRetornoResult() {
         configuraUi(seguro);
-        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -119,7 +120,6 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
     //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -129,12 +129,12 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         configuraToolbar();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void configuraUi(DespesaComSeguro seguro) {
-        tituloTxtView.setText("Seguro Compreensivo");
-        subTxtView.setText("Seguro Auto " + seguro.getRefCavalo());
-        dataInicioTxtView.setText(FormataDataUtil.dataParaString(seguro.getDataInicial()));
-        dataFinalTxtView.setText(FormataDataUtil.dataParaString(seguro.getDataFinal()));
+    private void configuraUi(@NonNull DespesaComSeguro seguro) {
+        String sub = R.string.seguro_auto + " "+ seguro.getRefCavalo();
+        subTxtView.setText(sub);
+        tituloTxtView.setText(R.string.seguro_compreensivo);
+        dataInicioTxtView.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
+        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(seguro.getDataFinal()));
         valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguro.getValorDespesa()));
         parcelasQntTxtView.setText(String.valueOf(seguro.getParcelas()));
         parcelaValorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguro.getValorParcela()));
@@ -161,15 +161,14 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
             DespesaComSeguroDeVida seguroDeVida = (DespesaComSeguroDeVida) seguro;
             sociosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguroDeVida.getCoberturaSocios()));
             motoristasTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguroDeVida.getCoberturaMotoristas()));
-            subTxtView.setText("Seguro de Vida");
-            tituloTxtView.setText("Demais Ramos");
+            subTxtView.setText(R.string.seguro_de_vida);
+            tituloTxtView.setText(R.string.demais_ramos);
         }
     }
 
-    private DespesaComSeguro recebeReferenciaExternaDeSeguro(DespesasSeguroDAO segurosDao) {
+    private DespesaComSeguro recebeReferenciaExternaDeSeguro(@NonNull DespesasSeguroDAO segurosDao) {
         int seguroId = (int) SegurosInformacoesGeraisFragmentArgs.fromBundle(getArguments()).getSeguroId();
-        DespesaComSeguro seguroRecebido = segurosDao.localizaPeloId(seguroId);
-        return seguroRecebido;
+        return segurosDao.localizaPeloId(seguroId);
     }
 
     private void inicializaCamposDaView() {

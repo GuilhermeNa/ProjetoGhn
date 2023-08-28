@@ -1,15 +1,22 @@
 package br.com.transporte.AppGhn.ui.activity;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ABASTECIMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DEFAUT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_FRETE;
+import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment.KEY_ACTION_ADAPTER;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,28 +27,149 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jetbrains.annotations.Contract;
+
+import java.util.Objects;
+
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.databinding.ActivityAreaMotoristaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.ui.activity.extensions.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.adapter.viewpager.ViewPagerAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecimentoFragment;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaCustosDePercursoFragment;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaFreteFragment;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment;
+import br.com.transporte.AppGhn.util.AnimationUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class AreaMotoristaActivity extends AppCompatActivity implements MenuProvider {
+    public static final String SEM_MOTORISTA = "Sem motorista";
+    public static final int VIEW_PAGER_POS_RESUMO_FRAGMENT = 0;
+    public static final int VIEW_PAGER_POS_FRETE_FRAGMENT = 1;
+    public static final int VIEW_PAGER_POS_ABASTECIMENTO_FRAGMENT = 2;
+    public static final int VIEW_PAGER_POS_CUSTO_FRAGMENT = 3;
     private ActivityAreaMotoristaBinding binding;
     private FloatingActionButton fabPrincipal, fab1, fab2, fab3;
-    private Animation animFabAbertura, animFabFechamento, animFabCima, animFabBaixo, animFabNoroesteAbre, animFabNoroesteFecha, animFabNordesteAbre, animFabNordesteFecha, logout;
+    private Animation animFabAbertura, animFabFechamento, animFabCima, animFabBaixo, animFabNoroesteAbre,
+            animFabNoroesteFecha, animFabNordesteAbre, animFabNordesteFecha, logout;
     private boolean fabVisivel = false;
     private ViewPager2 viewPager2;
+    private TextView nome;
+    private AreaMotoristaResumoFragment resumoFragment;
+    private AreaMotoristaFreteFragment freteFragment;
+    private AreaMotoristaAbastecimentoFragment abastecimentoFragment;
+    private AreaMotoristaCustosDePercursoFragment custoFragment;
+    private final ActivityResultLauncher<Intent> activityResultLauncherFrete = getActivityResultLauncherFrete();
+    private final ActivityResultLauncher<Intent> activityResultLauncherAbastecimento = getActivityResultLauncherAbastecimento();
+    private final ActivityResultLauncher<Intent> activityResultLauncherCusto = getActivityResultLauncherCusto();
+
+    @NonNull
+    @Contract(pure = true)
+    private ActivityResultLauncher<Intent> getActivityResultLauncherCusto() {
+        return registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    int resultCode = result.getResultCode();
+
+                    switch (resultCode) {
+                        case RESULT_OK:
+                            if (resumoFragment == null) {
+                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_RESUMO_FRAGMENT);
+                            }
+                            if (custoFragment == null) {
+                                Fragment verificaSeFragmentFoiInicializado =  getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_CUSTO_FRAGMENT);
+                                if(verificaSeFragmentFoiInicializado != null){
+                                    custoFragment = (AreaMotoristaCustosDePercursoFragment) verificaSeFragmentFoiInicializado;
+                                }
+                            }
+                            if(resumoFragment != null) resumoFragment.solicitaAtualizacao();
+                            if(custoFragment != null) custoFragment.solicitaAtualizacao();
+                            break;
+
+                        case RESULT_CANCELED:
+                            MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
+                            break;
+                    }
+                });
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    private ActivityResultLauncher<Intent> getActivityResultLauncherAbastecimento() {
+        return registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    int resultCode = result.getResultCode();
+
+                    switch (resultCode) {
+                        case RESULT_OK:
+                            if (resumoFragment == null) {
+                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_RESUMO_FRAGMENT);
+                            }
+                            if (abastecimentoFragment == null) {
+                                Fragment verificaSeFragmentFoiInicializado = getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_ABASTECIMENTO_FRAGMENT);
+                                if (verificaSeFragmentFoiInicializado != null) {
+                                    abastecimentoFragment = (AreaMotoristaAbastecimentoFragment) verificaSeFragmentFoiInicializado;
+                                }
+                            }
+                            if (resumoFragment != null) resumoFragment.solicitaAtualizacao();
+                            if (abastecimentoFragment != null) abastecimentoFragment.solicitaAtualizacao();
+                            break;
+
+                        case RESULT_CANCELED:
+                            MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
+                            break;
+                    }
+                });
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    private ActivityResultLauncher<Intent> getActivityResultLauncherFrete() {
+        return registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    int resultCode = result.getResultCode();
+
+                    switch (resultCode) {
+                        case RESULT_OK:
+                            if (resumoFragment == null) {
+                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_RESUMO_FRAGMENT);
+                            }
+                            if (freteFragment == null) {
+                                Fragment verificaSeFragmentFoiInicializado = getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_FRETE_FRAGMENT);
+                                if (verificaSeFragmentFoiInicializado != null) {
+                                    freteFragment = (AreaMotoristaFreteFragment) verificaSeFragmentFoiInicializado;
+                                }
+                            }
+                            if (resumoFragment != null) resumoFragment.solicitaAtualizacao();
+                            if (freteFragment != null) freteFragment.solicitaAtualizacao();
+                            break;
+
+                        case RESULT_CANCELED:
+                            MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
+                            break;
+                    }
+                });
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +178,28 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         setContentView(binding.getRoot());
         inicializaCamposDaView();
         Cavalo cavalo = recebeReferenciaDeCavalo();
-
         configuraUi(cavalo);
         configuraViewPager(cavalo);
         configuraNavegacao(cavalo);
-        setStatusBarColor();
+        StatusBarUtil.setStatusBarColor(this, getWindow());
+        configuraToolbar(cavalo);
+        configuraObserverDosAdaptersDosDemaisFragments();
+    }
 
+    private void configuraObserverDosAdaptersDosDemaisFragments() {
+        getSupportFragmentManager().setFragmentResultListener(KEY_ACTION_ADAPTER, this, (requestKey, result) -> {
+            if(resumoFragment == null){
+                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_RESUMO_FRAGMENT);
+            }
+            if(resumoFragment != null) resumoFragment.solicitaAtualizacao();
+        });
+
+    }
+
+    private void configuraToolbar(@NonNull Cavalo cavalo) {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(cavalo.getPlaca());
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
@@ -66,14 +207,11 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
     }
 
     private void configuraUi(Cavalo cavalo) {
-        TextView nome = binding.motorista;
-
         try {
             nome.setText(cavalo.getMotorista().getNome());
         } catch (NullPointerException e) {
             e.printStackTrace();
-            e.getMessage();
-            nome.setText("Sem motorista");
+            nome.setText(SEM_MOTORISTA);
         }
     }
 
@@ -83,17 +221,12 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         CavaloDAO cavaloDao = new CavaloDAO();
         int cavaloId = 0;
 
-        if (dados.hasExtra(CHAVE_ID_CAVALO)){
+        if (dados.hasExtra(CHAVE_ID_CAVALO)) {
             cavaloId = dados.getIntExtra(CHAVE_ID_CAVALO, VALOR_DEFAUT);
         }
 
         cavalo = cavaloDao.localizaPeloId(cavaloId);
         return cavalo;
-    }
-
-    private void setStatusBarColor() {
-        int color = ContextCompat.getColor(this, R.color.midnightblue);
-        getWindow().setStatusBarColor(color);
     }
 
     private void configuraNavegacao(Cavalo cavalo) {
@@ -105,21 +238,13 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         binding.actAreaMotoristaImgResumo.setColorFilter(Color.parseColor("#E74C3C"));
         binding.actAreaMotoristaTxtResumo.setTextColor(Color.parseColor("#E74C3C"));
 
-        binding.actAreaMotoristaIcResumo.setOnClickListener(v -> {
-            navegaComClickViewPager(0, binding.actAreaMotoristaImgResumo, binding.actAreaMotoristaTxtResumo);
-        });
-        binding.actAreaMotoristaIcFrete.setOnClickListener(v -> {
-            navegaComClickViewPager(1, binding.actAreaMotoristaImgFrete, binding.actAreaMotoristaTxtFrete);
-        });
-        binding.actAreaMotoristaIcAbastecimento.setOnClickListener(v -> {
-            navegaComClickViewPager(2, binding.actAreaMotoristaImgAbastecimento, binding.actAreaMotoristaTxtAbastecimento);
-        });
-        binding.actAreaMotoristaIcDespesa.setOnClickListener(v -> {
-            navegaComClickViewPager(3, binding.actAreaMotoristaImgDespesa, binding.actAreaMotoristaTxtDespesa);
-        });
+        binding.actAreaMotoristaIcResumo.setOnClickListener(v -> navegaComClickViewPager(0, binding.actAreaMotoristaImgResumo, binding.actAreaMotoristaTxtResumo));
+        binding.actAreaMotoristaIcFrete.setOnClickListener(v -> navegaComClickViewPager(1, binding.actAreaMotoristaImgFrete, binding.actAreaMotoristaTxtFrete));
+        binding.actAreaMotoristaIcAbastecimento.setOnClickListener(v -> navegaComClickViewPager(2, binding.actAreaMotoristaImgAbastecimento, binding.actAreaMotoristaTxtAbastecimento));
+        binding.actAreaMotoristaIcDespesa.setOnClickListener(v -> navegaComClickViewPager(3, binding.actAreaMotoristaImgDespesa, binding.actAreaMotoristaTxtDespesa));
     }
 
-    private void configuraViewPager(Cavalo cavalo) {
+    private void configuraViewPager(@NonNull Cavalo cavalo) {
         viewPager2 = binding.viewPager;
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, cavalo.getId());
         viewPager2.setAdapter(viewPagerAdapter);
@@ -139,8 +264,6 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
                         binding.actAreaMotoristaTxtAbastecimento.setTextColor(Color.parseColor("#FFFFFF"));
                         binding.actAreaMotoristaImgDespesa.clearColorFilter();
                         binding.actAreaMotoristaTxtDespesa.setTextColor(Color.parseColor("#FFFFFF"));
-
-                        logout = AnimationUtils.loadAnimation(AreaMotoristaActivity.this, R.anim.anim_logout);
                         break;
                     case 1:
                         binding.actAreaMotoristaImgFrete.setColorFilter(Color.parseColor("#E74C3C"));
@@ -152,8 +275,6 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
                         binding.actAreaMotoristaTxtAbastecimento.setTextColor(Color.parseColor("#FFFFFF"));
                         binding.actAreaMotoristaImgDespesa.clearColorFilter();
                         binding.actAreaMotoristaTxtDespesa.setTextColor(Color.parseColor("#FFFFFF"));
-
-                        logout = AnimationUtils.loadAnimation(AreaMotoristaActivity.this, R.anim.anim_logout);
                         break;
                     case 2:
                         binding.actAreaMotoristaImgAbastecimento.setColorFilter(Color.parseColor("#E74C3C"));
@@ -165,8 +286,6 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
                         binding.actAreaMotoristaTxtFrete.setTextColor(Color.parseColor("#FFFFFF"));
                         binding.actAreaMotoristaImgDespesa.clearColorFilter();
                         binding.actAreaMotoristaTxtDespesa.setTextColor(Color.parseColor("#FFFFFF"));
-
-                        logout = AnimationUtils.loadAnimation(AreaMotoristaActivity.this, R.anim.anim_logout);
                         break;
                     case 3:
                         binding.actAreaMotoristaImgDespesa.setColorFilter(Color.parseColor("#E74C3C"));
@@ -178,10 +297,9 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
                         binding.actAreaMotoristaTxtFrete.setTextColor(Color.parseColor("#FFFFFF"));
                         binding.actAreaMotoristaImgAbastecimento.clearColorFilter();
                         binding.actAreaMotoristaTxtAbastecimento.setTextColor(Color.parseColor("#FFFFFF"));
-
-                        logout = AnimationUtils.loadAnimation(AreaMotoristaActivity.this, R.anim.anim_logout);
                         break;
                 }
+                animaNomeEmTransicoes();
             }
         });
     }
@@ -190,16 +308,18 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         int indiceFragments = viewPager2.getCurrentItem();
         if (indiceFragments != idItem) {
             viewPager2.setCurrentItem(idItem);
-            logout = AnimationUtils.loadAnimation(this, R.anim.anim_logout);
-
-            alteraCor(icon, txt, indiceFragments);
-
+            animaNomeEmTransicoes();
+            configuraCorDosItensNaBottomAppBar(icon, txt, indiceFragments);
         } else {
-            Toast.makeText(this, "Você está aqui!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.voce_ja_esta_aqui, Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void alteraCor(ImageView icon, TextView txt, int indiceFragments) {
+    private void animaNomeEmTransicoes() {
+        AnimationUtil.defineAnimacao(this, R.anim.anim_logout, nome);
+    }
+
+    private void configuraCorDosItensNaBottomAppBar(ImageView icon, TextView txt, int indiceFragments) {
         switch (indiceFragments) {
             case 0:
                 binding.actAreaMotoristaImgResumo.clearColorFilter();
@@ -223,6 +343,7 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
     }
 
     private void inicializaCamposDaView() {
+        nome = binding.motorista;
         fabPrincipal = binding.areaDoMotoristaFaBPrincipal;
         fab1 = binding.areaDoMotoristaFaB1;
         fab2 = binding.areaDoMotoristaFaB2;
@@ -244,21 +365,21 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
             Intent intent = new Intent(this, FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
             intent.putExtra(CHAVE_ID_CAVALO, cavalo.getId());
-            startActivity(intent);
+            activityResultLauncherFrete.launch(intent);
         });
         fab2.setOnClickListener(v -> {
             animacaoFabs();
             Intent intent = new Intent(this, FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_ABASTECIMENTO);
             intent.putExtra(CHAVE_ID_CAVALO, cavalo.getId());
-            startActivity(intent);
+            activityResultLauncherAbastecimento.launch(intent);
         });
         fab3.setOnClickListener(v -> {
             animacaoFabs();
             Intent intent = new Intent(this, FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_CUSTO_PERCURSO);
             intent.putExtra(CHAVE_ID_CAVALO, cavalo.getId());
-            startActivity(intent);
+            activityResultLauncherCusto.launch(intent);
         });
     }
 
@@ -288,6 +409,10 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         fabVisivel = !fabVisivel;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                      On Create Menu                                        ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.menu_padrao, menu);
@@ -295,11 +420,12 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         menu.removeItem(R.id.menu_padrao_search);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        switch(menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.menu_padrao_logout:
-                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
             case android.R.id.home:

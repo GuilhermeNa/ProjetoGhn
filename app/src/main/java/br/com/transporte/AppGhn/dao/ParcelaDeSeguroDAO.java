@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.dao;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
@@ -15,14 +16,13 @@ public class ParcelaDeSeguroDAO {
     private static final List<ParcelaDeSeguro> dao = new ArrayList<>();
     private static int contadorDeIds = 1;
 
-    public void adiciona(ParcelaDeSeguro parcela){
+    public void adiciona(@NonNull ParcelaDeSeguro parcela){
         parcela.setId(contadorDeIds);
         dao.add(parcela);
         contadorDeIds++;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void edita(ParcelaDeSeguro parcela){
+    public void edita(@NonNull ParcelaDeSeguro parcela){
         Optional<ParcelaDeSeguro> parcelaOptional = localizaPeloId(parcela.getId());
         parcelaOptional.ifPresent(p -> {
             int posicao = dao.indexOf(p);
@@ -42,14 +42,12 @@ public class ParcelaDeSeguroDAO {
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public List<ParcelaDeSeguro> listaParcelasDoSeguro(int id) {
         return dao.stream()
                 .filter(p -> p.getRefSeguro() == id)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public List<ParcelaDeSeguro> listaParcelasDoCavalo(int id) {
         return dao.stream()
                 .filter(p -> p.getRefCavalo() == id)
@@ -58,7 +56,6 @@ public class ParcelaDeSeguroDAO {
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private Optional<ParcelaDeSeguro> localizaPeloId(int parcelaId){
         return dao.stream()
                 .filter(p -> p.getId() == parcelaId)

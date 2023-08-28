@@ -14,7 +14,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPD
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -41,14 +39,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroAutoBinding;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
-import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroAutoBinding;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
+import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -57,6 +55,9 @@ import br.com.transporte.AppGhn.util.MensagemUtil;
 public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de seguro que já existe.";
     public static final String SUB_TITULO_APP_BAR_RENOVANDO = "Você está renovando o seguro do cavalo ";
+    public static final String JA_EXISTE_UM_SEGURO_FROTA_PARA_ESTE_ITEM = "Já existe um seguro frota para este item";
+    public static final String SELECIONE_UM_CAVALO_VALIDO = "Selecione um cavalo válido";
+    public static final String INCORRETO = "Incorreto";
     private EditText dataInicialEdit, dataFinalEdit, valorEdit, parcelasEdit, valorParcelasEdit, companhiaEdit, nContratoEdit, coberturaCascoEdit,
             rcfMateriaisEdit, rcfCorporaisEdit, appMorteEdit, appInvalidezEdit, danosMoraisEdit, vidrosEdit, assistenciaEdit, dataPrimeiraParcelaEdit;
     private TextInputLayout dataFinalLayout, dataInicialLayout, dataPrimeiraParcelaLayout, refCavaloLayout;
@@ -85,9 +86,9 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
     private void configuraTipoDeRecebimento() {
         Bundle bundle = getArguments();
-        TipoFormulario tipoRequisicao = (TipoFormulario) bundle.getSerializable(CHAVE_REQUISICAO);
+        TipoFormulario tipoRequisicao = (TipoFormulario) Objects.requireNonNull(bundle).getSerializable(CHAVE_REQUISICAO);
 
-        switch (tipoRequisicao) {
+        switch (Objects.requireNonNull(tipoRequisicao)) {
             case EDITANDO:
                 setTipoFormulario(EDITANDO);
                 break;
@@ -137,7 +138,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -149,7 +149,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
     private void configuraDropDownMenuDeCavalos() {
         String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
-        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, cavalos);
+        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloAutoComplete.setAdapter(adapterCavalos);
     }
 
@@ -179,7 +179,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         assistenciaEdit = binding.fragFormularioSeguroAssistencia24h;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi() {
         Toolbar toolbar = binding.toolbar;
         configuraToolbar(toolbar);
@@ -226,15 +225,14 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         String placaDoCavaloQueEstaSendoEditado = cavaloDao.localizaPeloId(seguro.getRefCavalo()).getPlaca();
         
         refCavaloAutoComplete.setText(placaDoCavaloQueEstaSendoEditado);
-        dataPrimeiraParcelaEdit.setText(FormataDataUtil.dataParaString(seguro.getDataPrimeiraParcela()));
-        dataInicialEdit.setText(FormataDataUtil.dataParaString(seguro.getDataInicial()));
-        dataFinalEdit.setText(FormataDataUtil.dataParaString(seguro.getDataFinal()));
+        dataPrimeiraParcelaEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataPrimeiraParcela()));
+        dataInicialEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
+        dataFinalEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataFinal()));
         valorEdit.setText(FormataNumerosUtil.formataNumero(seguro.getValorDespesa()));
         parcelasEdit.setText(String.valueOf(seguro.getParcelas()));
         valorParcelasEdit.setText(FormataNumerosUtil.formataNumero(seguro.getValorParcela()));
@@ -250,7 +248,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         assistenciaEdit.setText(seguro.getAssistencia24H());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataInicialLayout, dataInicialEdit);
@@ -295,19 +292,18 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         boolean placaInexistente = !cavaloDao.listaPlacas().contains(refCavaloAutoComplete.getText().toString().toUpperCase(Locale.ROOT));
 
         if (placaInexistente) {
-            refCavaloAutoComplete.setError("Incorreto");
+            refCavaloAutoComplete.setError(INCORRETO);
             refCavaloAutoComplete.getText().clear();
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
-            MensagemUtil.toast(this.requireContext(), "Selecione um cavalo válido");
+            MensagemUtil.toast(this.requireContext(), SELECIONE_UM_CAVALO_VALIDO);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        seguro.setDataInicial(FormataDataUtil.stringParaData(dataInicialEdit.getText().toString()));
-        seguro.setDataFinal(FormataDataUtil.stringParaData(dataFinalEdit.getText().toString()));
-        seguro.setDataPrimeiraParcela(FormataDataUtil.stringParaData(dataPrimeiraParcelaEdit.getText().toString()));
+        seguro.setDataInicial(ConverteDataUtil.stringParaData(dataInicialEdit.getText().toString()));
+        seguro.setDataFinal(ConverteDataUtil.stringParaData(dataFinalEdit.getText().toString()));
+        seguro.setDataPrimeiraParcela(ConverteDataUtil.stringParaData(dataPrimeiraParcelaEdit.getText().toString()));
         seguro.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
         seguro.setParcelas(Integer.parseInt(parcelasEdit.getText().toString()));
         seguro.setValorParcela(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorParcelasEdit.getText().toString())));
@@ -333,7 +329,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         seguroDao.deleta(seguro.getId());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         int cavaloId = configuraObjetoNaCriacao();
@@ -356,7 +351,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         return cavaloId;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraParcelamento(int cavaloId){
         int chaveEstrangeira = seguro.getId();
 
@@ -368,7 +362,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         BigDecimal valorDeCadaParcela = new BigDecimal(valorParcelaFormatada);
 
         String campoDataPrimeiraParcela = dataPrimeiraParcelaEdit.getText().toString();
-        LocalDate dataPrimeiraParcela = FormataDataUtil.stringParaData(campoDataPrimeiraParcela);
+        LocalDate dataPrimeiraParcela = ConverteDataUtil.stringParaData(campoDataPrimeiraParcela);
 
         ParcelaDeSeguro parcelaDeSeguro;
         ParcelaDeSeguroDAO parcelaDeSeguroDao = new ParcelaDeSeguroDAO();
@@ -398,7 +392,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -479,7 +472,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void deletaParcelasNoBancoDeDados() {
         ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
 
@@ -489,7 +481,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void procuraPorSeguroDuplicado(){
 
         if(getTipoFormulario() == ADICIONANDO){
@@ -505,14 +496,9 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
             if( buscaDuplicidade.isPresent()) {
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
                 refCavaloAutoComplete.setError("");
-                MensagemUtil.toast(this.requireContext(), "Já existe um seguro frota para este item");
+                MensagemUtil.toast(this.requireContext(), JA_EXISTE_UM_SEGURO_FROTA_PARA_ESTE_ITEM);
             }
-
         }
-
-
-
-
     }
 
 }

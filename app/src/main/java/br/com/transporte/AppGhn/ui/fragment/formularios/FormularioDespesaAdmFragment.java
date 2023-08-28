@@ -1,9 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.INCORRETO;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.SELECIONE_UM_CAVALO_VALIDO;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -24,19 +24,20 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.math.BigDecimal;
 import java.util.Locale;
 
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioDespesaAdmBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de despesa que já existe.";
+    public static final String ESCOLHA_UMA_TIPO_DE_DESPESA = "Escolha uma tipo de despesa";
     private FragmentFormularioDespesaAdmBinding binding;
     private EditText dataEdit, descricaoEdit, valorEdit;
     private TextInputLayout dataLayout, refLayout;
@@ -91,7 +92,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
     private void configuraDropDownMenuDePlacas() {
         String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
-        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, cavalos);
+        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloEdit.setAdapter(adapterCavalos);
     }
 
@@ -129,7 +130,6 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if(despesa.getTipoDespesa() == TipoDespesa.DIRETA){
@@ -139,12 +139,11 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
         } else if (despesa.getTipoDespesa() == TipoDespesa.INDIRETA){
             indiretaBox.setChecked(true);
         }
-        dataEdit.setText(FormataDataUtil.dataParaString(despesa.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(despesa.getData()));
         valorEdit.setText(despesa.getValorDespesa().toPlainString());
         descricaoEdit.setText(despesa.getDescricao());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataLayout, dataEdit);
@@ -163,35 +162,34 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
             verificaCampo(refCavaloEdit);
 
             if (!cavaloDao.listaPlacas().contains(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT))) {
-                refCavaloEdit.setError("Incorreto");
+                refCavaloEdit.setError(INCORRETO);
                 refCavaloEdit.getText().clear();
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
-                MensagemUtil.snackBar(view, "Selecione um cavalo válido");
+                MensagemUtil.snackBar(view, SELECIONE_UM_CAVALO_VALIDO);
             }
         }
 
         if (!diretaBox.isChecked() && !indiretaBox.isChecked()) {
             despesaTxtView.setError("");
-            snackBar(view, "Escolha uma tipo de despesa");
+            snackBar(view, ESCOLHA_UMA_TIPO_DE_DESPESA);
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
         }
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        despesa.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        despesa.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         despesa.setDescricao(descricaoEdit.getText().toString());
         despesa.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
         if(diretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.DIRETA);
             int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT)).getId();
-            despesa.setRefPlacaCavalo(cavaloId);
+            despesa.setRefCavalo(cavaloId);
         } else if (indiretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.INDIRETA);
-            despesa.setRefPlacaCavalo(0);
+            despesa.setRefCavalo(0);
         }
     }
 

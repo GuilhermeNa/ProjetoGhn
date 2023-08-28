@@ -1,7 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -23,10 +22,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
 import br.com.transporte.AppGhn.util.ImagemUtil;
 
@@ -36,15 +35,19 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     public static final int DIAS_SEMANA = 7;
     private final CertificadosDiretosFragment context;
     private OnItemClickListener onItemClickListener;
-    private final List<Cavalo> lista;
+    private final List<Cavalo> dataSet;
     private static final int SITUACAO_OK = 0;
     private static final int SITUACAO_AVISO = 2;
     private static final int SITUACAO_ATENCAO = 1;
     private int situacaoDoCavalo;
 
     public CertificadoAdapter(List<Cavalo> lista, CertificadosDiretosFragment context) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -55,7 +58,6 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
         private final ImageView statusImgView, icCaminhaoImgView;
         private final TextView placaTxtView;
 
-        @RequiresApi(api = Build.VERSION_CODES.O)
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             icCaminhaoImgView = itemView.findViewById(R.id.rec_item_certificados_ic_camimhao);
@@ -68,7 +70,6 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     //                                          OnCreateViewHolder                                ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @NonNull
     @Override
     public CertificadoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -80,10 +81,9 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     //                                          OnBindViewHolder                                  ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull CertificadoAdapter.ViewHolder holder, int position) {
-        Cavalo cavalo = lista.get(position);
+        Cavalo cavalo = dataSet.get(position);
         configuraUi(holder);
         vincula(holder, cavalo);
         configuraListeners(holder, cavalo);
@@ -97,14 +97,20 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
         holder.icCaminhaoImgView.setColorFilter(Color.parseColor("#FFFFFFFF"));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, Cavalo cavalo) {
-        holder.placaTxtView.setText(cavalo.getPlaca());
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
 
+    //----------------------------------------------------------------------------
+    // -> Vincula                                                               ||
+    //----------------------------------------------------------------------------
+
+    private void vincula(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
+        holder.placaTxtView.setText(cavalo.getPlaca());
         exibeImgDeStatusDoCertificadoParaCadaCavalo(holder, cavalo);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void exibeImgDeStatusDoCertificadoParaCadaCavalo(ViewHolder holder, Cavalo cavalo) {
         situacaoDoCavalo = SITUACAO_OK;
         situacaoDoCavalo = verificaVencimentoDosCertificados(cavalo);
@@ -125,12 +131,11 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
 
     }
 
-    private void setStatusImgView(ViewHolder holder, String situacao) {
+    private void setStatusImgView(@NonNull ViewHolder holder, String situacao) {
         holder.statusImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), situacao));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private int verificaVencimentoDosCertificados(Cavalo cavalo) {
+    private int verificaVencimentoDosCertificados(@NonNull Cavalo cavalo) {
         DespesasCertificadoDAO certificado = new DespesasCertificadoDAO();
         List<DespesaCertificado> listaTodosCertificadosDoCavalo = certificado.listaFiltradaPorCavalo(cavalo.getId());
         int diasAteVencimento = 0;
@@ -161,19 +166,11 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
 
     //------------------------------------- Metodos Publicos ---------------------------------------
 
-    @Override
-    public int getItemCount() {
-        return lista.size();
-    }
-
-    public void atualizaAdapter(List<Cavalo> listaFiltrada) {
-        this.lista.clear();
-        this.lista.addAll(listaFiltrada);
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<Cavalo> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
         notifyDataSetChanged();
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
     }
 
 }

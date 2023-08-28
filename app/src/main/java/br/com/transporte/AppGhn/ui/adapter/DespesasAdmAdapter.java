@@ -1,13 +1,12 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,11 +17,11 @@ import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmDiretasFragment;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 
 public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.ViewHolder> {
     private final DespesasAdmDiretasFragment context;
-    private final List<DespesaAdm> lista;
+    private final List<DespesaAdm> dataSet;
     private final CavaloDAO cavaloDao;
     private OnItemClickListener onItemClickListener;
 
@@ -32,9 +31,13 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
 
     public DespesasAdmAdapter(DespesasAdmDiretasFragment context, List<DespesaAdm> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
         cavaloDao = new CavaloDAO();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView placaTxtView, dataTxtView, valorTxtView, descricaoTxtView;
@@ -48,6 +51,10 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public DespesasAdmAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,32 +62,49 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull DespesasAdmAdapter.ViewHolder holder, int position) {
-        DespesaAdm despesa = lista.get(position);
+        DespesaAdm despesa = dataSet.get(position);
         vincula(holder, despesa);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(despesa));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    public void atualiza(List<DespesaAdm> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void vincula(ViewHolder holder, DespesaAdm despesa) {
+    public void vincula(@NonNull ViewHolder holder, @NonNull DespesaAdm despesa) {
         String placa = cavaloDao.localizaPeloId(despesa.getRefCavalo()).getPlaca();
         holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(despesa.getValorDespesa()));
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(despesa.getData()));
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(despesa.getData()));
         holder.descricaoTxtView.setText(despesa.getDescricao());
+    }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<DespesaAdm> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void adiciona(DespesaAdm despesaAdm) {
+        this.dataSet.add(despesaAdm);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(DespesaAdm despesaAdm){
+        int posicao = -1;
+        posicao = this.dataSet.indexOf(despesaAdm);
+        this.dataSet.remove(despesaAdm);
+        notifyItemRemoved(posicao);
     }
 
 }

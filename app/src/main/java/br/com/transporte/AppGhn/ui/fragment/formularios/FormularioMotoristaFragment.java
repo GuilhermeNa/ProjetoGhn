@@ -8,7 +8,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -35,11 +33,16 @@ import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.dao.MotoristaDAO;
 import br.com.transporte.AppGhn.ui.fragment.extensions.BitmapImagem;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
 public class FormularioMotoristaFragment extends FormularioBaseFragment {
+    public static final String GALERIA = "Galeria";
+    public static final String CAMERA = "Câmera";
+    public static final String SELECIONE_A_ORIGEM_DA_FOTO = "Selecione a origem da foto";
+    public static final String ORIGEM_DA_FOTO = "Origem da foto";
+    public static final String DATA = "data";
     private FragmentFormularioMotoristaBinding binding;
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de motorista que já existe.";
     private EditText dataEdit, nomeEdit, cpfEdit, cnhEdit, cnhValidadeEdit, dataContratacaoEdit, salarioBaseEdit;
@@ -50,7 +53,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     private Bitmap imgRecebidaEmBitmap;
     private String imgEmString;
     private boolean recebeuImagem;
-    private ActivityResultLauncher<Intent> activityResultLauncherCamera = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityResultLauncherCamera = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
@@ -58,7 +61,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
                 if (codigoResultado == RESULT_OK) {
                     try {
-                        imgRecebidaEmBitmap = (Bitmap) dataResultado.getExtras().get("data");
+                        imgRecebidaEmBitmap = (Bitmap) dataResultado.getExtras().get(DATA);
                         motoristaImg.setImageBitmap(imgRecebidaEmBitmap);
                         motoristaImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
@@ -75,7 +78,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
                     }
                 }
             });
-    private ActivityResultLauncher<Intent> activityResultLauncherGaleria = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityResultLauncherGaleria = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
@@ -119,7 +122,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -131,20 +133,18 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     }
 
     private void configuraCLickSelecaoDeImagemDoFuncionario() {
-        motoristaImg.setOnClickListener(v -> {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Origem da foto")
-                    .setMessage("Selecione a origem da foto")
-                    .setPositiveButton("Câmera", (dialog, which) -> {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        activityResultLauncherCamera.launch(intent);
-                    })
-                    .setNegativeButton("Galeria", (dialog, which) -> {
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/*");
-                        activityResultLauncherGaleria.launch(intent);
-                    }).show();
-        });
+        motoristaImg.setOnClickListener(v -> new AlertDialog.Builder(getContext())
+                .setTitle(ORIGEM_DA_FOTO)
+                .setMessage(SELECIONE_A_ORIGEM_DA_FOTO)
+                .setPositiveButton(CAMERA, (dialog, which) -> {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    activityResultLauncherCamera.launch(intent);
+                })
+                .setNegativeButton(GALERIA, (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("image/*");
+                    activityResultLauncherGaleria.launch(intent);
+                }).show());
 
     }
 
@@ -189,15 +189,14 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(motorista.getDataNascimento()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(motorista.getDataNascimento()));
         nomeEdit.setText(motorista.getNome());
         cpfEdit.setText(motorista.getCpf());
         cnhEdit.setText(motorista.getCnh());
-        cnhValidadeEdit.setText(FormataDataUtil.dataParaString(motorista.getCnhValidade()));
-        dataContratacaoEdit.setText(FormataDataUtil.dataParaString(motorista.getDataContratacao()));
+        cnhValidadeEdit.setText(ConverteDataUtil.dataParaString(motorista.getCnhValidade()));
+        dataContratacaoEdit.setText(ConverteDataUtil.dataParaString(motorista.getDataContratacao()));
         salarioBaseEdit.setText(motorista.getSalarioBase().toPlainString());
 
         try {
@@ -206,11 +205,9 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
             motoristaImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
         } catch (NullPointerException e) {
             e.printStackTrace();
-            e.getMessage();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         MascaraDataUtil.MascaraData(dataEdit);
@@ -236,16 +233,15 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
         verificaCampo(salarioBaseEdit);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        motorista.setDataNascimento(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        motorista.setDataNascimento(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         motorista.setNome(nomeEdit.getText().toString());
         motorista.setCpf(cpfEdit.getText().toString());
         motorista.setCnh(cnhEdit.getText().toString());
-        motorista.setCnhValidade(FormataDataUtil.stringParaData(cnhValidadeEdit.getText().toString()));
+        motorista.setCnhValidade(ConverteDataUtil.stringParaData(cnhValidadeEdit.getText().toString()));
         motorista.setImg(imgEmString);
-        motorista.setDataContratacao(FormataDataUtil.stringParaData(dataContratacaoEdit.getText().toString()));
+        motorista.setDataContratacao(ConverteDataUtil.stringParaData(dataContratacaoEdit.getText().toString()));
         motorista.setSalarioBase(new BigDecimal(formatPriceSave(salarioBaseEdit.getText().toString())));
     }
 
@@ -263,7 +259,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public int configuraObjetoNaCriacao() {
-
         return 0;
     }
 

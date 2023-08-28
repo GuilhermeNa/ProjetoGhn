@@ -12,6 +12,6 @@ public class StatusBarUtil {
     public static void setStatusBarColor(Context context, Window window) {
         int color = ContextCompat.getColor(context, R.color.midnightblue);
         window.setStatusBarColor(color);
-
     }
+
 }

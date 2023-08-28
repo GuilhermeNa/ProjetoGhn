@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.filtros;
 
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
+
 import androidx.annotation.NonNull;
 
 import java.time.LocalDate;
@@ -28,7 +30,7 @@ public class FiltraCustosAbastecimento {
             return abastecimentoLocalizado;
         }
 
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 
@@ -40,7 +42,7 @@ public class FiltraCustosAbastecimento {
 
     public static List<CustosDeAbastecimento> listaPorData(@NonNull List<CustosDeAbastecimento> dataSet, LocalDate dataInicial, LocalDate dataFinal) {
         return dataSet.stream()
-                .filter(a -> DataUtil.capturaRange(a.getData(), dataInicial, dataFinal))
+                .filter(a -> DataUtil.verificaSeEstaNoRange(a.getData(), dataInicial, dataFinal))
                 .collect(Collectors.toList());
     }
 
@@ -55,9 +57,5 @@ public class FiltraCustosAbastecimento {
                 .filter(c -> c.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());
     }
-
-
-
-
 
 }

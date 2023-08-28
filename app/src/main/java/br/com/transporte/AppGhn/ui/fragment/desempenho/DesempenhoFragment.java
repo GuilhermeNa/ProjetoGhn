@@ -66,7 +66,7 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
         super.onCreate(savedInstanceState);
         cavaloDao = new CavaloDAO();
         tipoDeRequisicao = FRETE_BRUTO;
-        anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
         listaObjTemporarios = getListaObjetosTemporarios(anoRequisitado, tipoDeRequisicao, false);
     }
 

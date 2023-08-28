@@ -52,4 +52,20 @@
     <string name="manutencao">Manutenção</string>
     <string name="abastecimento">Abastecimento</string>
     <string name="placa">Placa</string>
+    <string name="sim">Sim</string>
+    <string name="nao">Não</string>
+    <string name="comissao">Comissão</string>
+    <string name="editar_comissao">Editar comissão</string>
+    <string name="fechar_frete">Fechar Frete</string>
+    <string name="km">Km</string>
+    <string name="total_pago">Total Pago</string>
+    <string name="comissao_paga">Comissão Paga</string>
+    <string name="visualizar_parcelas">Visualizar Parcelas</string>
+    <string name="renovar_seguro">Renovar Seguro</string>
+    <string name="seguro_auto">Seguro Auto</string>
+    <string name="vida_grupo">Vida Grupo</string>
+    <string name="voce_ja_esta_aqui">Você já está aqui!</string>
+    <string name="seguro_compreensivo">Seguro Compreensivo</string>
+    <string name="seguro_de_vida">Seguro de Vida</string>
+    <string name="demais_ramos">Demais Ramos</string>
 </resources>

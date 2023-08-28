@@ -1,15 +1,15 @@
 package br.com.transporte.AppGhn.ui.activity;
 
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.ADICIONANDO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_FROTA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_VIDA;
 
 import android.annotation.SuppressLint;
-
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,7 +18,6 @@ import android.view.animation.AnimationUtils;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
@@ -39,6 +38,7 @@ import br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.SeguroVidaFragmen
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class SegurosActivity extends AppCompatActivity implements SegurosInformacoesGeraisFragment.Callback {
+
     private ActivitySegurosBinding binding;
     private FloatingActionButton fabPrincipal, fabSeguroFrota, fabSeguroVida;
     private boolean fabEscondido = true;
@@ -46,7 +46,6 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
     private final ActivityResultLauncher<Intent> activityResultLauncherFrota = getActivityResultLauncherFrota();
     private final ActivityResultLauncher<Intent> activityResultLauncherVida = getActivityResultLauncherVida();
     private SeguroFrotaFragment fragmentFrota;
-    private SeguroVidaFragment fragmentVida;
 
     @NonNull
     private ActivityResultLauncher<Intent> getActivityResultLauncherFrota() {
@@ -59,14 +58,14 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
                         case RESULT_OK:
 
                             if (Objects.requireNonNull(controlador.getCurrentDestination()).getId() == R.id.navSeguroFrota) {
-                                fragmentFrota.atualizaAdapter("Registro Criado");
+                                fragmentFrota.atualizaAdapter(REGISTRO_CRIADO);
                             } else {
-                                MensagemUtil.toast(this, "Registro Criado");
+                                MensagemUtil.toast(this, REGISTRO_CRIADO);
                             }
                             break;
 
                         case RESULT_CANCELED:
-                            MensagemUtil.toast(this, "Nenhuma alteração realizada");
+                            MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
                             break;
                     }
                 });
@@ -83,15 +82,15 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
                         case RESULT_OK:
                             if (Objects.requireNonNull(controlador.getCurrentDestination()).getId() == R.id.navSeguroVida) {
                                 NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container_seguros);
-                                SeguroVidaFragment fragment = (SeguroVidaFragment) navHost.getChildFragmentManager().getFragments().get(0);
-                                fragment.atualizaAdapter("Registro Criado");
+                                SeguroVidaFragment fragment = (SeguroVidaFragment) Objects.requireNonNull(navHost).getChildFragmentManager().getFragments().get(0);
+                                fragment.atualizaAdapter(REGISTRO_CRIADO);
                             } else {
-                                MensagemUtil.toast(this, "Registro Criado");
+                                MensagemUtil.toast(this, REGISTRO_CRIADO);
                             }
                             break;
 
                         case RESULT_CANCELED:
-                            MensagemUtil.toast(this, "Nenhuma alteração realizada");
+                            MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
                             break;
                     }
                 });
@@ -101,7 +100,6 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
     //                                          OnCreate                                          ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,9 +112,6 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
         configuraBottomNavigation();
     }
 
-
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("NonConstantResourceId")
     private void configuraBottomNavigation() {
         BottomNavigationView bottomAppBar = binding.bottomNavigation;
@@ -141,7 +136,7 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
 
     private void criaReferenciaDoFragmentFrota() {
         NavHostFragment navHost = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container_seguros);
-        fragmentFrota = (SeguroFrotaFragment) navHost.getChildFragmentManager().getFragments().get(0);
+        fragmentFrota = (SeguroFrotaFragment) Objects.requireNonNull(navHost).getChildFragmentManager().getFragments().get(0);
     }
 
     private void configuraFabs() {

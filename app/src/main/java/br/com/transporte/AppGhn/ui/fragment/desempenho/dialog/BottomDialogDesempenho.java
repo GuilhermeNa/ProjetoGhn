@@ -179,7 +179,7 @@ public class BottomDialogDesempenho {
         ImageView direitaImg = binding.direita;
         TextView anoTxt = binding.ano;
 
-        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
         configuraAno(anoAtual, anoTxt);
 
         clickEsquerda(anoTxtParaAnimacao, esquerdaImg, anoTxt);

@@ -15,10 +15,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.math.BigDecimal;
 
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCavaloBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
 public class FormularioCavaloFragment extends FormularioBaseFragment {
@@ -26,14 +27,16 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de cavalo que já existe";
     private EditText placaEdit, versaoEdit, marcaEdit, anoEdit, modeloEdit, corEdit, renavamEdit, chassiEdit;
     private Cavalo cavalo;
-    private CavaloDAO cavaloDao;
+    //private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDataBase;
     private EditText comissaoEdit;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
+        cavaloDataBase = GhnDataBase.getInstance(requireContext()).getRoomCavaloDao();
+        //cavaloDao = new CavaloDAO();
 
         int cavaloId = verificaSeRecebeDadosExternos(CHAVE_ID_CAVALO);
         defineTipoEditandoOuCriando(cavaloId);
@@ -71,7 +74,8 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
     @Override
     public Object criaOuRecuperaObjeto(int id) {
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            cavalo = cavaloDao.localizaPeloId(id);
+            cavalo = cavaloDataBase.localizaPeloId(id);
+            //cavalo = cavaloDao.localizaPeloId(id);
         } else {
             cavalo = new Cavalo();
         }
@@ -135,13 +139,15 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        cavaloDao.edita(cavalo);
+        cavaloDataBase.adiciona(cavalo);
+        //cavaloDao.edita(cavalo);
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        cavaloDao.adiciona(cavalo);
+        cavaloDataBase.adiciona(cavalo);
+        //cavaloDao.adiciona(cavalo);
     }
 
     @Override
@@ -153,6 +159,5 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
     @Override
     public void deletaObjetoNoBancoDeDados() {
         cavalo.setValido(false);
-        //cavaloDao.deleta(cavalo.getId());
     }
 }

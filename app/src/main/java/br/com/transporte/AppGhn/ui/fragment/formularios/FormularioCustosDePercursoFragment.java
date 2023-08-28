@@ -2,10 +2,10 @@ package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioRecebimentoFreteFragment.ESCOLHA_UMA_FORMA_DE_PAGAMENTO;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,19 +16,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
+import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosPercursoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
@@ -58,7 +57,6 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -105,10 +103,9 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(custo.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(custo.getData()));
         valorEdit.setText(custo.getValorCusto().toPlainString());
         descricaoEdit.setText(custo.getDescricao());
         if (custo.getTipo() == TipoCustoDePercurso.NAO_REEMBOLSAVEL) {
@@ -118,7 +115,6 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataLayout, dataEdit);
@@ -134,15 +130,14 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
         if (!simBox.isChecked() && !naoBox.isChecked()) {
             reembolso.setError("");
-            snackBar(view, "Escolha uma forma de pagamento");
+            snackBar(view, ESCOLHA_UMA_FORMA_DE_PAGAMENTO);
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        custo.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        custo.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         custo.setValorCusto(new BigDecimal(formatPriceSave(valorEdit.getText().toString())));
         custo.setDescricao(descricaoEdit.getText().toString());
         if (simBox.isChecked()) {

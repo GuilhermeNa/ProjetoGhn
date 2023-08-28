@@ -1,7 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.freteReceber;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment.CANCELAR;
+import static br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment.CONFIRMAR;
+
 import android.app.AlertDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -40,6 +42,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberBinding;
@@ -49,10 +52,14 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FreteAReceberFragment extends Fragment implements MenuProvider {
+    public static final String VOCE_CONFIRMA_O_FECHAMENTO = "Você confirma o fechamento?";
+    public static final String FRETE_FECHADO = "Frete fechado";
+    public static final String VALOR_RECEBIDO_NAO_CONFERE = "Valor recebido nao confere";
+    public static final String FRETE_EM_ABERTO = "Frete em Aberto";
     private FragmentFreteAReceberBinding binding;
     private LinearLayout dataLayout, buscaVazia;
     private RecyclerView recyclerView;
@@ -76,7 +83,6 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -84,7 +90,7 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         freteDao = new FreteDAO();
 
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaFiltrada = getListaComPagamentoEmAberto();
 
         configuraToolbar();
@@ -97,19 +103,17 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Frete em Aberto");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(FRETE_EM_ABERTO);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Frete> getListaComPagamentoEmAberto() {
         return freteDao.listaFiltradaPorStatusEmAberto(dataInicial, dataFinal);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Selecione o periodo")
@@ -144,7 +148,6 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi() {
 
         if (listaFiltrada.isEmpty()) {
@@ -158,10 +161,9 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         configuraUiMutavel();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUiMutavel() {
-        dataInicialTxt.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxt.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxt.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxt.setText(ConverteDataUtil.dataParaString(dataFinal));
     }
 
     private void configuraRecycler() {
@@ -178,12 +180,10 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraMudancasAposSelecaoDeData() {
         listaFiltrada = getListaComPagamentoEmAberto();
         configuraUi();
         adapter.atualiza(listaFiltrada);
-
     }
 
     private void inicializaCamposDaView() {
@@ -194,7 +194,6 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         recyclerView = binding.recItemFreteReceberRecycler;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
@@ -210,25 +209,24 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         if (item.getItemId() == R.id.FechaFrete) {
             new AlertDialog.Builder(this.requireContext())
                     .setTitle(placa + " " + frete.getDestino())
-                    .setMessage("Você confirma o fechamento?")
-                    .setPositiveButton("Confirmar", (dialog, which) -> {
+                    .setMessage(VOCE_CONFIRMA_O_FECHAMENTO)
+                    .setPositiveButton(CONFIRMAR, (dialog, which) -> {
                         if (valorLiquidoAReceber.compareTo(valorTotalRecebido) == 0) {
                             frete.getAdmFrete().setFreteJaFoiPago(true);
                             listaFiltrada = getListaComPagamentoEmAberto();
                             adapter.atualiza(listaFiltrada);
-                            Toast.makeText(this.requireContext(), "Frete fechado", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this.requireContext(), FRETE_FECHADO, Toast.LENGTH_SHORT).show();
                         } else {
-                            MensagemUtil.snackBar(getView(), "Valor recebido nao confere");
+                            MensagemUtil.snackBar(getView(), VALOR_RECEBIDO_NAO_CONFERE);
                         }
                     })
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(CANCELAR, null)
                     .show();
         }
 
         return super.onContextItemSelected(item);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.menu_padrao, menu);
@@ -237,19 +235,18 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         MenuItem busca = menu.findItem(R.id.menu_padrao_search);
         SearchView searchView = (SearchView) busca.getActionView();
 
-        searchView.setOnSearchClickListener(v -> {
+        Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
             logout.setVisible(false);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
         });
 
         searchView.setOnCloseListener(() -> {
             logout.setVisible(true);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
             return false;
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public boolean onQueryTextChange(String newText) {
                 List<Frete> lista = new ArrayList<>();
@@ -279,14 +276,12 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
                 return false;
             }
         });
-
-
     }
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.menu_padrao_logout) {
-            Toast.makeText(this.requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
         } else if (menuItem.getItemId() == android.R.id.home) {
             requireActivity().finish();
         }

@@ -1,11 +1,16 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+
 import br.com.transporte.AppGhn.model.abstracts.Frota;
 
+@Entity
 public class SemiReboque extends Frota {
 
     private int referenciaCavalo;
 
+    @Ignore
     public SemiReboque(String placa, String marcaModelo, String ano, String modelo, String cor,
                        String renavam, String chassi, int referenciaCavalo) {
         setPlaca(placa);

@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.filtros;
 
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -12,7 +14,6 @@ import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 public class FiltraDespesasCertificado {
     private static final DespesasCertificadoDAO dao = new DespesasCertificadoDAO();
-
 
     @NonNull
     public static DespesaCertificado localizaPeloId(int despesaId) throws ObjetoNaoEncontrado {
@@ -28,7 +29,7 @@ public class FiltraDespesasCertificado {
             return despesaLocalizada;
         }
 
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 

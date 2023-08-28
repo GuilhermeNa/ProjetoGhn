@@ -1,7 +1,9 @@
 package br.com.transporte.AppGhn.ui.fragment.home;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -23,6 +24,8 @@ import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
+
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentGerenciamentoBinding;
@@ -34,6 +37,7 @@ import br.com.transporte.AppGhn.ui.activity.FreteAReceberActivity;
 import br.com.transporte.AppGhn.ui.activity.SegurosActivity;
 
 public class GerenciamentoFragment extends Fragment implements MenuProvider {
+    public static final String GERENCIAMENTO = "Gerenciamento";
     private FragmentGerenciamentoBinding binding;
     private CardView cardFrete, cardComissoes, cardImposto, cardCertificado, cardSeguros, cardManutencao, cardDespesa, cardDesempenho;
     private NavDirections direction;
@@ -53,7 +57,6 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -110,10 +113,10 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Gerenciamento");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(GERENCIAMENTO);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
     }
@@ -137,11 +140,12 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
         menu.removeItem(R.id.menu_padrao_search);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
             case R.id.menu_padrao_logout:
-                Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
             case android.R.id.home:

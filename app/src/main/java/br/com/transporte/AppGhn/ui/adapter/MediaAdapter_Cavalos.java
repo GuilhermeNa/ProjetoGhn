@@ -1,7 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Cavalo;
-import br.com.transporte.AppGhn.ui.fragment.media.MediaFragment;
 
 public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cavalos.ViewHolder> {
 
@@ -68,19 +67,18 @@ public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cava
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo, holder.getAdapterPosition()));
     }
 
-    private void vincula(ViewHolder holder, Cavalo cavalo) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
         holder.placaTxt.setText(cavalo.getPlaca());
     }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          Metodos Publicos                                  ||
-    //----------------------------------------------------------------------------------------------
 
     @Override
     public int getItemCount() {
         return dataSet.size();
     }
 
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<Cavalo> dataSetRecebido) {
         this.dataSet.clear();
         this.dataSet.addAll(dataSetRecebido);
@@ -88,7 +86,6 @@ public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cava
     }
 
     public void atualizaRecyclerACadaNovaBusca(int posicaoRecebida) {
-
         dataSet.add(cavaloArmazenado);
         notifyItemInserted(dataSet.size() - 1);
 
@@ -104,6 +101,10 @@ public class MediaAdapter_Cavalos extends RecyclerView.Adapter<MediaAdapter_Cava
     public List<Cavalo> getDataSet() {
         return new ArrayList<>(dataSet);
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          Interface                                         ||
+    //----------------------------------------------------------------------------------------------
 
     public interface OnItemClickListener {
         void onItemClick(Cavalo cavalo, int posicao);

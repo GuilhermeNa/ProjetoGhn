@@ -1,13 +1,11 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -16,23 +14,26 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPagoAdapter.ViewHolder> {
     private final ComissoesPagasDetalhesFragment context;
-    private final List<Adiantamento> lista;
+    private final List<Adiantamento> dataSet;
     private OnItemClickListener onItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-
     public AdiantamentoPagoAdapter(ComissoesPagasDetalhesFragment context, List<Adiantamento> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView dataTxtView, restaPagarTxtView, descontadoTxtView;
@@ -45,6 +46,10 @@ public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPa
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public AdiantamentoPagoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,25 +57,28 @@ public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPa
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull AdiantamentoPagoAdapter.ViewHolder holder, int position) {
-        Adiantamento adiantamento = lista.get(position);
+        Adiantamento adiantamento = dataSet.get(position);
         vincula(holder, adiantamento);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(adiantamento));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, Adiantamento adiantamento) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(adiantamento.getData()));
-        holder.descontadoTxtView.setText("(-) "+ FormataNumerosUtil.formataMoedaPadraoBr(adiantamento.getUltimoValorAbatido()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull Adiantamento adiantamento) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(adiantamento.getData()));
         holder.restaPagarTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(adiantamento.restaReembolsar()));
-    }
 
+        String descontadoString = "(-) "+ FormataNumerosUtil.formataMoedaPadraoBr(adiantamento.getUltimoValorAbatido());
+        holder.descontadoTxtView.setText(descontadoString);
+    }
 
 }

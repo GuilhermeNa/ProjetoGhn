@@ -1,20 +1,33 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.abstracts.Frota;
 
-//@Entity
+@Entity(foreignKeys = @ForeignKey(
+        entity = Motorista.class,
+        parentColumns = "id",
+        childColumns = "motoristaId",
+        onUpdate = ForeignKey.CASCADE,
+        onDelete = ForeignKey.SET_NULL))
 public class Cavalo extends Frota {
     private String versao;
-    private Motorista motorista;
+
     private BigDecimal comissaoBase;
     private boolean valido;
     private final List<SemiReboque> listaSemiReboque = new ArrayList<>();
+    private Motorista motorista;
+    private int motoristaId;
 
-    //@Ignore
+
+
+    @Ignore
     public Cavalo(String placa, String renavam, String chassi, String ano, String modelo,
                   String marcaModelo, String cor, String versao, Motorista motorista,
                   BigDecimal comissaoBase, boolean valido) {

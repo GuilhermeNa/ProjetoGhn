@@ -1,6 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,17 +17,17 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnLongClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdapter.ViewHolder> {
-    private final List<Frete> lista;
+    private final List<Frete> dataSet;
     private int posicao;
     private final ComissoesDetalhesFragment context;
     private OnLongClickListener onLongClickListener;
 
     public DetalhesFreteAdapter(ComissoesDetalhesFragment context, List<Frete> lista) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
     }
 
@@ -36,10 +35,13 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         this.onLongClickListener = onLongClickListener;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private final TextView origemTxtView, destinoTxtView, freteTxtView, comissaoTxtView, dataTxtView, comissaoPercentualTxtView;
 
-        @RequiresApi(api = Build.VERSION_CODES.N)
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dataTxtView = itemView.findViewById(R.id.rec_salario_detalhes_item_frete_data);
@@ -53,11 +55,14 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(Menu.NONE, R.id.editarComissao, Menu.NONE, "Editar comissão");
+            menu.add(Menu.NONE, R.id.editarComissao, Menu.NONE, R.string.editar_comissao);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public DetalhesFreteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -65,10 +70,13 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull DetalhesFreteAdapter.ViewHolder holder, int position) {
-        Frete frete = lista.get(position);
+        Frete frete = dataSet.get(position);
         vincula(holder, frete);
         holder.itemView.setOnLongClickListener(v -> {
             onLongClickListener.onLongClick(ComissoesDetalhesFragment.TipoDeAdapterPressionado.FRETE);
@@ -77,37 +85,41 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         });
     }
 
-    public void atualiza(List<Frete> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    public void atualizaItem(int posicao) {
-        notifyItemChanged(posicao);
-    }
-
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
+
+    private void setPosicao(int posicao) {
+        this.posicao = posicao;
+    }
+
+    public void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
+        holder.origemTxtView.setText(frete.getOrigem());
+        holder.destinoTxtView.setText(frete.getDestino());
+        holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
+        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+
+        String comissaoPercentual = R.string.comissao +" "+ frete.getAdmFrete().getComissaoPercentualAplicada() + " %";
+        holder.comissaoPercentualTxtView.setText(comissaoPercentual);
+    }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
 
     public int getPosicao() {
         return posicao;
     }
 
-    public void setPosicao(int posicao) {
-        this.posicao = posicao;
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<Frete> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void vincula(ViewHolder holder, Frete frete) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(frete.getData()));
-        holder.origemTxtView.setText(frete.getOrigem());
-        holder.destinoTxtView.setText(frete.getDestino());
-        holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
-        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
-        holder.comissaoPercentualTxtView.setText("Comissão " + frete.getAdmFrete().getComissaoPercentualAplicada() + " %");
+    public void atualizaItem(int posicao) {
+        notifyItemChanged(posicao);
     }
 
 }

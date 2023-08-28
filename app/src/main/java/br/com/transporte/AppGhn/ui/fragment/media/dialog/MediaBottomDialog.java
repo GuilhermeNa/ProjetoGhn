@@ -26,7 +26,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class MediaBottomDialog {
@@ -153,7 +153,7 @@ public class MediaBottomDialog {
     }
 
     private void ui_configuraPeriodoAnalisado(@NonNull CustosDeAbastecimento flag, @NonNull TextView dataTxt, @NonNull TextView kmTxt) {
-        String data = FormataDataUtil.dataParaString(flag.getData());
+        String data = ConverteDataUtil.dataParaString(flag.getData());
         dataTxt.setText(data);
 
         String km = flag.getMarcacaoKm().toPlainString();

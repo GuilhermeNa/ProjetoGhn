@@ -16,17 +16,15 @@ public class DataUtil {
     public static LocalDate formataDataParaPadraoPtBr(LocalDate data) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yy", new Locale("pt-br"));
         String dataFormatadaEmString = formato.format(data);
-        LocalDate dataEmFormatoPtBr = FormataDataUtil.stringParaData(dataFormatadaEmString);
-        return dataEmFormatoPtBr;
+        return ConverteDataUtil.stringParaData(dataFormatadaEmString);
     }
 
-    public static LocalDate capturaDataDeHojeParaConfiguracaoinicial() {
+    public static LocalDate capturaDataDeHojeParaConfiguracaoInicial() {
         LocalDate data = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
                 .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
         data = formataDataParaPadraoPtBr(data);
 
         return data;
-
     }
 
     public static LocalDate capturaPrimeiroDiaDoMesParaConfiguracaoInicial() {
@@ -37,7 +35,7 @@ public class DataUtil {
         return data;
     }
 
-    public static boolean capturaRange(
+    public static boolean verificaSeEstaNoRange(
             @NonNull LocalDate dataDoObjeto,
             LocalDate dataInicial,
             LocalDate dataFinal

@@ -1,13 +1,12 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.math.BigDecimal;
@@ -15,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
+import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHolder> {
@@ -48,6 +47,10 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         this.onItemClickListener = onItemClickListener;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView placaTxtView, nomeTxtView, comissaoPagaTituloTxtView, totalPagoTxtView,
                 adiantamentoTxtView, dataTxtView, reembolsoTxtView, comissaoTxtView, totalPagoTituloTxtView;
@@ -66,6 +69,10 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public SalariosAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -73,7 +80,10 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull SalariosAdapter.ViewHolder holder, int position) {
         CustosDeSalario salario = lista.get(position);
@@ -87,20 +97,13 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         return lista.size();
     }
 
-    private void configuraUi(ViewHolder holder) {
+    private void configuraUi(@NonNull ViewHolder holder) {
         holder.dataTxtView.setVisibility(View.VISIBLE);
-        holder.totalPagoTituloTxtView.setText("Total Pago");
-        holder.comissaoPagaTituloTxtView.setText("Comissão Paga");
+        holder.totalPagoTituloTxtView.setText(R.string.total_pago);
+        holder.comissaoPagaTituloTxtView.setText(R.string.comissao_paga);
     }
 
-    public void atualiza(List<CustosDeSalario> listaDeSalariosPagos) {
-        this.lista.clear();
-        this.lista.addAll(listaDeSalariosPagos);
-        notifyDataSetChanged();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, CustosDeSalario salario) {
+    private void vincula(@NonNull ViewHolder holder, CustosDeSalario salario) {
         calculaValoresParaExibir(salario);
 
         String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
@@ -109,7 +112,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         String nome = cavaloDao.localizaPeloId(salario.getRefCavalo()).getMotorista().getNome();
         holder.nomeTxtView.setText(nome);
 
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(salario.getData()));
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
         holder.totalPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(salario.getValorCusto()));
         holder.adiantamentoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(totalAdiantamentos));
         holder.reembolsoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(totalReembolsos));
@@ -117,8 +120,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void calculaValoresParaExibir(CustosDeSalario salario) {
+    private void calculaValoresParaExibir(@NonNull CustosDeSalario salario) {
         BigDecimal valorEncontrado;
 
         List<BigDecimal> listaAdiantamentos = new ArrayList<>();
@@ -148,4 +150,14 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         totalFretes = listaFretes.stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<CustosDeSalario> listaDeSalariosPagos) {
+        this.lista.clear();
+        this.lista.addAll(listaDeSalariosPagos);
+        notifyDataSetChanged();
+    }
+
 }

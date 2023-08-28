@@ -49,7 +49,7 @@ import br.com.transporte.AppGhn.dao.MotoristaDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.dao.SemiReboqueDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 
 public class GhnApplication extends Application {
     private FreteDAO freteDao = new FreteDAO();
@@ -117,18 +117,18 @@ public class GhnApplication extends Application {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaParcelas() {
-        ParcelaDeSeguro parcela1 = new ParcelaDeSeguro(1, FormataDataUtil.stringParaData("20/07/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela2 = new ParcelaDeSeguro(2, FormataDataUtil.stringParaData("20/08/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela3 = new ParcelaDeSeguro(3, FormataDataUtil.stringParaData("20/09/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela4 = new ParcelaDeSeguro(4, FormataDataUtil.stringParaData("20/10/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela5 = new ParcelaDeSeguro(5, FormataDataUtil.stringParaData("20/11/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela6 = new ParcelaDeSeguro(6, FormataDataUtil.stringParaData("20/12/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela7 = new ParcelaDeSeguro(7, FormataDataUtil.stringParaData("20/01/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela8 = new ParcelaDeSeguro(8, FormataDataUtil.stringParaData("20/02/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela9 = new ParcelaDeSeguro(9, FormataDataUtil.stringParaData("20/03/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela10 = new ParcelaDeSeguro(10, FormataDataUtil.stringParaData("20/04/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela11 = new ParcelaDeSeguro(11, FormataDataUtil.stringParaData("20/05/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
-        ParcelaDeSeguro parcela12 = new ParcelaDeSeguro(12, FormataDataUtil.stringParaData("20/06/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela1 = new ParcelaDeSeguro(1, ConverteDataUtil.stringParaData("20/07/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela2 = new ParcelaDeSeguro(2, ConverteDataUtil.stringParaData("20/08/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela3 = new ParcelaDeSeguro(3, ConverteDataUtil.stringParaData("20/09/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela4 = new ParcelaDeSeguro(4, ConverteDataUtil.stringParaData("20/10/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela5 = new ParcelaDeSeguro(5, ConverteDataUtil.stringParaData("20/11/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela6 = new ParcelaDeSeguro(6, ConverteDataUtil.stringParaData("20/12/23"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela7 = new ParcelaDeSeguro(7, ConverteDataUtil.stringParaData("20/01/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela8 = new ParcelaDeSeguro(8, ConverteDataUtil.stringParaData("20/02/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela9 = new ParcelaDeSeguro(9, ConverteDataUtil.stringParaData("20/03/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela10 = new ParcelaDeSeguro(10, ConverteDataUtil.stringParaData("20/04/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela11 = new ParcelaDeSeguro(11, ConverteDataUtil.stringParaData("20/05/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
+        ParcelaDeSeguro parcela12 = new ParcelaDeSeguro(12, ConverteDataUtil.stringParaData("20/06/24"), new BigDecimal("1666.66"), true,1, false, DIRETA,1);
 
         parcelaSeguroDao.adiciona(parcela1);
         parcelaSeguroDao.adiciona(parcela2);
@@ -143,18 +143,18 @@ public class GhnApplication extends Application {
         parcelaSeguroDao.adiciona(parcela11);
         parcelaSeguroDao.adiciona(parcela12);
 
-        ParcelaDeSeguro parcela13 = new ParcelaDeSeguro(1, FormataDataUtil.stringParaData("20/08/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela14 = new ParcelaDeSeguro(2, FormataDataUtil.stringParaData("20/09/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela15 = new ParcelaDeSeguro(3, FormataDataUtil.stringParaData("20/10/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela16 = new ParcelaDeSeguro(4, FormataDataUtil.stringParaData("20/11/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela17 = new ParcelaDeSeguro(5, FormataDataUtil.stringParaData("20/12/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela18 = new ParcelaDeSeguro(6, FormataDataUtil.stringParaData("20/01/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela19 = new ParcelaDeSeguro(7, FormataDataUtil.stringParaData("20/02/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela20 = new ParcelaDeSeguro(8, FormataDataUtil.stringParaData("20/03/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela21 = new ParcelaDeSeguro(9, FormataDataUtil.stringParaData("20/04/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela22 = new ParcelaDeSeguro(10, FormataDataUtil.stringParaData("20/05/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela23 = new ParcelaDeSeguro(11, FormataDataUtil.stringParaData("20/06/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
-        ParcelaDeSeguro parcela24 = new ParcelaDeSeguro(12, FormataDataUtil.stringParaData("20/07/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela13 = new ParcelaDeSeguro(1, ConverteDataUtil.stringParaData("20/08/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela14 = new ParcelaDeSeguro(2, ConverteDataUtil.stringParaData("20/09/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela15 = new ParcelaDeSeguro(3, ConverteDataUtil.stringParaData("20/10/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela16 = new ParcelaDeSeguro(4, ConverteDataUtil.stringParaData("20/11/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela17 = new ParcelaDeSeguro(5, ConverteDataUtil.stringParaData("20/12/23"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela18 = new ParcelaDeSeguro(6, ConverteDataUtil.stringParaData("20/01/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela19 = new ParcelaDeSeguro(7, ConverteDataUtil.stringParaData("20/02/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela20 = new ParcelaDeSeguro(8, ConverteDataUtil.stringParaData("20/03/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela21 = new ParcelaDeSeguro(9, ConverteDataUtil.stringParaData("20/04/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela22 = new ParcelaDeSeguro(10, ConverteDataUtil.stringParaData("20/05/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela23 = new ParcelaDeSeguro(11, ConverteDataUtil.stringParaData("20/06/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
+        ParcelaDeSeguro parcela24 = new ParcelaDeSeguro(12, ConverteDataUtil.stringParaData("20/07/24"), new BigDecimal("800.00"), true,3, false, INDIRETA,0);
 
         parcelaSeguroDao.adiciona(parcela13);
         parcelaSeguroDao.adiciona(parcela14);
@@ -172,13 +172,13 @@ public class GhnApplication extends Application {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaRecebimentoDeFrete() {
-        RecebimentoDeFrete recebimento = new RecebimentoDeFrete(FormataDataUtil.stringParaData("01/06/23"),
+        RecebimentoDeFrete recebimento = new RecebimentoDeFrete(ConverteDataUtil.stringParaData("01/06/23"),
                 new BigDecimal("10000.00"), "Ref. frete xyz bla bla bla", ADIANTAMENTO);
 
-        RecebimentoDeFrete recebimento1 = new RecebimentoDeFrete(FormataDataUtil.stringParaData("01/06/23"),
+        RecebimentoDeFrete recebimento1 = new RecebimentoDeFrete(ConverteDataUtil.stringParaData("01/06/23"),
                 new BigDecimal("3900.00"), "Ref. frete xyz bla bla bla", SALDO);
 
-        RecebimentoDeFrete recebimento2 = new RecebimentoDeFrete(FormataDataUtil.stringParaData("01/06/23"),
+        RecebimentoDeFrete recebimento2 = new RecebimentoDeFrete(ConverteDataUtil.stringParaData("01/06/23"),
                 new BigDecimal("10000.00"), "Ref. frete xyz bla bla bla", ADIANTAMENTO);
 
         recebimento.setRefFrete(1);
@@ -192,9 +192,9 @@ public class GhnApplication extends Application {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaDespesasComSeguros() {
-        DespesaComSeguroFrota seguros = new DespesaComSeguroFrota(FormataDataUtil.stringParaData("01/01/23"),
-                FormataDataUtil.stringParaData("01/01/24"),
-                FormataDataUtil.stringParaData("10/01/23"),
+        DespesaComSeguroFrota seguros = new DespesaComSeguroFrota(ConverteDataUtil.stringParaData("01/01/23"),
+                ConverteDataUtil.stringParaData("01/01/24"),
+                ConverteDataUtil.stringParaData("10/01/23"),
                 new BigDecimal("20000.00"),
                 12,
                 new BigDecimal("1666.66"),
@@ -208,9 +208,9 @@ public class GhnApplication extends Application {
                 new BigDecimal("10000.00"),
                 "Sim", "Sim", 1);
 
-        DespesaComSeguroFrota seguros1 = new DespesaComSeguroFrota(FormataDataUtil.stringParaData("01/01/23"),
-                FormataDataUtil.stringParaData("01/01/24"),
-                FormataDataUtil.stringParaData("10/01/23"),
+        DespesaComSeguroFrota seguros1 = new DespesaComSeguroFrota(ConverteDataUtil.stringParaData("01/01/23"),
+                ConverteDataUtil.stringParaData("01/01/24"),
+                ConverteDataUtil.stringParaData("10/01/23"),
                 new BigDecimal("20000.00"),
                 12,
                 new BigDecimal("1666.66"),
@@ -229,8 +229,8 @@ public class GhnApplication extends Application {
         segurosDao.adiciona(seguros);
         segurosDao.adiciona(seguros1);
 
-        DespesaComSeguroDeVida seguro2 = new DespesaComSeguroDeVida(FormataDataUtil.stringParaData("01/01/23"),
-                FormataDataUtil.stringParaData("01/01/24"), FormataDataUtil.stringParaData("10/01/23"), new BigDecimal("800.00"), new BigDecimal("10000.00"),
+        DespesaComSeguroDeVida seguro2 = new DespesaComSeguroDeVida(ConverteDataUtil.stringParaData("01/01/23"),
+                ConverteDataUtil.stringParaData("01/01/24"), ConverteDataUtil.stringParaData("10/01/23"), new BigDecimal("800.00"), new BigDecimal("10000.00"),
                 "Seguradora X", true, 12, 123456, 0,
                 new BigDecimal("500000.00"),
                 new BigDecimal("100000.00"),
@@ -241,11 +241,11 @@ public class GhnApplication extends Application {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void criaDespesasFinanceiras() {
-        DespesaAdm despesaAdm = new DespesaAdm(FormataDataUtil.stringParaData("10/08/23"),
+        DespesaAdm despesaAdm = new DespesaAdm(ConverteDataUtil.stringParaData("10/08/23"),
                 new BigDecimal("5000.00"), "Financiamento OUX5555", 1);
-        DespesaAdm despesaAdm1 = new DespesaAdm(FormataDataUtil.stringParaData("10/08/23"),
+        DespesaAdm despesaAdm1 = new DespesaAdm(ConverteDataUtil.stringParaData("10/08/23"),
                 new BigDecimal("5000.00"), "Financiamento RIF4E33", 2);
-        DespesaAdm despesaAdm2 = new DespesaAdm(FormataDataUtil.stringParaData("10/08/23"),
+        DespesaAdm despesaAdm2 = new DespesaAdm(ConverteDataUtil.stringParaData("10/08/23"),
                 new BigDecimal("500.00"), "Contabilidade", 0);
 
 
@@ -258,13 +258,13 @@ public class GhnApplication extends Application {
     }
 
     private void criaCustosDemanutencao() {
-        CustosDeManutencao manutencao = new CustosDeManutencao(FormataDataUtil.stringParaData("01/07/23"), new BigDecimal("500.00"),
+        CustosDeManutencao manutencao = new CustosDeManutencao(ConverteDataUtil.stringParaData("01/07/23"), new BigDecimal("500.00"),
                 "Cebolão", "Manutenção no filtro do ar", "1234586");
-        CustosDeManutencao manutencao1 = new CustosDeManutencao(FormataDataUtil.stringParaData("02/07/23"), new BigDecimal("500.00"),
+        CustosDeManutencao manutencao1 = new CustosDeManutencao(ConverteDataUtil.stringParaData("02/07/23"), new BigDecimal("500.00"),
                 "Cebolão", "Manutenção no eixo", "1234586");
-        CustosDeManutencao manutencao2 = new CustosDeManutencao(FormataDataUtil.stringParaData("03/07/23"), new BigDecimal("500.00"),
+        CustosDeManutencao manutencao2 = new CustosDeManutencao(ConverteDataUtil.stringParaData("03/07/23"), new BigDecimal("500.00"),
                 "Cebolão", "Manutenção no para-choque", "1234586");
-        CustosDeManutencao manutencao3 = new CustosDeManutencao(FormataDataUtil.stringParaData("04/07/23"), new BigDecimal("500.00"),
+        CustosDeManutencao manutencao3 = new CustosDeManutencao(ConverteDataUtil.stringParaData("04/07/23"), new BigDecimal("500.00"),
                 "Cebolão", "Manutenção no para-brisas", "1234586");
         manutencao.setRefCavalo(1);
         manutencao1.setRefCavalo(1);
@@ -284,19 +284,19 @@ public class GhnApplication extends Application {
 
     private void criaCertificado() {
         DespesaCertificado certificado = new DespesaCertificado(TipoCertificado.CRLV, "2023", 1234345567,
-                FormataDataUtil.stringParaData("14/06/23"), FormataDataUtil.stringParaData("13/07/23")
+                ConverteDataUtil.stringParaData("14/06/23"), ConverteDataUtil.stringParaData("13/07/23")
                 , 1, new BigDecimal("200.00"), DIRETA, true);
 
         DespesaCertificado certificado1 = new DespesaCertificado(TipoCertificado.CRONOTACOGRAFO, "2022", 1234567,
-                FormataDataUtil.stringParaData("14/06/22"), FormataDataUtil.stringParaData("14/06/22")
+                ConverteDataUtil.stringParaData("14/06/22"), ConverteDataUtil.stringParaData("14/06/22")
                 , 1, new BigDecimal("200.00"), DIRETA, false);
 
         DespesaCertificado certificado2 = new DespesaCertificado(TipoCertificado.CRLV, "2023", 1234567,
-                FormataDataUtil.stringParaData("14/06/23"), FormataDataUtil.stringParaData("10/06/23")
+                ConverteDataUtil.stringParaData("14/06/23"), ConverteDataUtil.stringParaData("10/06/23")
                 , 2, new BigDecimal("200.00"), DIRETA, false);
 
         DespesaCertificado certificado3 = new DespesaCertificado(TipoCertificado.CRONOTACOGRAFO, "2022", 1234567,
-                FormataDataUtil.stringParaData("14/06/22"), FormataDataUtil.stringParaData("14/06/24")
+                ConverteDataUtil.stringParaData("14/06/22"), ConverteDataUtil.stringParaData("14/06/24")
                 , 2, new BigDecimal("200.00"), DIRETA, true);
 
         certificadoDAO.adiciona(certificado);
@@ -305,32 +305,33 @@ public class GhnApplication extends Application {
         certificadoDAO.adiciona(certificado3);
 
         DespesaCertificado certificado4 = new DespesaCertificado(TipoCertificado.ANTT, "2023", 1234345567,
-                FormataDataUtil.stringParaData("14/06/23"), FormataDataUtil.stringParaData("13/06/24")
+                ConverteDataUtil.stringParaData("14/06/23"), ConverteDataUtil.stringParaData("13/06/24")
                 , 0, new BigDecimal("200.00"), INDIRETA, true);
 
         DespesaCertificado certificado5 = new DespesaCertificado(TipoCertificado.ANTT, "2022", 1234567,
-                FormataDataUtil.stringParaData("14/06/22"), FormataDataUtil.stringParaData("14/06/23")
+                ConverteDataUtil.stringParaData("14/06/22"), ConverteDataUtil.stringParaData("14/06/23")
                 , 0, new BigDecimal("200.00"), INDIRETA, false);
         certificadoDAO.adiciona(certificado4);
         certificadoDAO.adiciona(certificado5);
     }
 
     private void criaAdiantamentos() {
-        Adiantamento a1 = new Adiantamento(FormataDataUtil.stringParaData("09/06/23"),
+        Adiantamento a1 = new Adiantamento(ConverteDataUtil.stringParaData("09/06/23"),
                 new BigDecimal("100.00"), "blablablablablalba", 1, 1);
         a1.setAdiantamentoJaFoiPago(false);
         a1.setRefCavalo(cavalo1.getId());
         a1.setRefMotorista(cavalo1.getMotorista().getId());
+
         a1.setSaldoRestituido(new BigDecimal("0.0"));
 
-        Adiantamento a2 = new Adiantamento(FormataDataUtil.stringParaData("09/06/23"),
+        Adiantamento a2 = new Adiantamento(ConverteDataUtil.stringParaData("09/06/23"),
                 new BigDecimal("100.00"), "blablablablablalba", 1, 1);
         a2.setAdiantamentoJaFoiPago(false);
         a2.setRefCavalo(cavalo1.getId());
         a2.setRefMotorista(cavalo1.getMotorista().getId());
         a2.setSaldoRestituido(new BigDecimal("0.0"));
 
-        Adiantamento a3 = new Adiantamento(FormataDataUtil.stringParaData("09/06/23"),
+        Adiantamento a3 = new Adiantamento(ConverteDataUtil.stringParaData("09/06/23"),
                 new BigDecimal("100.00"), "blablablablablalba", 2, 2);
         a3.setAdiantamentoJaFoiPago(false);
         a3.setRefCavalo(cavalo2.getId());
@@ -388,10 +389,10 @@ public class GhnApplication extends Application {
     }
 
     private void criaDespesas() {
-        despesa1 = new CustosDePercurso(FormataDataUtil.stringParaData("01/07/23"), new BigDecimal("23"), "Oleo hidraulico", TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO, 1);
-        despesa2 = new CustosDePercurso(FormataDataUtil.stringParaData("02/07/23"), new BigDecimal("70"), "Guarda entre Pará e Ceará", TipoCustoDePercurso.NAO_REEMBOLSAVEL, 1);
-        despesa3 = new CustosDePercurso(FormataDataUtil.stringParaData("03/07/23"), new BigDecimal("123"), "Faixa refletiva", TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO, 2);
-        despesa4 = new CustosDePercurso(FormataDataUtil.stringParaData("04/07/23"), new BigDecimal("270"), "Balsa", TipoCustoDePercurso.REEMBOLSAVEL_JA_PAGO, 2);
+        despesa1 = new CustosDePercurso(ConverteDataUtil.stringParaData("01/07/23"), new BigDecimal("23"), "Oleo hidraulico", TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO, 1);
+        despesa2 = new CustosDePercurso(ConverteDataUtil.stringParaData("02/07/23"), new BigDecimal("70"), "Guarda entre Pará e Ceará", TipoCustoDePercurso.NAO_REEMBOLSAVEL, 1);
+        despesa3 = new CustosDePercurso(ConverteDataUtil.stringParaData("03/07/23"), new BigDecimal("123"), "Faixa refletiva", TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO, 2);
+        despesa4 = new CustosDePercurso(ConverteDataUtil.stringParaData("04/07/23"), new BigDecimal("270"), "Balsa", TipoCustoDePercurso.REEMBOLSAVEL_JA_PAGO, 2);
         despesaDao.adiciona(despesa1);
         despesaDao.adiciona(despesa2);
         despesaDao.adiciona(despesa3);
@@ -399,25 +400,25 @@ public class GhnApplication extends Application {
     }
 
     private void criaAbastecimentos() {
-        CustosDeAbastecimento abastecimento1 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("01/01/23"), "Dito", new BigDecimal("10000.00"), new BigDecimal("665.5"),
+        CustosDeAbastecimento abastecimento1 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("01/01/23"), "Dito", new BigDecimal("10000.00"), new BigDecimal("665.5"),
                 new BigDecimal("5.20"), new BigDecimal("3460.60"), TipoAbastecimento.TOTAL, 1, true);
 
-        CustosDeAbastecimento abastecimento2 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("02/02/23"), "Boiadeiro", new BigDecimal("15000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento2 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("02/02/23"), "Boiadeiro", new BigDecimal("15000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("1935.02"), TipoAbastecimento.PARCIAL, 1, false);
 
-        CustosDeAbastecimento abastecimento3 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("05/03/23"), "Boiadeiro", new BigDecimal("16000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento3 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("05/03/23"), "Boiadeiro", new BigDecimal("16000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("2795.02"), TipoAbastecimento.TOTAL, 1, true);
 
-        CustosDeAbastecimento abastecimento4 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/04/23"), "Boiadeiro", new BigDecimal("20000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento4 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/04/23"), "Boiadeiro", new BigDecimal("20000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("5035.02"), TipoAbastecimento.TOTAL, 1, true);
 
-        CustosDeAbastecimento abastecimento5 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/05/23"), "Boiadeiro", new BigDecimal("30000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento5 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/05/23"), "Boiadeiro", new BigDecimal("30000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("1835.02"), TipoAbastecimento.PARCIAL, 1, false);
 
-        CustosDeAbastecimento abastecimento6 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/06/23"), "Boiadeiro", new BigDecimal("40000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento6 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/06/23"), "Boiadeiro", new BigDecimal("40000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("3235.02"), TipoAbastecimento.PARCIAL, 1, false);
 
-        CustosDeAbastecimento abastecimento7 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/07/23"), "Boiadeiro", new BigDecimal("55000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento7 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/07/23"), "Boiadeiro", new BigDecimal("55000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("3935.02"), TipoAbastecimento.TOTAL, 1, true);
 
         abastecimentoDao.adiciona(abastecimento1);
@@ -428,28 +429,28 @@ public class GhnApplication extends Application {
         abastecimentoDao.adiciona(abastecimento6);
         abastecimentoDao.adiciona(abastecimento7);
 
-        CustosDeAbastecimento abastecimento8 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("01/01/23"), "Dito", new BigDecimal("10000.00"), new BigDecimal("665.5"),
+        CustosDeAbastecimento abastecimento8 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("01/01/23"), "Dito", new BigDecimal("10000.00"), new BigDecimal("665.5"),
                 new BigDecimal("5.20"), new BigDecimal("3460.60"), TipoAbastecimento.TOTAL, 2, false);
 
-        CustosDeAbastecimento abastecimento9 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("02/02/23"), "Boiadeiro", new BigDecimal("15000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento9 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("02/02/23"), "Boiadeiro", new BigDecimal("15000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("1935.02"), TipoAbastecimento.PARCIAL, 2, true);
 
-        CustosDeAbastecimento abastecimento10 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("05/03/23"), "Boiadeiro", new BigDecimal("16000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento10 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("05/03/23"), "Boiadeiro", new BigDecimal("16000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("2795.02"), TipoAbastecimento.PARCIAL, 2, false);
 
-        CustosDeAbastecimento abastecimento11 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/04/23"), "Boiadeiro", new BigDecimal("20000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento11 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/04/23"), "Boiadeiro", new BigDecimal("20000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("5035.02"), TipoAbastecimento.TOTAL, 2, false);
 
-        CustosDeAbastecimento abastecimento12 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/05/23"), "Boiadeiro", new BigDecimal("25000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento12 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/05/23"), "Boiadeiro", new BigDecimal("25000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("1835.02"), TipoAbastecimento.PARCIAL, 2, false);
 
-        CustosDeAbastecimento abastecimento13 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/06/23"), "Boiadeiro", new BigDecimal("30000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento13 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/06/23"), "Boiadeiro", new BigDecimal("30000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("3235.02"), TipoAbastecimento.PARCIAL, 2, false);
 
-        CustosDeAbastecimento abastecimento14 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("07/07/23"), "Boiadeiro", new BigDecimal("35000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento14 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("07/07/23"), "Boiadeiro", new BigDecimal("35000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("3935.02"), TipoAbastecimento.TOTAL, 2, true);
 
-        CustosDeAbastecimento abastecimento15 = new CustosDeAbastecimento(FormataDataUtil.stringParaData("06/07/23"), "Boiadeiro", new BigDecimal("32000.00"), new BigDecimal("470.32"),
+        CustosDeAbastecimento abastecimento15 = new CustosDeAbastecimento(ConverteDataUtil.stringParaData("06/07/23"), "Boiadeiro", new BigDecimal("32000.00"), new BigDecimal("470.32"),
                 new BigDecimal("5.39"), new BigDecimal("3935.02"), TipoAbastecimento.TOTAL, 2, false);
 
         abastecimentoDao.adiciona(abastecimento8);
@@ -467,7 +468,7 @@ public class GhnApplication extends Application {
     private void criaFretes() throws ValorInvalidoException {
 
 
-        frete3 = new Frete(FormataDataUtil.stringParaData("02/01/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete3 = new Frete(ConverteDataUtil.stringParaData("02/01/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete3.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete3.getAdmFrete().setFreteBruto(new BigDecimal("15000.00"));
         frete3.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -478,7 +479,7 @@ public class GhnApplication extends Application {
         frete3.getAdmFrete().setFreteJaFoiPago(false);
         frete3.setApenasAdmEdita(false);
 
-        frete9 = new Frete(FormataDataUtil.stringParaData("02/01/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete9 = new Frete(ConverteDataUtil.stringParaData("02/01/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete9.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete9.getAdmFrete().setFreteBruto(new BigDecimal("15000.00"));
         frete9.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -489,7 +490,7 @@ public class GhnApplication extends Application {
         frete9.getAdmFrete().setFreteJaFoiPago(false);
         frete9.setApenasAdmEdita(false);
 
-        frete4 = new Frete(FormataDataUtil.stringParaData("02/02/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete4 = new Frete(ConverteDataUtil.stringParaData("02/02/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete4.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete4.getAdmFrete().setFreteBruto(new BigDecimal("11000.00"));
         frete4.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -500,7 +501,7 @@ public class GhnApplication extends Application {
         frete4.getAdmFrete().setFreteJaFoiPago(false);
         frete4.setApenasAdmEdita(false);
 
-        frete10 = new Frete(FormataDataUtil.stringParaData("02/02/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete10 = new Frete(ConverteDataUtil.stringParaData("02/02/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete10.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete10.getAdmFrete().setFreteBruto(new BigDecimal("12000.00"));
         frete10.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -511,7 +512,7 @@ public class GhnApplication extends Application {
         frete10.getAdmFrete().setFreteJaFoiPago(false);
         frete10.setApenasAdmEdita(false);
 
-        frete5 = new Frete(FormataDataUtil.stringParaData("02/03/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete5 = new Frete(ConverteDataUtil.stringParaData("02/03/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete5.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete5.getAdmFrete().setFreteBruto(new BigDecimal("19000.00"));
         frete5.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -533,7 +534,7 @@ public class GhnApplication extends Application {
         frete11.getAdmFrete().setFreteJaFoiPago(false);
         frete11.setApenasAdmEdita(false);*/
 
-        frete6 = new Frete(FormataDataUtil.stringParaData("02/04/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete6 = new Frete(ConverteDataUtil.stringParaData("02/04/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete6.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete6.getAdmFrete().setFreteBruto(new BigDecimal("16000.00"));
         frete6.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -544,7 +545,7 @@ public class GhnApplication extends Application {
         frete6.getAdmFrete().setFreteJaFoiPago(false);
         frete6.setApenasAdmEdita(false);
 
-        frete12 = new Frete(FormataDataUtil.stringParaData("02/04/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete12 = new Frete(ConverteDataUtil.stringParaData("02/04/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete12.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete12.getAdmFrete().setFreteBruto(new BigDecimal("12000.00"));
         frete12.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -555,7 +556,7 @@ public class GhnApplication extends Application {
         frete12.getAdmFrete().setFreteJaFoiPago(false);
         frete12.setApenasAdmEdita(false);
 
-        frete7 = new Frete(FormataDataUtil.stringParaData("02/05/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete7 = new Frete(ConverteDataUtil.stringParaData("02/05/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete7.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete7.getAdmFrete().setFreteBruto(new BigDecimal("13000.00"));
         frete7.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -566,7 +567,7 @@ public class GhnApplication extends Application {
         frete7.getAdmFrete().setFreteJaFoiPago(false);
         frete7.setApenasAdmEdita(false);
 
-        frete13 = new Frete(FormataDataUtil.stringParaData("02/05/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete13 = new Frete(ConverteDataUtil.stringParaData("02/05/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete13.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete13.getAdmFrete().setFreteBruto(new BigDecimal("11000.00"));
         frete13.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -577,7 +578,7 @@ public class GhnApplication extends Application {
         frete13.getAdmFrete().setFreteJaFoiPago(false);
         frete13.setApenasAdmEdita(false);
 
-        frete8 = new Frete(FormataDataUtil.stringParaData("02/06/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
+        frete8 = new Frete(ConverteDataUtil.stringParaData("02/06/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 1);
         frete8.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete8.getAdmFrete().setFreteBruto(new BigDecimal("18000.00"));
         frete8.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -588,7 +589,7 @@ public class GhnApplication extends Application {
         frete8.getAdmFrete().setFreteJaFoiPago(false);
         frete8.setApenasAdmEdita(false);
 
-        frete14 = new Frete(FormataDataUtil.stringParaData("02/06/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete14 = new Frete(ConverteDataUtil.stringParaData("02/06/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete14.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete14.getAdmFrete().setFreteBruto(new BigDecimal("11000.00"));
         frete14.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -599,7 +600,7 @@ public class GhnApplication extends Application {
         frete14.getAdmFrete().setFreteJaFoiPago(false);
         frete14.setApenasAdmEdita(false);
 
-        frete1 = new Frete(FormataDataUtil.stringParaData("01/07/23"), "Soja", "Santana", "Fazenda", "Soja", new BigDecimal("45000.00"), 1);
+        frete1 = new Frete(ConverteDataUtil.stringParaData("01/07/23"), "Soja", "Santana", "Fazenda", "Soja", new BigDecimal("45000.00"), 1);
         frete1.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete1.getAdmFrete().setFreteBruto(new BigDecimal("14000.00"));
         frete1.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -610,7 +611,7 @@ public class GhnApplication extends Application {
         frete1.getAdmFrete().setFreteJaFoiPago(false);
         frete1.setApenasAdmEdita(false);
 
-        frete2 = new Frete(FormataDataUtil.stringParaData("02/07/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
+        frete2 = new Frete(ConverteDataUtil.stringParaData("02/07/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete2.setAdmFrete(new Frete.AdmFinanceiroFrete());
         frete2.getAdmFrete().setFreteBruto(new BigDecimal("10000.00"));
         frete2.getAdmFrete().setDescontos(new BigDecimal("0.00"));
@@ -647,8 +648,8 @@ public class GhnApplication extends Application {
         img1.compress(Bitmap.CompressFormat.PNG, 70, streamDaFotoEmBytes);
         fotoEmBytes = streamDaFotoEmBytes.toByteArray();
         String img1EmString = Base64.encodeToString(fotoEmBytes, Base64.DEFAULT);
-        m1 = new Motorista(FormataDataUtil.stringParaData("01/01/70"), img1EmString, "Gildean Freire", "02545878965", "157893645876",
-                FormataDataUtil.stringParaData("01/01/26"), FormataDataUtil.stringParaData("01/01/21"), new BigDecimal("2590.00"));
+        m1 = new Motorista(ConverteDataUtil.stringParaData("01/01/70"), img1EmString, "Gildean Freire", "02545878965", "157893645876",
+                ConverteDataUtil.stringParaData("01/01/26"), ConverteDataUtil.stringParaData("01/01/21"), new BigDecimal("2590.00"));
 
         Bitmap img2 = BitmapFactory.decodeResource(getResources(), R.drawable.roberto);
         byte[] fotoEmBytes2;
@@ -656,8 +657,8 @@ public class GhnApplication extends Application {
         img2.compress(Bitmap.CompressFormat.PNG, 70, streamDaFotoEmBytes2);
         fotoEmBytes2 = streamDaFotoEmBytes2.toByteArray();
         String img2EmString = Base64.encodeToString(fotoEmBytes2, Base64.DEFAULT);
-        m2 = new Motorista(FormataDataUtil.stringParaData("01/01/70"), img2EmString, "José Anacrizio", "02545878965", "157869345876",
-                FormataDataUtil.stringParaData("01/01/26"), FormataDataUtil.stringParaData("01/01/21"), new BigDecimal("2590.00"));
+        m2 = new Motorista(ConverteDataUtil.stringParaData("01/01/70"), img2EmString, "José Anacrizio", "02545878965", "157869345876",
+                ConverteDataUtil.stringParaData("01/01/26"), ConverteDataUtil.stringParaData("01/01/21"), new BigDecimal("2590.00"));
 
         motoristaDao.adiciona(m1);
         motoristaDao.adiciona(m2);

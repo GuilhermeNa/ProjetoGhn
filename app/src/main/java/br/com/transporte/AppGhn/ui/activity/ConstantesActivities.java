@@ -2,22 +2,18 @@ package br.com.transporte.AppGhn.ui.activity;
 
 public interface ConstantesActivities {
 
-    int POSICAO_INVALIDA = -1;
-    String CHAVE_POSICAO = "chave_posicao";
-
-    String CHAVE_FRETE = "chave_frete";
-    String CHAVE_ABASTECIMENTO = "chave_abastecimento";
+    String REGISTRO_ADICIONADO = "Registro adicionado";
+    String SELECIONE_O_PERIODO = "Selecione o periodo";
+    String CAVALOS = "Cavalos";
+     String ONE_HUNDRED = "100.00";
+    String REGISTRO_ALTERADO = "Registro alterado";
+    String BAIXA_REGISTRADA_COM_SUCESSO = "Baixa registrada com sucesso";
+    String REGISTRO_RENOVADO = "Registro renovado";
+    String REGISTRO_EDITADO = "Registro editado";
+    String REGISTRO_CRIADO = "Registro Criado";
+    String NENHUMA_ALTERACAO_REALIZADA = "Nenhuma alteração realizada";
+    String REGISTRO_APAGADO = "Registro apagado";
     String CHAVE_DESPESA = "chave_despesa";
+    String LOGOUT = "Logout";
 
-    String APAGA_REGISTRO_TITULO = "Apagando registro";
-    String APAGA_REGISTRO_TXT = "Todas as informações abaixo serão perdidas. Realmente deseja apagar permanentemente este registro?";
-    String CANCELAR_REGISTRO_TITULO = "Cancelando registro";
-    String CANCELA_REGISTRO_TXT = "Todas as informações abaixo serão perdidas. Realmente deseja cancelar este cadastro?";
-    String SIM = "sim";
-    String NAO = "Não";
-
-
-
-    int ID_DELETAR = 0;
-    int ID_CANCELAR = 1;
 }

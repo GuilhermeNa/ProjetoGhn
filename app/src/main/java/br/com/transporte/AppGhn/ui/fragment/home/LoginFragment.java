@@ -17,6 +17,9 @@ import androidx.navigation.Navigation;
 import br.com.transporte.AppGhn.databinding.FragmentLoginBinding;
 
 public class LoginFragment extends Fragment {
+    public static final String PREENCHA_O_LOGIN = "Preencha o Login.";
+    public static final String PREENCHA_A_SENHA = "Preencha a Senha.";
+    public static final String A_SENHA_DEVE_TER_NO_MINIMO_6_CARACTERES = "A senha deve ter no minimo 6 caracteres.";
     private FragmentLoginBinding binding;
 
     @Override
@@ -36,7 +39,6 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         configuraLogin();
         navegaParaHome(view);
-
     }
 
     private void configuraLogin() {
@@ -44,11 +46,11 @@ public class LoginFragment extends Fragment {
             String nome = binding.loginEditaNome.getText().toString();
             String senha = binding.loginEditaSenha.getText().toString();
             if (nome.isEmpty()) {
-                snackBar(view, "Preencha o Login.");
+                snackBar(view, PREENCHA_O_LOGIN);
             } else if (senha.isEmpty()) {
-                snackBar(view, "Preencha a Senha.");
+                snackBar(view, PREENCHA_A_SENHA);
             } else if (senha.length() <= 5) {
-                snackBar(view, "A senha deve ter no minimo 6 caracteres.");
+                snackBar(view, A_SENHA_DEVE_TER_NO_MINIMO_6_CARACTERES);
             } else {
                 navegaParaHome(view);
             }
@@ -59,10 +61,6 @@ public class LoginFragment extends Fragment {
         NavController controler = Navigation.findNavController(view);
         NavDirections direction = LoginFragmentDirections.loginActionHome();
         controler.navigate(direction);
-
-
     }
-
-
 
 }

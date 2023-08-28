@@ -34,12 +34,14 @@ public class DespesasAdmActivity extends AppCompatActivity {
         inicializaCamposDaView();
         StatusBarUtil.setStatusBarColor(this, getWindow());
         configuraFabs();
+        configuraNavControler();
 
+    }
 
+    private void configuraNavControler() {
         NavController controlador = Navigation.findNavController(this, R.id.nav_host_fragment_container_despesa);
         BottomNavigationView bottomNavigation = binding.bottomNavigation;
         NavigationUI.setupWithNavController(bottomNavigation, controlador);
-
     }
 
     private void configuraFabs() {

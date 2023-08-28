@@ -37,7 +37,6 @@ import br.com.transporte.AppGhn.ui.activity.extensions.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class CertificadosActivity extends AppCompatActivity {
     private FloatingActionButton fabIndireta, fabDireta;
     private ActivityCertificadosBinding binding;
@@ -94,7 +93,6 @@ public class CertificadosActivity extends AppCompatActivity {
     //                                          OnCreate                                          ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,9 +2,12 @@ package br.com.transporte.AppGhn.ui.fragment.home;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,6 +50,7 @@ import br.com.transporte.AppGhn.dao.MotoristaDAO;
 import br.com.transporte.AppGhn.ui.fragment.ConstantesFragment;
 
 public class FuncionariosFragment extends Fragment implements MenuProvider {
+    public static final String FUNCIONARIOS = "Funcionários";
     private FragmentFuncionariosBinding binding;
     private MotoristasAdapter adapter;
     private MotoristaDAO dao;
@@ -56,7 +60,6 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-                Intent dataResultado = result.getData();
 
                 switch (codigoResultado) {
                     case RESULT_OK:
@@ -66,7 +69,7 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -111,15 +114,12 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Funcionários");
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(FUNCIONARIOS);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-
-
     }
 
     private void configuraBtnNovoFuncionario() {
@@ -154,14 +154,14 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
         MenuItem busca = menu.findItem(R.id.menu_padrao_search);
         SearchView search = (SearchView) busca.getActionView();
 
-        search.setOnSearchClickListener(v -> {
+        Objects.requireNonNull(search).setOnSearchClickListener(v -> {
             logout.setVisible(false);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
         });
 
         search.setOnCloseListener(() -> {
             logout.setVisible(true);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
             return false;
         });
 
@@ -196,11 +196,12 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_padrao_logout:
-                Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
             case android.R.id.home:

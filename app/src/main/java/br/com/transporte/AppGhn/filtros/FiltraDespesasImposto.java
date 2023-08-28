@@ -1,9 +1,8 @@
 package br.com.transporte.AppGhn.filtros;
 
-import android.os.Build;
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,7 +18,6 @@ public class FiltraDespesasImposto {
     private static final DespesasImpostoDAO dao = new DespesasImpostoDAO();
 
     @NonNull
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static DespesasDeImposto localizaPeloId(int despesaId) throws ObjetoNaoEncontrado {
         DespesasDeImposto despesaLocalizada = null;
 
@@ -33,49 +31,38 @@ public class FiltraDespesasImposto {
             return despesaLocalizada;
         }
 
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<DespesasDeImposto> listaFiltradaPorData(@NonNull List<DespesasDeImposto> dataSet, LocalDate dataInicial, LocalDate dataFinal) {
         return dataSet.stream()
-                .filter(d -> DataUtil.capturaRange(d.getData(), dataInicial, dataFinal))
+                .filter(d -> DataUtil.verificaSeEstaNoRange(d.getData(), dataInicial, dataFinal))
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<DespesasDeImposto> listaPorCavaloId(@NonNull List<DespesasDeImposto> dataSet, int cavaloId){
         return dataSet.stream()
                 .filter(d -> d.getRefCavalo() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<DespesasDeImposto> listaPorTipo(@NonNull List<DespesasDeImposto> dataSet, TipoDespesa tipo){
         return dataSet.stream()
                 .filter(d -> d.getTipoDespesa() == tipo)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<DespesasDeImposto> listaPorAno(@NonNull List<DespesasDeImposto> dataSet, int ano){
         return dataSet.stream()
                 .filter(d -> d.getData().getYear() == ano)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<DespesasDeImposto> listaPorMes(@NonNull List<DespesasDeImposto> dataSet, int mes){
         return dataSet.stream()
                 .filter(d -> d.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());
     }
-
-
-
-
-
-
 
 }

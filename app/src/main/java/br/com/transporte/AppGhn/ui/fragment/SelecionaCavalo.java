@@ -1,11 +1,12 @@
 package br.com.transporte.AppGhn.ui.fragment;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.CAVALOS;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,12 +37,12 @@ import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.databinding.FragmentSelecionaCavaloBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo;
 import br.com.transporte.AppGhn.ui.activity.AreaMotoristaActivity;
 import br.com.transporte.AppGhn.ui.adapter.SelecionaCavaloAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 
 public class SelecionaCavalo extends Fragment implements MenuProvider {
     private FragmentSelecionaCavaloBinding binding;
@@ -81,7 +82,7 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Cavalos");
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(CAVALOS);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
@@ -127,7 +128,7 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
         MenuItem busca = menu.findItem(R.id.menu_padrao_search);
         SearchView searchView = (SearchView) busca.getActionView();
 
-        searchView.setOnSearchClickListener(v -> {
+        Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
             logout.setVisible(false);
             Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
         });
@@ -175,7 +176,7 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_padrao_logout:
-                Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
 

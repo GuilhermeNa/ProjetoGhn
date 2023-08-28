@@ -1,9 +1,8 @@
 package br.com.transporte.AppGhn.filtros;
 
-import android.os.Build;
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,20 +26,15 @@ public class FiltraSalario {
             }
         }
 
-        if (salarioLocalizada != null) {
-            return salarioLocalizada;
-        }
-
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        if (salarioLocalizada != null) return salarioLocalizada;
+        else throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public List<CustosDeSalario> listaPorData(LocalDate dataInicial, LocalDate dataFinal) {
         return dao.listaTodos().stream()
-                .filter(c -> DataUtil.capturaRange(c.getData(), dataInicial, dataFinal))
+                .filter(c -> DataUtil.verificaSeEstaNoRange(c.getData(), dataInicial, dataFinal))
                 .collect(Collectors.toList());
     }
-
 
 }

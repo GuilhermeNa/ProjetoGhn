@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ContextMenu;
@@ -27,13 +28,15 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.ui.fragment.home.FrotaFragment;
 
 public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder> {
-    private final List<Cavalo> lista;
+    public static final String MOTORISTA_NULO_MSG = "Não há motorista vinculado a este Cavalo";
+    private final List<Cavalo> dataSet;
     private final FrotaFragment context;
     private OnItemClickListener onItemClickListener;
     private boolean janelaFechada = true;
+    private int posicao;
 
     public CavaloAdapter(FrotaFragment context, List<Cavalo> lista) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
     }
 
@@ -41,6 +44,10 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         this.onItemClickListener = onItemClickListener;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+    
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private final TextView placaTxt, motorista;
         private final LinearLayout subMenu;
@@ -63,10 +70,14 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        public void onCreateContextMenu(@NonNull ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.add(Menu.NONE, R.id.defineMotorista, Menu.NONE, "Definir Motorista");
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
 
     @NonNull
     @Override
@@ -75,9 +86,13 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         return new ViewHolder(viewCriada);
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+    
     @Override
     public void onBindViewHolder(@NonNull CavaloAdapter.ViewHolder holder, int position) {
-        Cavalo cavalo = lista.get(position);
+        Cavalo cavalo = dataSet.get(position);
         configuraUi(holder);
         configuraAnimacaoSubListaSr(holder);
         vincula(holder, cavalo);
@@ -87,53 +102,21 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    public int posicao;
-
-    public void setPosicao(int posicao) {
-        this.posicao = posicao;
-    }
-
-    public int getPosicao() {
-        return posicao;
-    }
-
-    public void atualiza(List<Cavalo> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    private void vincula(ViewHolder holder, Cavalo cavalo) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
         holder.placaTxt.setText(cavalo.getPlaca());
 
         try {
             holder.motorista.setText(cavalo.getMotorista().getNome());
         } catch (NullPointerException e) {
             e.printStackTrace();
-            e.getMessage();
-            holder.motorista.setText("Não há motorista vinculado a este Cavalo");
+            holder.motorista.setText(MOTORISTA_NULO_MSG);
         }
     }
 
-    private void configuraUi(ViewHolder holder) {
-        holder.srImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
-        holder.cavaloImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
-        holder.motoristaImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
-    }
-
-    private void configuraListeners(ViewHolder holder, Cavalo cavalo) {
-        holder.btnNovoSr.setOnClickListener(v -> onItemClickListener.onNovoSrClick(cavalo.getId()));
-        holder.placaTxt.setOnClickListener(v -> onItemClickListener.onEditaCavaloClick(cavalo.getId()));
-        holder.itemView.setOnLongClickListener(v -> {
-            setPosicao(holder.getAdapterPosition());
-            return false;
-        });
-    }
-
-    private void configuraAnimacaoSubListaSr(ViewHolder holder) {
+    private void configuraAnimacaoSubListaSr(@NonNull ViewHolder holder) {
         Animation animationAbertura = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.seta_abertura);
         Animation animationFechamento = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.seta_fechamento);
 
@@ -154,27 +137,85 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         }
     }
 
+    private void configuraListeners(@NonNull ViewHolder holder, Cavalo cavalo) {
+        holder.btnNovoSr.setOnClickListener(v -> onItemClickListener.onNovoSrClick(cavalo.getId()));
+        holder.placaTxt.setOnClickListener(v -> onItemClickListener.onEditaCavaloClick(cavalo.getId()));
+        holder.itemView.setOnLongClickListener(v -> {
+            setPosicao(holder.getAdapterPosition());
+            return false;
+        });
+    }
+
+    private void configuraUi(@NonNull ViewHolder holder) {
+        holder.srImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
+        holder.cavaloImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
+        holder.motoristaImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
+    }
+
+    private void configuraRecycler(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
+        SemiReboqueAdapter adapter = configuraAdapter(holder, cavalo);
+        configuraItemDecoration(holder);
+        configuraLayoutManager(holder);
+        adapter.setOnItemClickListener((idSr) -> onItemClickListener.onEditaSrClick((Integer) idSr, cavalo.getId()));
+    }
+
+    private void configuraLayoutManager(@NonNull ViewHolder holder) {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context.getContext());
+        holder.recyclerFilha.setLayoutManager(layoutManager);
+    }
+
+    private void configuraItemDecoration(@NonNull ViewHolder holder) {
+        Drawable divider = ContextCompat.getDrawable(context.requireContext(), R.drawable.divider);
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(context.requireContext(), DividerItemDecoration.VERTICAL);
+        if (divider != null) itemDecoration.setDrawable(divider);
+        holder.recyclerFilha.addItemDecoration(itemDecoration);
+    }
+    @NonNull
+    private SemiReboqueAdapter configuraAdapter(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
+        SemiReboqueAdapter adapter = new SemiReboqueAdapter(context.getContext(), cavalo.getSemiReboque());
+        holder.recyclerFilha.setAdapter(adapter);
+        return adapter;
+    }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    public void setPosicao(int posicao) {
+        this.posicao = posicao;
+    }
+
+    public int getPosicao() {
+        return posicao;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<Cavalo> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void adiciona(Cavalo cavalo){
+        this.dataSet.add(cavalo);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(Cavalo cavalo){
+        int posicao = -1;
+        posicao = this.dataSet.indexOf(cavalo);
+        this.dataSet.remove(cavalo);
+        notifyItemRemoved(posicao);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          Interface                                         ||
+    //----------------------------------------------------------------------------------------------
+
     public interface OnItemClickListener {
         void onEditaCavaloClick(int idCavalo);
 
         void onNovoSrClick(int idCavalo);
 
         void onEditaSrClick(int idSr, int idCavalo);
-    }
-
-    private void configuraRecycler(ViewHolder holder, Cavalo cavalo) {
-        SemiReboqueAdapter adapter = new SemiReboqueAdapter(context.getContext(), cavalo.getSemiReboque());
-        holder.recyclerFilha.setAdapter(adapter);
-
-        Drawable divider = ContextCompat.getDrawable(context.requireContext(), R.drawable.divider);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(context.requireContext(), DividerItemDecoration.VERTICAL);
-        itemDecoration.setDrawable(divider);
-        holder.recyclerFilha.addItemDecoration(itemDecoration);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context.getContext());
-        holder.recyclerFilha.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener((idSr) -> onItemClickListener.onEditaSrClick((Integer) idSr, cavalo.getId()));
     }
 
 }

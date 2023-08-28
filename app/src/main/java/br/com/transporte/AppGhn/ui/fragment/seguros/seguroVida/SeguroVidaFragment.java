@@ -2,6 +2,9 @@ package br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.RENOVANDO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_RENOVADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -10,7 +13,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGU
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +27,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
@@ -36,17 +37,18 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-
+import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.databinding.FragmentSeguroVidaBinding;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.SeguroVidaAdapter;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.ui.fragment.extensions.BuscaDeDadosSemResultado;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
@@ -59,6 +61,8 @@ public class SeguroVidaFragment extends Fragment {
     private LinearLayout avisoDeListaVaziaLayout;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
 
+    @NonNull
+    @Contract(" -> new")
     private ActivityResultLauncher<Intent> getActivityResultLauncher() {
         return registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -67,11 +71,11 @@ public class SeguroVidaFragment extends Fragment {
 
                     switch(resultCode){
                         case RESULT_UPDATE:
-                            atualizaAdapter("Registro renovado");
+                            atualizaAdapter(REGISTRO_RENOVADO);
                             break;
 
                         case RESULT_CANCELED:
-                            atualizaAdapter("Registro apagado");
+                            atualizaAdapter(REGISTRO_APAGADO);
                             break;
                     }
                 });
@@ -165,7 +169,7 @@ public class SeguroVidaFragment extends Fragment {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:
@@ -177,7 +181,6 @@ public class SeguroVidaFragment extends Fragment {
     }
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
@@ -205,7 +208,6 @@ public class SeguroVidaFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
     //                                          OnResume                                          ||
     //----------------------------------------------------------------------------------------------
-
 
     @Override
     public void onResume() {

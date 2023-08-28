@@ -5,8 +5,6 @@ public interface ConstantesFragment {
     String CHAVE_FORMULARIO = "chave_formulario";
     String CHAVE_REQUISICAO = "chave_requisicao";
 
-
-
     int VALOR_FRETE = 1;
     int VALOR_ABASTECIMENTO = 2;
     int VALOR_CUSTO_PERCURSO = 3;

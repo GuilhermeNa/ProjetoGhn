@@ -42,7 +42,7 @@ import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterAbastecime
 import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaAdapterCavaloHelper;
 import br.com.transporte.AppGhn.ui.fragment.media.helpers.MediaMenuProviderHelper;
 import br.com.transporte.AppGhn.util.AnimationUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
@@ -251,7 +251,7 @@ public class MediaFragment extends Fragment {
     }
 
     private void vinculaDadosNaView(CustosDeAbastecimento abastecimento, TextView dataTxt, TextView kmTxt) {
-        String data = FormataDataUtil.dataParaString(abastecimento.getData());
+        String data = ConverteDataUtil.dataParaString(abastecimento.getData());
         dataTxt.setText(data);
 
         String km = FormataNumerosUtil.formataNumero(abastecimento.getMarcacaoKm());

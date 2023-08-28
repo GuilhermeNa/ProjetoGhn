@@ -1,22 +1,16 @@
 package br.com.transporte.AppGhn.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.ActivityFreteAreceberBinding;
@@ -24,6 +18,7 @@ import br.com.transporte.AppGhn.databinding.ActivityFreteAreceberBinding;
 public class FreteAReceberActivity extends AppCompatActivity {
     private ActivityFreteAreceberBinding binding;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +33,6 @@ public class FreteAReceberActivity extends AppCompatActivity {
         controlador.addOnDestinationChangedListener((navController, navDestination, bundle) -> {
             switch (navDestination.getId()){
                 case R.id.navFreteReceber:
-                    bottomNavigation.setVisibility(View.VISIBLE);
-                    break;
                 case R.id.navFreteReceberPago:
                     bottomNavigation.setVisibility(View.VISIBLE);
                     break;

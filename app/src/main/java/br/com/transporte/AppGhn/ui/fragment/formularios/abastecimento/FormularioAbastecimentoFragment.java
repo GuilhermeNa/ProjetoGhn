@@ -32,7 +32,7 @@ import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioBaseFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
@@ -116,7 +116,7 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(abastecimento.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(abastecimento.getData()));
         postoEdit.setText(abastecimento.getPosto());
         marcacaoKmEdit.setText(abastecimento.getMarcacaoKm().toPlainString());
         qntLitrosEdit.setText(abastecimento.getQuantidadeLitros().toPlainString());
@@ -152,7 +152,7 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
         if (isCompletoParaSalvar()) {
             BigDecimal marcacaoASalvar = new BigDecimal(MascaraMonetariaUtil.formatPriceSave(marcacaoKmEdit.getText().toString()));
-            LocalDate dataASalvar = FormataDataUtil.stringParaData(dataEdit.getText().toString());
+            LocalDate dataASalvar = ConverteDataUtil.stringParaData(dataEdit.getText().toString());
 
             try {
                 MarcacaoKm.verificaMarcacaoKm(dataASalvar, marcacaoASalvar, getReferenciaDeCavalo(CHAVE_ID_CAVALO));
@@ -256,7 +256,7 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public void vinculaDadosAoObjeto() {
-        abastecimento.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        abastecimento.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         abastecimento.setPosto(postoEdit.getText().toString());
         abastecimento.setMarcacaoKm(new BigDecimal(formatPriceSave(marcacaoKmEdit.getText().toString())));
         abastecimento.setQuantidadeLitros(new BigDecimal(formatPriceSave(qntLitrosEdit.getText().toString())));

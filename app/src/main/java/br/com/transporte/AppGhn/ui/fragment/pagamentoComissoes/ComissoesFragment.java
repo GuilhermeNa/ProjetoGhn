@@ -2,14 +2,20 @@ package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.ONE_HUNDRED;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ADIANTAMENTO;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +33,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -51,21 +56,23 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ComissoesAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.util.CentralSalariosEComissoes;
+import br.com.transporte.AppGhn.util.CalculoUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ComissoesFragment extends Fragment implements MenuProvider {
+    public static final String COMISSAO_EM_ABERTO = "Comissao em Aberto";
     private FragmentComissoesBinding binding;
     private ComissoesAdapter adapter;
     private ProgressBar progressBarView;
@@ -76,27 +83,26 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     private LinearLayout dataLayout;
     private LocalDate dataInicial, dataFinal;
     private CavaloDAO cavaloDao;
-    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-                Intent dataResultado = result.getData();
 
                 switch(codigoResultado){
                     case RESULT_OK:
-                        atualizaAposRetornoDeResult("Registro criado");
+                        atualizaAposRetornoDeResult(REGISTRO_CRIADO);
                         break;
 
                     case RESULT_EDIT:
-                        atualizaAposRetornoDeResult("Registro editado");
+                        atualizaAposRetornoDeResult(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
 
                     case RESULT_DELETE:
-                        atualizaAposRetornoDeResult("Registro apagado");
+                        atualizaAposRetornoDeResult(REGISTRO_APAGADO);
                         break;
                 }
             });
@@ -105,14 +111,13 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         atualizaAdapter();
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         cavaloDao = new CavaloDAO();
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaCavalos = cavaloDao.listaTodos();
     }
 
@@ -122,8 +127,7 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         binding = FragmentComissoesBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -134,15 +138,13 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         configuraDateRangePicker();
 
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     @Override
     public void onResume() {
         super.onResume();
         atualizaProgressBar();
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     public void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Selecione o periodo")
@@ -176,8 +178,7 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
             });
         });
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     private void configuraMudancasAposSelecaoDeData() {
         configuraUi();
         atualizaAdapter();
@@ -191,43 +192,39 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Comissao em Aberto");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(COMISSAO_EM_ABERTO);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     private void configuraUi() {
         configuraUiMutavel();
-
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    
     private void configuraUiMutavel() {
-        dataInicialTxt.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxt.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxt.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxt.setText(ConverteDataUtil.dataParaString(dataFinal));
 
         FreteDAO daoFrete = new FreteDAO();
         List<Frete> listaFiltradaPorData = daoFrete.listaFiltradaPorData(dataInicial, dataFinal);
 
-        BigDecimal comissaoTotalDevidaAosMotoristas = CentralSalariosEComissoes.getComissaoTotalDevidaAosMotoristas(listaFiltradaPorData);
+        BigDecimal comissaoTotalDevidaAosMotoristas = CalculoUtil.somaComissao(listaFiltradaPorData);
         valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalDevidaAosMotoristas));
 
-        BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CentralSalariosEComissoes.getComissaoTotalQueJaFoiPagaAosMotoristas(listaFiltradaPorData);
+        BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CalculoUtil.somaComissaoPorStatus(listaFiltradaPorData, true);
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalQueJaFoiPagaAosMotoristas));
 
         BigDecimal comissaoEmAbertoASerPaga = comissaoTotalDevidaAosMotoristas.subtract(comissaoTotalQueJaFoiPagaAosMotoristas);
         valorEmAbertoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoEmAbertoASerPaga));
 
         try {
-            evolucaoProgressBar = comissaoTotalQueJaFoiPagaAosMotoristas.divide(comissaoTotalDevidaAosMotoristas, RoundingMode.HALF_EVEN).multiply(new BigDecimal("100.00"));
+            evolucaoProgressBar = comissaoTotalQueJaFoiPagaAosMotoristas.divide(comissaoTotalDevidaAosMotoristas, RoundingMode.HALF_EVEN).multiply(new BigDecimal(ONE_HUNDRED));
             atualizaProgressBar();
         } catch (ArithmeticException e) {
             evolucaoProgressBar = BigDecimal.ZERO;
             e.printStackTrace();
-            e.getMessage();
         }
     }
 
@@ -260,7 +257,6 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
@@ -285,14 +281,14 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         MenuItem busca = menu.findItem(R.id.menu_padrao_search);
         SearchView searchView = (SearchView) busca.getActionView();
 
-        searchView.setOnSearchClickListener(v -> {
+        Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
             logout.setVisible(false);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
         });
 
         searchView.setOnCloseListener(() -> {
             logout.setVisible(true);
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
             return false;
         });
 
@@ -327,11 +323,12 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.menu_padrao_logout:
-                Toast.makeText(this.requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
             case android.R.id.home:

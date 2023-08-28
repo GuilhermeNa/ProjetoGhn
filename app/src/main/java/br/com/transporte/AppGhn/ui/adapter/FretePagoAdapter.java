@@ -1,13 +1,11 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -16,12 +14,12 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.ViewHolder>{
     private final ComissoesPagasDetalhesFragment context;
-    private final List<Frete> lista;
+    private final List<Frete> dataSet;
     private OnItemClickListener onItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -30,8 +28,12 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
 
     public FretePagoAdapter(ComissoesPagasDetalhesFragment context, List<Frete> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView dataTxtView, comissaoTxtView, origemTxtView;
@@ -44,6 +46,10 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public FretePagoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -51,22 +57,24 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull FretePagoAdapter.ViewHolder holder, int position) {
-        Frete frete = lista.get(position);
+        Frete frete = dataSet.get(position);
         vincula(holder, frete);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(frete));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, Frete frete) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(frete.getData()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
         holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
     }

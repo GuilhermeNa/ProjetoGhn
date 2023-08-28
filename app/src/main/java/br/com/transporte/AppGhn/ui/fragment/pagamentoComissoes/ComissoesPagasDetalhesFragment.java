@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
@@ -7,9 +8,9 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ADIA
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_FRETE;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -38,26 +38,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBinding;
-import br.com.transporte.AppGhn.model.Adiantamento;
-import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
-import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
-import br.com.transporte.AppGhn.ui.adapter.AdiantamentoPagoAdapter;
-import br.com.transporte.AppGhn.ui.adapter.FretePagoAdapter;
-import br.com.transporte.AppGhn.ui.adapter.ReembolsoPagoAdapter;
 import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.SalarioDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBinding;
+import br.com.transporte.AppGhn.model.Adiantamento;
+import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
+import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
+import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.adapter.AdiantamentoPagoAdapter;
+import br.com.transporte.AppGhn.ui.adapter.FretePagoAdapter;
+import br.com.transporte.AppGhn.ui.adapter.ReembolsoPagoAdapter;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ComissoesPagasDetalhesFragment extends Fragment {
+    public static final String VALOR_NEGATIVO = "(-) ";
+    public static final String VALOR_POSITIVO = "(+) ";
+    public static final String DETALHES_PAGAMENTO = "Detalhes Pagamento";
     private FragmentComissoesPagasDetalhesBinding binding;
     private TextView motoristaTxtView, placaTxtView, dataTxtView, valorAdiantamentosTxtView, valorReembolsosTxtView, valorFretesTxtView;
     private List<Adiantamento> listaDeAdiantamentos;
@@ -102,7 +106,6 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -114,7 +117,6 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         configuraToolbar();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi() {
         CavaloDAO cavaloDao = new CavaloDAO();
         String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
@@ -133,11 +135,16 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
                 .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        dataTxtView.setText(FormataDataUtil.dataParaString(salario.getData()));
+        dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
         placaTxtView.setText(placa);
         motoristaTxtView.setText(motorista);
-        valorAdiantamentosTxtView.setText("(-) "+FormataNumerosUtil.formataMoedaPadraoBr(somaAdiantamento));
-        valorReembolsosTxtView.setText("(+) "+FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso));
+
+        String valorAdiantamento = VALOR_NEGATIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaAdiantamento);
+        valorAdiantamentosTxtView.setText(valorAdiantamento);
+
+        String valorReembolso = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso);
+        valorReembolsosTxtView.setText(valorReembolso);
+
         valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
     }
 
@@ -160,10 +167,10 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
 
     }
 
-    private void recyclerLinhaVerticalDecoration(RecyclerView recycler) {
+    private void recyclerLinhaVerticalDecoration(@NonNull RecyclerView recycler) {
         Drawable divider = ContextCompat.getDrawable(requireContext(), R.drawable.divider);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
-        itemDecoration.setDrawable(divider);
+        itemDecoration.setDrawable(Objects.requireNonNull(divider));
         recycler.addItemDecoration(itemDecoration);
     }
 
@@ -215,10 +222,10 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Detalhes Pagamento");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(DETALHES_PAGAMENTO);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -227,11 +234,12 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
                 menu.removeItem(R.id.menu_padrao_editar);
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

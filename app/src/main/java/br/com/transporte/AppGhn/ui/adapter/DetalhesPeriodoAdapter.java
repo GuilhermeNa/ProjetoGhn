@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,13 +36,12 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
             placaTxt = itemView.findViewById(R.id.rec_detalhes_periodo_placa);
             valorTxt = itemView.findViewById(R.id.rec_detalhes_periodo_valor);
             percentualTxt = itemView.findViewById(R.id.rec_detalhes_periodo_percentual);
             motoristaTxt = itemView.findViewById(R.id.rec_detalhes_periodo_motorista);
-
         }
+
     }
 
     //----------------------------------------------------------------------------------------------
@@ -65,6 +65,15 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
         vincula(holder, detalhes);
     }
 
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
+
+    //----------------------------------------------
+    // -> Vincula                                 ||
+    //----------------------------------------------
+
     private void vincula(@NonNull ViewHolder holder, @NonNull ObjetoTemporario_representaCavalo detalhes) {
         holder.placaTxt.setText(detalhes.getPlaca());
         holder.valorTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(detalhes.getValor()));
@@ -81,11 +90,9 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
         return percentual;
     }
 
-    @Override
-    public int getItemCount() {
-        return dataSet.size();
-    }
+    //--------------------------------------- Metodos publicos -------------------------------------
 
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza (List<ObjetoTemporario_representaCavalo> dataSet){
         this.dataSet.clear();
         this.dataSet.addAll(dataSet);

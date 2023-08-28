@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.filtros;
 
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class FiltraParcelasSeguro {
             return parcelaLocalizada;
         }
 
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 
@@ -71,8 +73,5 @@ public class FiltraParcelasSeguro {
                 .filter(p -> !p.isPaga())
                 .collect(Collectors.toList());
     }
-
-
-
 
 }

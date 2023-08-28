@@ -1,13 +1,11 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -16,23 +14,27 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAdapter.ViewHolder>{
+    public static final String VALOR_POSITIVO = "(+) ";
     private final ComissoesPagasDetalhesFragment context;
-    private final List<CustosDePercurso> lista;
+    private final List<CustosDePercurso> dataSet;
     private OnItemClickListener onItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 
-
     public ReembolsoPagoAdapter(ComissoesPagasDetalhesFragment context, List<CustosDePercurso> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -45,6 +47,10 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public ReembolsoPagoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -52,24 +58,26 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull ReembolsoPagoAdapter.ViewHolder holder, int position) {
-        CustosDePercurso custo = lista.get(position);
+        CustosDePercurso custo = dataSet.get(position);
         vincula(holder, custo);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(custo));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, CustosDePercurso custo) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(custo.getData()));
-        holder.valorReemboloTxtView.setText("(+) "+FormataNumerosUtil.formataMoedaPadraoBr(custo.getValorCusto()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull CustosDePercurso custo) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(custo.getData()));
+        String custoFormatado = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(custo.getValorCusto());
+        holder.valorReemboloTxtView.setText(custoFormatado);
     }
-
 
 }

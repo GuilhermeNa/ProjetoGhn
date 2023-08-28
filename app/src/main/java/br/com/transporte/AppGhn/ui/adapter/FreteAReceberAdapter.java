@@ -1,6 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,26 +10,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
 
 public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdapter.ViewHolder> {
+    public static final String DRAWABLE_DONE = "done";
+    public static final String DRAWABLE_UNDONE = "undone";
     private final FreteAReceberFragment context;
-    private final List<Frete> lista;
+    private final List<Frete> dataSet;
     private OnItemClickListener onItemClickListener;
     private int posicao;
     private final RecebimentoFreteDAO recebimentoDao;
@@ -41,10 +42,14 @@ public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdap
 
     public FreteAReceberAdapter(FreteAReceberFragment context, List<Frete> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
         recebimentoDao = new RecebimentoFreteDAO();
         cavaloDao = new CavaloDAO();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private final ImageView statusImg;
@@ -65,10 +70,14 @@ public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdap
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(Menu.NONE, R.id.FechaFrete, menu.NONE, "Fechar Frete");
+        public void onCreateContextMenu(@NonNull ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(Menu.NONE, R.id.FechaFrete, menu.NONE, R.string.fechar_frete);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
 
     @NonNull
     @Override
@@ -77,10 +86,13 @@ public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdap
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull FreteAReceberAdapter.ViewHolder holder, int position) {
-        Frete frete = lista.get(position);
+        Frete frete = dataSet.get(position);
         vincula(holder, frete);
         configuraListeners(holder, frete);
     }
@@ -93,28 +105,21 @@ public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdap
         });
     }
 
-    public void atualiza(List<Frete> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
     private void setPosicao(int posicao) {
         this.posicao = posicao;
     }
 
-    public int getPosicao() {
-        return posicao;
-    }
+    //------------------------------------------------
+    // -> Vincula                                   ||
+    //------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, Frete frete) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(frete.getData()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
         holder.destinoTxtView.setText(frete.getDestino());
 
@@ -129,42 +134,58 @@ public class FreteAReceberAdapter extends RecyclerView.Adapter<FreteAReceberAdap
         configuraImgDeStatusDoRecebimento(holder, valorAReceber, valorAdiantamento, valorSaldo);
     }
 
-    private void configuraImgDeStatusDoRecebimento(ViewHolder holder, BigDecimal valorAReceber, BigDecimal valorAdiantamento, BigDecimal valorSaldo) {
+    private void configuraImgDeStatusDoRecebimento(ViewHolder holder, @NonNull BigDecimal valorAReceber, @NonNull BigDecimal valorAdiantamento, BigDecimal valorSaldo) {
         BigDecimal valorRecebido = valorAdiantamento.add(valorSaldo);
         int compare = valorAReceber.compareTo(valorRecebido);
         if (compare == 0) {
-            holder.statusImg.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "done"));
+            holder.statusImg.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_DONE));
         } else {
-            holder.statusImg.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "undone"));
+            holder.statusImg.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_UNDONE));
         }
     }
 
-    private BigDecimal vinculaSaldo(ViewHolder holder, Frete frete) {
+    private BigDecimal vinculaSaldo(ViewHolder holder, @NonNull Frete frete) {
         RecebimentoDeFrete saldo = recebimentoDao.retornaSaldo(frete.getId());
         BigDecimal valorSaldo;
         try {
             valorSaldo = saldo.getValor();
-            holder.saldoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorSaldo));
+
         } catch (NullPointerException e) {
             e.printStackTrace();
             valorSaldo = BigDecimal.ZERO;
-            holder.saldoTxtView.setText("R$ 0.00");
         }
+
+        holder.saldoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorSaldo));
+
         return valorSaldo;
     }
 
-    private BigDecimal vinculaAdiantamento(ViewHolder holder, Frete frete) {
+    private BigDecimal vinculaAdiantamento(ViewHolder holder, @NonNull Frete frete) {
         RecebimentoDeFrete adiantamento = recebimentoDao.retornaAdiantamento(frete.getId());
         BigDecimal valorAdiantamento;
         try {
             valorAdiantamento = adiantamento.getValor();
-            holder.adiantamentoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAdiantamento));
         } catch (NullPointerException e) {
             e.printStackTrace();
             valorAdiantamento = BigDecimal.ZERO;
-            holder.adiantamentoTxtView.setText("R$ 0.00");
         }
+
+        holder.adiantamentoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAdiantamento));
+
         return valorAdiantamento;
+    }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<Frete> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public int getPosicao() {
+        return posicao;
     }
 
 }

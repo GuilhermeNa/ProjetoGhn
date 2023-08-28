@@ -1,11 +1,13 @@
 package br.com.transporte.AppGhn.ui.fragment.despesasAdm;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DESPESA_ADM;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -38,6 +39,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentDespesasAdmIndiretasBinding;
@@ -47,32 +49,31 @@ import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.DespesasAdmIndiretasAdapter;
 import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DespesasAdmIndiretasFragment extends Fragment {
+    public static final String DESPESAS_INDIRETAS = "Despesas indiretas";
     private FragmentDespesasAdmIndiretasBinding binding;
     private LocalDate dataInicial;
     private LocalDate dataFinal;
     private DespesasAdmDAO despesaDao;
     private List<DespesaAdm> listaDeDespesasIndiretas;
-    private TextView dataFinalTxtView, datainicialTxtView, valorPagoTxtView;
+    private TextView dataFinalTxtView, dataInicialTxtView, valorPagoTxtView;
     private LinearLayout dataLayout;
-    private LinearLayout vaziolayout;
+    private LinearLayout vazioLayout;
     private RecyclerView recyclerView;
     private DespesasAdmIndiretasAdapter adapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         despesaDao = new DespesasAdmDAO();
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaDeDespesasIndiretas = getListaDespesasIndiretasFiltradaPorData(dataInicial, dataFinal);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<DespesaAdm> getListaDespesasIndiretasFiltradaPorData(LocalDate dataInicial, LocalDate dataFinal) {
         return despesaDao.listaFiltradaPorTipoEData(TipoDespesa.INDIRETA, dataInicial, dataFinal);
     }
@@ -84,7 +85,6 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -95,7 +95,6 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         configuraToolbar();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onResume() {
         super.onResume();
@@ -104,7 +103,6 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         configuraAdapterAposAtualizarData();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraValoresMutaveisDaUi() {
         BigDecimal somaTotalValorPago = listaDeDespesasIndiretas.stream()
                 .map(DespesaAdm::getValorDespesa)
@@ -112,8 +110,8 @@ public class DespesasAdmIndiretasFragment extends Fragment {
 
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaTotalValorPago));
 
-        datainicialTxtView.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxtView.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(dataFinal));
     }
 
     private void configuraRecycler() {
@@ -133,17 +131,16 @@ public class DespesasAdmIndiretasFragment extends Fragment {
 
     private void inicializaCamposDaView() {
         recyclerView = binding.fragItemDespesasFinanceirasRecycler;
-        vaziolayout = binding.fragCertificadoVazio;
+        vazioLayout = binding.fragCertificadoVazio;
         valorPagoTxtView = binding.fragDespesasFinanceirasTotalPagoValor;
         dataLayout = binding.fragDespesasFinanceirasDataLayout;
-        datainicialTxtView = binding.fragDespesasFinanceirasMesDtInicial;
+        dataInicialTxtView = binding.fragDespesasFinanceirasMesDtInicial;
         dataFinalTxtView = binding.fragDespesasFinanceirasMesDtFinal;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText("Selecione o periodo")
+                .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
                         new Pair(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
@@ -172,16 +169,15 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraAdapterAposAtualizarData() {
         listaDeDespesasIndiretas = getListaDespesasIndiretasFiltradaPorData(dataInicial, dataFinal);
         configuraValoresMutaveisDaUi();
         adapter.atualiza(listaDeDespesasIndiretas);
 
         if (listaDeDespesasIndiretas.isEmpty()) {
-            vaziolayout.setVisibility(View.VISIBLE);
-        } else if (!listaDeDespesasIndiretas.isEmpty() && vaziolayout.getVisibility() == View.VISIBLE) {
-            vaziolayout.setVisibility(View.INVISIBLE);
+            vazioLayout.setVisibility(View.VISIBLE);
+        } else if (!listaDeDespesasIndiretas.isEmpty() && vazioLayout.getVisibility() == View.VISIBLE) {
+            vazioLayout.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -189,10 +185,10 @@ public class DespesasAdmIndiretasFragment extends Fragment {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Despesas indiretas");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(DESPESAS_INDIRETAS);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -201,11 +197,12 @@ public class DespesasAdmIndiretasFragment extends Fragment {
                 menu.removeItem(R.id.menu_padrao_search);
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

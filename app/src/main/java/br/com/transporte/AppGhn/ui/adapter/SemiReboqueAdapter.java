@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -35,11 +33,14 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
         this.onItemClickListener = onItemClickListener;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+
     static class ViewHolder extends RecyclerView.ViewHolder  {
         private final ImageView alteraRefCavaloImgIc;
         private final TextView placaEdit;
 
-        @RequiresApi(api = Build.VERSION_CODES.O)
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             alteraRefCavaloImgIc = itemView.findViewById(R.id.rec_item_semireboque_altera);
@@ -47,7 +48,10 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public SemiReboqueAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,14 +59,16 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull SemiReboqueAdapter.ViewHolder holder, int position) {
         SemiReboque sr = lista.get(position);
         configuraUi(holder);
         vincula(holder, sr);
         configuraClickListeners(holder, sr);
-
     }
 
     private void configuraUi(@NonNull ViewHolder holder) {
@@ -74,16 +80,14 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
         return lista.size();
     }
 
-    public void itemRemovido(int posicaoSrRemovido) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
+        holder.placaEdit.setText(sr.getPlaca());
+    }
+    private void itemRemovido(int posicaoSrRemovido) {
         notifyItemRemoved(posicaoSrRemovido);
     }
 
-    private void vincula(ViewHolder holder, SemiReboque sr) {
-        holder.placaEdit.setText(sr.getPlaca());
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void configuraClickListeners(ViewHolder holder, SemiReboque sr) {
+    private void configuraClickListeners(@NonNull ViewHolder holder, SemiReboque sr) {
         holder.placaEdit.setOnClickListener(v -> onItemClickListener.onItemClick(sr.getId()));
 
         holder.alteraRefCavaloImgIc.setOnClickListener(v -> {

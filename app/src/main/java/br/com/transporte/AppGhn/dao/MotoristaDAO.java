@@ -10,9 +10,7 @@ public class MotoristaDAO {
     private final static List<Motorista> dao = new ArrayList<>();
     private static int contadorDeIds = 1;
 
-
     //---------------------------------- Manipula dao ----------------------------------------------
-
 
     public void adiciona(Motorista motorista) {
         dao.add(motorista);
@@ -35,9 +33,7 @@ public class MotoristaDAO {
         }
     }
 
-
     //---------------------------------- Retorna Listas ---------------------------------------------
-
 
     public List<Motorista> listaTodos() {
         return new ArrayList<>(dao);
@@ -52,9 +48,7 @@ public class MotoristaDAO {
         return lista;
     }
 
-
     //---------------------------------- Outros Metodos ---------------------------------------------
-
 
     public Motorista localizaPeloId(int idMotorista) {
         Motorista motoristaLocalizado = null;

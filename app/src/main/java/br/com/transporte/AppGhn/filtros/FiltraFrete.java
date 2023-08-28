@@ -1,9 +1,8 @@
 package br.com.transporte.AppGhn.filtros;
 
-import android.os.Build;
+import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,9 +16,7 @@ import br.com.transporte.AppGhn.util.DataUtil;
 public class FiltraFrete {
     static FreteDAO dao = new FreteDAO();
 
-
     @NonNull
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static Frete localizaPeloId(int freteId) throws ObjetoNaoEncontrado {
         Frete freteLocalizado = null;
 
@@ -33,25 +30,22 @@ public class FiltraFrete {
             return freteLocalizado;
         }
 
-        throw new ObjetoNaoEncontrado("Objeto não localizado");
+        throw new ObjetoNaoEncontrado(OBJETO_NULL);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<Frete> listaPorData(@NonNull List<Frete> dataSet, LocalDate dataInicial, LocalDate dataFinal) {
         return dataSet.stream()
-                .filter(f -> DataUtil.capturaRange(f.getData(), dataInicial, dataFinal))
+                .filter(f -> DataUtil.verificaSeEstaNoRange(f.getData(), dataInicial, dataFinal))
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<Frete> listaPorCavaloId(@NonNull List<Frete> dataSet, int cavaloId) {
         return dataSet.stream()
                 .filter(f -> f.getRefCavalo() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<Frete> listaPorStatusDePagamentoDaComissao(@NonNull List<Frete> dataSet, boolean isPago) {
         if (isPago) return dataSet.stream()
                 .filter(f -> f.getAdmFrete().isComissaoJaFoiPaga())
@@ -62,7 +56,6 @@ public class FiltraFrete {
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<Frete> listaPorStatusDeRecebimentoDoFrete(@NonNull List<Frete> dataSet, boolean isPago) {
         if (isPago) return dataSet.stream()
                 .filter(f -> f.getAdmFrete().isFreteJaFoiPago())
@@ -73,20 +66,16 @@ public class FiltraFrete {
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<Frete> listaPorAno(@NonNull List<Frete> dataSet, int ano) {
         return dataSet.stream()
                 .filter(f -> f.getData().getYear() == ano)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static List<Frete> listaPorMes(@NonNull List<Frete> dataSet, int mes) {
         return dataSet.stream()
                 .filter(f -> f.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());
     }
-
-
 
 }

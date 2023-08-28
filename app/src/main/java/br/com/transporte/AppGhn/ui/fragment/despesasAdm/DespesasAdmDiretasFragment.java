@@ -1,11 +1,13 @@
 package br.com.transporte.AppGhn.ui.fragment.despesasAdm;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DESPESA_ADM;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -41,6 +42,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentDespesasAdmBinding;
@@ -51,27 +53,27 @@ import br.com.transporte.AppGhn.ui.adapter.DespesasAdmAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DespesasAdmDiretasFragment extends Fragment {
+    public static final String DESPESAS_DIRETAS = "Despesas diretas";
     private FragmentDespesasAdmBinding binding;
     private List<DespesaAdm> listaDeDespesasDiretas;
-    private TextView dataFinalTxtView, datainicialTxtView, valorPagoTxtView;
+    private TextView dataFinalTxtView, dataInicialTxtView, valorPagoTxtView;
     private LinearLayout dataLayout;
     private DespesasAdmAdapter adapter;
     private LocalDate dataInicial, dataFinal;
     private DespesasAdmDAO despesaDao;
-    private LinearLayout vaziolayout;
+    private LinearLayout vazioLayout;
     private RecyclerView recyclerView;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         despesaDao = new DespesasAdmDAO();
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaDeDespesasDiretas = getListaDespesasDiretasFiltradaPorData(dataInicial, dataFinal);
     }
 
@@ -82,19 +84,16 @@ public class DespesasAdmDiretasFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
         configuraRecycler();
-
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
         configuraDateRangePicker();
         configuraToolbar();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onResume() {
         super.onResume();
@@ -103,10 +102,9 @@ public class DespesasAdmDiretasFragment extends Fragment {
         configuraAdapterAposAtualizarData();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText("Selecione o periodo")
+                .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
                         new Pair(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
@@ -135,20 +133,18 @@ public class DespesasAdmDiretasFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraAdapterAposAtualizarData() {
         listaDeDespesasDiretas = getListaDespesasDiretasFiltradaPorData(dataInicial, dataFinal);
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
         adapter.atualiza(listaDeDespesasDiretas);
 
         if (listaDeDespesasDiretas.isEmpty()) {
-            vaziolayout.setVisibility(View.VISIBLE);
-        } else if (!listaDeDespesasDiretas.isEmpty() && vaziolayout.getVisibility() == View.VISIBLE) {
-            vaziolayout.setVisibility(View.INVISIBLE);
+            vazioLayout.setVisibility(View.VISIBLE);
+        } else if (!listaDeDespesasDiretas.isEmpty() && vazioLayout.getVisibility() == View.VISIBLE) {
+            vazioLayout.setVisibility(View.INVISIBLE);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraValoresMutaveisDaUi(LocalDate dataInicial, LocalDate dataFinal) {
         BigDecimal somaTotalValorPago = listaDeDespesasDiretas.stream()
                 .map(DespesaAdm::getValorDespesa)
@@ -156,8 +152,8 @@ public class DespesasAdmDiretasFragment extends Fragment {
 
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaTotalValorPago));
 
-        datainicialTxtView.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxtView.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(dataFinal));
     }
 
     private void configuraRecycler() {
@@ -175,7 +171,6 @@ public class DespesasAdmDiretasFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<DespesaAdm> getListaDespesasDiretasFiltradaPorData(LocalDate dataInicial, LocalDate dataFinal) {
         listaDeDespesasDiretas = despesaDao.listaFiltradaPorTipoEData(TipoDespesa.DIRETA, dataInicial, dataFinal);
         return listaDeDespesasDiretas;
@@ -183,21 +178,20 @@ public class DespesasAdmDiretasFragment extends Fragment {
 
     private void inicializaCamposDaView() {
         recyclerView = binding.fragItemDespesasFinanceirasRecycler;
-        vaziolayout = binding.fragCertificadoVazio;
+        vazioLayout = binding.fragCertificadoVazio;
         valorPagoTxtView = binding.fragDespesasFinanceirasTotalPagoValor;
         dataLayout = binding.fragDespesasFinanceirasDataLayout;
-        datainicialTxtView = binding.fragDespesasFinanceirasMesDtInicial;
+        dataInicialTxtView = binding.fragDespesasFinanceirasMesDtInicial;
         dataFinalTxtView = binding.fragDespesasFinanceirasMesDtFinal;
-
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Despesas diretas");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(DESPESAS_DIRETAS);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -207,19 +201,18 @@ public class DespesasAdmDiretasFragment extends Fragment {
                 MenuItem busca = menu.findItem(R.id.menu_padrao_search);
                 SearchView searchView = (SearchView) busca.getActionView();
 
-                searchView.setOnSearchClickListener(v -> {
+                Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
                     logout.setVisible(false);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
                 });
 
                 searchView.setOnCloseListener(() -> {
                     logout.setVisible(true);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
                     return false;
                 });
 
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public boolean onQueryTextChange(String newText) {
                         List<DespesaAdm> listaFiltrada = new ArrayList<>();
@@ -235,11 +228,11 @@ public class DespesasAdmDiretasFragment extends Fragment {
                         }
 
                         if (listaFiltrada.isEmpty()) {
-                            vaziolayout.setVisibility(View.VISIBLE);
+                            vazioLayout.setVisibility(View.VISIBLE);
                             recyclerView.setVisibility(View.INVISIBLE);
                         } else {
-                            if (vaziolayout.getVisibility() == View.VISIBLE) {
-                                vaziolayout.setVisibility(View.INVISIBLE);
+                            if (vazioLayout.getVisibility() == View.VISIBLE) {
+                                vazioLayout.setVisibility(View.INVISIBLE);
                                 recyclerView.setVisibility(View.VISIBLE);
                             }
                             adapter.atualiza(listaFiltrada);
@@ -254,11 +247,12 @@ public class DespesasAdmDiretasFragment extends Fragment {
                 });
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

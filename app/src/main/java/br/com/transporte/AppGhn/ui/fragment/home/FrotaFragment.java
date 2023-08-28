@@ -2,6 +2,11 @@ package br.com.transporte.AppGhn.ui.fragment.home;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
@@ -10,10 +15,9 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDI
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CAVALO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEMIREBOQUE;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,10 +36,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -48,20 +49,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.SemiReboque;
-import br.com.transporte.AppGhn.ui.adapter.FrotaSrAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.SemiReboqueDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFrotaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CavaloAdapter;
-import br.com.transporte.AppGhn.dao.SemiReboqueDAO;
+import br.com.transporte.AppGhn.ui.adapter.FrotaSrAdapter;
 import br.com.transporte.AppGhn.ui.dialog.DefineMotorista;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FrotaFragment extends Fragment implements DefineMotorista.DefineMotoristaCallback {
+    public static final String FROTA = "Frota";
     private FragmentFrotaBinding binding;
     private CavaloDAO cavaloDao;
     private CavaloAdapter adapter;
@@ -77,34 +80,30 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-                Intent dataResultado = result.getData();
 
                 switch (codigoResultado) {
                     case RESULT_OK:
-                        Toast.makeText(requireContext(), "Registro criado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), REGISTRO_CRIADO, Toast.LENGTH_SHORT).show();
                         atualizaAdapter();
                         break;
                     case RESULT_DELETE:
-                        Toast.makeText(requireContext(), "Registro apagado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
                         atualizaAdapter();
                         break;
                     case RESULT_EDIT:
-                        Toast.makeText(requireContext(), "Registro editado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
                         atualizaAdapter();
                         break;
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
                 }
             });
 
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void atualizaAdapter() {
         adapter.atualiza(getListaDeCavalos());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +117,6 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
         return srDao.listaTodos();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private List<Cavalo> getListaDeCavalos() {
         return cavaloDao.listaValidos();
     }
@@ -130,7 +128,6 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -232,8 +229,6 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
                 janelaFechada = true;
             }
 
-            Log.d("teste", "Visibilidade -> " + recyclerSr.getVisibility());
-
         });
 
         if (recyclerSr.getVisibility() == View.VISIBLE) {
@@ -255,10 +250,10 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
     void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Frota");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(FROTA);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -268,15 +263,15 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
                 MenuItem busca = menu.findItem(R.id.menu_padrao_search);
                 SearchView search = (SearchView) busca.getActionView();
 
-                search.setOnSearchClickListener(v -> {
+                Objects.requireNonNull(search).setOnSearchClickListener(v -> {
                     logout.setVisible(false);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
                     btnNovoCavalo.setVisibility(View.GONE);
                 });
 
                 search.setOnCloseListener(() -> {
                     logout.setVisible(true);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
                     btnNovoCavalo.setVisibility(View.VISIBLE);
                     return false;
                 });
@@ -341,11 +336,12 @@ public class FrotaFragment extends Fragment implements DefineMotorista.DefineMot
                 });
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

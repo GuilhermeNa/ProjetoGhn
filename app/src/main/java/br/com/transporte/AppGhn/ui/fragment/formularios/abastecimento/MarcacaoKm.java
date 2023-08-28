@@ -69,7 +69,7 @@ public abstract class MarcacaoKm {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static boolean verificaSeADataEhValida(LocalDate dataASalvar)
             throws DataInvalida {
-        LocalDate dataDeHoje = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        LocalDate dataDeHoje = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         if (dataASalvar.isAfter(dataDeHoje)) {
             throw new DataInvalida("Data X");
         }

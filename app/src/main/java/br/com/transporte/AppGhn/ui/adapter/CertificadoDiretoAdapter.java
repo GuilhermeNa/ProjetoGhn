@@ -1,6 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,28 +10,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
+import br.com.transporte.AppGhn.ui.adapter.adaptersUtil.VencimentoUtil;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
 
 public class CertificadoDiretoAdapter extends RecyclerView.Adapter<CertificadoDiretoAdapter.ViewHolder> {
     private final CertificadoDiretosDetalhesFragment context;
     private OnItemClickListener onItemClickListener;
-    private final List<DespesaCertificado> lista;
+    private final List<DespesaCertificado> dataSet;
     public static final int DIAS_SEMANA = 7;
     public static final int DIAS_MES = 30;
+    private int posicao;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
     public CertificadoDiretoAdapter(CertificadoDiretosDetalhesFragment context, List<DespesaCertificado> lista) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
     }
 
@@ -75,10 +80,9 @@ public class CertificadoDiretoAdapter extends RecyclerView.Adapter<CertificadoDi
     //                                          OnBindViewHolder                                  ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull CertificadoDiretoAdapter.ViewHolder holder, int position) {
-        DespesaCertificado certificado = lista.get(position);
+        DespesaCertificado certificado = dataSet.get(position);
         vincula(holder, certificado);
         configuraListeners(holder, certificado);
     }
@@ -91,21 +95,27 @@ public class CertificadoDiretoAdapter extends RecyclerView.Adapter<CertificadoDi
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, DespesaCertificado certificado) {
+    private void setPosicao(int posicao) {
+        this.posicao = posicao;
+    }
+
+    //----------------------------------------------------------------------------
+    // -> Vincula                                                               ||
+    //----------------------------------------------------------------------------
+
+    private void vincula(@NonNull ViewHolder holder, @NonNull DespesaCertificado certificado) {
         String nomeEData = certificado.getTipoCertificado().getDescricao() + " " + certificado.getAno();
 
         holder.nomeEDataTxtView.setText(nomeEData);
-        holder.dataExpedicaoTxtView.setText(FormataDataUtil.dataParaString(certificado.getDataDeEmissao()));
+        holder.dataExpedicaoTxtView.setText(ConverteDataUtil.dataParaString(certificado.getDataDeEmissao()));
         holder.nCertificadoTxtView.setText(String.valueOf(certificado.getNumeroDoDocumento()));
         holder.valorDocumentoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(certificado.getValorDespesa()));
-        holder.dataVencimentoTxtView.setText(FormataDataUtil.dataParaString(certificado.getDataDeVencimento()));
+        holder.dataVencimentoTxtView.setText(ConverteDataUtil.dataParaString(certificado.getDataDeVencimento()));
 
         configuraImgDeStatusDoCertificado(holder, certificado);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void configuraImgDeStatusDoCertificado(ViewHolder holder, DespesaCertificado certificado) {
+    private void configuraImgDeStatusDoCertificado(ViewHolder holder, @NonNull DespesaCertificado certificado) {
         int diasAteVencimento = VencimentoUtil.verificaQuantosDiasFaltam(certificado.getDataDeVencimento());
 
         if (!certificado.isValido()) {
@@ -119,35 +129,38 @@ public class CertificadoDiretoAdapter extends RecyclerView.Adapter<CertificadoDi
         }
     }
 
-    private void setStatusImgView(ViewHolder holder, String situacao) {
+    private void setStatusImgView(@NonNull ViewHolder holder, String situacao) {
         holder.statusImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), situacao));
-    }
-
-    private int posicao;
-
-    private void setPosicao(int posicao) {
-        this.posicao = posicao;
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<DespesaCertificado> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
     public int getPosicao() {
         return posicao;
+    }
+
+    public void adiciona(DespesaCertificado certificado){
+        this.dataSet.add(certificado);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(DespesaCertificado certificado){
+        int posicaoRemovida = -1;
+        posicaoRemovida = this.dataSet.indexOf(certificado);
+        this.dataSet.remove(certificado);
+        notifyItemRemoved(posicaoRemovida);
     }
 
 }

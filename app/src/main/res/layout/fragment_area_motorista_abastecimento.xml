@@ -147,7 +147,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="8dp"
-                        tools:listitem="@layout/recycler_item_abastecimento" />
+                        tools:listitem="@layout/recycler_item_abastecimento"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
                     <View
                         android:id="@+id/view"

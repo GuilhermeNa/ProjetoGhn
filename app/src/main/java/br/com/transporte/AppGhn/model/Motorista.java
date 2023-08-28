@@ -1,14 +1,20 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
 public class Motorista implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
     private String img, nome, cpf, cnh;
     private LocalDate cnhValidade, dataContratacao, dataNascimento;
     private BigDecimal salarioBase, percentualComissao, salarioRecebido;
-    private int id;
 
     public Motorista(LocalDate dataNascimento, String img, String nome, String cpf, String cnh, LocalDate cnhValidade, LocalDate dataContratacao, BigDecimal salarioBase) {
         this.dataNascimento = dataNascimento;

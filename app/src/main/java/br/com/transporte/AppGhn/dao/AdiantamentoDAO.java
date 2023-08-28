@@ -57,7 +57,7 @@ public class AdiantamentoDAO {
         List<Adiantamento> listaEmAberto = new ArrayList<>();
 
         for(Adiantamento a: listaPorPlaca){
-            if(!a.isAdiantamentoJaFoiPago()){
+            if(!a.isAdiantamentoJaFoiDescontado()){
                 listaEmAberto.add(a);
             }
         }

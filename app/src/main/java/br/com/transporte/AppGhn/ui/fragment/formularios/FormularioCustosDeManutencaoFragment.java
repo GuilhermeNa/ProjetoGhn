@@ -4,7 +4,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,23 +14,23 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
+import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosDeManutencaoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.enums.TipoCustoManutencao;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
 public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment {
+    public static final String ESCOLHA_UM_TIPO_DE_CUSTO = "Escolha um tipo de custo";
     private FragmentFormularioCustosDeManutencaoBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de manutenção que já existe.";
     private CustosDeManutencaoDAO manutencaoDao;
@@ -106,10 +105,9 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(manutencao.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(manutencao.getData()));
         empresaEdit.setText(manutencao.getEmpresa());
         nNotaEdit.setText(manutencao.getnNota());
         descricaoEdit.setText(manutencao.getDescricao());
@@ -121,13 +119,11 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataLayout, dataEdit);
         MascaraDataUtil.MascaraData(dataEdit);
         valorEdit.addTextChangedListener(new MascaraMonetariaUtil(valorEdit));
-
     }
 
     @Override
@@ -139,15 +135,14 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
         verificaCampo(valorEdit);
         if (!boxPeriodico.isChecked() && !boxExtraordinario.isChecked()) {
             tituloTxtView.setError("");
-            snackBar(view, "Escolha um tipo de custo");
+            snackBar(view, ESCOLHA_UM_TIPO_DE_CUSTO);
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        manutencao.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        manutencao.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         manutencao.setEmpresa(empresaEdit.getText().toString());
         manutencao.setnNota(nNotaEdit.getText().toString());
         manutencao.setDescricao(descricaoEdit.getText().toString());

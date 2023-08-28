@@ -2,6 +2,12 @@ package br.com.transporte.AppGhn.ui.fragment;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_ADICIONADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
@@ -9,8 +15,8 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_MANUTENCAO;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,7 +32,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -48,6 +53,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
@@ -57,12 +63,12 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ManutencaoDetalhesAdapter;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class ManutencaoDetalhesFragment extends Fragment {
+    public static final String S_M = "S/M";
     private FragmentManutencaoDetalhesBinding binding;
     private TextView nomeTxtView, valorTxtView, dataInicialTxtView, dataFinalTxtView;
     private LinearLayout dataLayout;
@@ -76,28 +82,26 @@ public class ManutencaoDetalhesFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-                Intent dataResultado = result.getData();
 
                 switch(codigoResultado){
                     case RESULT_EDIT:
-                        atualizaUiAposRetornoResult("Registro editado");
+                        atualizaUiAposRetornoResult(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
 
                     case RESULT_DELETE:
-                        atualizaUiAposRetornoResult("Registro apagado");
+                        atualizaUiAposRetornoResult(REGISTRO_APAGADO);
                         break;
 
                     case RESULT_OK:
-                        atualizaUiAposRetornoResult("Registro adicionado");
+                        atualizaUiAposRetornoResult(REGISTRO_ADICIONADO);
                         break;
                 }
             });
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void atualizaUiAposRetornoResult(String msg){
         listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
         atualizaNaUiOTotalPagoNasManutencoes();
@@ -105,7 +109,10 @@ public class ManutencaoDetalhesFragment extends Fragment {
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,9 +120,13 @@ public class ManutencaoDetalhesFragment extends Fragment {
         cavalo = recebeReferenciaExternaDeCavalo(cavaloDao);
 
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -124,7 +135,6 @@ public class ManutencaoDetalhesFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -145,7 +155,6 @@ public class ManutencaoDetalhesFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<CustosDeManutencao> getListaFiltradaPorPlacaEData(LocalDate dataInicial, LocalDate dataFinal) {
         CustosDeManutencaoDAO manutencaoDao = new CustosDeManutencaoDAO();
         listaDeManutencoes = manutencaoDao.listaFiltradaPorPlacaEData(cavalo.getId(), dataInicial, dataFinal);
@@ -153,7 +162,6 @@ public class ManutencaoDetalhesFragment extends Fragment {
         return listaDeManutencoes;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraRecycler() {
         RecyclerView recyclerView = binding.fragManutencaoDetalhesRecycler;
 
@@ -171,10 +179,9 @@ public class ManutencaoDetalhesFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText("Selecione o periodo")
+                .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
                         new Pair(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
@@ -207,7 +214,6 @@ public class ManutencaoDetalhesFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUiAposAtualizacaoDeData() {
         listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
@@ -224,29 +230,26 @@ public class ManutencaoDetalhesFragment extends Fragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi(LocalDate dataInicial, LocalDate dataFinal) {
         try{
             nomeTxtView.setText(cavalo.getMotorista().getNome());
         } catch (NullPointerException ignore){
-            nomeTxtView.setText("S/M");
+            nomeTxtView.setText(S_M);
         }
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraValoresMutaveisDaUi(LocalDate dataInicial, LocalDate dataFinal) {
         atualizaNaUiOTotalPagoNasManutencoes();
 
-        String dataInicialEmString = FormataDataUtil.dataParaString(dataInicial);
+        String dataInicialEmString = ConverteDataUtil.dataParaString(dataInicial);
         dataInicialTxtView.setText(dataInicialEmString);
 
-        String dataFinalEmString = FormataDataUtil.dataParaString(dataFinal);
+        String dataFinalEmString = ConverteDataUtil.dataParaString(dataFinal);
         dataFinalTxtView.setText(dataFinalEmString);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void atualizaNaUiOTotalPagoNasManutencoes() {
         BigDecimal somaTotalCustosDeManutencao = listaDeManutencoes.stream()
                 .map(CustosDeManutencao::getValorCusto)
@@ -255,7 +258,7 @@ public class ManutencaoDetalhesFragment extends Fragment {
         valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaTotalCustosDeManutencao));
     }
 
-    private Cavalo recebeReferenciaExternaDeCavalo(CavaloDAO cavaloDao) {
+    private Cavalo recebeReferenciaExternaDeCavalo(@NonNull CavaloDAO cavaloDao) {
         Cavalo cavaloRecebido;
         int cavaloId = (int) ManutencaoDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
         cavaloRecebido = cavaloDao.localizaPeloId(cavaloId);
@@ -276,10 +279,10 @@ public class ManutencaoDetalhesFragment extends Fragment {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(cavalo.getPlaca());
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(cavalo.getPlaca());
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -288,11 +291,12 @@ public class ManutencaoDetalhesFragment extends Fragment {
                 menu.removeItem(R.id.menu_padrao_search);
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

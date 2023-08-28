@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +20,18 @@ import br.com.transporte.AppGhn.ui.fragment.home.FrotaFragment;
 
 public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHolder>{
     private final FrotaFragment context;
-    private final List<SemiReboque> lista;
+    private final List<SemiReboque> dataSet;
     private final CavaloDAO cavaloDao;
 
     public FrotaSrAdapter(FrotaFragment context, List<SemiReboque> lista) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = lista;
         cavaloDao = new CavaloDAO();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView placaSrTxtView, placaCavaloRefTxtView;
@@ -41,6 +46,10 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public FrotaSrAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -48,34 +57,40 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
         return new ViewHolder(viewCriada);
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull FrotaSrAdapter.ViewHolder holder, int position) {
-    SemiReboque sr = lista.get(position);
+    SemiReboque sr = dataSet.get(position);
     configuraUi(holder);
     vincula(holder, sr);
     }
 
-    private void configuraUi(ViewHolder holder) {
+    private void configuraUi(@NonNull ViewHolder holder) {
         holder.srImgView.setColorFilter(Color.parseColor("#FFFFFFFF"));
         holder.cavaloImgView.setColorFilter(Color.parseColor("#FFFFFFFF"));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    public void atualiza(List<SemiReboque> listaFiltrada) {
-        this.lista.clear();
-        this.lista.addAll(listaFiltrada);
-        notifyDataSetChanged();
-    }
-
-    private void vincula(ViewHolder holder, SemiReboque sr) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
         String placa = cavaloDao.localizaPeloId(sr.getReferenciaCavalo()).getPlaca();
         holder.placaCavaloRefTxtView.setText(placa);
         holder.placaSrTxtView.setText(sr.getPlaca());
     }
 
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<SemiReboque> listaFiltrada) {
+        this.dataSet.clear();
+        this.dataSet.addAll(listaFiltrada);
+        notifyDataSetChanged();
+    }
 
 }

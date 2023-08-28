@@ -13,10 +13,11 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQU
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.INCORRETO;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.SELECIONE_UM_CAVALO_VALIDO;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -30,7 +31,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -44,19 +44,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCertificadosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioCertificadosFragment extends FormularioBaseFragment {
+    public static final String JA_EXISTE_UM = "Já existe um ";
+    public static final String ATIVO = " ativo.";
+    public static final String SELECIONE_UM_CERTIFICADO_VALIDO = "Selecione um certificado válido";
+    public static final String PARA_A_PLACA = ", para a placa ";
     private FragmentFormularioCertificadosBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de certificado que já existe.";
     private static final String SUB_TITULO_APP_BAR_RENOVANDO = "Você está renovando um ";
@@ -90,7 +94,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         tipoDespesa = (TipoDespesa) bundle.getSerializable(CHAVE_DESPESA);
 
         TipoFormulario tipoRequisicao = (TipoFormulario) bundle.getSerializable(CHAVE_REQUISICAO);
-        switch (tipoRequisicao) {
+        switch (Objects.requireNonNull(tipoRequisicao)) {
             case EDITANDO:
                 setTipoFormulario(EDITANDO);
                 break;
@@ -140,7 +144,6 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -166,7 +169,6 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         dataVencimentoEdit = binding.fragFormularioCertificadoDataVencimento;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi() {
         Toolbar toolbar = binding.toolbar;
         configuraToolbar(toolbar);
@@ -203,7 +205,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
         if (tipoDespesa == DIRETA) {
             String placa = cavaloDao.localizaPeloId(certificadoQueEstaSendoSubstituido.getRefCavalo()).getPlaca();
-            subTitulo = SUB_TITULO_APP_BAR_RENOVANDO + " " + certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao() + ", para a placa " + placa;
+            subTitulo = SUB_TITULO_APP_BAR_RENOVANDO + " " + certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao() + PARA_A_PLACA + placa;
             placaAutoComplete.setText(placa);
 
             placaAutoComplete.setVisibility(GONE);
@@ -230,7 +232,6 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     public void alteraUiParaModoCriacao() {
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if (tipoDespesa == DIRETA) {
@@ -238,15 +239,14 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
             placaAutoComplete.setText(placa);
         }
 
-        dataExpedicaoEdit.setText(FormataDataUtil.dataParaString(certificado.getDataDeEmissao()));
+        dataExpedicaoEdit.setText(ConverteDataUtil.dataParaString(certificado.getDataDeEmissao()));
         certificadoAutoComplete.setText(certificado.getTipoCertificado().getDescricao());
         anoReferenciaEdit.setText(certificado.getAno());
         nDocumentoEdit.setText(String.valueOf(certificado.getNumeroDoDocumento()));
         valorDocumentoEdit.setText(certificado.getValorDespesa().toPlainString());
-        dataVencimentoEdit.setText(FormataDataUtil.dataParaString(certificado.getDataDeVencimento()));
+        dataVencimentoEdit.setText(ConverteDataUtil.dataParaString(certificado.getDataDeVencimento()));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataExpedicaoInputLayout, dataExpedicaoEdit);
@@ -266,30 +266,29 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         verificaCampo(certificadoAutoComplete);
 
         if (!listaCertificadosEmString.contains(certificadoAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
-            certificadoAutoComplete.setError("Incorreto");
+            certificadoAutoComplete.setError(INCORRETO);
             certificadoAutoComplete.getText().clear();
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
-            MensagemUtil.snackBar(view, "Selecione um certificado válido");
+            MensagemUtil.snackBar(view, SELECIONE_UM_CERTIFICADO_VALIDO);
         }
 
         if (tipoDespesa == DIRETA) {
             if (!cavaloDao.listaPlacas().contains(placaAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
-                placaAutoComplete.setError("Incorreto");
+                placaAutoComplete.setError(INCORRETO);
                 placaAutoComplete.getText().clear();
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
-                MensagemUtil.snackBar(view, "Selecione um cavalo válido");
+                MensagemUtil.snackBar(view, SELECIONE_UM_CAVALO_VALIDO);
             }
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        certificado.setDataDeEmissao(FormataDataUtil.stringParaData(dataExpedicaoEdit.getText().toString()));
+        certificado.setDataDeEmissao(ConverteDataUtil.stringParaData(dataExpedicaoEdit.getText().toString()));
         certificado.setAno(anoReferenciaEdit.getText().toString());
         certificado.setNumeroDoDocumento(Long.parseLong(nDocumentoEdit.getText().toString()));
         certificado.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorDocumentoEdit.getText().toString())));
-        certificado.setDataDeVencimento(FormataDataUtil.stringParaData(dataVencimentoEdit.getText().toString()));
+        certificado.setDataDeVencimento(ConverteDataUtil.stringParaData(dataVencimentoEdit.getText().toString()));
 
         String nomeDoCertificado = certificadoAutoComplete.getText().toString();
         TipoCertificado tipo = TipoCertificado.valueOf(nomeDoCertificado);
@@ -332,7 +331,6 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         return 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraDropDownMenuDeCertificados() {
         if (tipoDespesa == DIRETA) {
             listaCertificadosEmString = TipoCertificado.listaCertificados().stream()
@@ -347,18 +345,17 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         }
 
         String[] certificados = listaCertificadosEmString.toArray(new String[0]);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, certificados);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, certificados);
         certificadoAutoComplete.setAdapter(adapter);
     }
 
     private void configuraDropDownMenuDePlacas() {
         String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
-        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, cavalos);
+        ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         placaAutoComplete.setAdapter(adapterCavalos);
     }
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -438,7 +435,6 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void procuraPorCertificadoDuplicado() {
 
         String nomeDoCertificado = certificadoAutoComplete.getText().toString();
@@ -455,7 +451,8 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
             if (buscaDuplicidade.isPresent()) {
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
                 certificadoAutoComplete.setError("");
-                Toast.makeText(this.requireContext(), "Já existe um " + tipo + " ativo.", Toast.LENGTH_SHORT).show();
+                String txt = JA_EXISTE_UM + tipo + ATIVO;
+                Toast.makeText(this.requireContext(), txt, Toast.LENGTH_SHORT).show();
             }
 
         } else if (getTipoFormulario() == ADICIONANDO && tipoDespesa == DIRETA) {
@@ -470,7 +467,8 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
             if (buscaDuplicidade.isPresent()) {
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
                 certificadoAutoComplete.setError("");
-                Toast.makeText(this.requireContext(), "Já existe um " + tipo + " ativo.", Toast.LENGTH_SHORT).show();
+                String txt = JA_EXISTE_UM + tipo + ATIVO;
+                Toast.makeText(this.requireContext(), txt, Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,6 +1,9 @@
 package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 
-import android.os.Build;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -37,39 +39,38 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.SalarioDAO;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.adapter.SalariosAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.SalarioDAO;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
 
 public class ComissoesPagasFragment extends Fragment {
+    public static final String PAGAMENTOS = "Pagamentos";
     private FragmentComissoesPagasBinding binding;
     private SalarioDAO salarioDao;
     private List<CustosDeSalario> listaDeSalariosPagos;
     private LocalDate dataInicial, dataFinal;
-    private TextView dataInicialTxtView;
-    private TextView dataFinalTxtView;
+    private TextView dataInicialTxtView, dataFinalTxtView;
     private LinearLayout dataLayout;
     private SalariosAdapter adapter;
     private RecyclerView recyclerView;
     private LinearLayout buscaVazia;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         salarioDao = new SalarioDAO();
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaDeSalariosPagos = getListaDeSalariosPagos(dataInicial, dataFinal);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<CustosDeSalario> getListaDeSalariosPagos(LocalDate dataInicial, LocalDate dataFinal) {
         return salarioDao.listaFiltradaPorData(dataInicial, dataFinal);
     }
@@ -81,7 +82,6 @@ public class ComissoesPagasFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -93,10 +93,9 @@ public class ComissoesPagasFragment extends Fragment {
         configuraDateRangePicker();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText("Selecione o periodo")
+                .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
                         new Pair(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
@@ -128,13 +127,11 @@ public class ComissoesPagasFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraMudancasAposSelecaoDeData() {
         configuraUiMutavel();
         atualizaAdapter();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void atualizaAdapter() {
         listaDeSalariosPagos = getListaDeSalariosPagos(dataInicial, dataFinal);
         adapter.atualiza(listaDeSalariosPagos);
@@ -155,10 +152,9 @@ public class ComissoesPagasFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUiMutavel() {
-        dataInicialTxtView.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxtView.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(dataFinal));
 
         if (listaDeSalariosPagos.isEmpty()) {
             buscaVazia.setVisibility(View.VISIBLE);
@@ -182,10 +178,10 @@ public class ComissoesPagasFragment extends Fragment {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Pagamentos");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(PAGAMENTOS);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -195,20 +191,18 @@ public class ComissoesPagasFragment extends Fragment {
                 MenuItem busca = menu.findItem(R.id.menu_padrao_search);
                 SearchView searchView = (SearchView) busca.getActionView();
 
-                searchView.setOnSearchClickListener(v -> {
+                Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
                     logout.setVisible(false);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
                 });
 
                 searchView.setOnCloseListener(() -> {
                     logout.setVisible(true);
-                    ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
                     return false;
                 });
 
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-                    private LinearLayout buscaVaziaLayout;
 
                     @Override
                     public boolean onQueryTextChange(String newText) {
@@ -242,11 +236,12 @@ public class ComissoesPagasFragment extends Fragment {
                 });
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

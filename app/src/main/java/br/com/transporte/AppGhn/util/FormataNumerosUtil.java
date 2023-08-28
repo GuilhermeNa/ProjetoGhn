@@ -15,13 +15,9 @@ public class FormataNumerosUtil {
         return formatoBr.format(preco).replace("R$", "R$ ");
     }
 
-
     public static String formataNumero(BigDecimal numero){
         DecimalFormat formato = new DecimalFormat("#,###.00");
         return formato.format(numero);
     }
-
-
-
 
 }

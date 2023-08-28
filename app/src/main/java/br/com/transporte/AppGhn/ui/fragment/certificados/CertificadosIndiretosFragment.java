@@ -5,6 +5,11 @@ import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.EDITANDO;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.RENOVANDO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.CHAVE_DESPESA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_RENOVADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -12,13 +17,13 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CERTIFICADOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment.CERTIFICADO_JA_RENOVADO;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,7 +45,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -59,15 +63,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosIndiretosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoIndiretoAdapter;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class CertificadosIndiretosFragment extends Fragment {
+    public static final String DATA_LIMITE_PARA_BUSCA = "Data limite para busca";
+    public static final String CERTIFICADOS = "Certificados";
     private FragmentCertificadosIndiretosBinding binding;
     private List<DespesaCertificado> listaDeCertificadosIndiretos_Todos, listaDeCertificadosIndiretos;
     private CertificadoIndiretoAdapter adapter;
@@ -82,29 +87,27 @@ public class CertificadosIndiretosFragment extends Fragment {
 
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaAdapter("Registro editado");
+                        atualizaAdapter(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
 
                     case RESULT_DELETE:
-                        atualizaAdapter("Registro apagado");
+                        atualizaAdapter(REGISTRO_APAGADO);
                         break;
 
                     case RESULT_UPDATE:
-                        atualizaAdapter("Registro renovado");
+                        atualizaAdapter(REGISTRO_RENOVADO);
                         break;
                 }
             });
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private List<DespesaCertificado> getListaDeTodosOsIndiretos() {
         return certificadoDao.listaTodosOsCertificadosIndiretos();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @NonNull
     private List<DespesaCertificado> getListaDeCertificadosIndiretos_Ativos() {
         return listaDeCertificadosIndiretos_Todos.stream()
@@ -114,7 +117,6 @@ public class CertificadosIndiretosFragment extends Fragment {
 
     //------------------------------------- Metodos Publicos ---------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void atualizaAdapter(String msg) {
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
         listaDeCertificadosIndiretos_Todos = getListaDeTodosOsIndiretos();
@@ -126,7 +128,6 @@ public class CertificadosIndiretosFragment extends Fragment {
     //                                          OnCreate                                          ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,7 +199,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         DespesaCertificado certificado = listaDeCertificadosIndiretos.get(posicao);
 
         if (item.getItemId() == R.id.renovarCertificado && !certificado.isValido()) {
-            Toast.makeText(this.requireContext(), "Certificado já renovado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.requireContext(), CERTIFICADO_JA_RENOVADO, Toast.LENGTH_SHORT).show();
 
         } else if (item.getItemId() == R.id.renovarCertificado) {
             Intent intent = new Intent(this.getActivity(), FormulariosActivity.class);
@@ -217,7 +218,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Certificados");
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(CERTIFICADOS);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
 
         requireActivity().addMenuProvider(new MenuProvider() {
@@ -226,7 +227,6 @@ public class CertificadosIndiretosFragment extends Fragment {
                 menuInflater.inflate(R.menu.menu_certificados, menu);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
@@ -237,7 +237,7 @@ public class CertificadosIndiretosFragment extends Fragment {
                         break;
 
                     case R.id.menu_certificados_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:
@@ -249,7 +249,6 @@ public class CertificadosIndiretosFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showBottomDialog() {
         final Dialog dialog = new Dialog(this.requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -269,7 +268,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         switchExibicao.setChecked(true);
         String dataEmString = data.getText().toString();
         ano = Integer.parseInt(dataEmString);
-        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
 
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 
@@ -293,7 +292,7 @@ public class CertificadosIndiretosFragment extends Fragment {
                 ano = ano + 1;
                 data.setText(String.valueOf(ano));
             } else {
-                Toast.makeText(this.requireContext(), "Data limite para busca", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.requireContext(), DATA_LIMITE_PARA_BUSCA, Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -321,7 +320,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         });
 
         dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        Objects.requireNonNull(dialog.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);

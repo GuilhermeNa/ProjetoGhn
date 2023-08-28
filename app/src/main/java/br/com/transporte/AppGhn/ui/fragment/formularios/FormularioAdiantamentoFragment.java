@@ -8,9 +8,9 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_C
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,21 +21,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAdiantamentoBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -82,9 +82,8 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     private Cavalo recebeReferenciaExternaDeCavalo() {
         CavaloDAO cavaloDao = new CavaloDAO();
         int cavaloId = getArguments().getInt(CHAVE_ID_CAVALO);
-        Cavalo cavalo = cavaloDao.localizaPeloId(cavaloId);
 
-        return cavalo;
+        return cavaloDao.localizaPeloId(cavaloId);
     }
 
     @Override
@@ -118,15 +117,13 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(adiantamento.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(adiantamento.getData()));
         valorEdit.setText(FormataNumerosUtil.formataNumero(adiantamento.getValorTotal()));
         descricaoEdit.setText(adiantamento.getDescricao());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         configuraDataCalendario(dataLayout, dataEdit);
@@ -141,10 +138,9 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         verificaCampo(descricaoEdit);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        adiantamento.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        adiantamento.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         adiantamento.setValorTotal(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
         adiantamento.setDescricao(descricaoEdit.getText().toString());
     }
@@ -165,7 +161,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         adiantamento.setAdiantamentoJaFoiPago(false);
         adiantamento.setRefCavalo(cavalo.getId());
         adiantamento.setRefMotorista(cavalo.getMotorista().getId());
-        adiantamento.setSaldoRestituido(new BigDecimal("0.0"));
+        adiantamento.setSaldoRestituido(new BigDecimal(BigInteger.ZERO));
         return 0;
     }
 
@@ -174,7 +170,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         adiantamentoDao.deleta(adiantamento.getId());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {

@@ -8,8 +8,8 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,14 +28,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.math.BigDecimal;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioRecebimentoFreteBinding;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete;
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -45,6 +44,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de Recebimento que já existe.";
     public static final String ALERTA_ADIANTAMENTO_PREEXISTENTE = "Já existe um adiantamento para esse Frete";
     public static final String ALERTA_CADASTRANDO_SALDO_SEM_ADIANTAMENTO = "Você ainda não registrou um adiantamento";
+    public static final String ESCOLHA_UMA_FORMA_DE_PAGAMENTO = "Escolha uma forma de pagamento";
     private FragmentFormularioRecebimentoFreteBinding binding;
     private FreteDAO freteDao;
     private Bundle bundle;
@@ -63,7 +63,6 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -93,20 +92,13 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     private void configuraCheckBox() {
-        adiantamentoBox.setOnClickListener(v -> {
-            desmarcaBox(saldoBox);
-        });
-
-        saldoBox.setOnClickListener(v -> {
-            desmarcaBox(adiantamentoBox);
-        });
-
+        adiantamentoBox.setOnClickListener(v -> desmarcaBox(saldoBox));
+        saldoBox.setOnClickListener(v -> desmarcaBox(adiantamentoBox));
     }
 
     private Frete recebeReferenciaDeFreteExterno() {
         int freteId = bundle.getInt(CHAVE_ID);
         frete = freteDao.localizaPeloId(freteId);
-
         return frete;
     }
 
@@ -142,10 +134,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     public void alteraUiParaModoCriacao() {
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(FormataDataUtil.dataParaString(recebimento.getData()));
+        dataEdit.setText(ConverteDataUtil.dataParaString(recebimento.getData()));
         descricaoEdit.setText(recebimento.getDescricao());
         valorEdit.setText(FormataNumerosUtil.formataNumero(recebimento.getValor()));
 
@@ -160,7 +151,6 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         MascaraDataUtil.MascaraData(dataEdit);
@@ -168,10 +158,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         configuraDataCalendario(dataLayout, dataEdit);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        recebimento.setData(FormataDataUtil.stringParaData(dataEdit.getText().toString()));
+        recebimento.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         recebimento.setDescricao(descricaoEdit.getText().toString());
         recebimento.setValor(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
@@ -190,7 +179,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         verificaCampo(valorEdit);
         if (!adiantamentoBox.isChecked() && !saldoBox.isChecked()) {
             tipoTxtView.setError("");
-            snackBar(view, "Escolha uma forma de pagamento");
+            snackBar(view, ESCOLHA_UMA_FORMA_DE_PAGAMENTO);
             if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
         }
     }
@@ -228,7 +217,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {

@@ -1,6 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -23,12 +22,12 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
 
@@ -36,6 +35,9 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     public static final int SITUACAO_ATENCAO = 1;
     public static final int SITUACAO_AVISO = 2;
     public static final int SITUACAO_OK = 0;
+    public static final String DRAWABLE_SITUACAO_OK = "situacao_ok";
+    public static final String DRAWABLE_SITUACAO_ATENCAO = "situacao_atencao";
+    public static final String DRAWABLE_SITUACAO_AVISO = "situacao_aviso";
     private int situacaoDoCavalo;
     private final List<DespesaComSeguroFrota> dataSet;
     private final SeguroFrotaFragment context;
@@ -47,6 +49,10 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
         this.dataSet = lista;
         this.context = context;
         this.cavaloDao = new CavaloDAO();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -69,9 +75,9 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.add(Menu.NONE, R.id.visualizaParcelas, Menu.NONE, "Visualizar Parcelas");
-            menu.add(Menu.NONE, R.id.renovarSeguro, Menu.NONE, "Renovar Seguro");
+        public void onCreateContextMenu(@NonNull ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add(Menu.NONE, R.id.visualizaParcelas, Menu.NONE, R.string.visualizar_parcelas);
+            menu.add(Menu.NONE, R.id.renovarSeguro, Menu.NONE, R.string.renovar_seguro);
         }
     }
 
@@ -90,7 +96,6 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     //                                          OnBindViewHolder                                  ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull SeguroFrotaAdapter.ViewHolder holder, int position) {
         DespesaComSeguro seguros = dataSet.get(position);
@@ -109,33 +114,40 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     private void setPosicao(int posicao){
         this.posicao = posicao;
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, DespesaComSeguro seguros) {
+
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
+
+    //------------------------------------------------
+    // -> Vincula                                   ||
+    //------------------------------------------------
+
+    private void vincula(@NonNull ViewHolder holder, @NonNull DespesaComSeguro seguros) {
         String placa = cavaloDao.localizaPeloId(seguros.getRefCavalo()).getPlaca();
         holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguros.getValorDespesa()));
-        holder.dataInicialTxtView.setText(FormataDataUtil.dataParaString(seguros.getDataInicial()));
-        holder.dataFinalTxtView.setText(FormataDataUtil.dataParaString(seguros.getDataFinal()));
-        holder.descricaoTxtView.setText("Seguro Auto");
+        holder.dataInicialTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataInicial()));
+        holder.dataFinalTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataFinal()));
+        holder.descricaoTxtView.setText(R.string.seguro_auto);
         exibeImgDeStatusDoCertificadoParaCadaCavalo(holder, seguros);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void exibeImgDeStatusDoCertificadoParaCadaCavalo(ViewHolder holder, DespesaComSeguro seguros) {
         situacaoDoCavalo = SITUACAO_OK;
         situacaoDoCavalo = verificaVencimentoDosCertificados(seguros);
 
         if (situacaoDoCavalo == SITUACAO_OK) {
-            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "situacao_ok"));
+            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_SITUACAO_OK));
         } else if (situacaoDoCavalo == SITUACAO_ATENCAO) {
-            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "situacao_atencao"));
+            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_SITUACAO_ATENCAO));
         } else {
-            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "situacao_aviso"));
+            holder.statusImageView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_SITUACAO_AVISO));
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private int verificaVencimentoDosCertificados(DespesaComSeguro seguros) {
+    private int verificaVencimentoDosCertificados(@NonNull DespesaComSeguro seguros) {
         LocalDate dataDeHoje = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
                 .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
 
@@ -154,25 +166,27 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
 
     //------------------------------------- Metodos Publicos ---------------------------------------
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
     public int getPosicao(){
         return this.posicao;
     }
 
-
-    @Override
-    public int getItemCount() {
-        return dataSet.size();
-    }
-
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<DespesaComSeguroFrota> lista) {
         this.dataSet.clear();
         this.dataSet.addAll(lista);
         notifyDataSetChanged();
     }
 
+    public void adiciona(DespesaComSeguroFrota seguroFrota){
+        this.dataSet.add(seguroFrota);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(DespesaComSeguroFrota seguroFrota) {
+        int posicao = -1;
+        posicao = this.dataSet.indexOf(seguroFrota);
+        this.dataSet.remove(seguroFrota);
+        notifyItemRemoved(posicao);
+    }
 
 }

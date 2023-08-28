@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.ui.fragment.certificados;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -101,7 +103,7 @@ public class CertificadosDiretosFragment extends Fragment {
                 MenuItem busca = menu.findItem(R.id.menu_padrao_search);
                 SearchView searchView = (SearchView) busca.getActionView();
 
-                searchView.setOnSearchClickListener(v -> {
+                Objects.requireNonNull(searchView).setOnSearchClickListener(v -> {
                     logout.setVisible(false);
                     Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
                 });
@@ -133,7 +135,7 @@ public class CertificadosDiretosFragment extends Fragment {
                                 vazio.setVisibility(View.INVISIBLE);
                                 recycler.setVisibility(View.VISIBLE);
                             }
-                            adapter.atualizaAdapter(listaFiltrada);
+                            adapter.atualiza(listaFiltrada);
                         }
 
                         return false;
@@ -151,7 +153,7 @@ public class CertificadosDiretosFragment extends Fragment {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:
@@ -167,7 +169,7 @@ public class CertificadosDiretosFragment extends Fragment {
     public void atualizaAdapter(String msg){
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
         listaDeCavalos = cavaloDao.listaTodos();
-        adapter.atualizaAdapter(listaDeCavalos);
+        adapter.atualiza(listaDeCavalos);
     };
 
 }

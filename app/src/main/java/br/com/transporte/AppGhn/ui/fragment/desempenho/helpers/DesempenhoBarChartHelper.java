@@ -3,7 +3,6 @@ package br.com.transporte.AppGhn.ui.fragment.desempenho.helpers;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.FRETE_BRUTO;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
@@ -110,7 +109,7 @@ public class DesempenhoBarChartHelper {
     }
 
     private void configuracaoInicialData() {
-        int anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
         atualizaData(anoRequisitado, FRETE_BRUTO, SEM_REF_CAVALO);
     }
 

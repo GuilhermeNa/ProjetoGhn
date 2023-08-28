@@ -18,6 +18,7 @@ import br.com.transporte.AppGhn.databinding.ActivityComissoesBinding;
 public class ComissoesActivity extends AppCompatActivity {
     private ActivityComissoesBinding binding;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +50,5 @@ public class ComissoesActivity extends AppCompatActivity {
     private void setStatusBarColor() {
         int color = ContextCompat.getColor(this, R.color.midnightblue);
         getWindow().setStatusBarColor(color);
-
     }
 }

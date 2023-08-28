@@ -1,6 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,36 +8,40 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecimentoFragment;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
-import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecimentoFragment;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.ImagemUtil;
 
 public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdapter.ViewHolder> {
-    private final List<CustosDeAbastecimento> lista;
+    private final List<CustosDeAbastecimento> dataSet;
     private final AreaMotoristaAbastecimentoFragment context;
     private OnItemClickListener onItemClickListener;
 
-    public AbastecimentoAdapter(AreaMotoristaAbastecimentoFragment context, List<CustosDeAbastecimento> lista) {
+    public AbastecimentoAdapter(AreaMotoristaAbastecimentoFragment context, List<CustosDeAbastecimento> dataSet) {
         this.context = context;
-        this.lista = lista;
+        this.dataSet = dataSet;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView dataTxtView, postoTxtView, totalAbastecimentoTxtView, marcacaoKmTxtView, qntLitrosTxtView, valorLitroTxtView;
+        private final TextView dataTxtView, postoTxtView, totalAbastecimentoTxtView,
+                marcacaoKmTxtView, qntLitrosTxtView, valorLitroTxtView;
         private final ImageView xvImgView;
 
         public ViewHolder(@NonNull View itemView) {
@@ -52,6 +56,10 @@ public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdap
         }
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
     public AbastecimentoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,28 +67,24 @@ public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdap
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CustosDeAbastecimento abastecimento = lista.get(position);
+        CustosDeAbastecimento abastecimento = dataSet.get(position);
         vincula(holder, abastecimento);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(abastecimento.getId()));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    public void atualiza(List<CustosDeAbastecimento> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, CustosDeAbastecimento abastecimento) {
-        holder.dataTxtView.setText(FormataDataUtil.dataParaString(abastecimento.getData()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull CustosDeAbastecimento abastecimento) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(abastecimento.getData()));
         holder.postoTxtView.setText(abastecimento.getPosto());
         holder.totalAbastecimentoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(abastecimento.getValorCusto()));
         holder.marcacaoKmTxtView.setText(FormataNumerosUtil.formataNumero(abastecimento.getMarcacaoKm()));
@@ -92,6 +96,28 @@ public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdap
         } else {
             holder.xvImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), "undone"));
         }
+    }
+
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<CustosDeAbastecimento> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void insere(CustosDeAbastecimento custosDeAbastecimento){
+        this.dataSet.add(custosDeAbastecimento);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(CustosDeAbastecimento custosDeAbastecimento){
+        int posicao = -1;
+        posicao = this.dataSet.indexOf(custosDeAbastecimento);
+        this.dataSet.remove(custosDeAbastecimento);
+        notifyItemRemoved(posicao);
+
     }
 
 }

@@ -5,6 +5,11 @@ import static br.com.transporte.AppGhn.model.enums.TipoDespesa.DIRETA;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.EDITANDO;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.RENOVANDO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.CHAVE_DESPESA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_RENOVADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -18,7 +23,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,7 +44,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -61,17 +64,17 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosDiretosDetalhesBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoDiretoAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class CertificadoDiretosDetalhesFragment extends Fragment {
+    public static final String CERTIFICADO_JA_RENOVADO = "Certificado já renovado";
     private FragmentCertificadosDiretosDetalhesBinding binding;
     private List<DespesaCertificado> listaDeCertificados_Todos, listaDeCertificadosDiretos;
     private CertificadoDiretoAdapter adapter;
@@ -87,19 +90,19 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
 
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaAdapter("Registro editado");
+                        atualizaAdapter(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
 
                     case RESULT_DELETE:
-                        atualizaAdapter("Registro apagado");
+                        atualizaAdapter(REGISTRO_APAGADO);
                         break;
 
                     case RESULT_UPDATE:
-                        atualizaAdapter("Registro renovado");
+                        atualizaAdapter(REGISTRO_RENOVADO);
                 }
             });
     private LinearLayout buscaVazia;
@@ -223,7 +226,6 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
                 menuInflater.inflate(R.menu.menu_certificados, menu);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
@@ -234,7 +236,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
                         break;
 
                     case R.id.menu_certificados_logout:
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:
@@ -254,7 +256,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         DespesaCertificado certificado = listaDeCertificadosDiretos.get(posicao);
 
         if (item.getItemId() == R.id.renovarCertificado && !certificado.isValido()) {
-            Toast.makeText(this.requireContext(), "Certificado já renovado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.requireContext(), CERTIFICADO_JA_RENOVADO, Toast.LENGTH_SHORT).show();
 
         } else if (item.getItemId() == R.id.renovarCertificado) {
             Intent intent = new Intent(this.getActivity(), FormulariosActivity.class);
@@ -268,7 +270,6 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void showBottomDialog() {
         final Dialog dialog = new Dialog(this.requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -288,7 +289,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         switchExibicao.setChecked(true);
         String dataEmString = data.getText().toString();
         ano = Integer.parseInt(dataEmString);
-        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoinicial().getYear();
+        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
 
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 

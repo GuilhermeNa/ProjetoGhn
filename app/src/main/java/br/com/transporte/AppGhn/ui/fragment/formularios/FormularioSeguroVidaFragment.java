@@ -13,7 +13,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPD
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -36,13 +34,13 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroVidaBinding;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
-import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroVidaBinding;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
+import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -74,9 +72,9 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
 
     private void configuraTipoDeRecebimento() {
         Bundle bundle = getArguments();
-        TipoFormulario tipoRequisicao = (TipoFormulario) bundle.getSerializable(CHAVE_REQUISICAO);
+        TipoFormulario tipoRequisicao = (TipoFormulario) Objects.requireNonNull(bundle).getSerializable(CHAVE_REQUISICAO);
 
-        switch (tipoRequisicao) {
+        switch (Objects.requireNonNull(tipoRequisicao)) {
             case EDITANDO:
                 setTipoFormulario(EDITANDO);
                 break;
@@ -127,7 +125,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -155,7 +152,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         coberturaMotoristasEdit = binding.fragFormularioSeguroCoberturaMotoristas;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraUi() {
         Toolbar toolbar = binding.toolbar;
         configuraToolbar(toolbar);
@@ -193,12 +189,11 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     @Override
     public void alteraUiParaModoCriacao() {}
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataPrimeiraParcela.setText(FormataDataUtil.dataParaString(seguro.getDataPrimeiraParcela()));
-        dataInicialEdit.setText(FormataDataUtil.dataParaString(seguro.getDataInicial()));
-        dataFinalEdit.setText(FormataDataUtil.dataParaString(seguro.getDataFinal()));
+        dataPrimeiraParcela.setText(ConverteDataUtil.dataParaString(seguro.getDataPrimeiraParcela()));
+        dataInicialEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
+        dataFinalEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataFinal()));
         valorPremioEdit.setText(FormataNumerosUtil.formataNumero(seguro.getValorDespesa()));
         parcelasEdit.setText(String.valueOf(seguro.getParcelas()));
         valorParcela.setText(FormataNumerosUtil.formataNumero(seguro.getValorParcela()));
@@ -208,7 +203,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         coberturaMotoristasEdit.setText(FormataNumerosUtil.formataNumero(seguro.getCoberturaMotoristas()));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void aplicaMascarasAosEditTexts() {
         MascaraDataUtil.MascaraData(dataInicialEdit);
@@ -239,12 +233,11 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         verificaCampo(dataPrimeiraParcela);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void vinculaDadosAoObjeto() {
-        seguro.setDataPrimeiraParcela(FormataDataUtil.stringParaData(dataPrimeiraParcela.getText().toString()));
-        seguro.setDataInicial(FormataDataUtil.stringParaData(dataInicialEdit.getText().toString()));
-        seguro.setDataFinal(FormataDataUtil.stringParaData(dataFinalEdit.getText().toString()));
+        seguro.setDataPrimeiraParcela(ConverteDataUtil.stringParaData(dataPrimeiraParcela.getText().toString()));
+        seguro.setDataInicial(ConverteDataUtil.stringParaData(dataInicialEdit.getText().toString()));
+        seguro.setDataFinal(ConverteDataUtil.stringParaData(dataFinalEdit.getText().toString()));
         seguro.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorPremioEdit.getText().toString())));
         seguro.setParcelas(Integer.parseInt(parcelasEdit.getText().toString()));
         seguro.setValorParcela(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorParcela.getText().toString())));
@@ -259,7 +252,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         seguroDao.edita(seguro);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
@@ -267,7 +259,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         configuraParcelamento();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraParcelamento() {
         int chaveEstrangeira = seguro.getId();
 
@@ -279,7 +270,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         BigDecimal valorDeCadaParcela = new BigDecimal(valorParcelaFormatada);
 
         String campoDataPrimeiraParcela = dataPrimeiraParcela.getText().toString();
-        LocalDate dataPrimeiraParcela = FormataDataUtil.stringParaData(campoDataPrimeiraParcela);
+        LocalDate dataPrimeiraParcela = ConverteDataUtil.stringParaData(campoDataPrimeiraParcela);
 
         ParcelaDeSeguro parcelaDeSeguro;
         ParcelaDeSeguroDAO parcelaDeSeguroDao = new ParcelaDeSeguroDAO();
@@ -326,7 +317,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     @SuppressLint("NonConstantResourceId")
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
@@ -403,7 +393,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void deletaParcelasNoBancoDeDados() {
         ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
 

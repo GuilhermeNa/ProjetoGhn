@@ -2,12 +2,14 @@ package br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.BAIXA_REGISTRADA_COM_SUCESSO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_ALTERADO;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,23 +22,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
-import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
+import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
 import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;
 
 public class ExibeParcelasVidaDialog {
-
     public static final String TITULO_DIALOG = "Seguro Vida";
     private final ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
     private HashMap<Integer, Boolean> mapComParcelas;
@@ -52,7 +53,6 @@ public class ExibeParcelasVidaDialog {
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void showBottomDialog(DespesaComSeguroDeVida seguro) {
         final Dialog dialog = getDialog();
         inicializaCamposDaView(dialog);
@@ -63,7 +63,6 @@ public class ExibeParcelasVidaDialog {
         configuraParametrosDeExibicaoDoDialog(dialog);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraBtnPagar(DespesaComSeguroDeVida seguro, Dialog dialog) {
         btn.setOnClickListener(v -> {
             boolean precisaBaixar = verificaSeExisteAlgumaParcelaASerBaixada();
@@ -72,12 +71,11 @@ public class ExibeParcelasVidaDialog {
             }
 
             dialog.dismiss();
-            Toast.makeText(context, "Baixa registrada com sucesso", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, BAIXA_REGISTRADA_COM_SUCESSO, Toast.LENGTH_SHORT).show();
 
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void fazABaixaDaParcelaPaga(DespesaComSeguroDeVida seguro) {
         List<ParcelaDeSeguro> listaDeParcelas = getListaDeparcelas(seguro);
 
@@ -92,7 +90,7 @@ public class ExibeParcelasVidaDialog {
         }
     }
 
-    private void inicializaCamposDaView(Dialog dialog) {
+    private void inicializaCamposDaView(@NonNull Dialog dialog) {
         btn = dialog.findViewById(R.id.btn);
     }
 
@@ -100,19 +98,19 @@ public class ExibeParcelasVidaDialog {
         return btn.getVisibility() == VISIBLE;
     }
 
-    private void configuraBtnCancel(Dialog dialog) {
+    private void configuraBtnCancel(@NonNull Dialog dialog) {
         ImageView cancelBtn = dialog.findViewById(R.id.cancelButton);
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
-    private void configuraTitulo(Dialog dialog) {
+    private void configuraTitulo(@NonNull Dialog dialog) {
         TextView tituloTxt = dialog.findViewById(R.id.titulo_parcela_seguro);
         tituloTxt.setText(TITULO_DIALOG);
     }
 
-    private void configuraParametrosDeExibicaoDoDialog(Dialog dialog) {
+    private void configuraParametrosDeExibicaoDoDialog(@NonNull Dialog dialog) {
         dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        Objects.requireNonNull(dialog.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
@@ -126,8 +124,7 @@ public class ExibeParcelasVidaDialog {
         return dialog;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void configuraRecyclerDialog(DespesaComSeguroDeVida seguro, Dialog dialog) {
+    private void configuraRecyclerDialog(DespesaComSeguroDeVida seguro, @NonNull Dialog dialog) {
         RecyclerView recyclerDialog = dialog.findViewById(R.id.recycler_pagamento_seguro);
         listaDeparcelas = getListaDeparcelas(seguro);
 
@@ -138,14 +135,13 @@ public class ExibeParcelasVidaDialog {
             @Override
             public void onBoxClick(HashMap<Integer, Boolean> map) {
                 mapComParcelas = map;
-                Animation animacima = AnimationUtils.loadAnimation(context, R.anim.slide_in);
-                Animation animabaixo = AnimationUtils.loadAnimation(context, R.anim.slide_out);
+                Animation animaCima = AnimationUtils.loadAnimation(context, R.anim.slide_in);
+                Animation animaBaixo = AnimationUtils.loadAnimation(context, R.anim.slide_out);
 
                 boolean atualizacaoNecessaria = map.containsValue(true);
-                configuraVisualizacaoDoBtn(btn, animacima, animabaixo, atualizacaoNecessaria);
+                configuraVisualizacaoDoBtn(btn, animaCima, animaBaixo, atualizacaoNecessaria);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onItemClick(ParcelaDeSeguro parcela) {
                 EditaParcelaDialog dialogParcela = new EditaParcelaDialog(context, parcela);
@@ -156,30 +152,30 @@ public class ExibeParcelasVidaDialog {
                     public void quandoFunciona() {
                         listaDeparcelas = getListaDeparcelas(seguro);
                         adapterParcela.atualiza(listaDeparcelas);
-                        Toast.makeText(context, "Registro alterado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, REGISTRO_ALTERADO, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void quandoFalha() {
-                        Toast.makeText(context, "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private List<ParcelaDeSeguro> getListaDeparcelas(DespesaComSeguroDeVida seguro) {
+    private List<ParcelaDeSeguro> getListaDeparcelas(@NonNull DespesaComSeguroDeVida seguro) {
         return parcelaDao.listaParcelasDoSeguro(seguro.getId());
     }
 
-    private void configuraVisualizacaoDoBtn(Button btn, Animation animacima, Animation animabaixo, boolean atualizacaoNecessaria) {
+    private void configuraVisualizacaoDoBtn(Button btn, Animation animaCima, Animation animaBaixo, boolean atualizacaoNecessaria) {
         if (atualizacaoNecessaria && btn.getVisibility() == INVISIBLE) {
             btn.setVisibility(View.VISIBLE);
-            btn.startAnimation(animacima);
+            btn.startAnimation(animaCima);
         } else if (!atualizacaoNecessaria && btn.getVisibility() == VISIBLE) {
             btn.setVisibility(INVISIBLE);
-            btn.startAnimation(animabaixo);
+            btn.startAnimation(animaBaixo);
         }
     }
+
 }

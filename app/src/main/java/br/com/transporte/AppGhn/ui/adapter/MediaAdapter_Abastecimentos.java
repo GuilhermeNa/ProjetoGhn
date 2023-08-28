@@ -1,24 +1,21 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class MediaAdapter_Abastecimentos extends RecyclerView.Adapter<MediaAdapter_Abastecimentos.ViewHolder> {
@@ -61,38 +58,33 @@ public class MediaAdapter_Abastecimentos extends RecyclerView.Adapter<MediaAdapt
     }
 
     //----------------------------------------------------------------------------------------------
-    //                                          OnBind                                            ||
+    //                                          OnBindViewHolder                                  ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull MediaAdapter_Abastecimentos.ViewHolder holder, int position) {
         CustosDeAbastecimento abastecimento = dataSet.get(position);
         vincula(holder, abastecimento);
-        holder.itemView.setOnClickListener(v -> {
-            onItemClickListener.onClick(holder.getAdapterPosition(), abastecimento);
-        });
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onClick(holder.getAdapterPosition(), abastecimento));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, CustosDeAbastecimento abastecimento) {
-        String data = FormataDataUtil.dataParaString(abastecimento.getData());
+    private void vincula(@NonNull ViewHolder holder, @NonNull CustosDeAbastecimento abastecimento) {
+        String data = ConverteDataUtil.dataParaString(abastecimento.getData());
         holder.dataTxt.setText(data);
 
         String marcacaoKm = FormataNumerosUtil.formataNumero(abastecimento.getMarcacaoKm());
-        String marcacaoKmFormatada = "Km " + marcacaoKm;
+        String marcacaoKmFormatada = R.string.km + " " + marcacaoKm;
         holder.kmTxt.setText(marcacaoKmFormatada);
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          Metodos Publicos                                  ||
-    //----------------------------------------------------------------------------------------------
+    //------------------------------------- Metodos Publicos ---------------------------------------
 
     @Override
     public int getItemCount() {
         return dataSet.size();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<CustosDeAbastecimento> dataSet) {
         this.dataSet.clear();
         this.dataSet.addAll(dataSet);
@@ -112,7 +104,6 @@ public class MediaAdapter_Abastecimentos extends RecyclerView.Adapter<MediaAdapt
     public List<CustosDeAbastecimento> getDataSet() {
         return new ArrayList<>(dataSet);
     }
-
 
     //----------------------------------------------------------------------------------------------
     //                                          Click Listener                                    ||

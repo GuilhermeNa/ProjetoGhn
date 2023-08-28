@@ -1,13 +1,12 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -17,10 +16,10 @@ import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.ManutencaoDetalhesFragment;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 
 public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDetalhesAdapter.ViewHolder> {
-    private final List<CustosDeManutencao> lista;
+    private final List<CustosDeManutencao> dataSet;
     private final ManutencaoDetalhesFragment context;
     private OnItemClickListener onItemClickListener;
 
@@ -29,22 +28,30 @@ public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDe
     }
 
     public ManutencaoDetalhesAdapter(ManutencaoDetalhesFragment context, List<CustosDeManutencao> lista) {
-        this.lista = lista;
+        this.dataSet = lista;
         this.context = context;
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          ViewHolder                                        ||
+    //----------------------------------------------------------------------------------------------
+
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView datatxtView, valorTxtView, empresaTxtView, descricaoTxtView, numeroNotaTxtView;
+        private final TextView dataTxtView, valorTxtView, empresaTxtView, descricaoTxtView, numeroNotaTxtView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            datatxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_data);
+            dataTxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_data);
             valorTxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_valor);
             empresaTxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_empresa);
             descricaoTxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_descricao);
             numeroNotaTxtView = itemView.findViewById(R.id.rec_item_manutencao_detalhe_nota);
         }
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateViewHolder                                ||
+    //----------------------------------------------------------------------------------------------
 
     @NonNull
     @Override
@@ -53,31 +60,49 @@ public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDe
         return new ViewHolder(viewCriada);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    //----------------------------------------------------------------------------------------------
+    //                                          OnBindViewHolder                                  ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onBindViewHolder(@NonNull ManutencaoDetalhesAdapter.ViewHolder holder, int position) {
-        CustosDeManutencao manutencao = lista.get(position);
+        CustosDeManutencao manutencao = dataSet.get(position);
         vincula(holder, manutencao);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(manutencao));
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return dataSet.size();
     }
 
-    public void atualiza(List<CustosDeManutencao> lista) {
-        this.lista.clear();
-        this.lista.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vincula(ViewHolder holder, CustosDeManutencao manutencao) {
-        holder.datatxtView.setText(FormataDataUtil.dataParaString(manutencao.getData()));
+    private void vincula(@NonNull ViewHolder holder, @NonNull CustosDeManutencao manutencao) {
+        holder.dataTxtView.setText(ConverteDataUtil.dataParaString(manutencao.getData()));
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(manutencao.getValorCusto()));
         holder.empresaTxtView.setText(manutencao.getEmpresa());
         holder.descricaoTxtView.setText(manutencao.getDescricao());
         holder.numeroNotaTxtView.setText(manutencao.getnNota());
     }
+
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(List<CustosDeManutencao> lista) {
+        this.dataSet.clear();
+        this.dataSet.addAll(lista);
+        notifyDataSetChanged();
+    }
+
+    public void adiciona(CustosDeManutencao custoManutencao){
+        this.dataSet.add(custoManutencao);
+        notifyItemInserted(getItemCount()-1);
+    }
+
+    public void remove(CustosDeManutencao custoManutencao){
+        int posicao = -1;
+        posicao = this.dataSet.indexOf(custoManutencao);
+        this.dataSet.remove(custoManutencao);
+        notifyItemRemoved(posicao);
+    }
+
 }

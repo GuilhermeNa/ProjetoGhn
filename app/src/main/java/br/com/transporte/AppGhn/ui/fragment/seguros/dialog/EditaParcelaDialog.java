@@ -4,23 +4,21 @@ import static android.view.View.GONE;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.databinding.DialogSeguroParcelaBinding;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -39,14 +37,12 @@ public class EditaParcelaDialog {
     public EditaParcelaDialog(Context context, ParcelaDeSeguro parcela) {
         this.context = context;
         this.parcela = parcela;
-        Log.d("teste", "editando parcela -> " + parcela.getNumeroDaParcela());
     }
 
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void dialogEditaParcela() {
         binding = DialogSeguroParcelaBinding.inflate(LayoutInflater.from(context));
         EditText dataEdit = binding.data;
@@ -71,10 +67,9 @@ public class EditaParcelaDialog {
                 .show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void alteraParcela(EditText dataEdit, EditText valorEdit, CheckBox checkBox) {
+    private void alteraParcela(@NonNull EditText dataEdit, @NonNull EditText valorEdit, CheckBox checkBox) {
         String campoData = dataEdit.getText().toString();
-        LocalDate data = FormataDataUtil.stringParaData(campoData);
+        LocalDate data = ConverteDataUtil.stringParaData(campoData);
         parcela.setData(data);
 
         String campoValor = valorEdit.getText().toString();
@@ -87,7 +82,7 @@ public class EditaParcelaDialog {
         parcelaDao.edita(parcela);
     }
 
-    private boolean defineNovoStatusDePagamento(CheckBox checkBox) {
+    private boolean defineNovoStatusDePagamento(@NonNull CheckBox checkBox) {
         boolean parcelaFoiPaga = checkBox.getVisibility() == View.VISIBLE;
         boolean boxDesfazerPagamentoMarcado = checkBox.isChecked();
         boolean removeStatusDePagamentoRelizado = false;
@@ -110,14 +105,13 @@ public class EditaParcelaDialog {
         }
     }
 
-    private void aplicaMascarasAosEditTexts(EditText dataEdit, EditText valorEdit) {
+    private void aplicaMascarasAosEditTexts(EditText dataEdit, @NonNull EditText valorEdit) {
         MascaraDataUtil.MascaraData(dataEdit);
         valorEdit.addTextChangedListener(new MascaraMonetariaUtil(valorEdit));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void vinculaObjetoNaView(EditText dataEdit, EditText valorEdit) {
-        dataEdit.setText(FormataDataUtil.dataParaString(parcela.getData()));
+    private void vinculaObjetoNaView(@NonNull EditText dataEdit, @NonNull EditText valorEdit) {
+        dataEdit.setText(ConverteDataUtil.dataParaString(parcela.getData()));
         valorEdit.setText(FormataNumerosUtil.formataNumero(parcela.getValor()));
     }
 

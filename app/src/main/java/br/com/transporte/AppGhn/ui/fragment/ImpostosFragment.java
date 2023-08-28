@@ -2,21 +2,34 @@ package br.com.transporte.AppGhn.ui.fragment;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_IMPOSTOS;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Pair;
@@ -28,16 +41,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,6 +51,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
@@ -55,12 +59,12 @@ import br.com.transporte.AppGhn.databinding.FragmentImpostosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ImpostosAdapter;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class ImpostosFragment extends Fragment {
+    public static final String IMPOSTOS = "Impostos";
     private FragmentImpostosBinding binding;
     private TextView valorPagoTxtView, dataInicialTxtView, dataFinalTxtView;
     private LinearLayout dataLayout;
@@ -74,25 +78,23 @@ public class ImpostosFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-                Intent dataResultado = result.getData();
 
                 switch (codigoResultado) {
                     case RESULT_OK:
-                        atualizaUiAposRetornoResult("Registro criado");
+                        atualizaUiAposRetornoResult(REGISTRO_CRIADO);
                         break;
                     case RESULT_DELETE:
-                        atualizaUiAposRetornoResult("Registro apagado");
+                        atualizaUiAposRetornoResult(REGISTRO_APAGADO);
                         break;
                     case RESULT_EDIT:
-                        atualizaUiAposRetornoResult("Registro editado");
+                        atualizaUiAposRetornoResult(REGISTRO_EDITADO);
                         break;
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), "Nenhuma alteração realizada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
                         break;
                 }
             });
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void atualizaUiAposRetornoResult(String msg) {
         listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
         adapter.atualiza(listaDeImpostos);
@@ -100,18 +102,16 @@ public class ImpostosFragment extends Fragment {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         impostoDao = new DespesasImpostoDAO();
 
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoinicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<DespesasDeImposto> getListaDeImpostos(LocalDate dataInicial, LocalDate dataFinal) {
         return impostoDao.listaFiltradaPorData(dataInicial, dataFinal);
     }
@@ -123,7 +123,6 @@ public class ImpostosFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -142,8 +141,8 @@ public class ImpostosFragment extends Fragment {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaValorTotalDeImpostosPagos));
-        dataInicialTxtView.setText(FormataDataUtil.dataParaString(dataInicial));
-        dataFinalTxtView.setText(FormataDataUtil.dataParaString(dataFinal));
+        dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
+        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(dataFinal));
     }
 
     private void configuraFab() {
@@ -154,7 +153,6 @@ public class ImpostosFragment extends Fragment {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraDateRangePicker() {
         MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Selecione o periodo")
@@ -197,7 +195,6 @@ public class ImpostosFragment extends Fragment {
         configuraUiMutavel();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraRecycler() {
         adapter = new ImpostosAdapter(listaDeImpostos, this);
         recyclerView.setAdapter(adapter);
@@ -225,10 +222,10 @@ public class ImpostosFragment extends Fragment {
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Impostos");
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(IMPOSTOS);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -237,13 +234,14 @@ public class ImpostosFragment extends Fragment {
                 menu.removeItem(R.id.menu_padrao_search);
             }
 
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
 
                 switch (menuItem.getItemId()){
                     case R.id.menu_padrao_logout:
 
-                        Toast.makeText(requireContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:

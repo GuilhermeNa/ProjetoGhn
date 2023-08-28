@@ -94,9 +94,9 @@ public class HomeFragment extends Fragment {
             mHeight = metrics.heightPixels;
         }
 
-        TextView categoriastxt = binding.categoriasTitulo;
+        TextView categoriasTxt = binding.categoriasTitulo;
         ImageView logoutImg = binding.fragMotoristasLogout;
-        categoriastxt.setVisibility(View.INVISIBLE);
+        categoriasTxt.setVisibility(View.INVISIBLE);
         logoutImg.setVisibility(View.INVISIBLE);
         Animation animationLogout = AnimationUtils.loadAnimation(requireContext(), R.anim.anim_logout);
 
@@ -120,9 +120,9 @@ public class HomeFragment extends Fragment {
             bannerCategorias.animate().scaleY((float) (mHeight * 0.00060));
 
             logoutImg.setVisibility(View.VISIBLE);
-            categoriastxt.setVisibility(View.VISIBLE);
+            categoriasTxt.setVisibility(View.VISIBLE);
             logoutImg.setAnimation(animationLogout);
-            categoriastxt.setAnimation(animationLogout);
+            categoriasTxt.setAnimation(animationLogout);
         };
         handler.postDelayed(r, 1500);
         animacao = false;

@@ -1,27 +1,20 @@
 package br.com.transporte.AppGhn.util;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
-public class FormataDataUtil {
+public class ConverteDataUtil {
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static String dataParaString(LocalDate data) {
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yy", new Locale("pt-br"));
-        String dataFormatada = formatoData.format(data);
-        return dataFormatada;
+        return formatoData.format(data);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static LocalDate stringParaData(String dataEmString) {
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern("dd/MM/yy");
-        LocalDate data = null;
+        LocalDate data;
 
         try {
             data = LocalDate.parse(dataEmString, formatoData);
@@ -35,6 +28,5 @@ public class FormataDataUtil {
         }
         return data;
     }
-
 
 }

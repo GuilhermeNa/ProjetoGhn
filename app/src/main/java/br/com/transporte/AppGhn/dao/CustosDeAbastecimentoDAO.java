@@ -110,39 +110,8 @@ public class CustosDeAbastecimentoDAO {
         return abastecimentoLocalizado;
     }
 
-    public BigDecimal calculaKmPercorrido(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
-        List<CustosDeAbastecimento> listaTodos = listaPorCavalo(cavaloId);
-        List<CustosDeAbastecimento> listaFiltrada = listaFiltradaPorCavaloEData(cavaloId, dataInicial, dataFinal);
-
-        Comparator<CustosDeAbastecimento> comparing = Comparator.comparing(CustosDeAbastecimento::getMarcacaoKm);
-        Collections.sort(listaTodos, comparing);
-        Collections.sort(listaFiltrada, comparing);
-
-        CustosDeAbastecimento dMenos1;
-        CustosDeAbastecimento d0;
-        CustosDeAbastecimento dMais1;
-
-        if (listaFiltrada.size() == 0) {
-            throw new IndexOutOfBoundsException("Lista filtrada não encontrada");
-        } else if (listaTodos.size() == 0) {
-            throw new IndexOutOfBoundsException("Lista total não encontrada");
-        }
-        d0 = listaFiltrada.get(0);
-        dMais1 = listaFiltrada.get(listaFiltrada.size() - 1);
-        int d0PosicaoGeral = listaTodos.indexOf(d0);
-
-        try {
-            dMenos1 = listaTodos.get(d0PosicaoGeral - 1);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            dMenos1 = listaTodos.get(d0PosicaoGeral);
-        }
-
-        return dMais1.getMarcacaoKm().subtract(dMenos1.getMarcacaoKm());
-    }
-
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean getMarcacaoKmDoUltimoAbastecimento(BigDecimal marcacaoAtual, int cavaloId, LocalDate novaData)
             throws MarcacaoKmInvalida, MarcacaoKmComDataJaRegistrada, ListaNaoEncontrada {
         List<CustosDeAbastecimento> listaPorCavalo = listaPorCavalo(cavaloId);

@@ -87,7 +87,7 @@ public class Adiantamento implements Serializable {
         this.adiantamentoJaFoiPago = adiantamentoJaFoiPago;
     }
 
-    public boolean isAdiantamentoJaFoiPago() {
+    public boolean isAdiantamentoJaFoiDescontado() {
         return adiantamentoJaFoiPago;
     }
 

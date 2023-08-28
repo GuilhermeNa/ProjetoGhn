@@ -8,7 +8,7 @@ import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.os.Build;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +19,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
@@ -36,10 +35,10 @@ import java.time.ZoneOffset;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.util.FormataDataUtil;
+import br.com.transporte.AppGhn.util.ConverteDataUtil;
 
 public abstract class FormularioBaseFragment extends Fragment implements FormulariosInterface, MenuProvider {
     protected static final String TITULO_APP_BAR_EDITANDO = "Editando";
@@ -55,6 +54,10 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
     public static final String ADICIONA_REGISTRO_TXT = "Confirma a criação de um novo registro?";
     public static final String EDITANDO_REGISTRO_TITULO = "Editando Registro";
     public static final String EDITANDO_REGISTRO_TXT = "As informações previas serão perdidas. Confirma a edição deste registro?";
+    public static final String SELECIONE_UMA_DATA = "Selecione uma data";
+    public static final String PREENCHER = "Preencher";
+    public static final String INCOMPLETO = "Incompleto";
+    public static final String PREENCHA_A_DATA_CORRETAMENTE = "Preencha a data corretamente";
     private boolean completoParaSalvar = true;
     private TipoFormulario tipoFormulario;
 
@@ -126,38 +129,38 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
 
     protected void verificaCampo(EditText editText) {
         if (editText.getText().toString().isEmpty()) {
-            editText.setError("Preencher");
+            editText.setError(PREENCHER);
             if (completoParaSalvar) completoParaSalvar = false;
         }
     }
 
     protected void verificaCampoComData(EditText editText, View view) {
         if (editText.getText().toString().isEmpty()) {
-            editText.setError("Preencher");
+            editText.setError(PREENCHER);
             if (completoParaSalvar) completoParaSalvar = false;
         } else if (editText.getText().toString().length() < 8) {
-            editText.setError("Incompleto");
-            snackBar(view, "Preencha a data corretamente");
+            editText.setError(INCOMPLETO);
+            snackBar(view, PREENCHA_A_DATA_CORRETAMENTE);
             if (completoParaSalvar) completoParaSalvar = false;
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    protected void configuraDataCalendario(TextInputLayout layout, EditText editTxt) {
+    protected void configuraDataCalendario(@NonNull TextInputLayout layout, EditText editTxt) {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                 .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .setTitleText("Selecione uma data")
+                .setTitleText(SELECIONE_UMA_DATA)
                 .build();
-
         layout.setStartIconOnClickListener(v -> {
             datePicker.show(getParentFragmentManager(), "DataFrete");
-
             datePicker.addOnPositiveButtonClickListener(selection -> {
                 LocalDate data = Instant.ofEpochMilli(selection).atZone(ZoneId.of("America/Sao_Paulo"))
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
-
-                editTxt.setText(FormataDataUtil.dataParaString(data));
+                editTxt.setText(ConverteDataUtil.dataParaString(data));
+            });
+            datePicker.addOnDismissListener(dialog -> {
+                datePicker.clearOnPositiveButtonClickListeners();
+                datePicker.clearOnDismissListeners();
             });
         });
     }
