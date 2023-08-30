@@ -45,7 +45,7 @@ public class AdiantamentoDAO {
     public List<Adiantamento> listaPorCavalo(int cavaloId) {
         List<Adiantamento> lista = new ArrayList<>();
         for(Adiantamento a: dao){
-            if(a.getRefCavalo() == cavaloId){
+            if(a.getRefCavaloId() == cavaloId){
                 lista.add(a);
             }
         }

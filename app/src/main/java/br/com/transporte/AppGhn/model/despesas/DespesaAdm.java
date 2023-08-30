@@ -1,15 +1,19 @@
 package br.com.transporte.AppGhn.model.despesas;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.model.abstracts.Despesas;
 
+@Entity
 public class DespesaAdm extends Despesas {
     private String descricao;
-    private int id;
 
-    public DespesaAdm(LocalDate data, BigDecimal valor, String descricao, int refPlacaCavalo) {
+    @Ignore
+    public DespesaAdm(LocalDate data, BigDecimal valor, String descricao, Integer refPlacaCavalo) {
         super.setData(data);
         super.setValorDespesa(valor);
         this.descricao = descricao;
@@ -28,15 +32,4 @@ public class DespesaAdm extends Despesas {
         this.descricao = descricao;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public boolean temIdValido() {
-        return id > 0;
-    }
 }

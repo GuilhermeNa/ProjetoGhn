@@ -531,7 +531,7 @@ public class BarCharCalculosExtension {
                 } else {
                     return freteDao.listaTodos().stream()
                             .filter(frete -> frete.getData().getYear() == ano)
-                            .filter(frete -> frete.getRefCavalo() == id)
+                            .filter(frete -> frete.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 

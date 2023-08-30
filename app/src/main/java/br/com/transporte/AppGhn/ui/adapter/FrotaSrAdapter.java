@@ -16,7 +16,7 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.ui.fragment.home.FrotaFragment;
+import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHolder>{
     private final FrotaFragment context;
@@ -79,7 +79,7 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
-        String placa = cavaloDao.localizaPeloId(sr.getReferenciaCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(sr.getRefCavaloId()).getPlaca();
         holder.placaCavaloRefTxtView.setText(placa);
         holder.placaSrTxtView.setText(sr.getPlaca());
     }

@@ -4,13 +4,11 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class FreteDAO {
     private final static List<Frete> dao = new ArrayList<>();
@@ -64,7 +62,7 @@ public class FreteDAO {
     public List<Frete> listaFiltradaPorCavalo(int cavaloId) {
         List<Frete> lista = new ArrayList<>();
         for (Frete f : dao) {
-            if (f.getRefCavalo() == cavaloId) {
+            if (f.getRefCavaloId() == cavaloId) {
                 lista.add(f);
             }
         }

@@ -254,7 +254,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                             salario.setData(dataDoPagamento);
                             salario.setRefCavalo(cavalo.getId());
                             salario.setValorCusto(liquidoAFechar);
-                            salario.setRefMotorista(cavalo.getMotorista().getId());
+                            salario.setRefMotoristaId(cavalo.getMotorista().getId());
                             SalarioDAO salarioDao = new SalarioDAO();
                             salarioDao.adiciona(salario);
 

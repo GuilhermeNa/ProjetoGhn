@@ -1,12 +1,29 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
+@Entity(foreignKeys =
+@ForeignKey(
+        entity = Cavalo.class,
+        parentColumns = "id",
+        childColumns = "refCavaloId",
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
+))
 public abstract class Parcela {
-    private int numeroDaParcela, refSeguro, id, refCavalo;
+
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+    private Integer refCavaloId;
+    private int numeroDaParcela;
     private LocalDate data;
     private BigDecimal valor;
     private boolean valido;
@@ -19,14 +36,6 @@ public abstract class Parcela {
 
     public void setNumeroDaParcela(int numeroDaParcela) {
         this.numeroDaParcela = numeroDaParcela;
-    }
-
-    public int getRefSeguro() {
-        return refSeguro;
-    }
-
-    public void setRefSeguro(int refChaveIdEstrangeira) {
-        this.refSeguro = refChaveIdEstrangeira;
     }
 
     public BigDecimal getValor() {
@@ -45,11 +54,11 @@ public abstract class Parcela {
         this.valido = valido;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -77,11 +86,11 @@ public abstract class Parcela {
         this.tipoDespesa = tipoDespesa;
     }
 
-    public int getRefCavalo() {
-        return refCavalo;
+    public int getRefCavaloId() {
+        return refCavaloId;
     }
 
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
+    public void setRefCavaloId(int refCavaloId) {
+        this.refCavaloId = refCavaloId;
     }
 }

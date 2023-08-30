@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.home.FrotaFragment">
+    tools:context=".ui.fragment.home.frota.FrotaFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -37,6 +37,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_exibe_reboques"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
@@ -90,6 +91,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/recycler_item_frota" />
 
         <Button

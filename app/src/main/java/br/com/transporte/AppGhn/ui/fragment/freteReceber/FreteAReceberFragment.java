@@ -204,7 +204,7 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
 
         BigDecimal valorLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
         BigDecimal valorTotalRecebido = recebimentoDao.valorRecebido(frete.getId());
-        String placa = cavaloDao.localizaPeloId(frete.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
 
         if (item.getItemId() == R.id.FechaFrete) {
             new AlertDialog.Builder(this.requireContext())
@@ -254,7 +254,7 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
                 String placa;
 
                 for (Frete f : freteDao.listaFiltradaPorData(dataInicial, dataFinal)) {
-                    placa = cavaloDao.localizaPeloId(f.getRefCavalo()).getPlaca().toUpperCase(Locale.ROOT);
+                    placa = cavaloDao.localizaPeloId(f.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     if (placa.contains(newText.toUpperCase(Locale.ROOT))) {
                         lista.add(f);
                     }

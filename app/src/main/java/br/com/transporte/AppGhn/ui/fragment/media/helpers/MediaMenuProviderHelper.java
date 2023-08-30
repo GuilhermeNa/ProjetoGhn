@@ -50,7 +50,7 @@ public class MediaMenuProviderHelper implements MenuProvider {
         configuraBuscaNoBancoDeDados(busca);
     }
 
-    private void configuraBuscaNoBancoDeDados(SearchView busca) {
+    private void configuraBuscaNoBancoDeDados(@NonNull SearchView busca) {
         busca.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -74,7 +74,7 @@ public class MediaMenuProviderHelper implements MenuProvider {
         });
     }
 
-    private void configuraExibicaoDeIconesAoAcionarSearchView(@NonNull Menu menu, SearchView busca) {
+    private void configuraExibicaoDeIconesAoAcionarSearchView(@NonNull Menu menu, @NonNull SearchView busca) {
         MenuItem itemLogout = menu.findItem(R.id.menu_padrao_logout);
 
         busca.setOnSearchClickListener(v -> itemLogout.setVisible(false));

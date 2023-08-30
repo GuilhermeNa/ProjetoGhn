@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.math.BigDecimal;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioMotoristaBinding;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
@@ -49,7 +52,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     private TextInputLayout dataLayout, cnhValidadeLayout, contratacaoLayout;
     private ImageView motoristaImg;
     private Motorista motorista;
-    private MotoristaDAO motoristaDao;
+    private RoomMotoristaDao motoristaDao;
     private Bitmap imgRecebidaEmBitmap;
     private String imgEmString;
     private boolean recebeuImagem;
@@ -108,8 +111,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        motoristaDao = new MotoristaDAO();
-
+        motoristaDao = GhnDataBase.getInstance(this.requireContext()).getRoomMotoristaDao();
         int motoristaId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(motoristaId);
         motorista = (Motorista) criaOuRecuperaObjeto(motoristaId);
@@ -126,7 +128,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
         configuraCLickSelecaoDeImagemDoFuncionario();
@@ -145,7 +146,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
                     intent.setType("image/*");
                     activityResultLauncherGaleria.launch(intent);
                 }).show());
-
     }
 
     @Override
@@ -170,7 +170,8 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     public Object criaOuRecuperaObjeto(int id) {
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             motorista = motoristaDao.localizaPeloId(id);
-            recebeuImagem = true;
+            if(motorista.getImg() != null) recebeuImagem = true;
+
         } else {
             motorista = new Motorista();
             recebeuImagem = false;
@@ -247,9 +248,11 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        imgEmString = BitmapImagem.codificaBitmapEmString(imgRecebidaEmBitmap);
-        motorista.setImg(imgEmString);
-        motoristaDao.edita(motorista);
+        if(recebeuImagem){
+            imgEmString = BitmapImagem.codificaBitmapEmString(imgRecebidaEmBitmap);
+            motorista.setImg(imgEmString);
+        }
+        motoristaDao.adiciona(motorista);
     }
 
     @Override
@@ -264,6 +267,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        motoristaDao.deleta(motorista.getId());
+        motoristaDao.deleta(motorista);
     }
 }

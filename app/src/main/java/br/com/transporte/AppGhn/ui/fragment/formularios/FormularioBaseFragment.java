@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,6 +37,8 @@ import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
@@ -72,11 +75,9 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
 
     protected Cavalo recebeReferenciaExternaDeCavalo(String chave) {
         Bundle bundle = getArguments();
-        CavaloDAO cavaloDao = new CavaloDAO();
+        RoomCavaloDao cavaloDao = GhnDataBase.getInstance(this.requireContext()).getRoomCavaloDao();
         int cavaloId = bundle.getInt(chave);
-
-        Cavalo cavalo = cavaloDao.localizaPeloId(cavaloId);
-        return cavalo;
+        return cavaloDao.localizaPeloId(cavaloId);
     }
 
     protected int verificaSeRecebeDadosExternos(String chave) {
@@ -121,20 +122,20 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
-    protected void desmarcaBox(CheckBox box) {
+    protected void desmarcaBox(@NonNull CheckBox box) {
         if (box.isChecked()) {
             box.setChecked(false);
         }
     }
 
-    protected void verificaCampo(EditText editText) {
+    protected void verificaCampo(@NonNull EditText editText) {
         if (editText.getText().toString().isEmpty()) {
             editText.setError(PREENCHER);
             if (completoParaSalvar) completoParaSalvar = false;
         }
     }
 
-    protected void verificaCampoComData(EditText editText, View view) {
+    protected void verificaCampoComData(@NonNull EditText editText, View view) {
         if (editText.getText().toString().isEmpty()) {
             editText.setError(PREENCHER);
             if (completoParaSalvar) completoParaSalvar = false;

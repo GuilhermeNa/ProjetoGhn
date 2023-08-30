@@ -42,7 +42,7 @@ public class FiltraParcelasSeguro {
 
     public static List<ParcelaDeSeguro> listaPeloCavaloId(@NonNull List<ParcelaDeSeguro> dataSet, int cavaloId) {
         return dataSet.stream()
-                .filter(p -> p.getRefCavalo() == cavaloId)
+                .filter(p -> p.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 

@@ -277,7 +277,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
 
         for(int i = 0; i < numeroDeParcelas; i++){
             parcelaDeSeguro = new ParcelaDeSeguro();
-            parcelaDeSeguro.setRefCavalo(0);
+            parcelaDeSeguro.setRefCavaloId(0);
             parcelaDeSeguro.setRefSeguro(chaveEstrangeira);
             parcelaDeSeguro.setNumeroDaParcela(i+1);
             parcelaDeSeguro.setValor(valorDeCadaParcela);

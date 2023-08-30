@@ -1,10 +1,13 @@
 package br.com.transporte.AppGhn.model.despesas;
 
+import androidx.room.Entity;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 
+@Entity
 public class DespesaComSeguroFrota extends DespesaComSeguro {
     private String coberturaCasco, assistencia24H, coberturaVidros;
     private BigDecimal coberturaRcfMateriais, coberturaRcfCorporais, coberturaAppMorte,

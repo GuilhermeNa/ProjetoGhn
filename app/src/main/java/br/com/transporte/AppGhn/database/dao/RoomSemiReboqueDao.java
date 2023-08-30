@@ -22,6 +22,9 @@ public interface RoomSemiReboqueDao {
     @Query("SELECT *FROM semireboque")
     List<SemiReboque> todos();
 
+    @Query("SELECT * FROM semireboque WHERE refCavaloId = :cavaloId")
+    List<SemiReboque> listaPorCavaloId(int cavaloId);
+
     @Query("SELECT * FROM semireboque WHERE id = :srId")
     SemiReboque localizaPeloId(int srId);
 }

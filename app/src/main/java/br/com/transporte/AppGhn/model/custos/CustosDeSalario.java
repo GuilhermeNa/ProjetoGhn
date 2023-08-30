@@ -1,29 +1,47 @@
 package br.com.transporte.AppGhn.model.custos;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.abstracts.Custos;
 
+@Entity(foreignKeys =
+@ForeignKey(
+        entity = Motorista.class,
+        parentColumns = "id",
+        childColumns = "refMotoristaId",
+        onDelete = ForeignKey.CASCADE,
+        onUpdate = ForeignKey.CASCADE
+))
 public class CustosDeSalario extends Custos {
-    private int refMotorista;
+    private Integer refMotoristaId;
     private final List<Integer> refAdiantamentos = new ArrayList<>();
-    private final List<Integer> refReembolsos = new ArrayList<>();
-    private final List<Integer> refFretes = new ArrayList<>();
+    private final List<Long> refReembolsos = new ArrayList<>();
+    private final List<Long> refFretes = new ArrayList<>();
 
-    public void setRefMotorista(int refMotorista) {
-        this.refMotorista = refMotorista;
+    //---------------------------------- Getters Setters -------------------------------------------
+
+    public void setRefMotoristaId(Integer refMotorista) {
+        this.refMotoristaId = refMotorista;
+    }
+
+    public Integer getRefMotoristaId(){
+        return this.refMotoristaId;
     }
 
     public List<Integer> getRefAdiantamentos() {
         return refAdiantamentos;
     }
 
-    public List<Integer> getRefReembolsos() {
+    public List<Long> getRefReembolsos() {
         return refReembolsos;
     }
 
-    public List<Integer> getRefFretes() {
+    public List<Long> getRefFretes() {
         return refFretes;
     }
 

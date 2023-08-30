@@ -23,4 +23,8 @@ public interface RoomCavaloDao {
 
     @Query("SELECT * FROM cavalo WHERE id = :cavaloId")
     Cavalo localizaPeloId(int cavaloId);
+
+    @Query("SELECT * FROM cavalo WHERE placa = :placa")
+    Cavalo localizaPelaPlaca(String placa);
+
 }

@@ -1,21 +1,15 @@
 package br.com.transporte.AppGhn.model.despesas;
 
-import java.util.ArrayList;
-import java.util.List;
+import androidx.room.Entity;
 
 import br.com.transporte.AppGhn.model.abstracts.Despesas;
+import br.com.transporte.AppGhn.model.enums.TipoDeImposto;
 
+@Entity
 public class DespesasDeImposto extends Despesas {
     private String nome;
-    private int id;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    private TipoDeImposto tipo;
 
     public String getNome() {
         return nome;
@@ -25,27 +19,11 @@ public class DespesasDeImposto extends Despesas {
         this.nome = nome;
     }
 
-    public boolean temIdValido() {
-        return id > 0;
+    public TipoDeImposto getTipo() {
+        return tipo;
     }
 
-    public static List<String> listaDeImpostos(){
-        List<String> lista = new ArrayList<>();
-        lista.add("IRRF");
-        lista.add("INSS");
-        lista.add("FGTS");
-        lista.add("SIMPLES NAC");
-        lista.add("IPVA");
-        lista.add("ICMS");
-        lista.add("ISS");
-        lista.add("PIS");
-        lista.add("PASEP");
-        lista.add("CSLL");
-        lista.add("COFINS");
-        lista.add("IPI");
-        lista.add("IRPJ");
-
-        return lista;
+    public void setTipo(TipoDeImposto tipo) {
+        this.tipo = tipo;
     }
-
 }

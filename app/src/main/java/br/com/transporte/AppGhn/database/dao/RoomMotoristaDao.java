@@ -23,4 +23,7 @@ public interface RoomMotoristaDao {
 
     @Query("SELECT * FROM motorista WHERE id = :motoristaId")
     Motorista localizaPeloId(int motoristaId);
+
+    @Query("SELECT * FROM motorista WHERE nome = :nome")
+    Motorista localizaPeloNome(String nome);
 }

@@ -1,5 +1,11 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+import androidx.room.Relation;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -7,22 +13,33 @@ import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 
+@Entity(foreignKeys =
+@ForeignKey(
+        entity = Cavalo.class,
+        parentColumns = "id",
+        childColumns = "refCavaloId",
+        onUpdate = ForeignKey.CASCADE,
+        onDelete = ForeignKey.CASCADE
+))
 public class Frete implements Serializable {
+    @PrimaryKey(autoGenerate = true)
+    private long id;
+    private Integer refCavaloId;
+
     private String origem, destino, empresa, carga;
-    private AdmFinanceiroFrete admFrete;
+    //private AdmFinanceiroFrete admFrete;
     private boolean apenasAdmEdita;
-    private int id, refCavalo;
     private BigDecimal peso;
     private LocalDate data;
 
-    public Frete(LocalDate data, String origem, String destino, String empresa, String carga, BigDecimal peso, int refCavalo) {
+    public Frete(LocalDate data, String origem, String destino, String empresa, String carga, BigDecimal peso, Integer refCavalo) {
         this.data = data;
         this.origem = origem;
         this.destino = destino;
         this.empresa = empresa;
         this.carga = carga;
         this.peso = peso;
-        this.refCavalo = refCavalo;
+        this.refCavaloId = refCavalo;
     }
 
     public Frete() {
@@ -31,13 +48,13 @@ public class Frete implements Serializable {
 
     //---------------------------------- Getters and Setters --------------------------------------
 
-    public AdmFinanceiroFrete getAdmFrete() {
+  /*  public AdmFinanceiroFrete getAdmFrete() {
         return admFrete;
-    }
+    }*/
 
-    public void setAdmFrete(AdmFinanceiroFrete admFrete) {
+   /* public void setAdmFrete(AdmFinanceiroFrete admFrete) {
         this.admFrete = admFrete;
-    }
+    }*/
 
     public String getOrigem() {
         return origem;
@@ -71,11 +88,11 @@ public class Frete implements Serializable {
         this.carga = carga;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -99,12 +116,12 @@ public class Frete implements Serializable {
         this.apenasAdmEdita = apenasAdmEdita;
     }
 
-    public int getRefCavalo() {
-        return refCavalo;
+    public Integer getRefCavaloId() {
+        return refCavaloId;
     }
 
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
+    public void setRefCavaloId(Integer refCavaloId) {
+        this.refCavaloId = refCavaloId;
     }
 
     public BigDecimal getPeso() {
@@ -117,7 +134,20 @@ public class Frete implements Serializable {
 
     //----------------------------------------------------------------------------------------------
     //---------------------------------- Inner Class -----------------------------------------------
+
+    @Entity(/*foreignKeys =
+    @ForeignKey(
+            entity = Frete.class,
+            parentColumns = "id",
+            childColumns = "refFreteId",
+            onUpdate = ForeignKey.CASCADE,
+            onDelete = ForeignKey.CASCADE
+    )*/)
     public static class AdmFinanceiroFrete {
+        @PrimaryKey(autoGenerate = true)
+        private long id;
+        private long refFreteId;
+
         private BigDecimal freteBruto;
         private BigDecimal freteLiquidoAReceber;
         private BigDecimal seguroDeCarga;
@@ -126,10 +156,22 @@ public class Frete implements Serializable {
         private BigDecimal comissaoPercentualAplicada;
         private boolean comissaoJaFoiPaga;
         private boolean freteJaFoiPago;
-        private int id;
 
 
         //---------------------------------- Getters and Setters -----------------------------------
+
+
+        public long getRefFreteId() {
+            return refFreteId;
+        }
+
+        public void setRefFreteId(long refFreteId) {
+            this.refFreteId = refFreteId;
+        }
+
+        public static void teste() {
+        }
+
 
         public BigDecimal getFreteBruto() {
             return freteBruto;
@@ -193,11 +235,11 @@ public class Frete implements Serializable {
             this.comissaoJaFoiPaga = comissaoJaFoiPaga;
         }
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(long id) {
             this.id = id;
         }
 
@@ -235,3 +277,4 @@ public class Frete implements Serializable {
     }
 
 }
+

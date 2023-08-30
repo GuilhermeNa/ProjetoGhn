@@ -57,12 +57,12 @@
     </fragment>
     <fragment
         android:id="@+id/navMotoristas"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.FuncionariosFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment"
         android:label="Motoristas Fragment"
         tools:layout="@layout/fragment_funcionarios" />
     <fragment
         android:id="@+id/navFrota"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.FrotaFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment"
         android:label="Frota Fragment"
         tools:layout="@layout/fragment_frota" />
     <fragment

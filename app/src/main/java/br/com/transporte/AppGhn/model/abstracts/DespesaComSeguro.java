@@ -1,10 +1,13 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
+import androidx.room.Entity;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
 public abstract class DespesaComSeguro extends Despesas {
-    private int parcelas, nContrato, id, refCavalo;
+    private int parcelas, nContrato, refCavalo;
     private LocalDate dataInicial, dataFinal, dataPrimeiraParcela;
     private BigDecimal valorParcela;
     private String companhia;
@@ -56,14 +59,6 @@ public abstract class DespesaComSeguro extends Despesas {
 
     public void setnContrato(int nContrato) {
         this.nContrato = nContrato;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getRefCavalo() {

@@ -1,10 +1,24 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+
 import java.time.LocalDate;
 
-abstract class CustosEDespesas {
+import br.com.transporte.AppGhn.model.Cavalo;
+
+@Entity(foreignKeys =
+@ForeignKey(
+        entity = Cavalo.class,
+        parentColumns = "id",
+        childColumns = "refCavaloId",
+        onUpdate = ForeignKey.CASCADE,
+        onDelete = ForeignKey.CASCADE
+))
+public abstract class CustosEDespesas {
+
+    private Integer refCavaloId;
     private LocalDate data;
-    private int refCavalo;
 
     public LocalDate getData() {
         return data;
@@ -15,10 +29,10 @@ abstract class CustosEDespesas {
     }
 
     public int getRefCavalo() {
-        return refCavalo;
+        return refCavaloId;
     }
 
     public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
+        this.refCavaloId = refCavalo;
     }
 }

@@ -1,5 +1,8 @@
 package br.com.transporte.AppGhn.model.despesas;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -7,14 +10,15 @@ import br.com.transporte.AppGhn.model.abstracts.Despesas;
 import br.com.transporte.AppGhn.model.enums.TipoCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
+@Entity
 public class DespesaCertificado extends Despesas {
     private LocalDate dataDeEmissao, dataDeVencimento;
     private String ano;
     private TipoCertificado tipoCertificado;
     private long numeroDoDocumento;
     private boolean valido;
-    private int id;
 
+    @Ignore
     public DespesaCertificado(TipoCertificado tipoCertificado, String ano, long numeroDoDocumento, LocalDate dataDeEmissao,
                               LocalDate dataDeVencimento, int refCaminhao, BigDecimal valorDespesa,
                               TipoDespesa tipoDespesa, boolean valido) {
@@ -31,14 +35,6 @@ public class DespesaCertificado extends Despesas {
 
     public DespesaCertificado() {
 
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getAno() {
@@ -78,10 +74,6 @@ public class DespesaCertificado extends Despesas {
 
     public void setDataDeVencimento(LocalDate dataDeVencimento) {
         this.dataDeVencimento = dataDeVencimento;
-    }
-
-    public boolean temIdValido() {
-        return id > 0;
     }
 
     public boolean isValido() {

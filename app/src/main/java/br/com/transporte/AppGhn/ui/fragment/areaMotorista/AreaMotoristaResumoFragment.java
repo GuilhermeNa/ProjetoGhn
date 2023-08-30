@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +26,8 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaResumoBinding;
 import br.com.transporte.AppGhn.filtros.FiltraAdiantamento;
 import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
@@ -71,18 +72,19 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+
         abastecimentoDao = new CustosDeAbastecimentoDAO();
         adiantamentoDao = new AdiantamentoDAO();
         custoDao = new CustosDePercursoDAO();
         freteDao = new FreteDAO();
         configuracaoInicialDateRange();
-        cavalo = recebeCavaloEscolhidoParaVisualizacao();
+        cavalo = recebeCavaloEscolhidoParaVisualizacao(dataBase);
         atualizaListas();
-
     }
 
-    private Cavalo recebeCavaloEscolhidoParaVisualizacao() {
-        CavaloDAO cavaloDao = new CavaloDAO();
+    private Cavalo recebeCavaloEscolhidoParaVisualizacao(@NonNull GhnDataBase dataBase) {
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
         int cavaloId = requireArguments().getInt(CHAVE_ID_CAVALO);
         return cavalo = cavaloDao.localizaPeloId(cavaloId);
     }

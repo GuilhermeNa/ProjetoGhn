@@ -5,28 +5,28 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import br.com.transporte.AppGhn.model.abstracts.Frota;
 
-@Entity(foreignKeys = @ForeignKey(
+@Entity(foreignKeys =
+@ForeignKey(
         entity = Motorista.class,
         parentColumns = "id",
-        childColumns = "motoristaId",
+        childColumns = "refMotoristaId",
         onUpdate = ForeignKey.CASCADE,
-        onDelete = ForeignKey.SET_NULL))
+        onDelete = ForeignKey.SET_NULL
+))
 public class Cavalo extends Frota {
     private String versao;
-
     private BigDecimal comissaoBase;
     private boolean valido;
-    private final List<SemiReboque> listaSemiReboque = new ArrayList<>();
+    private Integer refMotoristaId;
+
+    //---------------------------------------------------------------------------------------------
+    @Ignore
     private Motorista motorista;
-    private int motoristaId;
-
-
-
+    // private final List<SemiReboque> listaSemiReboque = new ArrayList<>();
+    //---------------------------------------------------------------------------------------------
     @Ignore
     public Cavalo(String placa, String renavam, String chassi, String ano, String modelo,
                   String marcaModelo, String cor, String versao, Motorista motorista,
@@ -44,8 +44,8 @@ public class Cavalo extends Frota {
         this.valido = valido;
     }
 
-
-    public Cavalo() {}
+    public Cavalo() {
+    }
 
     //---------------------------------- Getters and Setters ----------------------------------------------
 
@@ -65,53 +65,62 @@ public class Cavalo extends Frota {
         this.versao = versao;
     }
 
-    public List<SemiReboque> getSemiReboque() {
+    public Integer getRefMotoristaId() {
+        return refMotoristaId;
+    }
+
+    public void setRefMotoristaId(Integer refMotoristaId) {
+        this.refMotoristaId = refMotoristaId;
+    }
+
+    /* public List<SemiReboque> getSemiReboque() {
         return listaSemiReboque;
     }
 
     public void adicionaSemiReboque(SemiReboque sr) {
         listaSemiReboque.add(sr);
-    }
+    }*/
 
-    public Motorista getMotorista() {
+/*    public Motorista getMotorista() {
         return motorista;
     }
 
     public void setMotorista(Motorista motorista) {
         this.motorista = motorista;
-    }
+    }*/
 
-    public List<SemiReboque> getListaSemiReboque() {
+/*    public List<SemiReboque> getListaSemiReboque() {
         return listaSemiReboque;
-    }
+    }*/
 
 
     //---------------------------------- Outros Metodos ----------------------------------------------
 
-    public int getPosicaoSr(SemiReboque sr) {
+   /* public int getPosicaoSr(SemiReboque sr) {
         SemiReboque cavaloEncontrado = null;
         int posicaoNaLista = 0;
-        for (SemiReboque s: listaSemiReboque) {
-            if(s.getId() == sr.getId()){
+        for (SemiReboque s : listaSemiReboque) {
+            if (s.getId() == sr.getId()) {
                 cavaloEncontrado = s;
             }
-        } if(cavaloEncontrado != null){
+        }
+        if (cavaloEncontrado != null) {
             posicaoNaLista = listaSemiReboque.indexOf(cavaloEncontrado);
         }
         return posicaoNaLista;
-    }
+    }*/
 
-    public void removeSemiReboque(SemiReboque sr ){
+    /*public void removeSemiReboque(SemiReboque sr) {
         SemiReboque srEncontrado = null;
-        for (SemiReboque s: listaSemiReboque) {
-            if(s.getId() == sr.getId()){
+        for (SemiReboque s : listaSemiReboque) {
+            if (s.getId() == sr.getId()) {
                 srEncontrado = s;
             }
         }
-        if(srEncontrado != null){
+        if (srEncontrado != null) {
             listaSemiReboque.remove(srEncontrado);
         }
-    }
+    }*/
 
     public boolean isValido() {
         return valido;
@@ -119,5 +128,15 @@ public class Cavalo extends Frota {
 
     public void setValido(boolean valido) {
         this.valido = valido;
+    }
+
+    public Motorista getMotorista(){
+        /*try{
+            return FiltraMotorista.localizaPeloId(this.refMotoristaId);
+        } catch (ObjetoNaoEncontrado e){
+            e.printStackTrace();
+            return null;
+        }*/
+        return null;
     }
 }

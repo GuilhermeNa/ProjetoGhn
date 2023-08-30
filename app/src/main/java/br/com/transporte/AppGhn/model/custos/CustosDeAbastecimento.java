@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.model.custos;
 
+import androidx.room.Entity;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,6 +9,7 @@ import java.time.LocalDate;
 import br.com.transporte.AppGhn.model.abstracts.Custos;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
 
+@Entity
 public class CustosDeAbastecimento extends Custos implements Serializable {
 
     private boolean flagAbastecimentoTotal;

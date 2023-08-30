@@ -178,7 +178,7 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
         frete.getAdmFrete().setComissaoJaFoiPaga(false);
         frete.getAdmFrete().setFreteJaFoiPago(false);
         frete.setApenasAdmEdita(false);
-        frete.setRefCavalo(cavalo.getId());
+        frete.setRefCavaloId(cavalo.getId());
         return 0;
     }
 

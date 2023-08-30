@@ -4,13 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+
 import java.io.ByteArrayOutputStream;
 
 import br.com.transporte.AppGhn.model.Motorista;
 
 public abstract class BitmapImagem {
 
-    public static Bitmap decodificaBitmapEmString(Motorista motorista) {
+    public static Bitmap decodificaBitmapEmString(@NonNull Motorista motorista) {
         if(motorista.getImg() == null){
             throw new NullPointerException("Não foi possivel carregar a imagem");
         }
@@ -18,7 +20,7 @@ public abstract class BitmapImagem {
         return BitmapFactory.decodeByteArray(decode, 0, decode.length);
     }
 
-    public static String codificaBitmapEmString(Bitmap imagem) {
+    public static String codificaBitmapEmString(@NonNull Bitmap imagem) {
         byte[] fotoEmBytes;
         ByteArrayOutputStream streamDaFotoEmBytes = new ByteArrayOutputStream();
         imagem.compress(Bitmap.CompressFormat.PNG, 70, streamDaFotoEmBytes);

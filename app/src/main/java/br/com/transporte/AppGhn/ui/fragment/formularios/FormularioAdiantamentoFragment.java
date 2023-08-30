@@ -159,8 +159,8 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     @Override
     public int configuraObjetoNaCriacao() {
         adiantamento.setAdiantamentoJaFoiPago(false);
-        adiantamento.setRefCavalo(cavalo.getId());
-        adiantamento.setRefMotorista(cavalo.getMotorista().getId());
+        adiantamento.setRefCavaloId(cavalo.getId());
+        adiantamento.setRefMotoristaId(cavalo.getMotorista().getId());
         adiantamento.setSaldoRestituido(new BigDecimal(BigInteger.ZERO));
         return 0;
     }

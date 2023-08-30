@@ -16,7 +16,7 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.ui.fragment.home.FuncionariosFragment;
+import br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment;
 import br.com.transporte.AppGhn.model.Motorista;
 
 public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.ViewHolder> {

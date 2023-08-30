@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.model;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -10,8 +11,7 @@ import java.time.LocalDate;
 @Entity
 public class Motorista implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    private int id;
-
+    private Integer id;
     private String img, nome, cpf, cnh;
     private LocalDate cnhValidade, dataContratacao, dataNascimento;
     private BigDecimal salarioBase, percentualComissao, salarioRecebido;
@@ -71,11 +71,11 @@ public class Motorista implements Serializable {
         this.img = img;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

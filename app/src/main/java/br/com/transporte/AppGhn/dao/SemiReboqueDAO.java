@@ -45,7 +45,7 @@ public class SemiReboqueDAO {
     public List<SemiReboque> listaPorIdDeCavalo(int cavaloId){
         List<SemiReboque> lista = new ArrayList<>();
         for(SemiReboque s: dao){
-            if(s.getReferenciaCavalo() == cavaloId){
+            if(s.getRefCavaloId() == cavaloId){
                 lista.add(s);
             }
         }

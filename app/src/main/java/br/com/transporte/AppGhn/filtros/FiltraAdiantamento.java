@@ -31,7 +31,7 @@ public class FiltraAdiantamento {
 
     public static List<Adiantamento> listaPorCavaloId(@NonNull List<Adiantamento> dataSet, int cavaloId) {
         return dataSet.stream()
-                .filter(adiantamento -> adiantamento.getRefCavalo() == cavaloId)
+                .filter(adiantamento -> adiantamento.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 

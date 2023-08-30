@@ -370,7 +370,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         for(int i = 0; i < numeroDeParcelas; i++){
             parcelaDeSeguro = new ParcelaDeSeguro();
             parcelaDeSeguro.setTipoDespesa(DIRETA);
-            parcelaDeSeguro.setRefCavalo(cavaloId);
+            parcelaDeSeguro.setRefCavaloId(cavaloId);
             parcelaDeSeguro.setRefSeguro(chaveEstrangeira);
             parcelaDeSeguro.setNumeroDaParcela(i+1);
             parcelaDeSeguro.setValor(valorDeCadaParcela);

@@ -48,7 +48,6 @@ public class CavaloDAO {
         return new ArrayList<>(dao);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public List<Cavalo> listaValidos(){
         List<Cavalo> collect = dao.stream()
                 .filter(Cavalo::isValido)

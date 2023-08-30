@@ -42,7 +42,7 @@ public class FiltraFrete {
 
     public static List<Frete> listaPorCavaloId(@NonNull List<Frete> dataSet, int cavaloId) {
         return dataSet.stream()
-                .filter(f -> f.getRefCavalo() == cavaloId)
+                .filter(f -> f.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 

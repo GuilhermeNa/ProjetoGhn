@@ -27,6 +27,7 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioImpostosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
+import br.com.transporte.AppGhn.model.enums.TipoDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
@@ -137,7 +138,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
             verificaCampo(referenciaEdit);
         }
 
-        if (!DespesasDeImposto.listaDeImpostos().contains(nomeImpostoAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
+        if (!TipoDeImposto.listaDeImpostos().contains(nomeImpostoAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
             nomeImpostoAutoComplete.setError(INCORRETO);
             nomeImpostoAutoComplete.getText().clear();
             if (!isCompletoParaSalvar()) setCompletoParaSalvar(true);
@@ -214,7 +215,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDeImpostos() {
-        String[] impostos = DespesasDeImposto.listaDeImpostos().toArray(new String[0]);
+        String[] impostos = TipoDeImposto.listaDeImpostos().toArray(new String[0]);
         ArrayAdapter<String> adapterImpostos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, impostos);
         nomeImpostoAutoComplete.setAdapter(adapterImpostos);
     }

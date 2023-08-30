@@ -100,7 +100,7 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
         holder.origemTxtView.setText(frete.getOrigem());
         holder.destinoTxtView.setText(frete.getDestino());
 
-        String placa = cavaloDao.localizaPeloId(frete.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
 
         BigDecimal valorAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();

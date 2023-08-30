@@ -160,7 +160,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         adapter.setOnItemClickListener(frete -> {
             Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
-            intent.putExtra(CHAVE_ID_CAVALO, ((Frete) frete).getRefCavalo());
+            intent.putExtra(CHAVE_ID_CAVALO, ((Frete) frete).getRefCavaloId());
             intent.putExtra(CHAVE_ID, ((Frete) frete).getId());
             startActivity(intent);
         });
@@ -204,7 +204,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         adapter.setOnItemClickListener(adiantamento -> {
             Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_ADIANTAMENTO);
-            intent.putExtra(CHAVE_ID_CAVALO, ((Adiantamento) adiantamento).getRefCavalo());
+            intent.putExtra(CHAVE_ID_CAVALO, ((Adiantamento) adiantamento).getRefCavaloId());
             intent.putExtra(CHAVE_ID, ((Adiantamento) adiantamento).getId());
             startActivity(intent);
         });

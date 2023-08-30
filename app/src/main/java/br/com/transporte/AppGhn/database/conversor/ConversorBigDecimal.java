@@ -1,4 +1,4 @@
-package br.com.transporte.AppGhn.database;
+package br.com.transporte.AppGhn.database.conversor;
 
 
 import androidx.room.TypeConverter;
@@ -9,7 +9,7 @@ import java.math.BigInteger;
 public class ConversorBigDecimal {
 
     @TypeConverter
-    public String bdParaString(BigDecimal valor) {
+    public String paraString(BigDecimal valor) {
         if (valor != null)
             return valor.toPlainString();
         else
@@ -17,7 +17,7 @@ public class ConversorBigDecimal {
     }
 
     @TypeConverter
-    public BigDecimal stringParaBD(String string) {
+    public BigDecimal paraBd(String string) {
         if (string != null)
             return new BigDecimal(string);
         else

@@ -50,7 +50,7 @@ public class ParcelaDeSeguroDAO {
 
     public List<ParcelaDeSeguro> listaParcelasDoCavalo(int id) {
         return dao.stream()
-                .filter(p -> p.getRefCavalo() == id)
+                .filter(p -> p.getRefCavaloId() == id)
                 .collect(Collectors.toList());
     }
 

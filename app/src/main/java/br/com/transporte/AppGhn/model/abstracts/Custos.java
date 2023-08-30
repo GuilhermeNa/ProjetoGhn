@@ -1,12 +1,18 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.math.BigDecimal;
 
+@Entity
 public abstract class Custos extends CustosEDespesas {
+    @PrimaryKey(autoGenerate = true)
+    private Long id;
     private BigDecimal valorCusto;
-    private int id;
-    private int refCavalo;
     private boolean apenasAdmEdita;
+
+    //------
 
     public BigDecimal getValorCusto() {
         return valorCusto;
@@ -16,20 +22,12 @@ public abstract class Custos extends CustosEDespesas {
         this.valorCusto = valorCusto;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
-    }
-
-    public int getRefCavalo() {
-        return refCavalo;
-    }
-
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
     }
 
     public boolean isApenasAdmEdita() {

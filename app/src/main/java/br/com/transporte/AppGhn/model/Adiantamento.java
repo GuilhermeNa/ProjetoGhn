@@ -1,24 +1,51 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 
+@Entity(foreignKeys = {
+        @ForeignKey(
+                entity = Cavalo.class,
+                parentColumns = "id",
+                childColumns = "refCavaloId",
+                onUpdate = ForeignKey.CASCADE,
+                onDelete = ForeignKey.CASCADE
+        ),
+        @ForeignKey(
+                entity = Motorista.class,
+                parentColumns = "id",
+                childColumns = "refMotoristaId",
+                onUpdate = ForeignKey.CASCADE,
+                onDelete = ForeignKey.CASCADE
+        )
+})
 public class Adiantamento implements Serializable {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    private Integer refCavaloId;
+    private Integer refMotoristaId;
+
     private LocalDate data;
     private BigDecimal valorTotal, saldoRestituido, ultimoValorAbatido;
     private String descricao;
-    private int refCavalo, refMotorista, id;
     private boolean adiantamentoJaFoiPago;
 
-    public Adiantamento(LocalDate data, BigDecimal valorTotal, String descricao, int refCavalo, int refMotorista) {
+    @Ignore
+    public Adiantamento(LocalDate data, BigDecimal valorTotal, String descricao, int refCavalo, Integer refMotorista) {
         this.data = data;
         this.valorTotal = valorTotal;
         this.descricao = descricao;
-        this.refCavalo = refCavalo;
-        this.refMotorista = refMotorista;
+        this.refCavaloId = refCavalo;
+        this.refMotoristaId = refMotorista;
     }
 
     public Adiantamento() {
@@ -51,20 +78,20 @@ public class Adiantamento implements Serializable {
         this.descricao = descricao;
     }
 
-    public int getRefCavalo() {
-        return refCavalo;
+    public int getRefCavaloId() {
+        return refCavaloId;
     }
 
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
+    public void setRefCavaloId(int refCavaloId) {
+        this.refCavaloId = refCavaloId;
     }
 
-    public int getRefMotorista() {
-        return refMotorista;
+    public Integer getRefMotoristaId() {
+        return refMotoristaId;
     }
 
-    public void setRefMotorista(int refMotorista) {
-        this.refMotorista = refMotorista;
+    public void setRefMotoristaId(Integer refMotoristaId) {
+        this.refMotoristaId = refMotoristaId;
     }
 
     public int getId() {

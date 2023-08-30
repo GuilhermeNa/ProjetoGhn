@@ -213,7 +213,7 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
                 String placa;
 
                 for (Frete f : freteDao.listaFiltradaPorStatusJaRecebido(dataInicial, dataFinal)) {
-                    placa = cavaloDao.localizaPeloId(f.getRefCavalo()).getPlaca().toUpperCase(Locale.ROOT);
+                    placa = cavaloDao.localizaPeloId(f.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     if (placa.contains(newText.toUpperCase(Locale.ROOT))) {
                         lista.add(f);
                     }

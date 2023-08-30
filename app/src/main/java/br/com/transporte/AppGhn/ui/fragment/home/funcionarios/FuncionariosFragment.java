@@ -1,24 +1,22 @@
-package br.com.transporte.AppGhn.ui.fragment.home;
+package br.com.transporte.AppGhn.ui.fragment.home.funcionarios;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static android.view.View.GONE;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -28,34 +26,37 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentFuncionariosBinding;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.MotoristasAdapter;
 import br.com.transporte.AppGhn.dao.MotoristaDAO;
 import br.com.transporte.AppGhn.ui.fragment.ConstantesFragment;
+import br.com.transporte.AppGhn.ui.fragment.extensions.BuscaDeDadosSemResultado;
+import br.com.transporte.AppGhn.util.AnimationUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class FuncionariosFragment extends Fragment implements MenuProvider {
+public class FuncionariosFragment extends Fragment implements FuncionariosMenuProviderHelper.MenuProviderCallback{
     public static final String FUNCIONARIOS = "Funcionários";
     private FragmentFuncionariosBinding binding;
     private MotoristasAdapter adapter;
-    private MotoristaDAO dao;
+    private RoomMotoristaDao motoristaDao;
     private List<Motorista> listaDeFuncionarios;
     private RecyclerView recycler;
+    private Button btn;
+    private LinearLayout buscaVazia;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -63,9 +64,15 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
 
                 switch (codigoResultado) {
                     case RESULT_OK:
+                        atualizaAdapter(REGISTRO_CRIADO);
+                        break;
+
                     case RESULT_DELETE:
+                        atualizaAdapter(REGISTRO_APAGADO);
+                        break;
+
                     case RESULT_EDIT:
-                        atualizaAdapter();
+                        atualizaAdapter(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
@@ -75,21 +82,30 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
             }
     );
 
-    private void atualizaAdapter() {
+    private void atualizaAdapter(String txt) {
         listaDeFuncionarios = getListaDeFuncionarios();
         adapter.atualiza(listaDeFuncionarios);
+        MensagemUtil.toast(requireContext(), txt);
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dao = new MotoristaDAO();
+        motoristaDao = GhnDataBase.getInstance(requireContext()).getRoomMotoristaDao();
         listaDeFuncionarios = getListaDeFuncionarios();
     }
 
     private List<Motorista> getListaDeFuncionarios() {
-        return dao.listaTodos();
+        return motoristaDao.todos();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                            OnCreateView                                    ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -98,18 +114,35 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                           OnViewCreated                                    ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCampos();
-
         configuraToolbar();
+        configuraMenuProvider();
         configuraRecycler();
         configuraBtnNovoFuncionario();
+        configuraUi();
+    }
+
+    private void configuraUi() {
+        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(listaDeFuncionarios.size(), recycler, buscaVazia);
+    }
+
+    private void configuraMenuProvider() {
+        FuncionariosMenuProviderHelper menuProviderHelper = new FuncionariosMenuProviderHelper(this);
+        requireActivity().addMenuProvider(menuProviderHelper, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        menuProviderHelper.setMenuProviderCallback(this);
     }
 
     private void inicializaCampos() {
+        btn = binding.btn;
         recycler = binding.recycler;
+        buscaVazia = binding.buscaVazia;
     }
 
     private void configuraToolbar() {
@@ -119,11 +152,9 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(FUNCIONARIOS);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     private void configuraBtnNovoFuncionario() {
-        Button btn = binding.btn;
         btn.setOnClickListener(v -> {
             Intent intent = new Intent(this.getActivity(), FormulariosActivity.class);
             intent.putExtra(ConstantesFragment.CHAVE_FORMULARIO, ConstantesFragment.VALOR_MOTORISTA);
@@ -142,74 +173,30 @@ public class FuncionariosFragment extends Fragment implements MenuProvider {
             intent.putExtra(ConstantesFragment.CHAVE_ID, (Integer) idMotorista);
             intent.putExtra(ConstantesFragment.CHAVE_FORMULARIO, ConstantesFragment.VALOR_MOTORISTA);
             activityResultLauncher.launch(intent);
-
         });
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                           Callback                                         ||
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void realizaBusca(List<Motorista> dataSet) {
+        adapter.atualiza(dataSet);
+        configuraUi();
     }
 
     @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.menu_padrao, menu);
-        menu.removeItem(R.id.menu_padrao_editar);
-        MenuItem logout = menu.findItem(R.id.menu_padrao_logout);
-        MenuItem busca = menu.findItem(R.id.menu_padrao_search);
-        SearchView search = (SearchView) busca.getActionView();
-
-        Objects.requireNonNull(search).setOnSearchClickListener(v -> {
-            logout.setVisible(false);
-            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
-        });
-
-        search.setOnCloseListener(() -> {
-            logout.setVisible(true);
-            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-            return false;
-        });
-
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                List<Motorista> listaFiltrada = new ArrayList<>();
-                LinearLayout vazio = binding.buscaVazia;
-
-                for (Motorista m : dao.listaTodos()) {
-                    if (m.getNome().toLowerCase().contains(newText.toLowerCase())) {
-                        listaFiltrada.add(m);
-                    }
-                }
-                if (listaFiltrada.isEmpty()) {
-                    vazio.setVisibility(View.VISIBLE);
-                    recycler.setVisibility(View.INVISIBLE);
-                } else {
-                    if (vazio.getVisibility() == View.VISIBLE) {
-                        vazio.setVisibility(View.INVISIBLE);
-                        recycler.setVisibility(View.VISIBLE);
-                    }
-                    adapter.setListaFiltrada(listaFiltrada);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-        });
+    public void searchViewAtivada() {
+        btn.setVisibility(GONE);
+        AnimationUtil.defineAnimacao(requireContext(), R.anim.slide_out_bottom, btn);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_padrao_logout:
-                Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
-                break;
-
-            case android.R.id.home:
-                NavController controlador = Navigation.findNavController(requireView());
-                controlador.popBackStack();
-                break;
-        }
-        return false;
+    public void searchViewDesativada() {
+        btn.setVisibility(View.VISIBLE);
+        AnimationUtil.defineAnimacao(requireContext(), R.anim.slide_in_bottom, btn);
+        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
     }
-
 }

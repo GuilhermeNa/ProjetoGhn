@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSemiReboqueBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
@@ -24,21 +26,27 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     private FragmentFormularioSemiReboqueBinding binding;
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de semi-reboque que já existe.";
     private EditText placaEdit, marcaEdit, anoEdit, modeloEdit, corEdit, renavamEdit, chassiEdit;
-    private SemiReboqueDAO srDao;
+    private RoomSemiReboqueDao srDao;
     private SemiReboque sr;
     private Cavalo cavalo;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create                                         ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        srDao = new SemiReboqueDAO();
-
+        srDao = GhnDataBase.getInstance(this.requireContext()).getRoomReboqueDao();
         cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         int srId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(srId);
         sr = (SemiReboque) criaOuRecuperaObjeto(srId);
-
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create View                                    ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -47,11 +55,14 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          On View Created                                   ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
     }
@@ -128,7 +139,7 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        srDao.edita(sr);
+        srDao.adiciona(sr);
     }
 
     @Override
@@ -139,14 +150,12 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public int configuraObjetoNaCriacao() {
-        sr.setReferenciaCavalo(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
-        cavalo.adicionaSemiReboque(sr);
+        sr.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
         return 0;
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        cavalo.getSemiReboque().remove(sr);
-        srDao.deleta(sr.getId());
+        srDao.deleta(sr);
     }
 }

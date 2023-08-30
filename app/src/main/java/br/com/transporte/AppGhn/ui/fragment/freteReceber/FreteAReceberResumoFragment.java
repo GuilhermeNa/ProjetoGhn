@@ -172,7 +172,7 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
 
     private void configuraUi() {
         CavaloDAO cavaloDao = new CavaloDAO();
-        String placa = cavaloDao.localizaPeloId(frete.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
 
         placaTxtView.setText(placa);
         origemTxtView.setText(frete.getOrigem());

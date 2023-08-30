@@ -38,6 +38,8 @@ import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentSelecionaCavaloBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo;
@@ -48,14 +50,23 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
     private FragmentSelecionaCavaloBinding binding;
     private SelecionaCavaloAdapter adapter;
     private LinearLayout buscaVaziaLayout;
-    private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDao;
     private NavController controlador;
     private RecyclerView recyclerView;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cavaloDao = GhnDataBase.getInstance(requireContext()).getRoomCavaloDao();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                        OnCreateView                                        ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -64,17 +75,19 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                         OnView Created                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        cavaloDao = new CavaloDAO();
         controlador = Navigation.findNavController(view);
         TipoSelecionaCavalo requisicao = SelecionaCavaloArgs.fromBundle(getArguments()).getTipoDirection();
         configuraToolbar();
         configuraRecycler();
         configuraNavegacao(requisicao);
-
     }
 
     private void configuraToolbar() {
@@ -85,7 +98,6 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(CAVALOS);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-
     }
 
     private void inicializaCamposDaView() {
@@ -111,7 +123,7 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
     }
 
     private void configuraRecycler() {
-        List<Cavalo> listaRecycler = cavaloDao.listaTodos();
+        List<Cavalo> listaRecycler = cavaloDao.todos();
 
         adapter = new SelecionaCavaloAdapter(this, listaRecycler);
         recyclerView.setAdapter(adapter);
@@ -144,7 +156,7 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
             public boolean onQueryTextChange(String newText) {
                 List<Cavalo> listaFiltrada = new ArrayList<>();
 
-                for (Cavalo c : cavaloDao.listaTodos()) {
+                for (Cavalo c : cavaloDao.todos()) {
                     if (c.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
                         listaFiltrada.add(c);
                     }
@@ -179,11 +191,9 @@ public class SelecionaCavalo extends Fragment implements MenuProvider {
                 Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                 break;
 
-
             case android.R.id.home:
                 controlador.popBackStack();
                 break;
-
         }
         return false;
     }

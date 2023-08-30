@@ -124,7 +124,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="48dp"
-                    tools:listitem="@layout/recycler_item_semireboque" />
+                    tools:listitem="@layout/recycler_item_semireboque"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
                 <Button
                     android:id="@+id/rec_item_frota_btn"

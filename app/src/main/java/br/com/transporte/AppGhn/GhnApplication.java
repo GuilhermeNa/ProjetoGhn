@@ -97,7 +97,7 @@ public class GhnApplication extends Application {
         }
         criaAbastecimentos();
         criaDespesas();
-        criaAdiantamentos();
+        //criaAdiantamentos();
         criaCertificado();
         criaCustosDemanutencao();
         criaDespesasFinanceiras();
@@ -315,7 +315,7 @@ public class GhnApplication extends Application {
         certificadoDAO.adiciona(certificado5);
     }
 
-    private void criaAdiantamentos() {
+/*    private void criaAdiantamentos() {
         Adiantamento a1 = new Adiantamento(ConverteDataUtil.stringParaData("09/06/23"),
                 new BigDecimal("100.00"), "blablablablablalba", 1, 1);
         a1.setAdiantamentoJaFoiPago(false);
@@ -341,7 +341,7 @@ public class GhnApplication extends Application {
         adiantamentoDao.adiciona(a1);
         adiantamentoDao.adiciona(a2);
         adiantamentoDao.adiciona(a3);
-    }
+    }*/
 
     private void criaSemiReboques() {
         sr1 = new SemiReboque("PJB1111", "RodoCaçamba D", "2011",
@@ -370,8 +370,8 @@ public class GhnApplication extends Application {
                 "Vermelho",
                 "6x4", m1,
                 new BigDecimal("11.00"), true);
-        cavalo1.adicionaSemiReboque(sr1);
-        cavalo1.adicionaSemiReboque(sr2);
+       /* cavalo1.adicionaSemiReboque(sr1);
+        cavalo1.adicionaSemiReboque(sr2);*/
 
         cavalo2 = new Cavalo("RIF6A07",
                 "123456", "123456789123456",
@@ -380,8 +380,8 @@ public class GhnApplication extends Application {
                 "Vermelho",
                 "6x4", m2,
                 new BigDecimal("12.00"), true);
-        cavalo2.adicionaSemiReboque(sr3);
-        cavalo2.adicionaSemiReboque(sr4);
+ /*       cavalo2.adicionaSemiReboque(sr3);
+        cavalo2.adicionaSemiReboque(sr4);*/
 
         cavaloDao.adiciona(cavalo1);
         cavaloDao.adiciona(cavalo2);
@@ -610,6 +610,8 @@ public class GhnApplication extends Application {
         frete1.getAdmFrete().calculaComissaoELiquido(frete1);
         frete1.getAdmFrete().setFreteJaFoiPago(false);
         frete1.setApenasAdmEdita(false);
+
+        Frete.AdmFinanceiroFrete.teste();
 
         frete2 = new Frete(ConverteDataUtil.stringParaData("02/07/23"), "Soja", "Horizonte", "Fazenda", "Soja", new BigDecimal("40000.00"), 2);
         frete2.setAdmFrete(new Frete.AdmFinanceiroFrete());
