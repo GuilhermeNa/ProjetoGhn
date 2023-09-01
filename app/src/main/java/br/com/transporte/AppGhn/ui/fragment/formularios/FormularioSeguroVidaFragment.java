@@ -36,6 +36,9 @@ import java.util.Objects;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroVidaBinding;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
@@ -53,8 +56,9 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
             parcelasEdit, ciaEdit, nContratoEdit, dataPrimeiraParcela;
     private TextInputLayout dataInicialLayout, dataFinalLayout, dataPrimeiraParcelaLayout;
     private DespesaComSeguroDeVida seguro, seguroQueEstaSendoSubstituido;
-    private DespesasSeguroDAO seguroDao;
+    private RoomDespesaSeguroDao seguroDao;
     private TextView subEdit;
+    private RoomParcelaSeguroDao parcelaDeSeguroDao;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -63,7 +67,9 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        seguroDao = new DespesasSeguroDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+      //  seguroDao = dataBase.getRoomDespesaSeguroDao();
+        parcelaDeSeguroDao = dataBase.getRoomParcelaSeguroDao();
 
         int seguroId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
@@ -90,8 +96,8 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int seguroId) {
-
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long seguroId = (Long)id;
         switch (getTipoFormulario()) {
             case EDITANDO:
                 seguro = (DespesaComSeguroDeVida) seguroDao.localizaPeloId(seguroId);
@@ -198,7 +204,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         parcelasEdit.setText(String.valueOf(seguro.getParcelas()));
         valorParcela.setText(FormataNumerosUtil.formataNumero(seguro.getValorParcela()));
         ciaEdit.setText(seguro.getCompanhia());
-        nContratoEdit.setText(String.valueOf(seguro.getnContrato()));
+        nContratoEdit.setText(String.valueOf(seguro.getNContrato()));
         coberturaSociosEdit.setText(FormataNumerosUtil.formataNumero(seguro.getCoberturaSocios()));
         coberturaMotoristasEdit.setText(FormataNumerosUtil.formataNumero(seguro.getCoberturaMotoristas()));
     }
@@ -242,14 +248,14 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         seguro.setParcelas(Integer.parseInt(parcelasEdit.getText().toString()));
         seguro.setValorParcela(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorParcela.getText().toString())));
         seguro.setCompanhia(ciaEdit.getText().toString());
-        seguro.setnContrato(Integer.parseInt(nContratoEdit.getText().toString()));
+        seguro.setNContrato(Integer.parseInt(nContratoEdit.getText().toString()));
         seguro.setCoberturaSocios(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(coberturaSociosEdit.getText().toString())));
         seguro.setCoberturaMotoristas(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(coberturaMotoristasEdit.getText().toString())));
     }
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        seguroDao.edita(seguro);
+        seguroDao.adiciona(seguro);
     }
 
     @Override
@@ -260,7 +266,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     private void configuraParcelamento() {
-        int chaveEstrangeira = seguro.getId();
+        Long chaveEstrangeira = seguro.getId();
 
         String campoParcelas = parcelasEdit.getText().toString();
         int numeroDeParcelas = getNumeroDeParcelas(campoParcelas);
@@ -273,7 +279,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         LocalDate dataPrimeiraParcela = ConverteDataUtil.stringParaData(campoDataPrimeiraParcela);
 
         ParcelaDeSeguro parcelaDeSeguro;
-        ParcelaDeSeguroDAO parcelaDeSeguroDao = new ParcelaDeSeguroDAO();
 
         for(int i = 0; i < numeroDeParcelas; i++){
             parcelaDeSeguro = new ParcelaDeSeguro();
@@ -313,7 +318,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        seguroDao.deleta(seguro.getId());
+        seguroDao.deleta(seguro);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -394,11 +399,10 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     private void deletaParcelasNoBancoDeDados() {
-        ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
 
-        List<ParcelaDeSeguro> listaDeParcelasParaApagar = parcelaDao.listaParcelasDoSeguro(seguro.getId());
+        List<ParcelaDeSeguro> listaDeParcelasParaApagar = parcelaDeSeguroDao.listaPeloSeguroId(seguro.getId());
         for(ParcelaDeSeguro p: listaDeParcelasParaApagar){
-            parcelaDao.delete(p.getId());
+            parcelaDeSeguroDao.deleta(p);
         }
     }
 

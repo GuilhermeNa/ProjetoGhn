@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Entity
 public abstract class DespesaComSeguro extends Despesas {
-    private int parcelas, nContrato, refCavalo;
+    private int parcelas, nContrato;
     private LocalDate dataInicial, dataFinal, dataPrimeiraParcela;
     private BigDecimal valorParcela;
     private String companhia;
@@ -53,20 +53,12 @@ public abstract class DespesaComSeguro extends Despesas {
         this.companhia = companhia;
     }
 
-    public int getnContrato() {
+    public int getNContrato() {
         return nContrato;
     }
 
-    public void setnContrato(int nContrato) {
+    public void setNContrato(int nContrato) {
         this.nContrato = nContrato;
-    }
-
-    public int getRefCavalo() {
-        return refCavalo;
-    }
-
-    public void setRefCavalo(int refCavalo) {
-        this.refCavalo = refCavalo;
     }
 
     public boolean isValido() {
@@ -84,4 +76,6 @@ public abstract class DespesaComSeguro extends Despesas {
     public void setDataPrimeiraParcela(LocalDate dataPrimeiraParcela) {
         this.dataPrimeiraParcela = dataPrimeiraParcela;
     }
+
+
 }

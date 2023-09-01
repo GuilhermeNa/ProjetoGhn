@@ -25,7 +25,7 @@ public class DespesaComSeguroFrota extends DespesaComSeguro {
         super.setParcelas(parcelas);
         super.setValorParcela(valorParcela);
         super.setCompanhia(companhia);
-        super.setnContrato(nContrato);
+        super.setNContrato(nContrato);
         this.coberturaCasco = coberturaCasco;
         this.coberturaRcfMateriais = coberturaRcfMateriais;
         this.coberturaRcfCorporais = coberturaRcfCorporais;

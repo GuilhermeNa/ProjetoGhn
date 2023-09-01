@@ -6,7 +6,10 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
+import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 @Dao
 public interface RoomDespesaCertificadoDao {
@@ -19,5 +22,14 @@ public interface RoomDespesaCertificadoDao {
 
     @Query("SELECT * FROM despesacertificado WHERE id = :despesaId")
     DespesaCertificado localizaPeloId(Long despesaId);
+
+    @Query("SELECT * FROM despesaCertificado")
+    List<DespesaCertificado> todos();
+
+    @Query("SELECT * FROM despesacertificado WHERE tipoDespesa = :tipo")
+    List<DespesaCertificado> listaPorTipo(TipoDespesa tipo);
+
+    @Query("SELECT * FROM despesaCertificado WHERE refCavaloId = :cavaloId")
+    List<DespesaCertificado> listaPorCavaloId(Integer cavaloId);
 
 }

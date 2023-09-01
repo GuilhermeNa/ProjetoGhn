@@ -81,7 +81,7 @@ public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDe
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(manutencao.getValorCusto()));
         holder.empresaTxtView.setText(manutencao.getEmpresa());
         holder.descricaoTxtView.setText(manutencao.getDescricao());
-        holder.numeroNotaTxtView.setText(manutencao.getnNota());
+        holder.numeroNotaTxtView.setText(manutencao.getNNota());
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

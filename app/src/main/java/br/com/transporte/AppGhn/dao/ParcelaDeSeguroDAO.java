@@ -16,7 +16,7 @@ public class ParcelaDeSeguroDAO {
     private static final List<ParcelaDeSeguro> dao = new ArrayList<>();
     private static int contadorDeIds = 1;
 
-    public void adiciona(@NonNull ParcelaDeSeguro parcela){
+  /*  public void adiciona(@NonNull ParcelaDeSeguro parcela){
         parcela.setId(contadorDeIds);
         dao.add(parcela);
         contadorDeIds++;
@@ -34,7 +34,7 @@ public class ParcelaDeSeguroDAO {
     public void delete(int parcelaId){
         Optional<ParcelaDeSeguro> parcelaOptional = localizaPeloId(parcelaId);
         parcelaOptional.ifPresent(dao::remove);
-    }
+    }*/
 
     public List<ParcelaDeSeguro> listaTodos() {
         return new ArrayList<>(dao);

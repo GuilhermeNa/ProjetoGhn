@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasFragment;
@@ -27,20 +28,21 @@ import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHolder> {
     private final ComissoesPagasFragment context;
     private final List<CustosDeSalario> lista;
-    private final FreteDAO freteDao;
-    private final AdiantamentoDAO adiantamentoDao;
-    private final CustosDePercursoDAO custosDePercursoDao;
-    private final CavaloDAO cavaloDao;
+    private final RoomFreteDao freteDao;
+    private final RoomAdiantamentoDao adiantamentoDao;
+    private final RoomCustosPercursoDao custosDePercursoDao;
+    private final RoomCavaloDao cavaloDao;
     private OnItemClickListener onItemClickListener;
     private BigDecimal totalAdiantamentos, totalReembolsos, totalFretes;
 
-    public SalariosAdapter(ComissoesPagasFragment context, List<CustosDeSalario> lista) {
+    public SalariosAdapter(@NonNull ComissoesPagasFragment context, List<CustosDeSalario> lista) {
         this.context = context;
         this.lista = lista;
-        freteDao = new FreteDAO();
-        cavaloDao = new CavaloDAO();
-        adiantamentoDao = new AdiantamentoDAO();
-        custosDePercursoDao = new CustosDePercursoDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(context.requireContext());
+        freteDao = dataBase.getRoomFreteDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
+        custosDePercursoDao = dataBase.getRoomCustosPercursoDao();
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -130,15 +132,15 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         }
 
         List<BigDecimal> listaReembolsos = new ArrayList<>();
-        for (int i : salario.getRefReembolsos()) {
+        for (Long i : salario.getRefReembolsos()) {
             valorEncontrado = custosDePercursoDao.localizaPeloId(i).getValorCusto();
             listaReembolsos.add(valorEncontrado);
         }
 
         List<BigDecimal> listaFretes = new ArrayList<>();
-        for (int i : salario.getRefFretes()) {
-            valorEncontrado = freteDao.localizaPeloId(i).getAdmFrete().getComissaoAoMotorista();
-            listaFretes.add(valorEncontrado);
+        for (Long i : salario.getRefFretes()) {
+            //valorEncontrado = freteDao.localizaPeloId(i).getAdmFrete().getComissaoAoMotorista();
+            //listaFretes.add(valorEncontrado);
         }
 
         totalAdiantamentos = listaAdiantamentos.stream()

@@ -10,7 +10,6 @@ import androidx.room.Transaction;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.FreteEAdm;
 
 @Dao
 public interface RoomFreteDao {
@@ -21,12 +20,10 @@ public interface RoomFreteDao {
     @Delete
     void deleta(Frete frete);
 
-    @Transaction
+    @Query("SELECT * FROM frete")
+    List<Frete> todos();
+
     @Query("SELECT * FROM frete WHERE id = :freteId")
     Frete localizaPeloId(long freteId);
-
-    @Transaction
-    @Query("SELECT * FROM frete")
-    List<FreteEAdm> freteEAdm();
 
 }

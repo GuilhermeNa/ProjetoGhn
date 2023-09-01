@@ -21,7 +21,7 @@ public class CustosDePercursoDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(CustosDePercurso custo) {
+ /*   public void adiciona(CustosDePercurso custo) {
         custo.setId(contadorDeIds);
         dao.add(custo);
         contadorDeIds++;
@@ -40,7 +40,7 @@ public class CustosDePercursoDAO {
         if (despesaEncontrada != null) {
             dao.remove(despesaEncontrada);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------
@@ -70,7 +70,7 @@ public class CustosDePercursoDAO {
         }
         return lista;
     }
-
+// esse cara VVVVVV
     public List<CustosDePercurso> listaPorCavaloEAberto(int cavaloId) {
         List<CustosDePercurso> listaPorPlaca = listaPorCavalo(cavaloId);
         List<CustosDePercurso> listaEmAberto = new ArrayList<>();

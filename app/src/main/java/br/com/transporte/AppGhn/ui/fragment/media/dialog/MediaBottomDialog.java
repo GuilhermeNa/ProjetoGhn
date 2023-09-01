@@ -121,14 +121,14 @@ public class MediaBottomDialog {
         BigDecimal totalLitros = dados.getTotalDeLitrosUsadosNoIntervalo();
         ui_configuraNumeros(litrosTxt, totalLitros);
 
-        BigDecimal frete = dados.getFreteBrutoAuferidoNoPeriodo();
-        ui_configuraValores(freteTxt, frete);
+     //   BigDecimal frete = dados.getFreteBrutoAuferidoNoPeriodo();
+        //ui_configuraValores(freteTxt, frete);
 
         BigDecimal abastecimento = dados.getAbastecimentoAcumuladoNoPeriodo();
         ui_configuraValores(abastecimentoTxt, abastecimento);
 
-        BigDecimal comissao = dados.getComissaoPagaNoPeriodo();
-        ui_configuraValores(comissaoTxt, comissao);
+      //  BigDecimal comissao = dados.getComissaoPagaNoPeriodo();
+        //ui_configuraValores(comissaoTxt, comissao);
 
         BigDecimal custosPercurso = dados.getCustosDePercursoAcumuladoNoPeriodo();
         ui_configuraValores(custosPercursoTxt, custosPercurso);
@@ -136,9 +136,9 @@ public class MediaBottomDialog {
         BigDecimal media = dados.getMediaDoPeriodo();
         mediaTxt.setText(media.toPlainString());
 
-        BigDecimal percentual = dados.getPercentualDeLucroDoPeriodo();
-        String percentualEmString = percentual.toPlainString() + " %";
-        percentualTxt.setText(percentualEmString);
+       // BigDecimal percentual = dados.getPercentualDeLucroDoPeriodo();
+       // String percentualEmString = percentual.toPlainString() + " %";
+      //  percentualTxt.setText(percentualEmString);
 
     }
 
@@ -199,13 +199,13 @@ class ManipulaDados {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
+  /*  protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
         return freteDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
                 .stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getFreteBruto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
     protected BigDecimal getAbastecimentoAcumuladoNoPeriodo() {
         return abastecimentoDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
@@ -214,13 +214,13 @@ class ManipulaDados {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    protected BigDecimal getComissaoPagaNoPeriodo() {
+   /* protected BigDecimal getComissaoPagaNoPeriodo() {
         return freteDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
                 .stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
     protected BigDecimal getCustosDePercursoAcumuladoNoPeriodo() {
         return custosPercursoDao.listaFiltradaPorPlacaEData(cavalo.getId(), flag1.getData(), flag2.getData())
@@ -236,7 +236,7 @@ class ManipulaDados {
         return kmRodado.divide(litrosUsados, 2, RoundingMode.HALF_EVEN);
     }
 
-    protected BigDecimal getPercentualDeLucroDoPeriodo() {
+   /* protected BigDecimal getPercentualDeLucroDoPeriodo() {
         BigDecimal BIGDECIMAL_ONE = new BigDecimal("1.00");
         BigDecimal freteBruto = getFreteBrutoAuferidoNoPeriodo();
         BigDecimal abastecimento = getAbastecimentoAcumuladoNoPeriodo();
@@ -251,6 +251,6 @@ class ManipulaDados {
         return BIGDECIMAL_ONE.subtract(
                 custos.divide(freteBruto, 2, RoundingMode.HALF_EVEN)
         );
-    }
+    }*/
 
 }

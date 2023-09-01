@@ -54,6 +54,11 @@ public class Adiantamento implements Serializable {
 
     // ------------------------------ Getters e Setters --------------------------------------------
 
+
+    public boolean isAdiantamentoJaFoiPago() {
+        return adiantamentoJaFoiPago;
+    }
+
     public LocalDate getData() {
         return data;
     }

@@ -3,7 +3,6 @@ package br.com.transporte.AppGhn.ui.fragment.home.frota.helpers;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,8 +25,10 @@ import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class FrotaMenuProviderHelper implements MenuProvider {
 
-    private final List<Cavalo> dataSetcavalo;
-    private final List<SemiReboque> dataSetSemiReboque;
+    private final List<Cavalo> copiaDataSetCavalos_fragment;
+    private final List<SemiReboque> copiaDataSetReboques_fragment;
+    private List<Cavalo> dataSet_searchView_cavalo;
+    private List<SemiReboque> dataSet_searchView_semiReboque;
     private final FrotaFragment fragment;
     private MenuProviderCallback menuProviderCallback;
 
@@ -35,13 +36,13 @@ public class FrotaMenuProviderHelper implements MenuProvider {
         this.menuProviderCallback = menuProviderCallback;
     }
 
-    public FrotaMenuProviderHelper(FrotaFragment fragment, List<Cavalo> dataSetcavalo, List<SemiReboque> dataSetSemiReboque) {
+    public FrotaMenuProviderHelper(FrotaFragment fragment, List<Cavalo> copiaDataSetCavalos, List<SemiReboque> copiaDataSetReboques) {
         this.fragment = fragment;
-        this.dataSetcavalo = dataSetcavalo;
-        this.dataSetSemiReboque = dataSetSemiReboque;
-
-
+        this.copiaDataSetCavalos_fragment = copiaDataSetCavalos;
+        this.copiaDataSetReboques_fragment = copiaDataSetReboques;
     }
+
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -63,40 +64,60 @@ public class FrotaMenuProviderHelper implements MenuProvider {
         MenuProvider.super.onPrepareMenu(menu);
         MenuItem busca = menu.findItem(R.id.menu_padrao_search);
         SearchView search = (SearchView) busca.getActionView();
-        configuraExibicaoDeIconesAoAcionarSearchView(menu, search);
-        configuraBuscaNoBancoDeDados(search);
+        if(search != null){
+            configuraExibicaoDeIconesAoAcionarSearchView(menu, search);
+            configuraBuscaNoBancoDeDados(search);
+        }
+
+    }
+
+    private void configuraExibicaoDeIconesAoAcionarSearchView(@NonNull Menu menu, SearchView search) {
+        MenuItem logout = menu.findItem(R.id.menu_padrao_logout);
+        if (search != null && logout != null) {
+            search.setOnSearchClickListener(v -> {
+                logout.setVisible(false);
+                menuProviderCallback.searchViewAtivada();
+            });
+            search.setOnCloseListener(() -> {
+                logout.setVisible(true);
+                menuProviderCallback.searchViewDesativada();
+                return false;
+            });
+        }
+
     }
 
     private void configuraBuscaNoBancoDeDados(@NonNull SearchView search) {
+
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<Cavalo> dataSet_searchView_cavalo = buscaPorCavalosNoBd(newText);
-                List<SemiReboque> dataSet_searchView_semiReboque = buscaPorSrNoBd(newText);
+                dataSet_searchView_cavalo = buscaPorCavalosNoBd(newText);
+                dataSet_searchView_semiReboque = buscaPorSrNoBd(newText);
                 menuProviderCallback.realizaBusca(dataSet_searchView_cavalo, dataSet_searchView_semiReboque);
                 return false;
             }
 
             @NonNull
             private List<Cavalo> buscaPorCavalosNoBd(String newText) {
-                List<Cavalo> dataSet = new ArrayList<>();
-                for (Cavalo c : dataSetcavalo) {
-                    if (c.getPlaca().toLowerCase().contains(newText.toLowerCase())) {
-                        dataSet.add(c);
+                List<Cavalo> lista = new ArrayList<>();
+                for (Cavalo c : copiaDataSetCavalos_fragment) {
+                    if (c.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
+                        lista.add(c);
                     }
                 }
-                return dataSet;
+                return lista;
             }
 
             @NonNull
             private List<SemiReboque> buscaPorSrNoBd(String newText) {
-                List<SemiReboque> dataSet = new ArrayList<>();
-                for (SemiReboque s : dataSetSemiReboque) {
+                List<SemiReboque> lista = new ArrayList<>();
+                for (SemiReboque s : copiaDataSetReboques_fragment) {
                     if (s.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
-                        dataSet.add(s);
+                        lista.add(s);
                     }
                 }
-                return dataSet;
+                return lista;
             }
 
             @Override
@@ -105,32 +126,6 @@ public class FrotaMenuProviderHelper implements MenuProvider {
             }
         });
     }
-
-    private void configuraExibicaoDeIconesAoAcionarSearchView(@NonNull Menu menu, SearchView search) {
-        MenuItem logout = menu.findItem(R.id.menu_padrao_logout);
-
-        if (search == null) {
-            Log.d("debug", "SearchView Nula");
-            fragment.requireActivity().finish();
-        }
-        if(logout == null){
-            Log.d("debug", "SearchView Nula");
-            fragment.requireActivity().finish();
-        }
-
-        search.setOnSearchClickListener(v -> {
-            logout.setVisible(false);
-            menuProviderCallback.searchViewAtivada();
-
-        });
-
-        search.setOnCloseListener(() -> {
-            logout.setVisible(true);
-            menuProviderCallback.searchViewDesativada();
-            return false;
-        });
-    }
-
 
     //----------------------------------------------------------------------------------------------
     //                                       OnMenuItemSelected                                   ||
@@ -152,6 +147,19 @@ public class FrotaMenuProviderHelper implements MenuProvider {
         return false;
     }
 
+    //------------------------------------- Metodos Publicos ---------------------------------------
+
+    public void atualizaCavalos(List<Cavalo> listaDeCavalos) {
+        // Usado pelo fragment para atualizar a copia do Dataset
+        this.copiaDataSetCavalos_fragment.clear();
+        this.copiaDataSetCavalos_fragment.addAll(listaDeCavalos);
+    }
+
+    public void atualizaReboques(List<SemiReboque> listaDeReboques) {
+        // Usado pelo fragment para atualizar a copia do Dataset
+        this.copiaDataSetReboques_fragment.clear();
+        this.copiaDataSetReboques_fragment.addAll(listaDeReboques);
+    }
 
     //----------------------------------------------------------------------------------------------
     //                                       Callback                                              ||
@@ -159,7 +167,9 @@ public class FrotaMenuProviderHelper implements MenuProvider {
 
     public interface MenuProviderCallback {
         void realizaBusca(List<Cavalo> dataSet_searchView_cavalo, List<SemiReboque> dataSet_searchView_semiReboque);
+
         void searchViewAtivada();
+
         void searchViewDesativada();
     }
 }

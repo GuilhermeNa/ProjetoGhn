@@ -14,7 +14,6 @@ import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaRe
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CustosDePercursoAdapter;
-import br.com.transporte.AppGhn.util.BuscaVazia;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
@@ -189,7 +188,7 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     private void configuraUi() {
         ui_data();
         ui_totalCustos();
-        BuscaVazia.configura(listaDeCustos.size(), buscaVazia, recycler);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeCustos.size(), buscaVazia, recycler, "INVISIBLE");
     }
 
     private void ui_totalCustos() {
@@ -213,7 +212,7 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
         if (atualizacaoSolicitadaPelaActivity) {
             atualizaUi();
             resetaSolicitacaoDeAtualizacao();
-            BuscaVazia.configura(listaDeCustos.size(), buscaVazia, recycler);
+            ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeCustos.size(), buscaVazia, recycler, "INVISIBLE");
         }
     }
 

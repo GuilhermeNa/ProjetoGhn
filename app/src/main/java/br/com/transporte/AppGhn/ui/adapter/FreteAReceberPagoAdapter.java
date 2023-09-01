@@ -1,5 +1,8 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import static br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete.ADIANTAMENTO;
+import static br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete.SALDO;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,11 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
+import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
+import br.com.transporte.AppGhn.filtros.FiltraRecebimentoFrete;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
@@ -29,8 +37,8 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     private final FreteAReceberPagosFragment context;
     private final List<Frete> dataSet;
     private OnItemClickListener onItemClickListener;
-    private final RecebimentoFreteDAO recebimentoDao;
-    private final CavaloDAO cavaloDao;
+    private final RoomRecebimentoFreteDao recebimentoDao;
+    private final RoomCavaloDao cavaloDao;
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
@@ -39,8 +47,9 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     public FreteAReceberPagoAdapter(FreteAReceberPagosFragment context, List<Frete> lista) {
         this.context = context;
         this.dataSet = lista;
-        recebimentoDao = new RecebimentoFreteDAO();
-        cavaloDao = new CavaloDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(context.requireContext());
+        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -103,12 +112,12 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
         String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
 
-        BigDecimal valorAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
-        holder.totalReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
+        //BigDecimal valorAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
+       // holder.totalReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
 
         BigDecimal valorAdiantamento = vinculaAdiantamento(holder, frete);
         BigDecimal valorSaldo = vinculaSaldo(holder, frete);
-        configuraImgDeStatusDoRecebimento(holder, valorAReceber, valorAdiantamento, valorSaldo);
+        //configuraImgDeStatusDoRecebimento(holder, valorAReceber, valorAdiantamento, valorSaldo);
     }
 
     private void configuraImgDeStatusDoRecebimento(ViewHolder holder, @NonNull BigDecimal valorAReceber, @NonNull BigDecimal valorAdiantamento, BigDecimal valorSaldo) {
@@ -121,11 +130,13 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     }
 
     private BigDecimal vinculaSaldo(ViewHolder holder, @NonNull Frete frete) {
-        RecebimentoDeFrete saldo = recebimentoDao.retornaSaldo(frete.getId());
+        List<RecebimentoDeFrete> listaRecebimentos = FiltraRecebimentoFrete.listaPeloIdDoFrete(recebimentoDao.todos(), frete.getId());
+
         BigDecimal valorSaldo;
         try {
+            RecebimentoDeFrete saldo = FiltraRecebimentoFrete.localizaPorTipo(listaRecebimentos, SALDO);
             valorSaldo = saldo.getValor();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | ObjetoNaoEncontrado e) {
             e.printStackTrace();
             valorSaldo = BigDecimal.ZERO;
         }
@@ -134,11 +145,13 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     }
 
     private BigDecimal vinculaAdiantamento(ViewHolder holder, @NonNull Frete frete) {
-        RecebimentoDeFrete adiantamento = recebimentoDao.retornaAdiantamento(frete.getId());
+        List<RecebimentoDeFrete> listaRecebimentos = FiltraRecebimentoFrete.listaPeloIdDoFrete(recebimentoDao.todos(), frete.getId());
+
         BigDecimal valorAdiantamento;
         try {
+            RecebimentoDeFrete adiantamento = FiltraRecebimentoFrete.localizaPorTipo(listaRecebimentos, ADIANTAMENTO);
             valorAdiantamento = adiantamento.getValor();
-        } catch (NullPointerException e) {
+        } catch (NullPointerException | ObjetoNaoEncontrado e) {
             e.printStackTrace();
             valorAdiantamento = BigDecimal.ZERO;
         }

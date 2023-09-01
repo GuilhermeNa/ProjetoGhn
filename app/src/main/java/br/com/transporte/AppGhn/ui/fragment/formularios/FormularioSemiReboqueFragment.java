@@ -79,9 +79,10 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Integer reboqueId = (Integer)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            sr = srDao.localizaPeloId(id);
+            sr = srDao.localizaPeloId(reboqueId);
         } else {
             sr = new SemiReboque();
         }

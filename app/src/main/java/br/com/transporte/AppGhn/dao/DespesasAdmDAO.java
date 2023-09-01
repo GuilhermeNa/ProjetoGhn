@@ -18,7 +18,7 @@ public class DespesasAdmDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(DespesaAdm despesa) {
+   /* public void adiciona(DespesaAdm despesa) {
         dao.add(despesa);
         despesa.setId(contadorDeIds);
         contadorDeIds++;
@@ -37,7 +37,7 @@ public class DespesasAdmDAO {
         if (despesaEncontrada != null) {
             dao.remove(despesaEncontrada);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

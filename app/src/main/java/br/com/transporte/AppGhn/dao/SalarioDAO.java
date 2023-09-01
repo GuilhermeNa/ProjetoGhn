@@ -17,7 +17,7 @@ public class SalarioDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(CustosDeSalario salario) {
+   /* public void adiciona(CustosDeSalario salario) {
         salario.setId(contadorDeIds);
         dao.add(salario);
         contadorDeIds++;
@@ -36,7 +36,7 @@ public class SalarioDAO {
         if (salarioEncontrado != null) {
             dao.remove(salarioEncontrado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas --------------------------------------------

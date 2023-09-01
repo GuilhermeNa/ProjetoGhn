@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
 import br.com.transporte.AppGhn.databinding.DialogSeguroParcelaBinding;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
@@ -32,7 +34,7 @@ public class EditaParcelaDialog {
     private final Context context;
     private final ParcelaDeSeguro parcela;
     private Callback callback;
-    private ParcelaDeSeguroDAO parcelaDao;
+    private RoomParcelaSeguroDao parcelaDao;
 
     public EditaParcelaDialog(Context context, ParcelaDeSeguro parcela) {
         this.context = context;
@@ -49,7 +51,7 @@ public class EditaParcelaDialog {
         EditText valorEdit = binding.valor;
         CheckBox checkBox = binding.checkbox;
         TextView boxTxt = binding.boxTxt;
-        parcelaDao = new ParcelaDeSeguroDAO();
+        parcelaDao = GhnDataBase.getInstance(context).getRoomParcelaSeguroDao();
 
         configuraUiCheckBox(checkBox, boxTxt);
         aplicaMascarasAosEditTexts(dataEdit, valorEdit);
@@ -79,7 +81,7 @@ public class EditaParcelaDialog {
         boolean novoStatusDePagamento = defineNovoStatusDePagamento(checkBox);
         parcela.setPaga(novoStatusDePagamento);
 
-        parcelaDao.edita(parcela);
+        parcelaDao.adiciona(parcela);
     }
 
     private boolean defineNovoStatusDePagamento(@NonNull CheckBox checkBox) {

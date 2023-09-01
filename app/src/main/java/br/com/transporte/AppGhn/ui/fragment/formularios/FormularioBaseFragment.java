@@ -91,7 +91,7 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
         return id;
     }
 
-    protected void defineTipoEditandoOuCriando(int id) {
+    protected void defineTipoEditandoOuCriando(long id) {
         if (id > 0) {
             setTipoFormulario(TipoFormulario.EDITANDO);
         } else {

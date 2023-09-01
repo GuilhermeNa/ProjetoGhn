@@ -167,9 +167,10 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Integer motoristaId = (Integer)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            motorista = motoristaDao.localizaPeloId(id);
+            motorista = motoristaDao.localizaPeloId(motoristaId);
             if(motorista.getImg() != null) recebeuImagem = true;
 
         } else {

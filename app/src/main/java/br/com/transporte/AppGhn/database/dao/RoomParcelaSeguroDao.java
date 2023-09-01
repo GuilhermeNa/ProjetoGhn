@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 
 @Dao
@@ -19,5 +21,9 @@ public interface RoomParcelaSeguroDao {
 
     @Query("SELECT * FROM parcelaDeSeguro WHERE id = :parcelaId")
     ParcelaDeSeguro localizaPeloId(long parcelaId);
+
+    @Query("SELECT * FROM ParcelaDeSeguro WHERE refSeguroId = :seguroId")
+    List<ParcelaDeSeguro> listaPeloSeguroId(Long seguroId);
+
 
 }

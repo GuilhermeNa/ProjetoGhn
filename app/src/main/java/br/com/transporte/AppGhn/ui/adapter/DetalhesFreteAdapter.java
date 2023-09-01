@@ -98,11 +98,11 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
         holder.destinoTxtView.setText(frete.getDestino());
-        holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
-        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+        //holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
+        //holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
 
-        String comissaoPercentual = R.string.comissao +" "+ frete.getAdmFrete().getComissaoPercentualAplicada() + " %";
-        holder.comissaoPercentualTxtView.setText(comissaoPercentual);
+        //String comissaoPercentual = R.string.comissao +" "+ frete.getAdmFrete().getComissaoPercentualAplicada() + " %";
+        //holder.comissaoPercentualTxtView.setText(comissaoPercentual);
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

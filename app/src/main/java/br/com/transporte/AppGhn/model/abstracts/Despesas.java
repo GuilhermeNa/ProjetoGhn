@@ -9,10 +9,8 @@ import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 @Entity
 public abstract class Despesas extends CustosEDespesas {
-
-    @PrimaryKey(autoGenerate = true)
-    private Long id;
-
+/*    @PrimaryKey(autoGenerate = true)
+    private Long id;*/
     private BigDecimal valorDespesa;
     private TipoDespesa tipoDespesa;
 
@@ -32,7 +30,7 @@ public abstract class Despesas extends CustosEDespesas {
         this.tipoDespesa = tipoDespesa;
     }
 
-    public boolean temIdValido() {
+    /*public boolean temIdValido() {
         return id > 0;
     }
 
@@ -42,5 +40,5 @@ public abstract class Despesas extends CustosEDespesas {
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 }

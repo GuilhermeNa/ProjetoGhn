@@ -22,28 +22,28 @@ public class CalculoUtil {
     //                                          Frete                                             //
     //--------------------------------------------------------------------------------------------//
 
-    public static BigDecimal somaFreteBruto(@NonNull List<Frete> dataSet) {
+   /* public static BigDecimal somaFreteBruto(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getFreteBruto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
-    public static BigDecimal somaFreteLiquido(@NonNull List<Frete> dataSet) {
+    /*public static BigDecimal somaFreteLiquido(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getFreteLiquidoAReceber)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
-    public static BigDecimal somaComissao(@NonNull List<Frete> dataSet) {
+  /*  public static BigDecimal somaComissao(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
-    public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago){
+    /*public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago){
         if(isPago) return dataSet.stream()
                 .map(Frete::getAdmFrete)
                 .filter(Frete.AdmFinanceiroFrete::isComissaoJaFoiPaga)
@@ -55,14 +55,14 @@ public class CalculoUtil {
                 .filter(f -> !f.isComissaoJaFoiPaga())
                 .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
+    }*/
+/*
     public static BigDecimal somaDescontoNoFrete(List<Frete> dataSet){
         return dataSet.stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getDescontos)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
+    }*/
 
     //--------------------------------------------------------------------------------------------//
     //                                          Custos                                            //

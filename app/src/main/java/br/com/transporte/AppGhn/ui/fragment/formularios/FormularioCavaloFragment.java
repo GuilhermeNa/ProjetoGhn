@@ -70,9 +70,10 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        int cavaloId = (Integer)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            cavalo = cavaloDataBase.localizaPeloId(id);
+            cavalo = cavaloDataBase.localizaPeloId(cavaloId);
         } else {
             cavalo = new Cavalo();
         }

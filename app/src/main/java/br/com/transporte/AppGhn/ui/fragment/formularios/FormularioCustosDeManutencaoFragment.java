@@ -20,7 +20,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeManutencaoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosDeManutencaoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.enums.TipoCustoManutencao;
@@ -33,7 +34,7 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     public static final String ESCOLHA_UM_TIPO_DE_CUSTO = "Escolha um tipo de custo";
     private FragmentFormularioCustosDeManutencaoBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de manutenção que já existe.";
-    private CustosDeManutencaoDAO manutencaoDao;
+    private RoomCustosDeManutencaoDao manutencaoDao;
     private CustosDeManutencao manutencao;
     private EditText dataEdit, empresaEdit, descricaoEdit, nNotaEdit, valorEdit;
     private TextInputLayout dataLayout;
@@ -43,11 +44,10 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        manutencaoDao = new CustosDeManutencaoDAO();
+        manutencaoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosDeManutencaoDao();
         int manutencaoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(manutencaoId);
         manutencao = (CustosDeManutencao) criaOuRecuperaObjeto(manutencaoId);
-
     }
 
     @Nullable
@@ -85,9 +85,10 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long manutencaoId = (Long) id;
         if(getTipoFormulario() == TipoFormulario.EDITANDO){
-            manutencao = manutencaoDao.localizaPeloid(id);
+            manutencao = manutencaoDao.localizaPeloId(manutencaoId);
         } else {
             manutencao = new CustosDeManutencao();
         }
@@ -109,7 +110,7 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     public void exibeObjetoEmCasoDeEdicao() {
         dataEdit.setText(ConverteDataUtil.dataParaString(manutencao.getData()));
         empresaEdit.setText(manutencao.getEmpresa());
-        nNotaEdit.setText(manutencao.getnNota());
+        nNotaEdit.setText(manutencao.getNNota());
         descricaoEdit.setText(manutencao.getDescricao());
         valorEdit.setText((manutencao.getValorCusto().toPlainString()));
         if(manutencao.getTipoCustoManutencao() == TipoCustoManutencao.PERIODICA){
@@ -144,7 +145,7 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     public void vinculaDadosAoObjeto() {
         manutencao.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         manutencao.setEmpresa(empresaEdit.getText().toString());
-        manutencao.setnNota(nNotaEdit.getText().toString());
+        manutencao.setNNota(nNotaEdit.getText().toString());
         manutencao.setDescricao(descricaoEdit.getText().toString());
         manutencao.setValorCusto(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
         if (boxExtraordinario.isChecked()) {
@@ -159,12 +160,12 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        manutencaoDao.edita(manutencao);
+        manutencaoDao.adiciona(manutencao);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        manutencaoDao.deleta(manutencao.getId());
+        manutencaoDao.deleta(manutencao);
     }
 
     @Override

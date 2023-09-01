@@ -210,10 +210,10 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         FreteDAO daoFrete = new FreteDAO();
         List<Frete> listaFiltradaPorData = daoFrete.listaFiltradaPorData(dataInicial, dataFinal);
 
-        BigDecimal comissaoTotalDevidaAosMotoristas = CalculoUtil.somaComissao(listaFiltradaPorData);
-        valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalDevidaAosMotoristas));
+       // BigDecimal comissaoTotalDevidaAosMotoristas = CalculoUtil.somaComissao(listaFiltradaPorData);
+        //valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalDevidaAosMotoristas));
 
-        BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CalculoUtil.somaComissaoPorStatus(listaFiltradaPorData, true);
+    /*    BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CalculoUtil.somaComissaoPorStatus(listaFiltradaPorData, true);
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalQueJaFoiPagaAosMotoristas));
 
         BigDecimal comissaoEmAbertoASerPaga = comissaoTotalDevidaAosMotoristas.subtract(comissaoTotalQueJaFoiPagaAosMotoristas);
@@ -225,7 +225,7 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         } catch (ArithmeticException e) {
             evolucaoProgressBar = BigDecimal.ZERO;
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void atualizaProgressBar() {

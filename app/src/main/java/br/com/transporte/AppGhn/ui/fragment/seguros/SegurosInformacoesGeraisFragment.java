@@ -139,7 +139,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         parcelasQntTxtView.setText(String.valueOf(seguro.getParcelas()));
         parcelaValorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguro.getValorParcela()));
         companhiaTxtView.setText(seguro.getCompanhia());
-        nContratoTxtView.setText(String.valueOf(seguro.getnContrato()));
+        nContratoTxtView.setText(String.valueOf(seguro.getNContrato()));
 
         if (seguro instanceof DespesaComSeguroFrota) {
             LinearLayout seguroAutoLayout = binding.fragSalarioDetalhesLayoutCoberturasAuto;

@@ -23,7 +23,7 @@ public class DespesaComSeguroDeVida extends DespesaComSeguro {
         super.setCompanhia(companhia);
         super.setValido(valido);
         super.setParcelas(parcelas);
-        super.setnContrato(nContrato);
+        super.setNContrato(nContrato);
         super.setRefCavalo(refCavalo);
         this.coberturaSocios = coberturaSocios;
         this.coberturaMotoristas = coberturaMotoristas;

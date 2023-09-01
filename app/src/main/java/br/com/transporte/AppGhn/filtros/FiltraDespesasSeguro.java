@@ -36,10 +36,10 @@ public class FiltraDespesasSeguro {
     }
 
     @NonNull
-    public static List<DespesaComSeguroFrota> listaFrota_valida() {
-        return Collections.singletonList((DespesaComSeguroFrota) dao.listaTodos().stream()
-                .filter(d -> d instanceof DespesaComSeguroFrota && d.isValido())
-                .collect(Collectors.toList()));
+    public static List<DespesaComSeguroFrota> listaFrota_valida(List<DespesaComSeguroFrota> dataSet) {
+        return dataSet.stream()
+                .filter(DespesaComSeguro::isValido)
+                .collect(Collectors.toList());
     }
 
     @NonNull

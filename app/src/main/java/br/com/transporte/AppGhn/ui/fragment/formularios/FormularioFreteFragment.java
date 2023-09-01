@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_DEZ;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 
 import android.os.Bundle;
@@ -19,11 +20,13 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioFreteBinding;
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.helpers.FreteHelper;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
@@ -31,20 +34,18 @@ import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
 public class FormularioFreteFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de frete que já existe.";
-    public static final String TEN = "10.00";
     private FragmentFormularioFreteBinding binding;
     private EditText dataEdit, origemEdit, destinoEdit, empresaEdit, cargaEdit, freteBrutoEdit,
             descontosEdit, seguroCargaEdit, pesoEdit;
     private Frete frete;
-    private FreteDAO freteDao;
+    private RoomFreteDao freteDao;
     private TextInputLayout dataLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        freteDao = new FreteDAO();
-
-        int freteId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        freteDao = GhnDataBase.getInstance(requireContext()).getRoomFreteDao();
+        long freteId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(freteId);
         frete = (Frete) criaOuRecuperaObjeto(freteId);
     }
@@ -79,14 +80,14 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        long freteId = (long)id;
+
         if(getTipoFormulario() == TipoFormulario.EDITANDO){
-            frete = freteDao.localizaPeloId(id);
+            frete = freteDao.localizaPeloId(freteId);
         } else {
             frete = new Frete();
-            frete.setAdmFrete(new Frete.AdmFinanceiroFrete());
         }
-
         return frete;
     }
 
@@ -107,9 +108,9 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
         empresaEdit.setText(frete.getEmpresa());
         cargaEdit.setText(frete.getCarga());
         pesoEdit.setText(String.valueOf(frete.getPeso()));
-        freteBrutoEdit.setText(frete.getAdmFrete().getFreteBruto().toPlainString());
-        descontosEdit.setText(frete.getAdmFrete().getDescontos().toPlainString());
-        seguroCargaEdit.setText(frete.getAdmFrete().getSeguroDeCarga().toPlainString());
+        freteBrutoEdit.setText(frete.getFreteBruto().toPlainString());
+        descontosEdit.setText(frete.getDescontos().toPlainString());
+        seguroCargaEdit.setText(frete.getSeguroDeCarga().toPlainString());
     }
 
     @Override
@@ -143,19 +144,19 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
         frete.setEmpresa(empresaEdit.getText().toString());
         frete.setCarga(cargaEdit.getText().toString());
         frete.setPeso(new BigDecimal(formatPriceSave(pesoEdit.getText().toString())));
-        frete.getAdmFrete().setFreteBruto(new BigDecimal(formatPriceSave(freteBrutoEdit.getText().toString())));
-        frete.getAdmFrete().setDescontos(new BigDecimal(formatPriceSave(descontosEdit.getText().toString())));
-        frete.getAdmFrete().setSeguroDeCarga(new BigDecimal(formatPriceSave(seguroCargaEdit.getText().toString())));
+        frete.setFreteBruto(new BigDecimal(formatPriceSave(freteBrutoEdit.getText().toString())));
+        frete.setDescontos(new BigDecimal(formatPriceSave(descontosEdit.getText().toString())));
+        frete.setSeguroDeCarga(new BigDecimal(formatPriceSave(seguroCargaEdit.getText().toString())));
     }
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        freteDao.edita(frete);
+        freteDao.adiciona(frete);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        freteDao.deleta(frete.getId());
+        freteDao.deleta(frete);
     }
 
     @Override
@@ -167,16 +168,23 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     @Override
     public int configuraObjetoNaCriacao() {
         Cavalo cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
-
+        BigDecimal comissaoPercentual;
         try{
-            frete.getAdmFrete().setComissaoPercentualAplicada(cavalo.getComissaoBase());
+            comissaoPercentual = FreteHelper.vinculaComissaoAplicada(cavalo.getComissaoBase());
+            frete.setComissaoPercentualAplicada(comissaoPercentual);
         } catch (ValorInvalidoException e) {
             e.printStackTrace();
-            frete.getAdmFrete().setComissaoPercentualAplicadaIgnorandoTryCatch(new BigDecimal(TEN));
+            comissaoPercentual = BIG_DECIMAL_DEZ;
         }
-        frete.getAdmFrete().calculaComissaoELiquido(frete);
-        frete.getAdmFrete().setComissaoJaFoiPaga(false);
-        frete.getAdmFrete().setFreteJaFoiPago(false);
+
+        BigDecimal valorComissao = FreteHelper.calculaComissao(comissaoPercentual, this.frete.getFreteBruto());
+        frete.setComissaoAoMotorista(valorComissao);
+
+        BigDecimal valorLiquido = FreteHelper.calculaFreteLiquidoAReceber(this.frete.getFreteBruto(), this.frete.getDescontos(), this.frete.getSeguroDeCarga());
+        frete.setFreteLiquidoAReceber(valorLiquido);
+
+        frete.setComissaoJaFoiPaga(false);
+        frete.setFreteJaFoiPago(false);
         frete.setApenasAdmEdita(false);
         frete.setRefCavaloId(cavalo.getId());
         return 0;

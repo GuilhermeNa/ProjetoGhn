@@ -31,6 +31,8 @@ import java.math.BigInteger;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAdiantamentoBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
@@ -43,12 +45,18 @@ import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     private FragmentFormularioAdiantamentoBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de adiantamento que já existe.";
-    private AdiantamentoDAO adiantamentoDao;
+    private RoomAdiantamentoDao adiantamentoDao;
     private Adiantamento adiantamento;
     private EditText dataEdit, valorEdit, descricaoEdit;
     private TextInputLayout dataLayout;
     private Cavalo cavalo;
     private TextView placa, motorista;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        adiantamentoDao = GhnDataBase.getInstance(requireContext()).getRoomAdiantamentoDao();
+    }
 
     @Nullable
     @Override
@@ -61,7 +69,6 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        adiantamentoDao = new AdiantamentoDAO();
 
         cavalo = recebeReferenciaExternaDeCavalo();
         int adiantamentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
@@ -97,9 +104,10 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        int adiantamentoId = (int) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            adiantamento = adiantamentoDao.localizaPeloId(id);
+            adiantamento = adiantamentoDao.localizaPeloId(adiantamentoId);
         } else {
             adiantamento = new Adiantamento();
         }
@@ -147,7 +155,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        adiantamentoDao.edita(adiantamento);
+        adiantamentoDao.adiciona(adiantamento);
     }
 
     @Override
@@ -167,7 +175,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        adiantamentoDao.deleta(adiantamento.getId());
+        adiantamentoDao.deleta(adiantamento);
     }
 
     @SuppressLint("NonConstantResourceId")

@@ -40,11 +40,11 @@ public class CustosDeManutencao extends Custos {
         this.descricao = descricao;
     }
 
-    public String getnNota() {
+    public String getNNota() {
         return nNota;
     }
 
-    public void setnNota(String nNota) {
+    public void setNNota(String nNota) {
         this.nNota = nNota;
     }
 

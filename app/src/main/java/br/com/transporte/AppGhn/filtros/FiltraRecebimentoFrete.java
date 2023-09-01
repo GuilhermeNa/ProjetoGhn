@@ -9,19 +9,17 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete;
 
 public class FiltraRecebimentoFrete {
-    private static final RecebimentoFreteDAO dao = new RecebimentoFreteDAO();
 
     @NonNull
-    public static RecebimentoDeFrete localizaPeloId(int recebimentoId) throws ObjetoNaoEncontrado {
+    public static RecebimentoDeFrete localizaPeloId(@NonNull List<RecebimentoDeFrete> dataSet, int recebimentoId) throws ObjetoNaoEncontrado {
         RecebimentoDeFrete recebimentoLocalizado = null;
 
-        for (RecebimentoDeFrete r : dao.listaTodos()) {
+        for (RecebimentoDeFrete r : dataSet) {
             if (r.getId() == recebimentoId) {
                 recebimentoLocalizado = r;
             }
@@ -32,26 +30,26 @@ public class FiltraRecebimentoFrete {
 
     }
 
-    public static List<RecebimentoDeFrete> listaPeloIdDoFrete(int freteId) {
-        return dao.listaTodos().stream()
-                .filter(r -> r.getRefFrete() == freteId)
+    public static List<RecebimentoDeFrete> listaPeloIdDoFrete(@NonNull List<RecebimentoDeFrete> dataSet, long freteId) {
+        return dataSet.stream()
+                .filter(r -> r.getRefFreteId() == freteId)
                 .collect(Collectors.toList());
     }
 
-    public static BigDecimal valorTotalRecebido(int freteId) {
+    public static BigDecimal valorTotalRecebido(@NonNull List<RecebimentoDeFrete> dataSet) {
         BigDecimal total = new BigDecimal(BigInteger.ZERO);
 
-        for (RecebimentoDeFrete r : listaPeloIdDoFrete(freteId)) {
+        for (RecebimentoDeFrete r : dataSet) {
             total = total.add(r.getValor());
         }
-
         return total;
     }
 
-    public static RecebimentoDeFrete localizaPorTipo(int freteId, TipoRecebimentoFrete tipo) throws ObjetoNaoEncontrado {
+    @NonNull
+    public static RecebimentoDeFrete localizaPorTipo(@NonNull List<RecebimentoDeFrete> dataSet, TipoRecebimentoFrete tipo) throws ObjetoNaoEncontrado {
         RecebimentoDeFrete recebimentoLocalizado = null;
 
-        for (RecebimentoDeFrete r : listaPeloIdDoFrete(freteId)) {
+        for (RecebimentoDeFrete r : dataSet) {
             if (r.getTipoRecebimentoFrete() == tipo) {
                 recebimentoLocalizado = r;
             }

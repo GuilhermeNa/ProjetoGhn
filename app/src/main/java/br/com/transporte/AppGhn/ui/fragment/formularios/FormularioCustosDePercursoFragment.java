@@ -22,7 +22,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosPercursoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
@@ -38,13 +39,13 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     private TextView reembolso;
     private CheckBox naoBox, simBox;
     private CustosDePercurso custo;
-    private CustosDePercursoDAO custosDao;
+    private RoomCustosPercursoDao custosDao;
     private TextInputLayout dataLayout;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        custosDao = new CustosDePercursoDAO();
+        custosDao = GhnDataBase.getInstance(requireContext()).getRoomCustosPercursoDao();
         int custoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(custoId);
         custo = (CustosDePercurso) criaOuRecuperaObjeto(custoId);
@@ -83,9 +84,10 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long custoId = (Long)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            custo = custosDao.localizaPeloId(id);
+            custo = custosDao.localizaPeloId(custoId);
         } else {
             custo = new CustosDePercurso();
         }
@@ -151,7 +153,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        custosDao.edita(custo);
+        custosDao.adiciona(custo);
     }
 
     @Override
@@ -169,7 +171,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        custosDao.deleta(custo.getId());
+        custosDao.deleta(custo);
     }
 
 }

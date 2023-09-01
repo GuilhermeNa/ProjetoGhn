@@ -39,10 +39,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroAutoBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasSeguro;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
@@ -64,9 +68,11 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     private DespesaComSeguroFrota seguro, seguroQueEstaSendoSubstituido;
     private FragmentFormularioSeguroAutoBinding binding;
     private AutoCompleteTextView refCavaloAutoComplete;
-    private DespesasSeguroDAO seguroDao;
-    private CavaloDAO cavaloDao;
+    private RoomDespesaSeguroDao seguroDao;
+    private RoomCavaloDao cavaloDao;
     private TextView subEdit;
+    private List<String> listaDePlacas;
+    private RoomParcelaSeguroDao parcelaDeSeguroDao;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -75,8 +81,10 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
-        seguroDao = new DespesasSeguroDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+       // seguroDao = dataBase.getRoomDespesaSeguroDao();
+        parcelaDeSeguroDao = dataBase.getRoomParcelaSeguroDao();
 
         int seguroId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
@@ -104,10 +112,12 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long seguroId = (Long)id;
+
         switch (getTipoFormulario()) {
             case EDITANDO:
-                seguro = (DespesaComSeguroFrota) seguroDao.localizaPeloId(id);
+                seguro = (DespesaComSeguroFrota) seguroDao.localizaPeloId(seguroId);
                 break;
 
             case ADICIONANDO:
@@ -116,7 +126,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
             case RENOVANDO:
                 seguro = new DespesaComSeguroFrota();
-                seguroQueEstaSendoSubstituido = (DespesaComSeguroFrota) seguroDao.localizaPeloId(id);
+                seguroQueEstaSendoSubstituido = (DespesaComSeguroFrota) seguroDao.localizaPeloId(seguroId);
                 break;
         }
 
@@ -144,11 +154,11 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         inicializaCamposDaView();
         configuraUi();
         configuraDropDownMenuDeCavalos();
-
     }
 
     private void configuraDropDownMenuDeCavalos() {
-        String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
+        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+        String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloAutoComplete.setAdapter(adapterCavalos);
     }
@@ -200,7 +210,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
                 alteraUiParaModoRenovacao();
                 Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(TITULO_APP_BAR_RENOVANDO);
                 break;
-
         }
     }
 
@@ -237,7 +246,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         parcelasEdit.setText(String.valueOf(seguro.getParcelas()));
         valorParcelasEdit.setText(FormataNumerosUtil.formataNumero(seguro.getValorParcela()));
         companhiaEdit.setText(seguro.getCompanhia());
-        nContratoEdit.setText(String.valueOf(seguro.getnContrato()));
+        nContratoEdit.setText(String.valueOf(seguro.getNContrato()));
         coberturaCascoEdit.setText(seguro.getCoberturaCasco());
         rcfMateriaisEdit.setText(FormataNumerosUtil.formataNumero(seguro.getCoberturaRcfMateriais()));
         rcfCorporaisEdit.setText(FormataNumerosUtil.formataNumero(seguro.getCoberturaRcfCorporais()));
@@ -289,7 +298,8 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     private void verificaSeAPlacaDigitadaEhValida() {
-        boolean placaInexistente = !cavaloDao.listaPlacas().contains(refCavaloAutoComplete.getText().toString().toUpperCase(Locale.ROOT));
+
+        boolean placaInexistente = !listaDePlacas.contains(refCavaloAutoComplete.getText().toString().toUpperCase(Locale.ROOT));
 
         if (placaInexistente) {
             refCavaloAutoComplete.setError(INCORRETO);
@@ -308,7 +318,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         seguro.setParcelas(Integer.parseInt(parcelasEdit.getText().toString()));
         seguro.setValorParcela(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorParcelasEdit.getText().toString())));
         seguro.setCompanhia(companhiaEdit.getText().toString());
-        seguro.setnContrato(Integer.parseInt(nContratoEdit.getText().toString()));
+        seguro.setNContrato(Integer.parseInt(nContratoEdit.getText().toString()));
         seguro.setCoberturaCasco(coberturaCascoEdit.getText().toString());
         seguro.setCoberturaRcfMateriais(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(rcfMateriaisEdit.getText().toString())));
         seguro.setCoberturaRcfCorporais(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(rcfCorporaisEdit.getText().toString())));
@@ -321,12 +331,12 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        seguroDao.edita(seguro);
+        seguroDao.adiciona(seguro);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        seguroDao.deleta(seguro.getId());
+        seguroDao.deleta(seguro);
     }
 
     @Override
@@ -339,7 +349,8 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     @Override
     public int configuraObjetoNaCriacao() {
         String placa = refCavaloAutoComplete.getText().toString();
-        int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(placa).getId();
+
+        int cavaloId = cavaloDao.localizaPelaPlaca(placa).getId();
 
         seguro.setTipoDespesa(DIRETA);
         seguro.setRefCavalo(cavaloId);
@@ -352,7 +363,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     private void configuraParcelamento(int cavaloId){
-        int chaveEstrangeira = seguro.getId();
+        Long chaveEstrangeira = seguro.getId();
 
         String campoParcelas = parcelasEdit.getText().toString();
         int numeroDeParcelas = getNumeroDeParcelas(campoParcelas);
@@ -365,7 +376,6 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         LocalDate dataPrimeiraParcela = ConverteDataUtil.stringParaData(campoDataPrimeiraParcela);
 
         ParcelaDeSeguro parcelaDeSeguro;
-        ParcelaDeSeguroDAO parcelaDeSeguroDao = new ParcelaDeSeguroDAO();
 
         for(int i = 0; i < numeroDeParcelas; i++){
             parcelaDeSeguro = new ParcelaDeSeguro();
@@ -473,11 +483,9 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     private void deletaParcelasNoBancoDeDados() {
-        ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
-
-        List<ParcelaDeSeguro> listaDeParcelasParaApagar = parcelaDao.listaParcelasDoSeguro(seguro.getId());
+        List<ParcelaDeSeguro> listaDeParcelasParaApagar = parcelaDeSeguroDao.listaPeloSeguroId(seguro.getId());
         for(ParcelaDeSeguro p: listaDeParcelasParaApagar){
-            parcelaDao.delete(p.getId());
+            parcelaDeSeguroDao.deleta(p);
         }
     }
 
@@ -486,9 +494,11 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
         if(getTipoFormulario() == ADICIONANDO){
 
             String placa = refCavaloAutoComplete.getText().toString();
-            int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(placa).getId();
+            int cavaloId = cavaloDao.localizaPelaPlaca(placa).getId();
 
-            List<DespesaComSeguroFrota> listaDeSegurosFrotaAtivos =  seguroDao.listaSegurosFrota();
+            List<DespesaComSeguroFrota> listaDeSegurosFrotaAtivos =  seguroDao.listaPorSeguroFrota(DIRETA);
+            listaDeSegurosFrotaAtivos = FiltraDespesasSeguro.listaFrota_valida(listaDeSegurosFrotaAtivos);
+
 
             Optional<DespesaComSeguroFrota> buscaDuplicidade = listaDeSegurosFrotaAtivos.stream()
                     .filter(s -> s.isValido() && s.getRefCavalo() == cavaloId).findAny();

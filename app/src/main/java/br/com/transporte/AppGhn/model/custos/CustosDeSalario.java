@@ -19,9 +19,9 @@ import br.com.transporte.AppGhn.model.abstracts.Custos;
 ))
 public class CustosDeSalario extends Custos {
     private Integer refMotoristaId;
-    private final List<Integer> refAdiantamentos = new ArrayList<>();
-    private final List<Long> refReembolsos = new ArrayList<>();
-    private final List<Long> refFretes = new ArrayList<>();
+    public List<Integer> refAdiantamentos = new ArrayList<>();
+    public List<Long> refReembolsos = new ArrayList<>();
+    public List<Long> refFretes = new ArrayList<>();
 
     //---------------------------------- Getters Setters -------------------------------------------
 
@@ -34,28 +34,32 @@ public class CustosDeSalario extends Custos {
     }
 
     public List<Integer> getRefAdiantamentos() {
-        return refAdiantamentos;
+        return new ArrayList<>(refAdiantamentos);
     }
 
     public List<Long> getRefReembolsos() {
-        return refReembolsos;
+        return new ArrayList<>(refReembolsos);
     }
 
     public List<Long> getRefFretes() {
-        return refFretes;
+        return new ArrayList<>(refFretes);
     }
+
+    public void setRefAdiantamentos(){}
+    public void setRefReembolsos(){}
+    public void setRefFretes(){}
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    public void listaFretesAdiciona(int i){
+    public void listaFretesAdiciona(Long i){
         refFretes.add(i);
     }
 
-    public void listaAdiantamentosAdiciona(int i){
+    public void listaAdiantamentosAdiciona(Integer i){
         refAdiantamentos.add(i);
     }
 
-    public void listaReembolsosAdiciona(int i){
+    public void listaReembolsosAdiciona(Long i){
         refReembolsos.add(i);
     }
 

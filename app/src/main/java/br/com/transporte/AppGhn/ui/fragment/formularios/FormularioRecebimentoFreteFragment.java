@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete.ADIANTAMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_RECEBIMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
@@ -26,11 +27,17 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioRecebimentoFreteBinding;
+import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
+import br.com.transporte.AppGhn.filtros.FiltraRecebimentoFrete;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
@@ -46,15 +53,23 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     public static final String ALERTA_CADASTRANDO_SALDO_SEM_ADIANTAMENTO = "Você ainda não registrou um adiantamento";
     public static final String ESCOLHA_UMA_FORMA_DE_PAGAMENTO = "Escolha uma forma de pagamento";
     private FragmentFormularioRecebimentoFreteBinding binding;
-    private FreteDAO freteDao;
+    private RoomFreteDao freteDao;
     private Bundle bundle;
-    private RecebimentoFreteDAO recebimentoDao;
+    private RoomRecebimentoFreteDao recebimentoDao;
     private TextView restaReceberTxtView, tipoTxtView;
     private EditText dataEdit, descricaoEdit, valorEdit;
     private TextInputLayout dataLayout;
     private CheckBox adiantamentoBox, saldoBox;
     private RecebimentoDeFrete recebimento;
     private Frete frete;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        freteDao = dataBase.getRoomFreteDao();
+        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
+    }
 
     @Nullable
     @Override
@@ -67,8 +82,6 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        freteDao = new FreteDAO();
-        recebimentoDao = new RecebimentoFreteDAO();
 
         bundle = getArguments();
         frete = recebeReferenciaDeFreteExterno();
@@ -80,15 +93,14 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         configuraUi(toolbar);
         configuracoesAdicionaisUi();
         configuraCheckBox();
-
     }
 
     private void configuracoesAdicionaisUi() {
-        BigDecimal freteLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
-        BigDecimal recebido = recebimentoDao.valorRecebido(frete.getId());
-        BigDecimal emAberto = freteLiquidoAReceber.subtract(recebido);
+        //BigDecimal freteLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
+        //BigDecimal recebido = recebimentoDao.valorRecebido(frete.getId());
+      //  BigDecimal emAberto = freteLiquidoAReceber.subtract(recebido);
 
-        restaReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(emAberto));
+       // restaReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(emAberto));
     }
 
     private void configuraCheckBox() {
@@ -115,9 +127,10 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        long recebimentoId = (long)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            recebimento = recebimentoDao.localizaPeloId(id);
+            recebimento = recebimentoDao.localizaPeloId(recebimentoId);
         } else {
             recebimento = new RecebimentoDeFrete();
         }
@@ -165,7 +178,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         recebimento.setValor(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
         if (adiantamentoBox.isChecked()) {
-            recebimento.setTipoRecebimentoFrete(TipoRecebimentoFrete.ADIANTAMENTO);
+            recebimento.setTipoRecebimentoFrete(ADIANTAMENTO);
         } else if (saldoBox.isChecked()) {
             recebimento.setTipoRecebimentoFrete(TipoRecebimentoFrete.SALDO);
         }
@@ -185,7 +198,12 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     private void verificaSeJaExisteRegistrosDeAdiantamento(@NonNull View view) {
-        RecebimentoDeFrete adiantamento = recebimentoDao.retornaAdiantamento(frete.getId());
+        List<RecebimentoDeFrete> listaDeRecebimentos = recebimentoDao.listaPorFreteId(frete.getId());
+        RecebimentoDeFrete adiantamento = null;
+        try {
+            adiantamento =  FiltraRecebimentoFrete.localizaPorTipo(listaDeRecebimentos, ADIANTAMENTO);
+        } catch (ObjetoNaoEncontrado ignore){}
+
         boolean jaExisteAdiantamento = adiantamento != null;
         boolean naoExisteAdiantamento = adiantamento == null;
 
@@ -291,7 +309,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        recebimentoDao.edita(recebimento);
+        recebimentoDao.adiciona(recebimento);
     }
 
     @Override
@@ -302,7 +320,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
 
     @Override
     public int configuraObjetoNaCriacao() {
-        recebimento.setRefFrete(frete.getId());
+        recebimento.setRefFreteId(frete.getId());
         return 0;
     }
 

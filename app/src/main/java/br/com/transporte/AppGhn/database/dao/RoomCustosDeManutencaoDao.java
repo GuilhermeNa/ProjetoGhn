@@ -15,7 +15,7 @@ public interface RoomCustosDeManutencaoDao {
     void adiciona(CustosDeManutencao custosDeManutencao);
 
     @Delete
-    void delete(CustosDeManutencao custosDeManutencao);
+    void deleta(CustosDeManutencao custosDeManutencao);
 
     @Query("SELECT * FROM custosDeManutencao WHERE id = :manutencaoId")
     CustosDeManutencao localizaPeloId(Long manutencaoId);

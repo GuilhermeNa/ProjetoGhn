@@ -9,7 +9,9 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
 import br.com.transporte.AppGhn.database.conversor.ConversorBigDecimal;
+import br.com.transporte.AppGhn.database.conversor.ConversorIntegerList;
 import br.com.transporte.AppGhn.database.conversor.ConversorLocalDate;
+import br.com.transporte.AppGhn.database.conversor.ConversorLongList;
 import br.com.transporte.AppGhn.database.conversor.ConversorTipoAbastecimento;
 import br.com.transporte.AppGhn.database.conversor.ConversorTipoCertificado;
 import br.com.transporte.AppGhn.database.conversor.ConversorTipoCustoManutencao;
@@ -28,14 +30,17 @@ import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaComSeguroFrotaDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.model.abstracts.Custos;
 import br.com.transporte.AppGhn.model.abstracts.CustosEDespesas;
@@ -62,7 +67,8 @@ import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
         ConversorTipoRecebimento.class,
         ConversorTipoCertificado.class,
         ConversorTipoImposto.class,
-
+        ConversorIntegerList.class,
+        ConversorLongList.class
 })
 @Database(entities = {
         Frota.class,
@@ -71,8 +77,8 @@ import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
         Motorista.class,
         //------------
         Frete.class,
-        Frete.AdmFinanceiroFrete.class,
         Adiantamento.class,
+        RecebimentoDeFrete.class,
         //------------
         CustosEDespesas.class,
         Custos.class,
@@ -91,7 +97,7 @@ import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
         DespesasDeImposto.class,
         ParcelaDeSeguro.class
 },
-        version = 2, exportSchema = false)
+        version = 4, exportSchema = false)
 public abstract class GhnDataBase extends RoomDatabase {
     private static final String GHN_DB = "ghn.db";
     private static GhnDataBase instance = null;
@@ -138,5 +144,11 @@ public abstract class GhnDataBase extends RoomDatabase {
     public abstract RoomDespesaImpostoDao getRoomDespesaImpostoDao();
 
     public abstract RoomParcelaSeguroDao getRoomParcelaSeguroDao();
+
+    public abstract RoomFreteDao getRoomFreteDao();
+
+    public abstract RoomRecebimentoFreteDao getRoomRecebimentoFreteDao();
+
+   // public abstract RoomDespesaSeguroDao getRoomDespesaSeguroDao();
 
 }

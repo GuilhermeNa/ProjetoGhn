@@ -179,15 +179,17 @@ public class ComissoesAdapter extends RecyclerView.Adapter<ComissoesAdapter.View
         private static BigDecimal getComissaoEmAberto(int cavaloId){
             List<Frete> dataSet = FiltraFrete.listaPorCavaloId(freteDao.listaTodos(), cavaloId);
             dataSet = FiltraFrete.listaPorData(dataSet, dataInicial, dataFinal);
-            dataSet = FiltraFrete.listaPorStatusDePagamentoDaComissao(dataSet, false);
-            return CalculoUtil.somaComissao(dataSet);
+           // dataSet = FiltraFrete.listaPorStatusDePagamentoDaComissao(dataSet, false);
+           // return CalculoUtil.somaComissao(dataSet);
+            return null;
         }
 
         private static BigDecimal getComissaoJaPaga(int cavaloId){
             List<Frete> dataSet = FiltraFrete.listaPorCavaloId(freteDao.listaTodos(), cavaloId);
             dataSet = FiltraFrete.listaPorData(dataSet, dataInicial, dataFinal);
-            dataSet = FiltraFrete.listaPorStatusDePagamentoDaComissao(dataSet, true);
-            return CalculoUtil.somaComissao(dataSet);
+            //dataSet = FiltraFrete.listaPorStatusDePagamentoDaComissao(dataSet, true);
+           // return CalculoUtil.somaComissao(dataSet);
+            return null;
         }
 
         private static BigDecimal getAdiantamentosADescontar(int cavaloId){

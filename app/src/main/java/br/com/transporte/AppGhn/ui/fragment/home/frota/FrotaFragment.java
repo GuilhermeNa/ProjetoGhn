@@ -15,10 +15,12 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CAVALO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEMIREBOQUE;
+import static br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment.FROTA;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_GONE;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,11 +38,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,25 +61,31 @@ import br.com.transporte.AppGhn.ui.fragment.home.frota.adapters.CavaloAdapter;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.dialog.DefineMotorista;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.helpers.FrotaMenuProviderHelper;
 import br.com.transporte.AppGhn.util.AnimationUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class FrotaFragment extends Fragment implements
-        DefineMotorista.DefineMotoristaCallback,
-        FrotaMenuProviderHelper.MenuProviderCallback,
-        CavaloAdapter.OnItemClickListener
-{
+public class FrotaFragment extends Fragment {
     public static final String FROTA = "Frota";
+    // --------- Extensoes de Fragment
+    private _Toolbar toolbarExt;
+    private _RecyclerReboques recyclerReboqueExt;
+    private _RecyclerCavalos recyclerCavaloExt;
+    // --------- View
+    private ConstraintLayout headerRecyclerReboque;
     private FragmentFrotaBinding binding;
-    private RoomCavaloDao cavaloDao;
-    private CavaloAdapter adapter;
-    private List<Cavalo> listaDeCavalos;
     private RecyclerView recyclerCavalos;
-    private RoomSemiReboqueDao reboqueDao;
-    private List<SemiReboque> listaDeReboques;
-    private RecyclerView recyclerSr;
+    private Toolbar toolbar;
     private Button btnNovoCavalo;
+    private RecyclerView recyclerReboques;
+    private LinearLayout buscaVazia;
+    // --------- DataBase
+    private RoomCavaloDao cavaloDao;
+    private RoomSemiReboqueDao reboqueDao;
+    // --------- Listas
+    private List<Cavalo> dataSetCavalo;
+    private List<SemiReboque> dataSetReboque;
+    // --------- Variaveis de Fragment
     private boolean janelaFechada = true;
-    private FrotaSrAdapter adapterSr;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -83,15 +94,15 @@ public class FrotaFragment extends Fragment implements
                 switch (codigoResultado) {
                     case RESULT_OK:
                         Toast.makeText(requireContext(), REGISTRO_CRIADO, Toast.LENGTH_SHORT).show();
-                        atualizaAdapter();
+                        atualizaAposResultLauncher();
                         break;
                     case RESULT_DELETE:
                         Toast.makeText(requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
-                        atualizaAdapter();
+                        atualizaAposResultLauncher();
                         break;
                     case RESULT_EDIT:
                         Toast.makeText(requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
-                        atualizaAdapter();
+                        atualizaAposResultLauncher();
                         break;
                     case RESULT_CANCELED:
                         Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
@@ -99,12 +110,33 @@ public class FrotaFragment extends Fragment implements
                 }
             });
 
-    private void atualizaAdapter() {
-        adapter.atualiza(getListaDeCavalos());
+    private void atualizaAposResultLauncher() {
+        atualizaDataSetCavalo();
+        atualizaDataSetReboque();
+        recyclerCavaloExt.atualizaAdapter(getDataSetCavalo());
+        toolbarExt.atualizaDataDoMenuProvider(getDataSetCavalo(), getDataSetReboque());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(this.dataSetCavalo.size(), buscaVazia, recyclerCavalos, VIEW_INVISIBLE);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(this.dataSetReboque.size(), null, recyclerReboques, VIEW_GONE);
     }
 
-    private List<Cavalo> getListaDeCavalos() {
-        return cavaloDao.todos();
+    protected void atualizaDataSetCavalo() {
+        if (dataSetCavalo == null) dataSetCavalo = new ArrayList<>();
+        this.dataSetCavalo.clear();
+        this.dataSetCavalo.addAll(cavaloDao.todos());
+    }
+
+    protected void atualizaDataSetReboque() {
+        if (dataSetReboque == null) dataSetReboque = new ArrayList<>();
+        this.dataSetReboque.clear();
+        this.dataSetReboque.addAll(reboqueDao.todos());
+    }
+
+    protected List<Cavalo> getDataSetCavalo() {
+        return new ArrayList<>(this.dataSetCavalo);
+    }
+
+    protected List<SemiReboque> getDataSetReboque() {
+        return new ArrayList<>(this.dataSetReboque);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -116,17 +148,9 @@ public class FrotaFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         cavaloDao = GhnDataBase.getInstance(this.requireContext()).getRoomCavaloDao();
         reboqueDao = GhnDataBase.getInstance(this.requireContext()).getRoomReboqueDao();
-        listaDeCavalos = getListaDeCavalos();
-        listaDeReboques = getListaDeReboques();
+        atualizaDataSetCavalo();
+        atualizaDataSetReboque();
     }
-
-    private List<SemiReboque> getListaDeReboques() {
-        return reboqueDao.todos();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          On Create View                                    ||
-    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -135,41 +159,42 @@ public class FrotaFragment extends Fragment implements
         return binding.getRoot();
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          On View Created                                   ||
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
         configuraToolbar();
-        configuraMenuProvider();
-        configuraClickListenerParaExibirSemiReboques();
-        configuraRecyclerSr();
         configuraRecyclerCavalo();
+        configuraRecyclerReboque();
+        configuraClickListenerParaExibirSemiReboques();
         configuraBtnNovoCavalo();
     }
 
-    void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(FROTA);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-    }
-
-    private void configuraMenuProvider() {
-        FrotaMenuProviderHelper menuProviderHelper = new FrotaMenuProviderHelper(this, getListaDeCavalos(), getListaDeReboques());
-        requireActivity().addMenuProvider(menuProviderHelper, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        menuProviderHelper.setMenuProviderCallback(this);
+    private void configuraRecyclerReboque() {
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetReboque.size(), null, recyclerReboques, VIEW_GONE);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetReboque.size(), null, headerRecyclerReboque, VIEW_GONE);
+        recyclerReboqueExt = new _RecyclerReboques(this);
+        recyclerReboqueExt.configura(recyclerReboques);
     }
 
     private void inicializaCamposDaView() {
+        toolbar = binding.toolbar;
+        buscaVazia = binding.fragFrotaVazio;
         recyclerCavalos = binding.fragFrotaRecycler;
-        recyclerSr = binding.fragFrotaSrRecycler;
+        recyclerReboques = binding.fragFrotaSrRecycler;
+        headerRecyclerReboque = binding.layoutExibeReboques;
         btnNovoCavalo = binding.fragFrotaCadastraNovo;
+    }
+
+    private void configuraToolbar() {
+        toolbarExt = new _Toolbar(this);
+        toolbarExt.configura(toolbar, getDataSetCavalo(), getDataSetReboque());
+    }
+
+    private void configuraRecyclerCavalo() {
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetCavalo.size(), buscaVazia, recyclerCavalos, VIEW_INVISIBLE);
+        recyclerCavaloExt = new _RecyclerCavalos(this);
+        recyclerCavaloExt.configura(recyclerCavalos);
     }
 
     private void configuraBtnNovoCavalo() {
@@ -188,121 +213,220 @@ public class FrotaFragment extends Fragment implements
         imgIcSetaSr.setOnClickListener(v -> {
             if (janelaFechada) {
                 imgIcSetaSr.startAnimation(animationAbertura);
-                recyclerSr.setVisibility(VISIBLE);
+                recyclerReboques.setVisibility(VISIBLE);
                 janelaFechada = false;
             } else {
                 imgIcSetaSr.startAnimation(animationFechamento);
-                recyclerSr.setVisibility(GONE);
+                recyclerReboques.setVisibility(GONE);
                 janelaFechada = true;
             }
         });
-        if (recyclerSr.getVisibility() == VISIBLE) {
+        if (recyclerReboques.getVisibility() == VISIBLE) {
             imgIcSetaSr.startAnimation(animationAbertura);
         }
     }
 
-    private void configuraRecyclerSr() {
-        if(listaDeReboques.isEmpty()){
-            binding.layoutExibeReboques.setVisibility(GONE);
-        } else {
-            binding.layoutExibeReboques.setVisibility(VISIBLE);
-        }
-        adapterSr = new FrotaSrAdapter(this, listaDeReboques);
-        recyclerSr.setAdapter(adapterSr);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext(), RecyclerView.HORIZONTAL, false);
-        recyclerSr.setLayoutManager(layoutManager);
-    }
-
-    private void configuraRecyclerCavalo() {
-        adapter = new CavaloAdapter(this, listaDeCavalos);
-        recyclerCavalos.setAdapter(adapter);
-        adapter.setOnItemClickListener(this);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                   On Context Item Selected                                 ||
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
-        posicao = adapter.getPosicao();
-        Cavalo cavalo = listaDeCavalos.get(posicao);
+        posicao = recyclerCavaloExt.getAdapterPos();
+        Cavalo cavalo = getDataSetCavalo().get(posicao);
 
         if (item.getItemId() == R.id.defineMotorista) {
             DefineMotorista defineMotorista = new DefineMotorista(this.getContext(), cavalo);
             defineMotorista.configuraDialog();
-            defineMotorista.setDefineMotoristaCallback(this);
+            defineMotorista.setDefineMotoristaCallback(new DefineMotorista.DefineMotoristaCallback() {
+                @Override
+                public void quandoFalha(String txt) {
+                    MensagemUtil.snackBar(getView(), txt);
+                }
+
+                @Override
+                public void quandoSucesso() {
+                    atualizaDataSetCavalo();
+                    recyclerCavaloExt.atualizaAdapter(getDataSetCavalo());
+                }
+            });
         }
         return super.onContextItemSelected(item);
     }
 
+//---------------------
 
-    //----------------------------------------------------------------------------------------------
-    //                                   CallBack Menu Provider Helper                            ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void realizaBusca(List<Cavalo> dataSet_searchView_cavalo, List<SemiReboque> dataSet_searchView_semiReboque) {
-        adapter.atualiza(dataSet_searchView_cavalo);
-        adapterSr.atualiza(dataSet_searchView_semiReboque);
+    protected void atualizaAdaptersAposBuscarNaSearchView(@NonNull List<Cavalo> dataSet_searchView_cavalos, List<SemiReboque> dataSet_SearchView_reboques) {
+        recyclerCavaloExt.atualizaAdapter(dataSet_searchView_cavalos);
+        recyclerReboqueExt.atualizaAdapter(dataSet_SearchView_reboques);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet_searchView_cavalos.size(), buscaVazia, recyclerCavalos, VIEW_INVISIBLE);
     }
 
-    @Override
-    public void searchViewAtivada() {
-        btnNovoCavalo.setVisibility(View.INVISIBLE);
-        AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_out_bottom, btnNovoCavalo);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
+    protected void configuraInteracaoAoAcessarSearchView(boolean visivel) {
+        if (visivel) {
+            btnNovoCavalo.setVisibility(VISIBLE);
+            AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_bottom, btnNovoCavalo);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        } else {
+            btnNovoCavalo.setVisibility(View.GONE);
+            AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_out_bottom, btnNovoCavalo);
+            Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        }
+
     }
 
-    @Override
-    public void searchViewDesativada() {
-        btnNovoCavalo.setVisibility(VISIBLE);
-        AnimationUtil.defineAnimacao(this.requireContext(), R.anim.slide_in_bottom, btnNovoCavalo);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                   CallBack Define Motorista                                ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void quandoFalha(String txt) {
-        MensagemUtil.snackBar(getView(), txt);
-    }
-
-    @Override
-    public void quandoSucesso() {
-        adapter.atualiza(cavaloDao.todos());
-        Log.d("teste", "Deu");
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                   ClickListener Adapter Cavalo                             ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void onEditaCavaloClick(int idCavalo) {
+    protected void navegaParaFormularioCavalo(Integer cavaloId) {
         Intent intent = new Intent(getContext(), FormulariosActivity.class);
         intent.putExtra(CHAVE_FORMULARIO, VALOR_CAVALO);
-        intent.putExtra(CHAVE_ID, idCavalo);
+        intent.putExtra(CHAVE_ID, cavaloId);
         activityResultLauncher.launch(intent);
     }
 
-    @Override
-    public void onNovoSrClick(int idCavalo) {
+    protected void navegaParaFormularioReboque(Integer cavaloId, Integer reboqueId) {
         Intent intent = new Intent(getContext(), FormulariosActivity.class);
+        if (reboqueId != null) intent.putExtra(CHAVE_ID, reboqueId);
         intent.putExtra(CHAVE_FORMULARIO, VALOR_SEMIREBOQUE);
-        intent.putExtra(CHAVE_ID_CAVALO, idCavalo);
+        intent.putExtra(CHAVE_ID_CAVALO, cavaloId);
         activityResultLauncher.launch(intent);
     }
+}
 
-    @Override
-    public void onEditaSrClick(int idSr, int idCavalo) {
-        Intent intent = new Intent(getContext(), FormulariosActivity.class);
-        intent.putExtra(CHAVE_FORMULARIO, VALOR_SEMIREBOQUE);
-        intent.putExtra(CHAVE_ID, idSr);
-        intent.putExtra(CHAVE_ID_CAVALO, idCavalo);
-        activityResultLauncher.launch(intent);
+//----------------------------------------------------------------------------------------------
+//                                           Toolbar                                          ||
+//----------------------------------------------------------------------------------------------
+
+class _Toolbar {
+    private final FrotaFragment fragment;
+    private FrotaMenuProviderHelper menuProviderHelper;
+
+    _Toolbar(FrotaFragment frotaFragment) {
+        this.fragment = frotaFragment;
+    }
+
+    //----------------------------------
+
+    protected void configura(
+            Toolbar toolbar,
+            List<Cavalo> copiaDataSetCavalos,
+            List<SemiReboque> copiaDataSetReboques
+    ) {
+        configuraToolbar(toolbar);
+        configuraMenuProvider(copiaDataSetCavalos, copiaDataSetReboques);
+    }
+
+    private void configuraToolbar(Toolbar toolbar) {
+        AppCompatActivity appCompatActivity = (AppCompatActivity) fragment.requireActivity();
+        appCompatActivity.setSupportActionBar(toolbar);
+
+        if (appCompatActivity.getSupportActionBar() != null) {
+            appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            appCompatActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            appCompatActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+            appCompatActivity.getSupportActionBar().setTitle(FROTA);
+            appCompatActivity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        }
+    }
+
+    private void configuraMenuProvider(List<Cavalo> copiaDataSetCavalos, List<SemiReboque> copiaDataSetReboques) {
+        menuProviderHelper = new FrotaMenuProviderHelper(fragment, copiaDataSetCavalos, copiaDataSetReboques);
+        fragment.requireActivity().addMenuProvider(menuProviderHelper, fragment.getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        menuProviderHelper.setMenuProviderCallback(new FrotaMenuProviderHelper.MenuProviderCallback() {
+            // Callback do menuProviderHelper:
+            // Interage com o Fragment para atualizar a Ui enquanto usuario interage com a SearchView
+            @Override
+            public void realizaBusca(List<Cavalo> dataSet_searchView_cavalo, List<SemiReboque> dataSet_searchView_semiReboque) {
+                fragment.atualizaAdaptersAposBuscarNaSearchView(dataSet_searchView_cavalo, dataSet_searchView_semiReboque);
+            }
+
+            @Override
+            public void searchViewAtivada() {
+                boolean searchViewAtiva = false;
+                fragment.configuraInteracaoAoAcessarSearchView(searchViewAtiva);
+            }
+
+            @Override
+            public void searchViewDesativada() {
+                boolean searchViewInativa = true;
+                fragment.configuraInteracaoAoAcessarSearchView(searchViewInativa);
+            }
+        });
+    }
+
+    // ------------------------------------- Publicos ----------------------------------------------
+
+    public void atualizaDataDoMenuProvider(List<Cavalo> copiaDataSetCavalo, List<SemiReboque> copiaDataSetReboque) {
+        menuProviderHelper.atualizaCavalos(copiaDataSetCavalo);
+        menuProviderHelper.atualizaReboques(copiaDataSetReboque);
+    }
+}
+
+//----------------------------------------------------------------------------------------------
+//                                         Recycler Cavalos                                   ||
+//----------------------------------------------------------------------------------------------
+
+class _RecyclerCavalos extends FrotaFragment {
+    private final FrotaFragment fragment;
+    private CavaloAdapter adapter;
+
+    _RecyclerCavalos(FrotaFragment fragment) {
+        this.fragment = fragment;
+    }
+
+    //----------------------------------
+
+    public void configura(@NonNull RecyclerView recycler) {
+        adapter = new CavaloAdapter(fragment, fragment.getDataSetCavalo());
+        recycler.setAdapter(adapter);
+        adapter.setOnItemClickListener(new CavaloAdapter.OnItemClickListener() {
+            // Callback do cavaloAdapter
+            // Configura os comportamentos ao interagir com os itens da RecyclerView
+            @Override
+            public void onCLickEditaCavalo(Integer cavaloId) {
+                fragment.navegaParaFormularioCavalo(cavaloId);
+            }
+
+            @Override
+            public void onClickAdicionaReboque(Integer cavaloId) {
+                fragment.navegaParaFormularioReboque(cavaloId, null);
+            }
+
+            @Override
+            public void onClickEditaReboque(Integer reboqueId, Integer cavaloId) {
+                fragment.navegaParaFormularioReboque(cavaloId, reboqueId);
+            }
+        });
+    }
+
+    //----------------------------------
+
+    protected void atualizaAdapter(List<Cavalo> listaDeCavalos) {
+        adapter.atualiza(listaDeCavalos);
+    }
+
+    public int getAdapterPos() {
+        return adapter.getPosicao();
+    }
+}
+
+//----------------------------------------------------------------------------------------------
+//                                        Recycler Reboques                                   ||
+//----------------------------------------------------------------------------------------------
+
+class _RecyclerReboques {
+    private final FrotaFragment fragment;
+    private FrotaSrAdapter adapter;
+
+    _RecyclerReboques(FrotaFragment fragment) {
+        this.fragment = fragment;
+    }
+
+    //----------------------------------
+
+    protected void configura(@NonNull RecyclerView recycler) {
+        adapter = new FrotaSrAdapter(fragment, fragment.getDataSetReboque());
+        recycler.setAdapter(adapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(fragment.requireContext(), RecyclerView.HORIZONTAL, false);
+        recycler.setLayoutManager(layoutManager);
+    }
+
+    protected void atualizaAdapter(List<SemiReboque> lista) {
+        adapter.atualiza(lista);
     }
 }

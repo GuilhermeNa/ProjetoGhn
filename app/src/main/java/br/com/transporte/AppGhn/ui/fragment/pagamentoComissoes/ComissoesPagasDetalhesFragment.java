@@ -46,6 +46,12 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.SalarioDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Frete;
@@ -68,16 +74,18 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
     private List<CustosDePercurso> listaDeReembolsos;
     private List<Frete> listaDeFretes;
     private CustosDeSalario salario;
+    private GhnDataBase dataBase;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AdiantamentoDAO adiantamentoDao = new AdiantamentoDAO();
-        CustosDePercursoDAO custosDao = new CustosDePercursoDAO();
-        FreteDAO freteDao = new FreteDAO();
-        SalarioDAO salarioDao = new SalarioDAO();
+        dataBase = GhnDataBase.getInstance(this.requireContext());
+        RoomAdiantamentoDao adiantamentoDao = dataBase.getRoomAdiantamentoDao();
+        RoomCustosPercursoDao custoPercursoDao = dataBase.getRoomCustosPercursoDao();
+        RoomFreteDao freteDao = dataBase.getRoomFreteDao();
+        RoomCustosDeSalarioDao salarioDao = dataBase.getRoomCustosDeSalarioDao();
 
-        int salarioId = (int) ComissoesPagasDetalhesFragmentArgs.fromBundle(getArguments()).getSalarioId();
+        Long salarioId = (Long) ComissoesPagasDetalhesFragmentArgs.fromBundle(getArguments()).getSalarioId();
         salario = salarioDao.localizaPeloId(salarioId);
 
         listaDeAdiantamentos = new ArrayList<>();
@@ -87,16 +95,17 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         }
 
         listaDeReembolsos = new ArrayList<>();
-        for (Integer i : salario.getRefReembolsos()) {
-            CustosDePercurso custo = custosDao.localizaPeloId(i);
+        for (Long i : salario.getRefReembolsos()) {
+            CustosDePercurso custo = custoPercursoDao.localizaPeloId(i);
             listaDeReembolsos.add(custo);
         }
 
         listaDeFretes = new ArrayList<>();
-        for (Integer i : salario.getRefFretes()) {
+        for (Long i : salario.getRefFretes()) {
             Frete frete = freteDao.localizaPeloId(i);
             listaDeFretes.add(frete);
         }
+
     }
 
     @Nullable
@@ -118,9 +127,10 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
     }
 
     private void configuraUi() {
-        CavaloDAO cavaloDao = new CavaloDAO();
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
         String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
         String motorista = cavaloDao.localizaPeloId(salario.getRefCavalo()).getMotorista().getNome();
+
 
         BigDecimal somaAdiantamento = listaDeAdiantamentos.stream()
                 .map(Adiantamento::getUltimoValorAbatido)
@@ -130,10 +140,12 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
                 .map(CustosDePercurso::getValorCusto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal somaFrete = listaDeFretes.stream()
+
+
+ /*       BigDecimal somaFrete = listaDeFretes.stream()
                 .map(Frete::getAdmFrete)
                 .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
 
         dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
         placaTxtView.setText(placa);
@@ -145,7 +157,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         String valorReembolso = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso);
         valorReembolsosTxtView.setText(valorReembolso);
 
-        valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
+       // valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
     }
 
     private void configuraRecyclerFretes() {

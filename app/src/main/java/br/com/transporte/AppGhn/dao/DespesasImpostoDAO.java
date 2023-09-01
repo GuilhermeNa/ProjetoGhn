@@ -18,7 +18,7 @@ public class DespesasImpostoDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(DespesasDeImposto imposto) {
+   /* public void adiciona(DespesasDeImposto imposto) {
         dao.add(imposto);
         imposto.setId(contadorDeIds);
         contadorDeIds++;
@@ -37,7 +37,7 @@ public class DespesasImpostoDAO {
         if(impostoEncontrado != null){
             dao.remove(impostoEncontrado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

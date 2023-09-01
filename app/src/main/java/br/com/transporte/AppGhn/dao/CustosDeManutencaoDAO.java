@@ -18,7 +18,7 @@ public class CustosDeManutencaoDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(CustosDeManutencao manutencao){
+   /* public void adiciona(CustosDeManutencao manutencao){
         manutencao.setId(contadorDeIds);
         dao.add(manutencao);
         contadorDeIds++;
@@ -37,7 +37,7 @@ public class CustosDeManutencaoDAO {
         if(manutencaoLocalizada != null){
             dao.remove(manutencaoLocalizada);
         }
-    }
+    }*/
 
     //---------------------------------- Retorna Listas ---------------------------------------------
 

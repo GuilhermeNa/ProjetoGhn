@@ -85,13 +85,13 @@ public class FreteAdapter extends RecyclerView.Adapter<FreteAdapter.ViewHolder> 
         holder.destinoTxtView.setText(frete.getDestino());
         holder.cargaTxtView.setText(frete.getCarga());
         holder.empresaTxtView.setText(frete.getEmpresa());
-        holder.freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
+      /*  holder.freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
         holder.descontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getDescontos()));
         if (frete.getAdmFrete().isComissaoJaFoiPaga()) {
             holder.xvImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_DONE));
         } else {
             holder.xvImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_UNDONE));
-        }
+        }*/
     }
 
     @Override

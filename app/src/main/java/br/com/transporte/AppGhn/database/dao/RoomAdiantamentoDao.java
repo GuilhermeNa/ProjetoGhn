@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.Adiantamento;
 
 @Dao
@@ -16,6 +18,9 @@ public interface RoomAdiantamentoDao {
 
     @Delete
     void deleta(Adiantamento adiantamento);
+
+    @Query("SELECT * FROM adiantamento")
+    List<Adiantamento> todos();
 
     @Query("SELECT * FROM adiantamento WHERE id = :adiantamentoId")
     Adiantamento localizaPeloId(int adiantamentoId);

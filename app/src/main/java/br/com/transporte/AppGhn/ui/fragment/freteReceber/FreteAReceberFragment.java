@@ -45,8 +45,14 @@ import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberBinding;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
+import br.com.transporte.AppGhn.filtros.FiltraRecebimentoFrete;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.ui.adapter.FreteAReceberAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
@@ -65,15 +71,18 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
     private RecyclerView recyclerView;
     private TextView dataInicialTxt, dataFinalTxt;
     private LocalDate dataInicial, dataFinal;
-    private FreteDAO freteDao;
+    private RoomFreteDao freteDao;
     private FreteAReceberAdapter adapter;
     private NavController controlador;
     private NavDirections direction;
     private List<Frete> listaFiltrada;
+    private GhnDataBase dataBase;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataBase = GhnDataBase.getInstance(requireContext());
+        freteDao = dataBase.getRoomFreteDao();
     }
 
     @Nullable
@@ -87,12 +96,9 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        freteDao = new FreteDAO();
-
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
         dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         listaFiltrada = getListaComPagamentoEmAberto();
-
         configuraToolbar();
         configuraRecycler();
         configuraUi();
@@ -111,7 +117,9 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
     }
 
     private List<Frete> getListaComPagamentoEmAberto() {
-        return freteDao.listaFiltradaPorStatusEmAberto(dataInicial, dataFinal);
+        List<Frete> dataSet = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
+        //dataSet = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(dataSet, false);
+        return dataSet;
     }
 
     public void configuraDateRangePicker() {
@@ -200,10 +208,12 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
         posicao = adapter.getPosicao();
         Frete frete = listaFiltrada.get(posicao);
         CavaloDAO cavaloDao = new CavaloDAO();
-        RecebimentoFreteDAO recebimentoDao = new RecebimentoFreteDAO();
+        RoomRecebimentoFreteDao recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
 
-        BigDecimal valorLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
-        BigDecimal valorTotalRecebido = recebimentoDao.valorRecebido(frete.getId());
+        //BigDecimal valorLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
+
+        List<RecebimentoDeFrete> listaRecebimento = FiltraRecebimentoFrete.listaPeloIdDoFrete(recebimentoDao.todos(), frete.getId());
+        BigDecimal valorTotalRecebido = FiltraRecebimentoFrete.valorTotalRecebido(listaRecebimento);
         String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
 
         if (item.getItemId() == R.id.FechaFrete) {
@@ -211,14 +221,14 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
                     .setTitle(placa + " " + frete.getDestino())
                     .setMessage(VOCE_CONFIRMA_O_FECHAMENTO)
                     .setPositiveButton(CONFIRMAR, (dialog, which) -> {
-                        if (valorLiquidoAReceber.compareTo(valorTotalRecebido) == 0) {
+                    /*    if (valorLiquidoAReceber.compareTo(valorTotalRecebido) == 0) {
                             frete.getAdmFrete().setFreteJaFoiPago(true);
                             listaFiltrada = getListaComPagamentoEmAberto();
                             adapter.atualiza(listaFiltrada);
                             Toast.makeText(this.requireContext(), FRETE_FECHADO, Toast.LENGTH_SHORT).show();
                         } else {
                             MensagemUtil.snackBar(getView(), VALOR_RECEBIDO_NAO_CONFERE);
-                        }
+                        }*/
                     })
                     .setNegativeButton(CANCELAR, null)
                     .show();
@@ -253,7 +263,8 @@ public class FreteAReceberFragment extends Fragment implements MenuProvider {
                 CavaloDAO cavaloDao = new CavaloDAO();
                 String placa;
 
-                for (Frete f : freteDao.listaFiltradaPorData(dataInicial, dataFinal)) {
+                List<Frete> listaFrete = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
+                for (Frete f : listaFrete) {
                     placa = cavaloDao.localizaPeloId(f.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     if (placa.contains(newText.toUpperCase(Locale.ROOT))) {
                         lista.add(f);

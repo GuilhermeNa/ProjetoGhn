@@ -76,6 +76,6 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
     private void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
-        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+        //holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
     }
 }

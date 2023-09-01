@@ -19,7 +19,7 @@ public class DespesasCertificadoDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(DespesaCertificado certificado){
+ /*   public void adiciona(DespesaCertificado certificado){
         dao.add(certificado);
         certificado.setId(contadorDeIds);
         contadorDeIds++;
@@ -38,7 +38,7 @@ public class DespesasCertificadoDAO {
         if(certificadoLocalizado != null){
             dao.remove(certificadoLocalizado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

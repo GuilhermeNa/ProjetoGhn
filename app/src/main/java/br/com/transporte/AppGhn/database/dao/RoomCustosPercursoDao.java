@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 
 @Dao
@@ -16,6 +18,9 @@ public interface RoomCustosPercursoDao {
 
     @Delete
     void deleta(CustosDePercurso custo);
+
+    @Query("SELECT * FROM custosDePercurso")
+    List<CustosDePercurso> todos();
 
     @Query("SELECT * FROM custosdepercurso WHERE id = :custoId" )
     CustosDePercurso localizaPeloId(Long custoId);

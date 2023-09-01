@@ -81,8 +81,8 @@ public class FormulariosActivity extends AppCompatActivity {
                     bundle.putInt(CHAVE_ID_CAVALO, cavaloId);
 
                     if (dados.hasExtra(CHAVE_ID)) {
-                        int freteId = dados.getIntExtra(CHAVE_ID, VALOR_DEFAUT);
-                        bundle.putInt(CHAVE_ID, freteId);
+                        long freteId = dados.getIntExtra(CHAVE_ID, VALOR_DEFAUT);
+                        bundle.putLong(CHAVE_ID, freteId);
                     }
 
                     fragment.setArguments(bundle);

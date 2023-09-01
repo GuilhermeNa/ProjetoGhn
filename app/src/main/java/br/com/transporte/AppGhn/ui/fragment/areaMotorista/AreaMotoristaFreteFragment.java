@@ -29,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.Contract;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,10 +41,8 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.FreteAdapter;
-import br.com.transporte.AppGhn.util.BuscaVazia;
-import br.com.transporte.AppGhn.util.CalculoUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
-import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class AreaMotoristaFreteFragment extends Fragment implements DateRangePickerUtil.CallbackDatePicker {
@@ -194,12 +191,12 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
     private void configuraUi() {
         ui_data();
         ui_totalFreteLiquido();
-        BuscaVazia.configura(listaDeFretes.size(), buscaVazia, recycler);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeFretes.size(), buscaVazia, recycler, "INVISIBLE");
     }
 
     private void ui_totalFreteLiquido() {
-        BigDecimal freteLiquido = CalculoUtil.somaFreteLiquido(listaDeFretes);
-        freteAcumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(freteLiquido));
+   //     BigDecimal freteLiquido = CalculoUtil.somaFreteLiquido(listaDeFretes);
+   //     freteAcumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(freteLiquido));
     }
 
     private void ui_data() {
@@ -224,7 +221,7 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
         listaDeFretes = getListaDeFretes(cavalo);
         adapter.atualiza(listaDeFretes);
         ui_totalFreteLiquido();
-        BuscaVazia.configura(listaDeFretes.size(), buscaVazia, recycler);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeFretes.size(), buscaVazia, recycler, "INVISIBLE");
     }
 
     //----------------------------------------------------------------------------------------------

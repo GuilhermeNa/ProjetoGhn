@@ -1,9 +1,5 @@
 package br.com.transporte.AppGhn.dao;
 
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +14,7 @@ public class FreteDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(Frete frete) {
+ /*   public void adiciona(Frete frete) {
         frete.setId(contadorDeIds);
         dao.add(frete);
         contadorDeIds++;
@@ -38,7 +34,7 @@ public class FreteDAO {
         if (freteEncontrado != null) {
             dao.remove(freteEncontrado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------
@@ -48,7 +44,6 @@ public class FreteDAO {
         return new ArrayList<>(dao);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public List<Frete> listaFiltradaPorData(LocalDate dataInicial, LocalDate dataFinal) {
         List<Frete> lista = new ArrayList<>();
         for (Frete f : dao) {
@@ -69,7 +64,6 @@ public class FreteDAO {
         return lista;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public List<Frete> listaFiltradaPorCavaloEData(int cavaloId, LocalDate data01, LocalDate data02) {
         List<Frete> listaPorCavalo = listaFiltradaPorCavalo(cavaloId);
         List<Frete> listaFiltrada = new ArrayList<>();
@@ -82,20 +76,7 @@ public class FreteDAO {
         return listaFiltrada;
     }
 
-    public List<Frete> listaPorPlacaEComissaoAberta(int cavaloId) {
-        List<Frete> listaPorCavalo = listaFiltradaPorCavalo(cavaloId);
-        List<Frete> listaEmAberto = new ArrayList<>();
-
-        for (Frete f : listaPorCavalo) {
-            if (!f.getAdmFrete().isComissaoJaFoiPaga()) {
-                listaEmAberto.add(f);
-            }
-        }
-        return listaEmAberto;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<Frete> listaFiltradaPorStatusEmAberto(LocalDate dataInicio, LocalDate dataFim) {
+   /* public List<Frete> listaFiltradaPorStatusEmAberto(LocalDate dataInicio, LocalDate dataFim) {
         List<Frete> listaPorData = listaFiltradaPorData(dataInicio, dataFim);
         List<Frete> lista = new ArrayList<>();
 
@@ -105,10 +86,9 @@ public class FreteDAO {
             }
         }
         return lista;
-    }
+    }*/
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<Frete> listaFiltradaPorStatusJaRecebido(LocalDate dataInicio, LocalDate dataFim) {
+    /*public List<Frete> listaFiltradaPorStatusJaRecebido(LocalDate dataInicio, LocalDate dataFim) {
         List<Frete> listaPorData = listaFiltradaPorData(dataInicio, dataFim);
         List<Frete> lista = new ArrayList<>();
 
@@ -118,7 +98,7 @@ public class FreteDAO {
             }
         }
         return lista;
-    }
+    }*/
 
 
     //---------------------------------- Outros Metodos ---------------------------------------------

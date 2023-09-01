@@ -22,11 +22,16 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaAdmDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioDespesaAdmBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
@@ -44,15 +49,18 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     private AutoCompleteTextView refCavaloEdit;
     private CheckBox diretaBox, indiretaBox;
     private TextView despesaTxtView;
-    private DespesasAdmDAO despesaDao;
-    private CavaloDAO cavaloDao;
+    private RoomDespesaAdmDao despesaDao;
+    private RoomCavaloDao cavaloDao;
     private DespesaAdm despesa;
+    private List<String> listaDePlacas;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        despesaDao = new DespesasAdmDAO();
-        cavaloDao = new CavaloDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        despesaDao = dataBase.getRoomDespesaAdmDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
 
         int despesaId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(despesaId);
@@ -91,7 +99,8 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDePlacas() {
-        String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
+
+        String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloEdit.setAdapter(adapterCavalos);
     }
@@ -110,9 +119,10 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long despesaId = (Long)id;
         if(getTipoFormulario() == TipoFormulario.EDITANDO){
-            despesa = despesaDao.localizaPeloId(id);
+            despesa = despesaDao.localizaPeloId(despesaId);
         } else {
             despesa = new DespesaAdm();
         }
@@ -161,7 +171,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
         if(diretaBox.isChecked()){
             verificaCampo(refCavaloEdit);
 
-            if (!cavaloDao.listaPlacas().contains(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT))) {
+            if (!listaDePlacas.contains(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT))) {
                 refCavaloEdit.setError(INCORRETO);
                 refCavaloEdit.getText().clear();
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
@@ -185,7 +195,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
         if(diretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.DIRETA);
-            int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT)).getId();
+            int cavaloId = cavaloDao.localizaPelaPlaca(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT)).getId();
             despesa.setRefCavalo(cavaloId);
         } else if (indiretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.INDIRETA);
@@ -195,12 +205,12 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        despesaDao.edita(despesa);
+        despesaDao.adiciona(despesa);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        despesaDao.deleta(despesa.getId());
+        despesaDao.deleta(despesa);
     }
 
     @Override
@@ -213,4 +223,5 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
         return 0;
     }
+
 }

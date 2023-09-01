@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberResumoBinding;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
@@ -64,7 +66,7 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
             freteLiquidoTxtView, seguroCargaTxtView, outrosDescontosTxtView, comissaoMotoristaTxtView;
     private RecebimentoFretesAdapter adapter;
     private List<RecebimentoDeFrete> listaFiltrada;
-    private RecebimentoFreteDAO recebimentoDao;
+    private RoomRecebimentoFreteDao recebimentoDao;
 
     private final ActivityResultLauncher<Intent> activityResultLauncherEditaFrete = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -79,7 +81,7 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
 
                     case RESULT_DELETE:
                         listaFiltrada = getListaFiltrada();
-                        recebimentoDao.deletaLista(listaFiltrada);
+                   //     recebimentoDao.deletaLista(listaFiltrada);
                         Navigation.findNavController(this.requireView()).popBackStack();
                         Toast.makeText(this.requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
                         break;
@@ -119,18 +121,20 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
                         break;
                 }
             });
+    private GhnDataBase dataBase;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recebimentoDao = new RecebimentoFreteDAO();
+        dataBase = GhnDataBase.getInstance(requireContext());
+        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
         frete = recebeIdArgument();
         listaFiltrada = getListaFiltrada();
     }
 
     private List<RecebimentoDeFrete> getListaFiltrada() {
-        return recebimentoDao.listaPorIdFrete(frete.getId());
+        return recebimentoDao.listaPorFreteId(frete.getId());
     }
 
     @Nullable
@@ -178,11 +182,11 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
         origemTxtView.setText(frete.getOrigem());
         destinoTxtView.setText(frete.getDestino());
         cargaTxtView.setText(frete.getCarga());
-        freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
-        freteLiquidoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteLiquidoAReceber()));
-        seguroCargaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getSeguroDeCarga()));
-        outrosDescontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getDescontos()));
-        comissaoMotoristaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+        //freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
+        //freteLiquidoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteLiquidoAReceber()));
+        //seguroCargaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getSeguroDeCarga()));
+        //outrosDescontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getDescontos()));
+        //comissaoMotoristaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
 
     }
 

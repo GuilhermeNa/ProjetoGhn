@@ -224,22 +224,24 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     }
 
     private BigDecimal ui_acumulado() {
-        BigDecimal comissaoTotalAoMotorista = CalculoUtil.somaComissao(listaDeFretes);
-        acumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalAoMotorista));
-        return comissaoTotalAoMotorista;
+    //    BigDecimal comissaoTotalAoMotorista = CalculoUtil.somaComissao(listaDeFretes);
+    //    acumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalAoMotorista));
+    //    return comissaoTotalAoMotorista;
+        return null;
     }
 
     private void totalAReceber(
             BigDecimal adiantamentoADescontar, BigDecimal custoEmAberto, @NonNull BigDecimal comissaAReceber
     ) {
-        BigDecimal valorAReceber = comissaAReceber.add(custoEmAberto).subtract(adiantamentoADescontar);
-        totalAReceberTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
+//        BigDecimal valorAReceber = comissaAReceber.add(custoEmAberto).subtract(adiantamentoADescontar);
+  //      totalAReceberTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
     }
 
     private BigDecimal ui_jaRecebido() {
-        BigDecimal comissaoJaPaga = CalculoUtil.somaComissaoPorStatus(listaDeFretes, true);
-        jaRecebidoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoJaPaga));
-        return comissaoJaPaga;
+   //     BigDecimal comissaoJaPaga = CalculoUtil.somaComissaoPorStatus(listaDeFretes, true);
+    //    jaRecebidoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoJaPaga));
+    //    return comissaoJaPaga;
+        return null;
     }
 
     @Override
@@ -292,18 +294,18 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
 
     private static class UiCardFrete {
         private static void ui_freteLiquido(List<Frete> dataSet, @NonNull TextView view) {
-            BigDecimal somaFreteLiquidoAReceber = CalculoUtil.somaFreteLiquido(dataSet);
-            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteLiquidoAReceber));
+         //   BigDecimal somaFreteLiquidoAReceber = CalculoUtil.somaFreteLiquido(dataSet);
+         //   view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteLiquidoAReceber));
         }
 
         private static void ui_descontos(List<Frete> dataSet, @NonNull TextView view) {
-            BigDecimal somaDescontosNoFrete = CalculoUtil.somaDescontoNoFrete(dataSet);
-            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaDescontosNoFrete));
+      //      BigDecimal somaDescontosNoFrete = CalculoUtil.somaDescontoNoFrete(dataSet);
+      //      view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaDescontosNoFrete));
         }
 
         private static void ui_FreteBruto(List<Frete> dataSet, @NonNull TextView view) {
-            BigDecimal somaFreteBruto = CalculoUtil.somaFreteBruto(dataSet);
-            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteBruto));
+      //      BigDecimal somaFreteBruto = CalculoUtil.somaFreteBruto(dataSet);
+      //      view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteBruto));
         }
     }
 
@@ -397,9 +399,10 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
 
     private static class UiCardResumo {
         private static BigDecimal ui_comissaoAReceber(@NonNull BigDecimal comissaoTotalAoMotorista, BigDecimal comissaoJaPaga, @NonNull TextView view) {
-            BigDecimal comissaAReceber = comissaoTotalAoMotorista.subtract(comissaoJaPaga);
-            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaAReceber));
-            return comissaAReceber;
+          //  BigDecimal comissaAReceber = comissaoTotalAoMotorista.subtract(comissaoJaPaga);
+          //  view.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaAReceber));
+         //   return comissaAReceber;
+            return null;
         }
 
         private static BigDecimal ui_reembolso(List<CustosDePercurso> dataSet, @NonNull TextView view) {

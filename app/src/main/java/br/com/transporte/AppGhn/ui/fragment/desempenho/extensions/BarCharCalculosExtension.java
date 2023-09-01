@@ -73,16 +73,16 @@ public class BarCharCalculosExtension {
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-                for (int i = 0; i < 12; i++) {
+               /* for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(frete -> ((Frete) frete).getAdmFrete().getFreteBruto())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }
+                }*/
                 break;
 
-            case FRETE_LIQUIDO:
+          /*  case FRETE_LIQUIDO:
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
@@ -93,22 +93,22 @@ public class BarCharCalculosExtension {
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }
-                break;
+                }*/
+              /*  break;*/
 
-            case COMISSAO:
+         /*   case COMISSAO:
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-                for (int i = 0; i < 12; i++) {
+               *//* for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(frete -> ((Frete) frete).getAdmFrete().getComissaoAoMotorista())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }
-                break;
+                }*//*
+                break;*/
 
 
             case LITRAGEM:
@@ -234,13 +234,13 @@ public class BarCharCalculosExtension {
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-                for (int i = 0; i < 12; i++) {
+               /* for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(frete -> ((Frete) frete).getAdmFrete().getFreteLiquidoAReceber())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }
+                }*/
 
                 // ---------
                 listaDeObjetos.clear();
@@ -265,7 +265,7 @@ public class BarCharCalculosExtension {
                 listaDeListas_Meses = criaListaDeListas();
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, COMISSAO, id);
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, COMISSAO);
-                for (int i = 0; i < 12; i++) {
+              /*  for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
                             .map(frete -> ((Frete) frete).getAdmFrete().getComissaoAoMotorista())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -273,7 +273,7 @@ public class BarCharCalculosExtension {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
-                }
+                }*/
 
                 // ---------
                 listaDeObjetos.clear();

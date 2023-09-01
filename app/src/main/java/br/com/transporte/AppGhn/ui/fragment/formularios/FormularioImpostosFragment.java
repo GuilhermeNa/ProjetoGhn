@@ -21,11 +21,16 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioImpostosBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
@@ -43,15 +48,16 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     private TextInputLayout dataLayout, layoutRef;
     private AutoCompleteTextView nomeImpostoAutoComplete, referenciaEdit;
     private EditText valorEdit, dataEdit;
-    private DespesasImpostoDAO impostoDao;
+    private RoomDespesaImpostoDao impostoDao;
     private DespesasDeImposto imposto;
-    private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDao;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        impostoDao = new DespesasImpostoDAO();
-        cavaloDao = new CavaloDAO();
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        impostoDao = dataBase.getRoomDespesaImpostoDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
         int impostoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(impostoId);
         imposto = (DespesasDeImposto) criaOuRecuperaObjeto(impostoId);
@@ -86,9 +92,11 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long impostoId = (Long)id;
+
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            imposto = impostoDao.localizaPeloid(id);
+            imposto = impostoDao.localizaPeloId(impostoId);
         } else {
             imposto = new DespesasDeImposto();
         }
@@ -154,7 +162,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         imposto.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
         if (layoutRef.getVisibility() == View.VISIBLE) {
-            int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(referenciaEdit.getText().toString()).getId();
+            Integer cavaloId = cavaloDao.localizaPelaPlaca(referenciaEdit.getText().toString()).getId();
             imposto.setRefCavalo(cavaloId);
             imposto.setTipoDespesa(TipoDespesa.DIRETA);
         } else {
@@ -165,12 +173,12 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        impostoDao.edita(imposto);
+        impostoDao.adiciona(imposto);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        impostoDao.deleta(imposto.getId());
+        impostoDao.deleta(imposto);
     }
 
     @Override
@@ -208,8 +216,8 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDeReferenciasParaCavalos() {
-        cavaloDao = new CavaloDAO();
-        String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
+        List<String> listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+        String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         referenciaEdit.setAdapter(adapterCavalos);
     }

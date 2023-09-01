@@ -320,9 +320,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaAnual, obj.getId());
-                valor = CalculoUtil.somaFreteBruto(dataSet);
+           //     valor = CalculoUtil.somaFreteBruto(dataSet);
 
-                adicionaValorAoObjetoTemporario(valor, obj);
+          //      adicionaValorAoObjetoTemporario(valor, obj);
             }
 
         }
@@ -332,9 +332,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaAnual, obj.getId());
-                valor = CalculoUtil.somaFreteLiquido(dataSet);
+          //      valor = CalculoUtil.somaFreteLiquido(dataSet);
 
-                adicionaValorAoObjetoTemporario(valor, obj);
+          //      adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
@@ -354,9 +354,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaAnual, obj.getId());
-                valor = CalculoUtil.somaComissao(dataSet);
+         //       valor = CalculoUtil.somaComissao(dataSet);
 
-                adicionaValorAoObjetoTemporario(valor, obj);
+           //     adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
@@ -445,10 +445,10 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
                 List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
-                BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
-                BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
-                adicionaValorAoObjetoTemporario(liquido, obj);
-                subtraiValorAoObjetoTemporario(comissao, obj);
+         //       BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
+         //       BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
+         //       adicionaValorAoObjetoTemporario(liquido, obj);
+         //       subtraiValorAoObjetoTemporario(comissao, obj);
 
                 List<CustosDeAbastecimento> dataSetAbastecimento = FiltraCustosAbastecimento.listaPorCavaloId(listaCustoAbastecimento, obj.getId());
                 BigDecimal abastecimento = CalculoUtil.somaCustosDeAbastecimento(dataSetAbastecimento);
@@ -570,8 +570,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
-                valor = CalculoUtil.somaComissao(dataSet);
-                adicionaValorAoObjetoTemporario(valor, obj);
+       //         valor = CalculoUtil.somaComissao(dataSet);
+       //         adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
@@ -592,8 +592,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
-                valor = CalculoUtil.somaFreteLiquido(dataSet);
-                adicionaValorAoObjetoTemporario(valor, obj);
+          //      valor = CalculoUtil.somaFreteLiquido(dataSet);
+          //      adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
@@ -603,8 +603,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
-                valor = CalculoUtil.somaFreteBruto(dataSet);
-                adicionaValorAoObjetoTemporario(valor, obj);
+        //        valor = CalculoUtil.somaFreteBruto(dataSet);
+        //        adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
@@ -639,10 +639,10 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
                 List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
-                BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
-                BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
-                adicionaValorAoObjetoTemporario(liquido, obj);
-                subtraiValorAoObjetoTemporario(comissao, obj);
+       //         BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
+       //         BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
+       //         adicionaValorAoObjetoTemporario(liquido, obj);
+        //        subtraiValorAoObjetoTemporario(comissao, obj);
 
                 List<CustosDeAbastecimento> dataSetAbastecimento = FiltraCustosAbastecimento.listaPorCavaloId(listaCustoAbastecimento, obj.getId());
                 BigDecimal abastecimento = CalculoUtil.somaCustosDeAbastecimento(dataSetAbastecimento);

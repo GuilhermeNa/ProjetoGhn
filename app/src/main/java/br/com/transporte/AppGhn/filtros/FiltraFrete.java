@@ -46,17 +46,19 @@ public class FiltraFrete {
                 .collect(Collectors.toList());
     }
 
-    public static List<Frete> listaPorStatusDePagamentoDaComissao(@NonNull List<Frete> dataSet, boolean isPago) {
+   /* public static List<Frete> listaPorStatusDePagamentoDaComissao(@NonNull List<Frete> dataSet, boolean isPago) {
+
         if (isPago) return dataSet.stream()
-                .filter(f -> f.getAdmFrete().isComissaoJaFoiPaga())
+                .filter(f -> Frete.getAdmFrete().isComissaoJaFoiPaga())
                 .collect(Collectors.toList());
 
         return dataSet.stream()
                 .filter(f -> !f.getAdmFrete().isComissaoJaFoiPaga())
                 .collect(Collectors.toList());
-    }
+    }*/
 
-    public static List<Frete> listaPorStatusDeRecebimentoDoFrete(@NonNull List<Frete> dataSet, boolean isPago) {
+
+  /*  public static List<Frete> listaPorStatusDeRecebimentoDoFrete(@NonNull List<Frete> dataSet, boolean isPago) {
         if (isPago) return dataSet.stream()
                 .filter(f -> f.getAdmFrete().isFreteJaFoiPago())
                 .collect(Collectors.toList());
@@ -64,7 +66,7 @@ public class FiltraFrete {
         return dataSet.stream()
                 .filter(f -> !f.getAdmFrete().isFreteJaFoiPago())
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public static List<Frete> listaPorAno(@NonNull List<Frete> dataSet, int ano) {
         return dataSet.stream()

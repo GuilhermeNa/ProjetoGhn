@@ -19,7 +19,7 @@ public class DespesasSeguroDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(DespesaComSeguro seguros) {
+ /*   public void adiciona(DespesaComSeguro seguros) {
         dao.add(seguros);
         seguros.setId(contadorDeIds);
         contadorDeIds++;
@@ -38,7 +38,7 @@ public class DespesasSeguroDAO {
         if (seguroLocalizado != null) {
             dao.remove(seguroLocalizado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

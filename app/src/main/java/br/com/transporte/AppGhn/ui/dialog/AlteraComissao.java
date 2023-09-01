@@ -27,7 +27,7 @@ public class AlteraComissao {
         this.frete = frete;
     }
 
-    public void dialogAlteraComissao(){
+/*    public void dialogAlteraComissao(){
         View viewCriada = LayoutInflater.from(context).inflate(R.layout.altera_comissao, null);
         EditText novoPercentualEdit = viewCriada.findViewById(R.id.dialog_novo_percentual_edit);
         novoPercentualEdit.addTextChangedListener(new MascaraMonetariaUtil(novoPercentualEdit));
@@ -53,7 +53,7 @@ public class AlteraComissao {
                 }).setNegativeButton("Cancelar", (dialog, which) ->
                         callback.quandoCancela("Alteração cancelada"))
                 .show();
-    }
+    }*/
 
     public interface Callback {
         void quandoFunciona(String msg);

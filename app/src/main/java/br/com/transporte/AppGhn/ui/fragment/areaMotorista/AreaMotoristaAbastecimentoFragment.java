@@ -14,7 +14,6 @@ import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaRe
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.AbastecimentoAdapter;
-import br.com.transporte.AppGhn.util.BuscaVazia;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
@@ -197,7 +196,7 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     private void configuraUi() {
         ui_data();
         ui_totalAbastecimento();
-        BuscaVazia.configura(listaDeAbastecimentos.size(), buscaVazia, recycler);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeAbastecimentos.size(), buscaVazia, recycler, "INVISIBLE");
     }
 
     private void ui_totalAbastecimento() {
@@ -217,7 +216,7 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
             atualizaUi();
             resetaSolicitacaoDeAtualizacao();
             ui_totalAbastecimento();
-            BuscaVazia.configura(listaDeAbastecimentos.size(), buscaVazia, recycler);
+            ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeAbastecimentos.size(), buscaVazia, recycler, "INVISIBLE");
         }
     }
 

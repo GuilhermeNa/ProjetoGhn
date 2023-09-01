@@ -1,4 +1,4 @@
-package br.com.transporte.AppGhn.ui.adapter;
+package br.com.transporte.AppGhn.ui.fragment.home.funcionarios.adapters;
 
 import static br.com.transporte.AppGhn.ui.fragment.extensions.BitmapImagem.decodificaBitmapEmString;
 

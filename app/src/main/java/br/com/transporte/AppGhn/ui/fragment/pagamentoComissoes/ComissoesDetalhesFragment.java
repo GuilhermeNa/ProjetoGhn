@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.view.View.GONE;
+import static br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
@@ -59,8 +60,17 @@ import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.SalarioDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesDetalhesBinding;
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
+import br.com.transporte.AppGhn.filtros.FiltraAdiantamento;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
@@ -92,9 +102,9 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
     private List<CustosDePercurso> listaReembolsoRecycler;
     private List<Frete> listaFreteRecycler;
     private Map<Integer, BigDecimal> map;
-    private AdiantamentoDAO adiantamentoDao;
-    private CustosDePercursoDAO custosDao;
-    private FreteDAO freteDao;
+    private RoomAdiantamentoDao adiantamentoDao;
+    private RoomCustosPercursoDao custosDao;
+    private RoomFreteDao freteDao;
     private DetalhesAdiantamentoAdapter adapterAdiantamento;
     private DetalhesReembolsoAdapter adapterReembolso;
     private DetalhesFreteAdapter adapterFrete;
@@ -143,6 +153,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                         break;
                 }
             });
+    private GhnDataBase dataBase;
 
     private void atualizaAdiantamentoAposRetornoDeResult(String msg) {
         listaAdiantamentosRecycler = getListaAdiantamentoEmAbertoPorPlaca();
@@ -163,9 +174,10 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adiantamentoDao = new AdiantamentoDAO();
-        custosDao = new CustosDePercursoDAO();
-        freteDao = new FreteDAO();
+        dataBase = GhnDataBase.getInstance(this.requireContext());
+        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
+        custosDao = dataBase.getRoomCustosPercursoDao();
+        freteDao = dataBase.getRoomFreteDao();
         map = new HashMap<>();
         cavalo = recebeIdArguments();
     }
@@ -223,9 +235,9 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                             CustosDeSalario salario = new CustosDeSalario();
 
                             for (Frete f : listaFreteRecycler) {
-                                f.getAdmFrete().setComissaoJaFoiPaga(true);
+                             //   f.getAdmFrete().setComissaoJaFoiPaga(true);
                                 f.setApenasAdmEdita(true);
-                                freteDao.edita(f);
+                                freteDao.adiciona(f);
                                 salario.listaFretesAdiciona(f.getId());
                             }
 
@@ -241,12 +253,12 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                                     }
                                 }
 
-                                adiantamentoDao.edita(a);
+                                adiantamentoDao.adiciona(a);
                             }
 
                             for (CustosDePercurso c : listaReembolsoRecycler) {
                                 c.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_JA_PAGO);
-                                custosDao.edita(c);
+                                custosDao.adiciona(c);
                                 salario.listaReembolsosAdiciona(c.getId());
                             }
 
@@ -255,7 +267,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                             salario.setRefCavalo(cavalo.getId());
                             salario.setValorCusto(liquidoAFechar);
                             salario.setRefMotoristaId(cavalo.getMotorista().getId());
-                            SalarioDAO salarioDao = new SalarioDAO();
+                            RoomCustosDeSalarioDao salarioDao = dataBase.getRoomCustosDeSalarioDao();
                             salarioDao.adiciona(salario);
 
                             adapterFrete.atualiza(listaFreteRecycler);
@@ -294,8 +306,8 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
     }
 
     private BigDecimal uiMutavel_atualizaComissao() {
-        List<Frete> fretesRefCavaloQueEstaSendoVisualizado = freteDao.listaFiltradaPorCavalo(cavalo.getId());
-        comissaoAcumulada = CalculoUtil.somaComissaoPorStatus(fretesRefCavaloQueEstaSendoVisualizado, false);
+        List<Frete> fretesRefCavaloQueEstaSendoVisualizado = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+    //    comissaoAcumulada = CalculoUtil.somaComissaoPorStatus(fretesRefCavaloQueEstaSendoVisualizado, false);
         comissaoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoAcumulada));
         return comissaoAcumulada;
     }
@@ -326,7 +338,9 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
     }
 
     private List<Adiantamento> getListaAdiantamentoEmAbertoPorPlaca() {
-        return adiantamentoDao.listaPorCavaloEAberto(cavalo.getId());
+        List<Adiantamento> dataSet = FiltraAdiantamento.listaPorCavaloId(adiantamentoDao.todos(), cavalo.getId());
+        dataSet = FiltraAdiantamento.listaPorStatus(dataSet, false);
+        return dataSet;
     }
 
     private void inicializaCampos() {
@@ -348,7 +362,9 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
 
     private void configuraRecyclerFrete() {
         RecyclerView recyclerView = binding.comissaoRecycler;
-        listaFreteRecycler = freteDao.listaPorPlacaEComissaoAberta(cavalo.getId());
+
+        List<Frete> listaFreteRecycler = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+  //      listaFreteRecycler = FiltraFrete.listaPorStatusDePagamentoDaComissao(listaFreteRecycler, false);
 
         adapterFrete = new DetalhesFreteAdapter(this, listaFreteRecycler);
         recyclerView.setAdapter(adapterFrete);
@@ -378,7 +394,9 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
     }
 
     private List<CustosDePercurso> getListaReembolsoRecycler() {
-        return custosDao.listaPorCavaloEAberto(cavalo.getId());
+        List<CustosDePercurso> dataSet = FiltraCustosPercurso.listaPorCavaloId(custosDao.todos(), cavalo.getId());
+        dataSet = FiltraCustosPercurso.listaPorTipo(dataSet, REEMBOLSAVEL_EM_ABERTO);
+        return dataSet;
     }
 
     private void configuraRecyclerAdiantamento() {
@@ -443,7 +461,7 @@ public class ComissoesDetalhesFragment extends Fragment implements MenuProvider 
                 Frete frete = listaFreteRecycler.get(posicao);
                 if (item.getItemId() == R.id.editarComissao) {
                     AlteraComissao alteraComissao = new AlteraComissao(this.getContext(), frete);
-                    alteraComissao.dialogAlteraComissao();
+                    //alteraComissao.dialogAlteraComissao();
                     int posicaoTemporaria = posicao;
                     alteraComissao.setCallback(new AlteraComissao.Callback() {
                         @Override

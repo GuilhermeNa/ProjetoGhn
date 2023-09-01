@@ -45,6 +45,8 @@ import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.ActivityAreaMotoristaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.ui.activity.extensions.StatusBarUtil;
@@ -218,7 +220,7 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
     private Cavalo recebeReferenciaDeCavalo() {
         Cavalo cavalo;
         Intent dados = getIntent();
-        CavaloDAO cavaloDao = new CavaloDAO();
+        RoomCavaloDao cavaloDao = GhnDataBase.getInstance(this).getRoomCavaloDao();
         int cavaloId = 0;
 
         if (dados.hasExtra(CHAVE_ID_CAVALO)) {

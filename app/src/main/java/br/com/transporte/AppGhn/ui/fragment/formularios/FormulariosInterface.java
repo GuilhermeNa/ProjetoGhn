@@ -6,7 +6,7 @@ public interface FormulariosInterface {
 
     void inicializaCamposDaView();
 
-    <T> T criaOuRecuperaObjeto(int id);
+    <T> T criaOuRecuperaObjeto(T id);
 
     void alteraUiParaModoEdicao();
 

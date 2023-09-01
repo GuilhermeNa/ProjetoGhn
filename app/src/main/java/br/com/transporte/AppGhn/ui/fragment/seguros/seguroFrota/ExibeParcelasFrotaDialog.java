@@ -32,7 +32,9 @@ import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
@@ -41,13 +43,16 @@ import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;
 
 public class ExibeParcelasFrotaDialog {
     private final Context context;
-    private final ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
+    private final RoomParcelaSeguroDao parcelaDao;
+    private final GhnDataBase dataBase;
     private HashMap<Integer, Boolean> mapComParcelas;
     private Button btn;
     private List<ParcelaDeSeguro> listaDeparcelas;
 
     public ExibeParcelasFrotaDialog(Context context) {
         this.context = context;
+        dataBase = GhnDataBase.getInstance(context);
+        parcelaDao = dataBase.getRoomParcelaSeguroDao();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -119,7 +124,7 @@ public class ExibeParcelasFrotaDialog {
     }
 
     private Cavalo getCavalo(@NonNull DespesaComSeguroFrota seguro) {
-        CavaloDAO cavaloDao = new CavaloDAO();
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
         return cavaloDao.localizaPeloId(seguro.getRefCavalo());
     }
 
@@ -172,7 +177,7 @@ public class ExibeParcelasFrotaDialog {
     }
 
     private List<ParcelaDeSeguro> getListaDeparcelas(@NonNull DespesaComSeguroFrota seguro) {
-        return parcelaDao.listaParcelasDoSeguro(seguro.getId());
+        return parcelaDao.listaPeloSeguroId(seguro.getId());
     }
 
     private void configuraVisualizacaoDoBtn(Button btn, Animation animaCima, Animation animaBaixo, boolean atualizacaoNecessaria) {

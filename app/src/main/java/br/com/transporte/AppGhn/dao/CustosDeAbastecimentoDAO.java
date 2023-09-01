@@ -4,7 +4,9 @@ import static br.com.transporte.AppGhn.model.enums.TipoAbastecimento.TOTAL;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.room.Ignore;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,26 +29,26 @@ public class CustosDeAbastecimentoDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(CustosDeAbastecimento abastecimento) {
+    /*public void adiciona(@NonNull CustosDeAbastecimento abastecimento) {
         abastecimento.setId(contadorDeIds);
         dao.add(abastecimento);
         contadorDeIds++;
-    }
+    }*/
 
-    public void edita(CustosDeAbastecimento abastecimento) {
+    /*public void edita(CustosDeAbastecimento abastecimento) {
         CustosDeAbastecimento abastecimentoEncontrado = localizaPeloId(abastecimento.getId());
         if (abastecimentoEncontrado != null) {
             int posicaoAbastecimento = dao.indexOf(abastecimentoEncontrado);
             dao.set(posicaoAbastecimento, abastecimento);
         }
-    }
+    }*/
 
-    public void deleta(int abastecimentoId) {
+    /*public void deleta(int abastecimentoId) {
         CustosDeAbastecimento abastecimentoEncontrado = localizaPeloId(abastecimentoId);
         if (abastecimentoEncontrado != null) {
             dao.remove(abastecimentoEncontrado);
         }
-    }
+    }*/
 
     //---------------------------------- Retorna Listas ---------------------------------------------
 
@@ -55,15 +57,13 @@ public class CustosDeAbastecimentoDAO {
         return new ArrayList<>(dao);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public List<CustosDeAbastecimento> listaCriaFlag(int cavaloId){
+    public List<CustosDeAbastecimento> listaCriaFlag(int cavaloId) {
         return dao.stream()
                 .filter(a -> a.getTipo() == TOTAL)
                 .filter(a -> a.getRefCavalo() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public List<CustosDeAbastecimento> listaFiltradaPorData(LocalDate dataInicial, LocalDate dataFinal) {
         List<CustosDeAbastecimento> lista = new ArrayList<>();
         for (CustosDeAbastecimento a : dao) {
@@ -84,7 +84,6 @@ public class CustosDeAbastecimentoDAO {
         return lista;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public List<CustosDeAbastecimento> listaFiltradaPorCavaloEData(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
         List<CustosDeAbastecimento> listaPorCavalo = listaPorCavalo(cavaloId);
         List<CustosDeAbastecimento> lista = new ArrayList<>();
@@ -187,7 +186,7 @@ public class CustosDeAbastecimentoDAO {
         return true;
     }
 
-    private CustosDeAbastecimento getCMenosUm(List<CustosDeAbastecimento> listaPorCavalo, CustosDeAbastecimento cMaisUm) {
+    private CustosDeAbastecimento getCMenosUm(@NonNull List<CustosDeAbastecimento> listaPorCavalo, CustosDeAbastecimento cMaisUm) {
         CustosDeAbastecimento cMenosUm;
         int posicaoCMaisUmNaLista = listaPorCavalo.indexOf(cMaisUm);
         cMenosUm = listaPorCavalo.get(posicaoCMaisUmNaLista + 1);

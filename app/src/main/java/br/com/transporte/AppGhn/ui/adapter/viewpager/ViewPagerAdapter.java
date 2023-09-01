@@ -15,7 +15,7 @@ import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFra
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private int cavaloId;
 
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, int cavaloId) {
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, Integer cavaloId) {
         super(fragmentActivity);
         this.cavaloId = cavaloId;
     }

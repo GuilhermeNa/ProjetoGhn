@@ -44,7 +44,11 @@ import java.util.Objects;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberPagosBinding;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.adapter.FreteAReceberPagoAdapter;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
@@ -59,11 +63,14 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
     private LinearLayout dataLayout, buscaVazia;
     private List<Frete> listaFiltrada;
     private RecyclerView recyclerView;
-    private FreteDAO freteDao;
+    private RoomFreteDao freteDao;
+    private GhnDataBase dataBase;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dataBase = GhnDataBase.getInstance(requireContext());
+        freteDao = dataBase.getRoomFreteDao();
     }
 
     @Nullable
@@ -77,7 +84,7 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        freteDao = new FreteDAO();
+
 
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
         dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
@@ -167,7 +174,9 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
     }
 
     private List<Frete> getListaPagos() {
-        return freteDao.listaFiltradaPorStatusJaRecebido(dataInicial, dataFinal);
+        List<Frete> listaFretes = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
+        // listaFretes = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(listaFretes, true);
+        return listaFretes;
     }
 
     private void configuraRecycler() {
@@ -209,10 +218,13 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
             @Override
             public boolean onQueryTextChange(String newText) {
                 List<Frete> lista = new ArrayList<>();
-                CavaloDAO cavaloDao = new CavaloDAO();
+                RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
                 String placa;
 
-                for (Frete f : freteDao.listaFiltradaPorStatusJaRecebido(dataInicial, dataFinal)) {
+                List<Frete> listaFretes = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
+               // listaFretes = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(listaFretes, true);
+
+                for (Frete f : listaFretes) {
                     placa = cavaloDao.localizaPeloId(f.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     if (placa.contains(newText.toUpperCase(Locale.ROOT))) {
                         lista.add(f);

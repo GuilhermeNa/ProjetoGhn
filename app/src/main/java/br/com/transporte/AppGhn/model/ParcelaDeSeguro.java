@@ -18,7 +18,6 @@ import br.com.transporte.AppGhn.model.enums.TipoDespesa;
         onDelete = ForeignKey.CASCADE
 ))
 public class ParcelaDeSeguro extends Parcela {
-
     private Long refSeguroId;
 
     public ParcelaDeSeguro(int numeroDaParcela, LocalDate data, BigDecimal valor, boolean valido, long refSeguroId, boolean paga, TipoDespesa tipo, int refCavalo) {
@@ -43,5 +42,13 @@ public class ParcelaDeSeguro extends Parcela {
 
     public void setRefSeguro(long refChaveIdEstrangeira) {
         this.refSeguroId = refChaveIdEstrangeira;
+    }
+
+    public Long getRefSeguroId() {
+        return refSeguroId;
+    }
+
+    public void setRefSeguroId(Long refSeguroId) {
+        this.refSeguroId = refSeguroId;
     }
 }

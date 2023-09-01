@@ -31,7 +31,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
 import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
@@ -39,7 +40,7 @@ import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;
 
 public class ExibeParcelasVidaDialog {
     public static final String TITULO_DIALOG = "Seguro Vida";
-    private final ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
+    private final RoomParcelaSeguroDao parcelaDao;
     private HashMap<Integer, Boolean> mapComParcelas;
     private List<ParcelaDeSeguro> listaDeparcelas;
     private final Context context;
@@ -47,6 +48,7 @@ public class ExibeParcelasVidaDialog {
 
     public ExibeParcelasVidaDialog(Context context) {
         this.context = context;
+        parcelaDao = GhnDataBase.getInstance(context).getRoomParcelaSeguroDao();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -165,7 +167,7 @@ public class ExibeParcelasVidaDialog {
     }
 
     private List<ParcelaDeSeguro> getListaDeparcelas(@NonNull DespesaComSeguroDeVida seguro) {
-        return parcelaDao.listaParcelasDoSeguro(seguro.getId());
+        return parcelaDao.listaPeloSeguroId(seguro.getId());
     }
 
     private void configuraVisualizacaoDoBtn(Button btn, Animation animaCima, Animation animaBaixo, boolean atualizacaoNecessaria) {

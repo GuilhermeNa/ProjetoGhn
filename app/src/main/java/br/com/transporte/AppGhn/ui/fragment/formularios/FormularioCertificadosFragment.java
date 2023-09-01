@@ -46,7 +46,12 @@ import java.util.stream.Collectors;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCertificadosBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
@@ -69,10 +74,11 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     private AutoCompleteTextView certificadoAutoComplete, placaAutoComplete;
     private DespesaCertificado certificadoQueEstaSendoSubstituido, certificado;
     private List<String> listaCertificadosEmString;
-    private DespesasCertificadoDAO certificadoDao;
+    private RoomDespesaCertificadoDao certificadoDao;
     private TipoDespesa tipoDespesa;
-    private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDao;
     private TextView subEdit;
+    private List<String> listaDePlacas;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -81,9 +87,10 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        certificadoDao = new DespesasCertificadoDAO();
-        cavaloDao = new CavaloDAO();
-
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        certificadoDao = dataBase.getRoomDespesaCertificadoDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
         int certificadoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
         certificado = (DespesaCertificado) criaOuRecuperaObjeto(certificadoId);
@@ -110,10 +117,12 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long certificadoId = (Long)id;
+
         switch (getTipoFormulario()) {
             case EDITANDO:
-                certificado = certificadoDao.localizaPeloId(id);
+                certificado = certificadoDao.localizaPeloId(certificadoId);
                 break;
 
             case ADICIONANDO:
@@ -122,7 +131,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
             case RENOVANDO:
                 certificado = new DespesaCertificado();
-                certificadoQueEstaSendoSubstituido = certificadoDao.localizaPeloId(id);
+                certificadoQueEstaSendoSubstituido = certificadoDao.localizaPeloId(certificadoId);
                 break;
         }
 
@@ -273,7 +282,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         }
 
         if (tipoDespesa == DIRETA) {
-            if (!cavaloDao.listaPlacas().contains(placaAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
+            if (!listaDePlacas.contains(placaAutoComplete.getText().toString().toUpperCase(Locale.ROOT))) {
                 placaAutoComplete.setError(INCORRETO);
                 placaAutoComplete.getText().clear();
                 if (isCompletoParaSalvar()) setCompletoParaSalvar(false);
@@ -297,12 +306,12 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        certificadoDao.edita(certificado);
+        certificadoDao.adiciona(certificado);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        certificadoDao.deleta(certificado.getId());
+        certificadoDao.deleta(certificado);
     }
 
     @Override
@@ -314,7 +323,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     @Override
     public int configuraObjetoNaCriacao() {
         if (tipoDespesa == DIRETA) {
-            int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(placaAutoComplete.getText().toString()).getId();
+            int cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
             certificado.setRefCavalo(cavaloId);
             certificado.setTipoDespesa(DIRETA);
 
@@ -350,7 +359,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDePlacas() {
-        String[] cavalos = cavaloDao.listaPlacas().toArray(new String[0]);
+        String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         placaAutoComplete.setAdapter(adapterCavalos);
     }
@@ -436,13 +445,12 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     }
 
     private void procuraPorCertificadoDuplicado() {
-
         String nomeDoCertificado = certificadoAutoComplete.getText().toString();
         TipoCertificado tipo = TipoCertificado.valueOf(nomeDoCertificado);
 
         if (getTipoFormulario() == ADICIONANDO && tipoDespesa == INDIRETA) {
 
-            List<DespesaCertificado> listaDeCertificados = certificadoDao.listaTodosOsCertificadosIndiretos();
+            List<DespesaCertificado> listaDeCertificados = certificadoDao.listaPorTipo(INDIRETA);
 
             Optional<DespesaCertificado> buscaDuplicidade = listaDeCertificados.stream()
                     .filter(d -> d.isValido() && d.getTipoCertificado() == tipo)
@@ -457,9 +465,9 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
         } else if (getTipoFormulario() == ADICIONANDO && tipoDespesa == DIRETA) {
 
-            int cavaloId = cavaloDao.retornaCavaloAtravesDaPlaca(placaAutoComplete.getText().toString()).getId();
+            Integer cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
 
-            List<DespesaCertificado> listaDeCertificadosPorCavalo = certificadoDao.listaFiltradaPorCavalo(cavaloId);
+            List<DespesaCertificado> listaDeCertificadosPorCavalo = certificadoDao.listaPorCavaloId(cavaloId);
 
             Optional<DespesaCertificado> buscaDuplicidade = listaDeCertificadosPorCavalo.stream()
                     .filter(d -> d.isValido() && d.getTipoCertificado() == tipo)

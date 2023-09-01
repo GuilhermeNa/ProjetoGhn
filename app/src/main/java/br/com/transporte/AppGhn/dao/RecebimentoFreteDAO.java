@@ -14,7 +14,7 @@ public class RecebimentoFreteDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-
+/*
     public void adiciona(RecebimentoDeFrete recebimento) {
         recebimento.setId(contadorDeIds);
         dao.add(recebimento);
@@ -34,7 +34,7 @@ public class RecebimentoFreteDAO {
         if(recebimentoLocalizado != null){
             dao.remove(recebimentoLocalizado);
         }
-    }
+    }*/
 
     public void deletaLista(List<RecebimentoDeFrete> listaFiltrada) {
         for(RecebimentoDeFrete r: listaFiltrada){
@@ -48,7 +48,7 @@ public class RecebimentoFreteDAO {
     public List<RecebimentoDeFrete> listaPorIdFrete(int freteId) {
         List<RecebimentoDeFrete> lista = new ArrayList<>();
         for (RecebimentoDeFrete r : dao) {
-            if (r.getRefFrete() == freteId) {
+            if (r.getRefFreteId() == freteId) {
                 lista.add(r);
             }
         }

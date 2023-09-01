@@ -15,17 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.model.Cavalo;
-import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder> implements CavaloAdapterInnerAdapterHelper.InterfaceCavaloInnerAdapter {
@@ -140,8 +139,8 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
     }
 
     private void configuraListeners(@NonNull ViewHolder holder, Cavalo cavalo) {
-        holder.btnNovoSr.setOnClickListener(v -> onItemClickListener.onNovoSrClick(cavalo.getId()));
-        holder.placaTxt.setOnClickListener(v -> onItemClickListener.onEditaCavaloClick(cavalo.getId()));
+        holder.btnNovoSr.setOnClickListener(v -> onItemClickListener.onClickAdicionaReboque(cavalo.getId()));
+        holder.placaTxt.setOnClickListener(v -> onItemClickListener.onCLickEditaCavalo(cavalo.getId()));
         holder.itemView.setOnLongClickListener(v -> {
             setPosicao(holder.getAdapterPosition());
             return false;
@@ -234,7 +233,7 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
 
     @Override
     public void solicitaAlteracao_clickEmEditarReboque(int reboqueId, int cavaloId) {
-        onItemClickListener.onEditaSrClick(reboqueId, cavaloId);
+        onItemClickListener.onClickEditaReboque(reboqueId, cavaloId);
     }
 
     @Override
@@ -247,13 +246,13 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
     //----------------------------------------------------------------------------------------------
 
     public interface OnItemClickListener {
-        void onEditaCavaloClick(int idCavalo);
+        void onCLickEditaCavalo(Integer cavaloId);
 
-        void onNovoSrClick(int idCavalo);
+        void onClickAdicionaReboque(Integer cavaloId);
 
         // Id do semireboque que foi clicado para realizar alterações
         // será enviado de volta ao Fragment para abrir Formulario modo Edição
-        void onEditaSrClick(int idSr, int idCavalo);
+        void onClickEditaReboque(Integer reboqueId, Integer cavaloId);
     }
 
 }

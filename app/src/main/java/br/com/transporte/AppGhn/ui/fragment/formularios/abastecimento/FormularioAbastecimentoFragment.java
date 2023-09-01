@@ -24,6 +24,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAbastecimentoBinding;
 import br.com.transporte.AppGhn.exception.DataInvalida;
 import br.com.transporte.AppGhn.exception.MarcacaoKmInvalida;
@@ -43,13 +45,13 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     private CheckBox totalBox, parcialBox;
     private TextView tipoAbastecimentoTxt;
     private TextInputLayout dataLayout;
-    private CustosDeAbastecimentoDAO abastecimentoDao;
+    private RoomCustosAbastecimentoDao abastecimentoDao;
     private CustosDeAbastecimento abastecimento;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        abastecimentoDao = new CustosDeAbastecimentoDAO();
+        abastecimentoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosAbastecimentoDao();
 
         int abastecimentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(abastecimentoId);
@@ -95,10 +97,12 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         dataLayout = binding.fragFormularioAbastecimentoLayoutData;
     }
 
+
     @Override
-    public Object criaOuRecuperaObjeto(int id) {
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long idAbastecimento = (Long)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            abastecimento = abastecimentoDao.localizaPeloId(id);
+            abastecimento = abastecimentoDao.localizaPeloId(idAbastecimento);
         } else {
             abastecimento = new CustosDeAbastecimento();
         }
@@ -279,12 +283,12 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        abastecimentoDao.edita(abastecimento);
+        abastecimentoDao.adiciona(abastecimento);
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        abastecimentoDao.deleta(abastecimento.getId());
+        abastecimentoDao.deleta(abastecimento);
     }
 
     @Override
