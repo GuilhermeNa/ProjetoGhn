@@ -9,6 +9,7 @@ import androidx.room.TypeConverter;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 public class ConversorTipoDespesa {
+
     @TypeConverter
     public String paraString(@NonNull TipoDespesa tipo) {
         switch (tipo) {

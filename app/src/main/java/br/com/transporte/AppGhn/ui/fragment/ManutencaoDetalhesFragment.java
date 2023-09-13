@@ -14,6 +14,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_C
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_MANUTENCAO;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -44,27 +45,33 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeManutencaoDao;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentManutencaoDetalhesBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCustosManutencao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ManutencaoDetalhesAdapter;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ManutencaoDetalhesFragment extends Fragment {
@@ -74,16 +81,19 @@ public class ManutencaoDetalhesFragment extends Fragment {
     private LinearLayout dataLayout;
     private ManutencaoDetalhesAdapter adapter;
     private Cavalo cavalo;
-    private LinearLayout vazio;
-    private List<CustosDeManutencao> listaDeManutencoes;
+    private LinearLayout buscaVazia;
+    private List<CustosDeManutencao> dataSet;
     private FloatingActionButton fab;
     private LocalDate dataInicial, dataFinal;
+    private RoomCustosDeManutencaoDao manutencaoDao;
+    private RecyclerView recycler;
+
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
 
-                switch(codigoResultado){
+                switch (codigoResultado) {
                     case RESULT_EDIT:
                         atualizaUiAposRetornoResult(REGISTRO_EDITADO);
                         break;
@@ -101,9 +111,11 @@ public class ManutencaoDetalhesFragment extends Fragment {
                         break;
                 }
             });
+    private RoomCavaloDao cavaloDao;
+    private GhnDataBase dataBase;
 
-    private void atualizaUiAposRetornoResult(String msg){
-        listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
+    private void atualizaUiAposRetornoResult(String msg) {
+        atualizaDataSet();
         atualizaNaUiOTotalPagoNasManutencoes();
         configuraAdapterAposAtualizarData();
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
@@ -116,12 +128,37 @@ public class ManutencaoDetalhesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CavaloDAO cavaloDao = new CavaloDAO();
-        cavalo = recebeReferenciaExternaDeCavalo(cavaloDao);
+        dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+        manutencaoDao = dataBase.getRoomCustosDeManutencaoDao();
 
+        cavalo = recebeReferenciaExternaDeCavalo(cavaloDao);
+        atualizaData_inicialEFinal();
+        atualizaDataSet();
+    }
+
+    private void atualizaData_inicialEFinal() {
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
         dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
-        listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
+    }
+
+    private Cavalo recebeReferenciaExternaDeCavalo(@NonNull RoomCavaloDao cavaloDao) {
+        Cavalo cavaloRecebido;
+        Long cavaloId = ManutencaoDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
+        cavaloRecebido = cavaloDao.localizaPeloId(cavaloId);
+
+        return cavaloRecebido;
+    }
+
+    private void atualizaDataSet() {
+        dataSet = manutencaoDao.listaPeloCavaloId(cavalo.getId());
+        dataSet = FiltraCustosManutencao.listaPorData(dataSet, dataInicial, dataFinal);
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<CustosDeManutencao> getDataSet() {
+        return new ArrayList<>(dataSet);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -134,6 +171,10 @@ public class ManutencaoDetalhesFragment extends Fragment {
         binding = FragmentManutencaoDetalhesBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -155,35 +196,28 @@ public class ManutencaoDetalhesFragment extends Fragment {
         });
     }
 
-    private List<CustosDeManutencao> getListaFiltradaPorPlacaEData(LocalDate dataInicial, LocalDate dataFinal) {
-        CustosDeManutencaoDAO manutencaoDao = new CustosDeManutencaoDAO();
-        listaDeManutencoes = manutencaoDao.listaFiltradaPorPlacaEData(cavalo.getId(), dataInicial, dataFinal);
-
-        return listaDeManutencoes;
-    }
-
     private void configuraRecycler() {
-        RecyclerView recyclerView = binding.fragManutencaoDetalhesRecycler;
+        recycler = binding.fragManutencaoDetalhesRecycler;
 
-        adapter = new ManutencaoDetalhesAdapter(this, listaDeManutencoes);
-        recyclerView.setAdapter(adapter);
+        adapter = new ManutencaoDetalhesAdapter(this, getDataSet());
+        recycler.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
-        recyclerView.setLayoutManager(layoutManager);
+        recycler.setLayoutManager(layoutManager);
 
-        adapter.setOnItemClickListener(manutencao -> {
+        adapter.setOnItemClickListener(manutencaoId -> {
             Intent intent = new Intent(this.getContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_MANUTENCAO);
             intent.putExtra(CHAVE_ID_CAVALO, cavalo.getId());
-            intent.putExtra(CHAVE_ID, ((CustosDeManutencao) manutencao).getId());
+            intent.putExtra(CHAVE_ID, (manutencaoId));
             activityResultLauncher.launch(intent);
         });
     }
 
     private void configuraDateRangePicker() {
-        MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
-                        new Pair(
+                        new Pair<>(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
                                 MaterialDatePicker.todayInUtcMilliseconds()
                         )
@@ -193,7 +227,7 @@ public class ManutencaoDetalhesFragment extends Fragment {
         dataLayout.setOnClickListener(v -> {
             dateRangePicker.show(getParentFragmentManager(), "DataRange");
 
-            dateRangePicker.addOnPositiveButtonClickListener((MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>) selection -> {
+            dateRangePicker.addOnPositiveButtonClickListener(selection -> {
                 LocalDate dataInicialAtualizada = Instant.ofEpochMilli(Long.parseLong(String.valueOf(selection.first))).atZone(ZoneId.of("America/Sao_Paulo"))
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
@@ -215,29 +249,27 @@ public class ManutencaoDetalhesFragment extends Fragment {
     }
 
     private void configuraUiAposAtualizacaoDeData() {
-        listaDeManutencoes = getListaFiltradaPorPlacaEData(dataInicial, dataFinal);
+        atualizaDataSet();
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
         configuraAdapterAposAtualizarData();
     }
 
     private void configuraAdapterAposAtualizarData() {
-        adapter.atualiza(listaDeManutencoes);
-
-        if(listaDeManutencoes.isEmpty()){
-            vazio.setVisibility(View.VISIBLE);
-        } else if (!listaDeManutencoes.isEmpty() && vazio.getVisibility() == View.VISIBLE){
-            vazio.setVisibility(View.INVISIBLE);
-        }
+        adapter.atualiza(getDataSet());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet.size(), buscaVazia, recycler, VIEW_INVISIBLE );
     }
 
     private void configuraUi(LocalDate dataInicial, LocalDate dataFinal) {
-        try{
-            nomeTxtView.setText(cavalo.getMotorista().getNome());
-        } catch (NullPointerException ignore){
-            nomeTxtView.setText(S_M);
+        RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
+        String nomeDoMotorista;
+        try {
+            nomeDoMotorista = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
+            nomeTxtView.setText(nomeDoMotorista);
+        } catch (NullPointerException ignore) {
+            nomeDoMotorista = "S_M";
         }
+        nomeTxtView.setText(nomeDoMotorista);
         configuraValoresMutaveisDaUi(dataInicial, dataFinal);
-
     }
 
     private void configuraValoresMutaveisDaUi(LocalDate dataInicial, LocalDate dataFinal) {
@@ -251,19 +283,11 @@ public class ManutencaoDetalhesFragment extends Fragment {
     }
 
     private void atualizaNaUiOTotalPagoNasManutencoes() {
-        BigDecimal somaTotalCustosDeManutencao = listaDeManutencoes.stream()
+        BigDecimal somaTotalCustosDeManutencao = dataSet.stream()
                 .map(CustosDeManutencao::getValorCusto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaTotalCustosDeManutencao));
-    }
-
-    private Cavalo recebeReferenciaExternaDeCavalo(@NonNull CavaloDAO cavaloDao) {
-        Cavalo cavaloRecebido;
-        int cavaloId = (int) ManutencaoDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
-        cavaloRecebido = cavaloDao.localizaPeloId(cavaloId);
-
-        return cavaloRecebido;
     }
 
     private void inicializaCamposDaView() {
@@ -272,7 +296,7 @@ public class ManutencaoDetalhesFragment extends Fragment {
         dataLayout = binding.fragManutencaoDetalhesData;
         dataInicialTxtView = binding.fragManutencaoDetalhesMesDtInicial;
         dataFinalTxtView = binding.fragManutencaoDetalhesMesDtFinal;
-        vazio = binding.fragManutencaoDetalhesVazio;
+        buscaVazia = binding.fragManutencaoDetalhesVazio;
         fab = binding.fragManutencaoDetalhesFab;
     }
 

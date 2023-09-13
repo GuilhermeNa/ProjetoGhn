@@ -1,16 +1,12 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
-import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.model.enums.TipoFormulario.EDITANDO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,13 +30,15 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.tasks.cavalo.LocalizaCavaloTask;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 
 public abstract class FormularioBaseFragment extends Fragment implements FormulariosInterface, MenuProvider {
@@ -63,29 +61,46 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
     public static final String PREENCHA_A_DATA_CORRETAMENTE = "Preencha a data corretamente";
     private boolean completoParaSalvar = true;
     private TipoFormulario tipoFormulario;
+    protected ExecutorService executorService;
+
+    protected Handler handler;
+    private Cavalo cavaloRefRecebido;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
-    protected int getReferenciaDeCavalo(String chave) {
-        return getArguments().getInt(chave);
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    protected Long getReferenciaDeCavalo(String chave) {
+        return getArguments().getLong(chave);
     }
 
     protected Cavalo recebeReferenciaExternaDeCavalo(String chave) {
         Bundle bundle = getArguments();
         RoomCavaloDao cavaloDao = GhnDataBase.getInstance(this.requireContext()).getRoomCavaloDao();
-        int cavaloId = bundle.getInt(chave);
-        return cavaloDao.localizaPeloId(cavaloId);
+        Long cavaloId = bundle.getLong(chave);
+        LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executorService, handler);
+        localizaCavaloTask.solicitaBusca(cavaloDao, cavaloId, cavaloRecebido -> {
+            cavaloRefRecebido = cavaloRecebido;
+        });
+
+        return cavaloRefRecebido;
     }
 
-    protected int verificaSeRecebeDadosExternos(String chave) {
+    protected long verificaSeRecebeDadosExternos(String chave) {
         Bundle bundle = getArguments();
-        int id = 0;
+        long id = 0;
 
         if (bundle != null && bundle.containsKey(chave)) {
-            id = bundle.getInt(chave);
+            id = bundle.getLong(chave);
         }
 
         return id;
@@ -102,7 +117,9 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
     protected void configuraUi(Toolbar toolbar) {
         configuraToolbar(toolbar);
         aplicaMascarasAosEditTexts();
+    }
 
+    protected void bind() {
         if (tipoFormulario == EDITANDO) {
             alteraUiParaModoEdicao();
             exibeObjetoEmCasoDeEdicao();
@@ -111,7 +128,6 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
             alteraUiParaModoCriacao();
             Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(TITULO_APP_BAR_CRIANDO);
         }
-
     }
 
     void configuraToolbar(Toolbar toolbar) {
@@ -211,8 +227,11 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
                             setPositiveButton(SIM, (dialog, which) -> {
                                 vinculaDadosAoObjeto();
                                 adicionaObjetoNoBancoDeDados();
-                                requireActivity().setResult(RESULT_OK);
-                                requireActivity().finish();
+
+                                //TODO colocar esses comportamentos nos formularios
+                                //  requireActivity().setResult(RESULT_OK);
+                                //  requireActivity().finish();
+
                             }).
                             setNegativeButton(NAO, null).
                             show();
@@ -231,8 +250,10 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
                             setPositiveButton(SIM, (dialog, which) -> {
                                 vinculaDadosAoObjeto();
                                 editaObjetoNoBancoDeDados();
-                                requireActivity().setResult(RESULT_EDIT);
-                                requireActivity().finish();
+
+                                //TODO colocar esses comportamentos nos formularios
+                                //  requireActivity().setResult(RESULT_EDIT);
+                                //  requireActivity().finish();
                             }).
                             setNegativeButton(NAO, null).
                             show();
@@ -247,8 +268,10 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
                         setMessage(APAGA_REGISTRO_TXT).
                         setPositiveButton(SIM, (dialog, which) -> {
                             deletaObjetoNoBancoDeDados();
-                            requireActivity().setResult(RESULT_DELETE);
-                            requireActivity().finish();
+
+                            //TODO colocar esses comportamentos nos formularios
+                            // requireActivity().setResult(RESULT_DELETE);
+                            // requireActivity().finish();
                         }).
                         setNegativeButton(NAO, null).show();
                 break;

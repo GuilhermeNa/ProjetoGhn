@@ -20,7 +20,7 @@ public abstract class CustosEDespesas {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
-    private Integer refCavaloId;
+    private Long refCavaloId;
     private LocalDate data;
 
     public LocalDate getData() {
@@ -31,19 +31,11 @@ public abstract class CustosEDespesas {
         this.data = data;
     }
 
-    public int getRefCavalo() {
+    public Long getRefCavaloId() {
         return refCavaloId;
     }
 
-    public void setRefCavalo(Integer refCavalo) {
-        this.refCavaloId = refCavalo;
-    }
-
-    public Integer getRefCavaloId() {
-        return refCavaloId;
-    }
-
-    public void setRefCavaloId(Integer refCavaloId) {
+    public void setRefCavaloId(Long refCavaloId) {
         this.refCavaloId = refCavaloId;
     }
 

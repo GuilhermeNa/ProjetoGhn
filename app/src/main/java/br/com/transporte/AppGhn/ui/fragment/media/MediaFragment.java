@@ -29,11 +29,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.Contract;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentMediaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
@@ -57,8 +61,8 @@ public class MediaFragment extends Fragment {
     private ConstraintLayout constraintLayout;
     private CardView card1, card2;
     private Button btnFiltrar;
-    private CavaloDAO cavaloDao;
-    private List<Cavalo> listaDeCavalosDoAdapter;
+    private RoomCavaloDao cavaloDao;
+    private List<Cavalo> dataSet_cavalos;
     private Cavalo cavaloExibido;
     private Runnable runnable;
     private Handler handler;
@@ -70,11 +74,21 @@ public class MediaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
+        inicializaDataBase();
+        atualizaDataSet();
         handler = new Handler();
+        cavaloExibido = getDataSet().get(POSICAO_CAVALO_EXIBIDO_NA_ABERTURA);
+        dataSet_cavalos = configuracaListaParaExibicao(getDataSet());
+    }
 
-        cavaloExibido = getListaDeCavalosDoAdapter().get(POSICAO_CAVALO_EXIBIDO_NA_ABERTURA);
-        listaDeCavalosDoAdapter = configuracaListaParaExibicao(getListaDeCavalosDoAdapter());
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+    }
+
+    private void atualizaDataSet() {
+        if (dataSet_cavalos == null) dataSet_cavalos = new ArrayList<>();
+        dataSet_cavalos = cavaloDao.todos();
     }
 
     @NonNull
@@ -83,8 +97,10 @@ public class MediaFragment extends Fragment {
         return lista;
     }
 
-    private List<Cavalo> getListaDeCavalosDoAdapter() {
-        return cavaloDao.listaTodos();
+    @NonNull
+    @Contract(" -> new")
+    private List<Cavalo> getDataSet() {
+        return new ArrayList<>(dataSet_cavalos);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -167,7 +183,7 @@ public class MediaFragment extends Fragment {
     }
 
     private void configuraMenuProvider() {
-        menuProvider = new MediaMenuProviderHelper(this, listaDeCavalosDoAdapter);
+        menuProvider = new MediaMenuProviderHelper(this, dataSet_cavalos);
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         menuProvider.setMenuProviderCallback(dataSet_searchView ->
@@ -186,13 +202,11 @@ public class MediaFragment extends Fragment {
         card1.setOnClickListener(v -> {
             escondeCardView(card1, R.anim.slide_out_left);
             configuraVisibilidadeDoBtnFiltrar();
-
         });
 
         card2.setOnClickListener(v -> {
             escondeCardView(card2, R.anim.slide_out_right);
             configuraVisibilidadeDoBtnFiltrar();
-
         });
     }
 
@@ -266,7 +280,7 @@ public class MediaFragment extends Fragment {
     private void configuraAdapterDeCavaloHelper() {
         RecyclerView recyclerDeCavalos = binding.recyclerCavalos;
 
-        adapterDeCavaloHelper = new MediaAdapterCavaloHelper(this.requireContext(), listaDeCavalosDoAdapter, cavaloExibido, recyclerDeCavalos);
+        adapterDeCavaloHelper = new MediaAdapterCavaloHelper(this.requireContext(), dataSet_cavalos, cavaloExibido, recyclerDeCavalos);
         adapterDeCavaloHelper.configuraRecyclerDeCavalos();
 
         adapterDeCavaloHelper.setAdapterCallback((cavaloClicado) -> {

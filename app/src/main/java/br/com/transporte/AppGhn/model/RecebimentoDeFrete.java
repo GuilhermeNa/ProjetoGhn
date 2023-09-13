@@ -21,7 +21,6 @@ public class RecebimentoDeFrete {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
-
     private long refFreteId;
 
     private LocalDate data;

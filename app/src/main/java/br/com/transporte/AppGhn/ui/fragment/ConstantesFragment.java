@@ -4,7 +4,7 @@ public interface ConstantesFragment {
 
     String CHAVE_FORMULARIO = "chave_formulario";
     String CHAVE_REQUISICAO = "chave_requisicao";
-
+    String CHAVE_TIPO_DESPESA = "chave_tipo_despesa";
     int VALOR_FRETE = 1;
     int VALOR_ABASTECIMENTO = 2;
     int VALOR_CUSTO_PERCURSO = 3;
@@ -30,6 +30,7 @@ public interface ConstantesFragment {
     String CHAVE_ADIANTAMENTO = "chave_adiantamento";
     String CHAVE_RENOVACAO = "chave_renovacao";
     int VALOR_DEFAUT = 0;
+
 
     int RESULT_DELETE = 30;
     int RESULT_EDIT = 31;

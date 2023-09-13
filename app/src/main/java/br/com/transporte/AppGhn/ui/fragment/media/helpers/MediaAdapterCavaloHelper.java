@@ -35,7 +35,6 @@ public class MediaAdapterCavaloHelper {
     //                                          Configuracao                                      ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void configuraRecyclerDeCavalos() {
         configuraAdapter();
         configuraLayoutManager();
@@ -53,7 +52,6 @@ public class MediaAdapterCavaloHelper {
         recyclerDeCavalos.setLayoutManager(layoutManager);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private void configuraAdapterClickListener() {
         adapter.setOnItemClickListener((cavalo, posicao) -> {
             adapter.atualizaRecyclerACadaNovaBusca(posicao);

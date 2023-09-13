@@ -26,6 +26,9 @@
         <argument
             android:name="seguroId"
             app:argType="long" />
+        <argument
+            android:name="tipoSeguro"
+            app:argType="br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro" />
     </fragment>
     <fragment
         android:id="@+id/navSeguroVida"

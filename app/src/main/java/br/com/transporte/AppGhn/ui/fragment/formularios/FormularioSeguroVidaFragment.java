@@ -34,15 +34,13 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroDao;
-import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSeguroVidaBinding;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
@@ -56,9 +54,9 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
             parcelasEdit, ciaEdit, nContratoEdit, dataPrimeiraParcela;
     private TextInputLayout dataInicialLayout, dataFinalLayout, dataPrimeiraParcelaLayout;
     private DespesaComSeguroDeVida seguro, seguroQueEstaSendoSubstituido;
-    private RoomDespesaSeguroDao seguroDao;
     private TextView subEdit;
-    private RoomParcelaSeguroDao parcelaDeSeguroDao;
+    private RoomDespesaSeguroVidaDao seguroDao;
+    private RoomParcela_seguroVidaDao parcelaDeSeguroDao;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -67,13 +65,16 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-      //  seguroDao = dataBase.getRoomDespesaSeguroDao();
-        parcelaDeSeguroDao = dataBase.getRoomParcelaSeguroDao();
-
-        int seguroId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        inicializaDataBase();
+        long seguroId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
         seguro = (DespesaComSeguroDeVida) criaOuRecuperaObjeto(seguroId);
+    }
+
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        seguroDao = dataBase.getRoomDespesaSeguroVidaDao();
+        parcelaDeSeguroDao = dataBase.getRoomParcela_seguroVidaDao();
     }
 
     private void configuraTipoDeRecebimento() {
@@ -100,7 +101,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         Long seguroId = (Long)id;
         switch (getTipoFormulario()) {
             case EDITANDO:
-                seguro = (DespesaComSeguroDeVida) seguroDao.localizaPeloId(seguroId);
+                seguro = seguroDao.localizaPeloId(seguroId);
                 break;
 
             case ADICIONANDO:
@@ -109,7 +110,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
 
             case RENOVANDO:
                 seguro = new DespesaComSeguroDeVida();
-                seguroQueEstaSendoSubstituido = (DespesaComSeguroDeVida) seguroDao.localizaPeloId(seguroId);
+                seguroQueEstaSendoSubstituido = seguroDao.localizaPeloId(seguroId);
                 break;
         }
 
@@ -179,7 +180,6 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
                 alteraUiParaModoRenovacao();
                 Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(TITULO_APP_BAR_RENOVANDO);
                 break;
-
         }
     }
 
@@ -266,7 +266,7 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     private void configuraParcelamento() {
-        Long chaveEstrangeira = seguro.getId();
+        Long chaveEstrangeira = seguroDao.ultimoAdicionado().getId();
 
         String campoParcelas = parcelasEdit.getText().toString();
         int numeroDeParcelas = getNumeroDeParcelas(campoParcelas);
@@ -278,11 +278,11 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
         String campoDataPrimeiraParcela = dataPrimeiraParcela.getText().toString();
         LocalDate dataPrimeiraParcela = ConverteDataUtil.stringParaData(campoDataPrimeiraParcela);
 
-        ParcelaDeSeguro parcelaDeSeguro;
+        Parcela_seguroVida parcelaDeSeguro;
 
         for(int i = 0; i < numeroDeParcelas; i++){
-            parcelaDeSeguro = new ParcelaDeSeguro();
-            parcelaDeSeguro.setRefCavaloId(0);
+            parcelaDeSeguro = new Parcela_seguroVida();
+            parcelaDeSeguro.setRefCavaloId(0L);
             parcelaDeSeguro.setRefSeguro(chaveEstrangeira);
             parcelaDeSeguro.setNumeroDaParcela(i+1);
             parcelaDeSeguro.setValor(valorDeCadaParcela);
@@ -305,15 +305,16 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         seguro.setTipoDespesa(INDIRETA);
         seguro.setValido(true);
-        seguro.setRefCavalo(0);
+        seguro.setRefCavaloId(0L);
 
         if(getTipoFormulario() == RENOVANDO){
             seguroQueEstaSendoSubstituido.setValido(false);
+            seguroDao.substitui(seguroQueEstaSendoSubstituido);
         }
-        return 0;
+        return null;
     }
 
     @Override
@@ -399,9 +400,8 @@ public class FormularioSeguroVidaFragment extends FormularioBaseFragment {
     }
 
     private void deletaParcelasNoBancoDeDados() {
-
-        List<ParcelaDeSeguro> listaDeParcelasParaApagar = parcelaDeSeguroDao.listaPeloSeguroId(seguro.getId());
-        for(ParcelaDeSeguro p: listaDeParcelasParaApagar){
+        List<Parcela_seguroVida> listaDeParcelasParaApagar = parcelaDeSeguroDao.listaPeloSeguroId(seguro.getId());
+        for(Parcela_seguroVida p: listaDeParcelasParaApagar){
             parcelaDeSeguroDao.deleta(p);
         }
     }

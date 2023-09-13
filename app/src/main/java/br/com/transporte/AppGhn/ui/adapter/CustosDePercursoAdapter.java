@@ -19,6 +19,7 @@ import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaCustosDeP
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercursoAdapter.ViewHolder> {
     public static final String DRAWABLE_NAO_PRECISA_REEMBOLSO = "nao_precisa_reembolso";
@@ -26,14 +27,14 @@ public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercur
     public static final String DRAWABLE_DONE = "done";
     private final List<CustosDePercurso> dataSet;
     private final AreaMotoristaCustosDePercursoFragment context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
 
     public CustosDePercursoAdapter(AreaMotoristaCustosDePercursoFragment context, List<CustosDePercurso> lista) {
         this.context = context;
         this.dataSet = lista;
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -74,7 +75,7 @@ public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercur
     public void onBindViewHolder(@NonNull CustosDePercursoAdapter.ViewHolder holder, int position) {
         CustosDePercurso despesa = dataSet.get(position);
         vincula(holder, despesa);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(despesa.getId()));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(despesa.getId()));
     }
 
     @Override

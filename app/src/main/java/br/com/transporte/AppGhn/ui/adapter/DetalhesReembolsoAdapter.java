@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +18,18 @@ import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class DetalhesReembolsoAdapter extends RecyclerView.Adapter <DetalhesReembolsoAdapter.ViewHolder> {
     private final List<CustosDePercurso> dataSet;
-    private final ComissoesDetalhesFragment context;
-    private OnItemClickListener onItemClickListener;
+    private final Context context;
+    private OnItemClickListenerNew onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 
-    public DetalhesReembolsoAdapter(ComissoesDetalhesFragment context, List<CustosDePercurso> lista) {
+    public DetalhesReembolsoAdapter(Context context, List<CustosDePercurso> lista) {
         this.dataSet = lista;
         this.context = context;
     }
@@ -54,7 +56,7 @@ public class DetalhesReembolsoAdapter extends RecyclerView.Adapter <DetalhesReem
     @NonNull
     @Override
     public DetalhesReembolsoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context.getContext()).inflate(R.layout.recycler_comissoes_detalhes_item_reembolso, parent, false);
+        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_comissoes_detalhes_item_reembolso, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -66,7 +68,7 @@ public class DetalhesReembolsoAdapter extends RecyclerView.Adapter <DetalhesReem
     public void onBindViewHolder(@NonNull DetalhesReembolsoAdapter.ViewHolder holder, int position) {
         CustosDePercurso custosDePercurso = dataSet.get(position);
         vincula(holder, custosDePercurso);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(custosDePercurso));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(custosDePercurso.getId()));
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull CustosDePercurso custosDePercurso){

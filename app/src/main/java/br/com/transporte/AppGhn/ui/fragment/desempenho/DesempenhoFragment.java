@@ -7,8 +7,11 @@ import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_ADM
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_IMPOSTOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_CERTIFICADOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.FRETE_BRUTO;
+import static br.com.transporte.AppGhn.model.enums.TipoMeses.MES_DEFAULT;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,34 +27,44 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentDesempenhoBinding;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
 import br.com.transporte.AppGhn.ui.adapter.DetalhesPeriodoAdapter;
-import br.com.transporte.AppGhn.ui.fragment.desempenho.extensions.CriaObjetoTemporarioParaExibirNaRecyclerExtension;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoBarChartHelper;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoDataSetHelper;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoMenuProviderHelper;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoDataSetRecyclerHelper;
 import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.RecyclerDecoration;
 
-public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHelper.Callback, DesempenhoMenuProviderHelper.Callback {
-    public static final int REF_CAVALO_NULA = 0;
+public class DesempenhoFragment extends Fragment {
+    public static final long REF_CAVALO_NULA = 0L;
     private FragmentDesempenhoBinding binding;
     private TipoDeRequisicao tipoDeRequisicao;
-    private CavaloDAO cavaloDao;
+    private List<Object> dataSet;
+    private RoomCavaloDao cavaloDao;
     private int anoRequisitado;
-    private List<ObjetoTemporario_representaCavalo> listaObjTemporarios;
+    private List<ObjetoTemporario_representaCavalo> dataSet_recycler;
     private DetalhesPeriodoAdapter adapter;
-    private SwitchMaterial switchbtn;
+    private SwitchMaterial switchBtn;
     private RecyclerView recyclerView;
     private DesempenhoBarChartHelper barChart;
     private int mesSelecionado;
+    private RoomMotoristaDao motoristaDao;
+    private DesempenhoDataSetHelper dataSetHelper;
+    private DesempenhoDataSetRecyclerHelper dataSetRecyclerHelper;
+    private GhnDataBase dataBase;
 
     private int getMesSelecionado() {
         return mesSelecionado;
@@ -64,14 +77,52 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
-        tipoDeRequisicao = FRETE_BRUTO;
-        anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
-        listaObjTemporarios = getListaObjetosTemporarios(anoRequisitado, tipoDeRequisicao, false);
+        inicializaDataBase();
+        inicializaRequisitosDeBuscaNoDataSet();
+        configuraDataSetBaseParaChartERecycler();
+        configuraDataSetRecyclerHelper();
+        //listaObjTemporarios = getListaObjetosTemporarios(anoRequisitado, tipoDeRequisicao, false);
     }
 
-    private List<ObjetoTemporario_representaCavalo> getListaObjetosTemporarios(int ano, TipoDeRequisicao tipo, boolean isCheched) {
-        return CriaObjetoTemporarioParaExibirNaRecyclerExtension.solicitaDataAnual(ano, tipo, isCheched);
+    private void inicializaDataBase() {
+        dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+        motoristaDao = dataBase.getRoomMotoristaDao();
+    }
+
+    private void inicializaRequisitosDeBuscaNoDataSet() {
+        tipoDeRequisicao = FRETE_BRUTO;
+        anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
+    }
+
+    private void configuraDataSetBaseParaChartERecycler() {
+        dataSetHelper = new DesempenhoDataSetHelper(requireContext());
+        dataSet = dataSetHelper.getDataSet(anoRequisitado, tipoDeRequisicao);
+    }
+
+    private void configuraDataSetRecyclerHelper() {
+        dataSetRecyclerHelper = new DesempenhoDataSetRecyclerHelper(getDataSet(), cavaloDao.todos(), dataBase);
+        dataSetRecyclerHelper.atualizaDataSet(tipoDeRequisicao, MES_DEFAULT.getRef(), false, anoRequisitado);
+        dataSet_recycler = dataSetRecyclerHelper.getDataSet();
+    }
+
+    private void atualizaDataSet(int ano, TipoDeRequisicao tipo) {
+        dataSet = dataSetHelper.getDataSet(ano, tipo);
+    }
+
+    private void atualizaDataSetRecycler(TipoDeRequisicao tipoRequisicao, int mes, boolean switchIsChecked) {
+        dataSetRecyclerHelper.atualizaDataSet(tipoRequisicao, mes, switchIsChecked, anoRequisitado);
+        dataSet_recycler = dataSetRecyclerHelper.getDataSet();
+    }
+
+    @NonNull
+    private List<Object> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    @NonNull
+    private List<ObjetoTemporario_representaCavalo> getDataSetRecycler() {
+        return new ArrayList<>(dataSet_recycler);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -92,37 +143,64 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        switchbtn = binding.switchbtn;
+        inicializaCamposDaView();
         configuraBarChart();
         configuraToolbar();
         configuraMenuProvider();
         configuraRecycler();
-        configuraSwitchButton();
         configuraUi(tipoDeRequisicao, REF_CAVALO_NULA);
+        configuraSwitchButton();
+    }
+
+    private void inicializaCamposDaView() {
+        recyclerView = binding.recyclerDetalhes;
+        switchBtn = binding.switchbtn;
     }
 
     private void configuraSwitchButton() {
-        switchbtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            listaObjTemporarios = CriaObjetoTemporarioParaExibirNaRecyclerExtension.solicitaDadosPorSwitch(isChecked, getMesSelecionado());
-            adapter.atualiza(listaObjTemporarios);
+        switchBtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            atualizaDataSetRecycler(tipoDeRequisicao, getMesSelecionado(), isChecked);
+            adapter.atualiza(getDataSetRecycler());
         });
     }
 
     private void configuraMenuProvider() {
         DesempenhoMenuProviderHelper menuProvider = new DesempenhoMenuProviderHelper(this);
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        menuProvider.setCallback(this);
+        menuProvider.setCallback((tipo, ano, cavaloId) -> {
+            if (tipoDeRequisicao != tipo || anoRequisitado != ano) {
+                if (tipoDeRequisicao != tipo) tipoDeRequisicao = tipo;
+                if (anoRequisitado != ano) anoRequisitado = ano;
+                atualizaDataSet(ano, tipo);
+                dataSetRecyclerHelper.atualizaCopiaDataSet(getDataSet());
+            }
+            atualizaDataSetRecycler(tipo, MES_DEFAULT.getRef(), false);
+            barChart.atualizaChart(ano, tipo, cavaloId);
+            configuraUi(tipo, cavaloId);
+            adapter.atualiza(getDataSetRecycler());
+        });
     }
 
     private void configuraBarChart() {
-        barChart = new DesempenhoBarChartHelper(binding.chart);
+        barChart = new DesempenhoBarChartHelper(requireContext(), binding.chart);
         barChart.show();
-        barChart.setCallback(this);
+        barChart.setCallback(new DesempenhoBarChartHelper.Callback() {
+            @Override
+            public void clickSelecionandoMes(int mesSelecionado) {
+                atualizaDataSetRecycler(tipoDeRequisicao, mesSelecionado, switchBtn.isChecked());
+                adapter.atualiza(getDataSetRecycler());
+            }
+
+            @Override
+            public void clickRemovendoSelecaoDeMes() {
+                atualizaDataSetRecycler(tipoDeRequisicao, MES_DEFAULT.getRef(), switchBtn.isChecked());
+                adapter.atualiza(getDataSetRecycler());
+            }
+        });
     }
 
     private void configuraRecycler() {
-        recyclerView = binding.recyclerDetalhes;
-        adapter = new DetalhesPeriodoAdapter(this.requireContext(), this.listaObjTemporarios);
+        adapter = new DetalhesPeriodoAdapter(this.requireContext(), getDataSetRecycler());
         recyclerView.setAdapter(adapter);
         RecyclerDecoration.linhaHorizontal(requireContext(), recyclerView);
     }
@@ -139,7 +217,7 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
     // -> Configura Ui                                                      ||
     //------------------------------------------------------------------------
 
-    private void configuraUi(TipoDeRequisicao tipoDeRequisicao, int cavaloId) {
+    private void configuraUi(TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
         ui_valorAcumulado();
         ui_tituloBarChart(tipoDeRequisicao, cavaloId);
         ui_visibilidadeSwitch(tipoDeRequisicao);
@@ -152,7 +230,7 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
         binding.valorAcumulado.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAcumulado));
     }
 
-    private void ui_tituloBarChart(TipoDeRequisicao tipoDeRequisicao, int cavaloId) {
+    private void ui_tituloBarChart(TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
         if (cavaloId != REF_CAVALO_NULA) {
             String placa = cavaloDao.localizaPeloId(cavaloId).getPlaca();
             String placaFormatada = tipoDeRequisicao.getDescricao() + ", " + placa;
@@ -170,7 +248,7 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
         }
     }
 
-    private void ui_TituloRecycler(int cavaloId) {
+    private void ui_TituloRecycler(Long cavaloId) {
         if (cavaloId != REF_CAVALO_NULA) {
             recyclerView.setVisibility(INVISIBLE);
             binding.detalhesPeriodoTxt.setVisibility(INVISIBLE);
@@ -180,41 +258,5 @@ public class DesempenhoFragment extends Fragment implements DesempenhoBarChartHe
         }
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                    CallBack -> BarChartHelper                              ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void clickSelecionandoMes(int mesSelecionado) {
-        listaObjTemporarios =
-                CriaObjetoTemporarioParaExibirNaRecyclerExtension.solicitaDataMensal(mesSelecionado, switchbtn.isChecked());
-        adapter.atualiza(listaObjTemporarios);
-    }
-
-    @Override
-    public void clickRemovendoSelecaoDeMes() {
-        listaObjTemporarios
-                = getListaObjetosTemporarios(anoRequisitado, tipoDeRequisicao, switchbtn.isChecked());
-        adapter.atualiza(listaObjTemporarios);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                    CallBack -> MenuProvider                                ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void repassaRequisicaoDeFiltragem(TipoDeRequisicao tipo, int ano, int cavaloId) {
-        this.tipoDeRequisicao = tipo;
-        this.anoRequisitado = ano;
-
-        barChart.atualizaChart(ano, tipo, cavaloId);
-        configuraUi(tipo, cavaloId);
-        atualizaRecycler(tipo, ano, switchbtn.isChecked());
-    }
-
-    private void atualizaRecycler(TipoDeRequisicao tipo, int ano, boolean isCheched) {
-        List<ObjetoTemporario_representaCavalo> listaObjTemporarios_aposNovaSolicitacao = CriaObjetoTemporarioParaExibirNaRecyclerExtension.solicitaDataAnual(ano, tipo, isCheched);
-        adapter.atualiza(listaObjTemporarios_aposNovaSolicitacao);
-    }
 }
 

@@ -1,8 +1,8 @@
 package br.com.transporte.AppGhn.model.enums;
 
 public enum TipoRecebimentoFrete {
-    ADIANTAMENTO("Adiantamento"),
-    SALDO("Saldo");
+    ADIANTAMENTO("ADIANTAMENTO"),
+    SALDO("SALDO");
 
     private final String descricao;
 

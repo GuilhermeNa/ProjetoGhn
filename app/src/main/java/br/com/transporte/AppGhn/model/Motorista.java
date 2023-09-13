@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 public class Motorista implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    private Integer id;
+    private Long id;
     private String img, nome, cpf, cnh;
     private LocalDate cnhValidade, dataContratacao, dataNascimento;
     private BigDecimal salarioBase, percentualComissao, salarioRecebido;
@@ -71,11 +71,11 @@ public class Motorista implements Serializable {
         this.img = img;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

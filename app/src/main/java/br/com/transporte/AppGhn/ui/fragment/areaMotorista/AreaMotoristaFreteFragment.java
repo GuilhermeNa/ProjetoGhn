@@ -11,6 +11,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_FRETE;
 import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment.KEY_ACTION_ADAPTER;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,35 +30,42 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.Contract;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaFreteBinding;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.FreteAdapter;
+import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class AreaMotoristaFreteFragment extends Fragment implements DateRangePickerUtil.CallbackDatePicker {
     private FragmentAreaMotoristaFreteBinding binding;
     private FreteAdapter adapter;
-    private FreteDAO freteDao;
+    private RoomFreteDao freteDao;
     private LocalDate dataInicial, dataFinal;
     private TextView dataInicialTxt, dataFinalTxt, freteAcumuladoTxt;
     private LinearLayout dataLayout, buscaVazia;
-    private List<Frete> listaDeFretes;
+    private List<Frete> dataSetFrete;
     private Cavalo cavalo;
     private DateRangePickerUtil dateRange;
     private RecyclerView recycler;
     private boolean atualizacaoSolicitadaPelaActivity = false;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
+    private GhnDataBase dataBase;
 
     @NonNull
     @Contract(pure = true)
@@ -67,7 +75,7 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
                 result -> {
                     int resultCode = result.getResultCode();
 
-                    switch(resultCode){
+                    switch (resultCode) {
                         case RESULT_EDIT:
                             atualizaAposResultado(REGISTRO_EDITADO);
                             ui_totalFreteLiquido();
@@ -75,23 +83,39 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
                             break;
 
                         case RESULT_CANCELED:
-                            atualizaAposResultado(NENHUMA_ALTERACAO_REALIZADA);
+                            MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                             break;
 
                         case RESULT_DELETE:
-                        atualizaAposResultado(REGISTRO_APAGADO);
+                            atualizaAposResultado(REGISTRO_APAGADO);
                             ui_totalFreteLiquido();
                             getParentFragmentManager().setFragmentResult(KEY_ACTION_ADAPTER, null);
+
                             break;
                     }
                 }
         );
     }
 
-    private void atualizaAposResultado(String msg){
-        listaDeFretes = getListaDeFretes(cavalo);
-        adapter.atualiza(listaDeFretes);
+    private void atualizaAposResultado(String msg) {
+        atualizaDataSetFrete(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSetFrete());
         MensagemUtil.toast(requireContext(), msg);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetFrete.size(), buscaVazia, recycler, VIEW_INVISIBLE);
+    }
+
+    private void atualizaDataSetFrete(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataSetFrete == null) dataSetFrete = new ArrayList<>();
+        this.dataSetFrete.clear();
+        this.dataSetFrete.addAll(freteDao.listaPorCavaloId(cavaloId));
+        dataSetFrete = FiltraFrete.listaPorData(dataSetFrete, dataInicial, dataFinal);
+        dataSetFrete.sort(Comparator.comparing(Frete::getData));
+        Collections.reverse(dataSetFrete);
+    }
+
+    @NonNull
+    private List<Frete> getDataSetFrete() {
+        return new ArrayList<>(dataSetFrete);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -101,30 +125,23 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        freteDao = new FreteDAO();
+        dataBase = GhnDataBase.getInstance(requireContext());
+        freteDao = dataBase.getRoomFreteDao();
         configuracaoInicialDateRange();
-        configuracaoInicialListaDeFretes();
+        configuracaoInicialDoDataSet();
     }
 
-    private void configuracaoInicialListaDeFretes() {
-        CavaloDAO cavaloDao = new CavaloDAO();
-        int cavaloId = requireArguments().getInt(CHAVE_ID_CAVALO);
+    private void configuracaoInicialDoDataSet() {
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+        Long cavaloId = requireArguments().getLong(CHAVE_ID_CAVALO);
         cavalo = cavaloDao.localizaPeloId(cavaloId);
-        listaDeFretes = getListaDeFretes(cavalo);
+        atualizaDataSetFrete(cavalo.getId(), dataInicial, dataFinal);
     }
 
     private void configuracaoInicialDateRange() {
         dateRange = new DateRangePickerUtil(getParentFragmentManager());
         dataInicial = dateRange.getDataInicialEmLocalDate();
         dataFinal = dateRange.getDataFinalEmLocalDate();
-    }
-
-    @NonNull
-    private List<Frete> getListaDeFretes(@NonNull Cavalo cavalo) {
-        List<Frete> lista = freteDao.listaFiltradaPorCavaloEData(cavalo.getId(), dataInicial, dataFinal);
-        lista.sort(Comparator.comparing(Frete::getData));
-        Collections.reverse(lista);
-        return lista;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -170,18 +187,17 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
     //-------------------------------------
 
     private void configuraRecycler() {
-        adapter = new FreteAdapter(this, listaDeFretes);
+        adapter = new FreteAdapter(this, getDataSetFrete());
         recycler.setAdapter(adapter);
-        configuraRecyclerListener();
+        adapter.setOnItemClickListener(this::configuraRecyclerListener);
     }
 
-    private void configuraRecyclerListener() {
-        adapter.setOnItemClickListener((idFrete) -> {
-            Intent intent = new Intent(getActivity(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
-            intent.putExtra(CHAVE_ID, (Integer) idFrete);
-            activityResultLauncher.launch(intent);
-        });
+    private void configuraRecyclerListener(Long freteId) {
+        Intent intent = new Intent(getActivity(), FormulariosActivity.class);
+        intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
+        intent.putExtra(CHAVE_ID, freteId);
+        activityResultLauncher.launch(intent);
+
     }
 
     //--------------------------------
@@ -191,12 +207,12 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
     private void configuraUi() {
         ui_data();
         ui_totalFreteLiquido();
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeFretes.size(), buscaVazia, recycler, "INVISIBLE");
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetFrete.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     private void ui_totalFreteLiquido() {
-   //     BigDecimal freteLiquido = CalculoUtil.somaFreteLiquido(listaDeFretes);
-   //     freteAcumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(freteLiquido));
+        BigDecimal freteLiquido = CalculoUtil.somaFreteLiquido(getDataSetFrete());
+        freteAcumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(freteLiquido));
     }
 
     private void ui_data() {
@@ -217,18 +233,18 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
         atualizacaoSolicitadaPelaActivity = false;
     }
 
-    private void atualizaUi(){
-        listaDeFretes = getListaDeFretes(cavalo);
-        adapter.atualiza(listaDeFretes);
+    private void atualizaUi() {
+        atualizaDataSetFrete(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSetFrete());
         ui_totalFreteLiquido();
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeFretes.size(), buscaVazia, recycler, "INVISIBLE");
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetFrete.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     //----------------------------------------------------------------------------------------------
     //                                       Metodos publicos                                     ||
     //----------------------------------------------------------------------------------------------
 
-    public void solicitaAtualizacao(){
+    public void solicitaAtualizacao() {
         this.atualizacaoSolicitadaPelaActivity = true;
     }
 
@@ -240,9 +256,10 @@ public class AreaMotoristaFreteFragment extends Fragment implements DateRangePic
     public void selecionaDataComSucesso(LocalDate dataInicial, LocalDate dataFinal) {
         this.dataInicial = dataInicial;
         this.dataFinal = dataFinal;
-        listaDeFretes = getListaDeFretes(cavalo);
-        adapter.atualiza(listaDeFretes);
+        atualizaDataSetFrete(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSetFrete());
         configuraUi();
     }
+
 }
 

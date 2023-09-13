@@ -5,7 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -20,10 +20,16 @@ public interface RoomFreteDao {
     @Delete
     void deleta(Frete frete);
 
+    @Update
+    void substitui(Frete frete);
+
     @Query("SELECT * FROM frete")
     List<Frete> todos();
 
     @Query("SELECT * FROM frete WHERE id = :freteId")
-    Frete localizaPeloId(long freteId);
+    Frete localizaPeloId(Long freteId);
+
+    @Query("SELECT * FROM frete WHERE refCavaloId = :cavaloId")
+    List<Frete> listaPorCavaloId(Long cavaloId);
 
 }

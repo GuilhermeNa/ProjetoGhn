@@ -31,20 +31,21 @@ import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberPagosFragm
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceberPagoAdapter.ViewHolder> {
     public static final String DRAWABLE_DONE = "done";
     private final FreteAReceberPagosFragment context;
     private final List<Frete> dataSet;
-    private OnItemClickListener onItemClickListener;
-    private final RoomRecebimentoFreteDao recebimentoDao;
-    private final RoomCavaloDao cavaloDao;
+    private OnItemClickListenerNew onItemClickListener;
+    private RoomRecebimentoFreteDao recebimentoDao;
+    private RoomCavaloDao cavaloDao;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public FreteAReceberPagoAdapter(FreteAReceberPagosFragment context, List<Frete> lista) {
+    public FreteAReceberPagoAdapter(@NonNull FreteAReceberPagosFragment context, List<Frete> lista) {
         this.context = context;
         this.dataSet = lista;
         GhnDataBase dataBase = GhnDataBase.getInstance(context.requireContext());
@@ -92,7 +93,7 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     public void onBindViewHolder(@NonNull FreteAReceberPagoAdapter.ViewHolder holder, int position) {
         Frete frete = dataSet.get(position);
         vincula(holder, frete);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(frete));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(frete.getId()));
     }
 
     @Override
@@ -112,12 +113,12 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
         String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
 
-        //BigDecimal valorAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
-       // holder.totalReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
+        BigDecimal valorAReceber = frete.getFreteLiquidoAReceber();
+        holder.totalReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
 
         BigDecimal valorAdiantamento = vinculaAdiantamento(holder, frete);
         BigDecimal valorSaldo = vinculaSaldo(holder, frete);
-        //configuraImgDeStatusDoRecebimento(holder, valorAReceber, valorAdiantamento, valorSaldo);
+        configuraImgDeStatusDoRecebimento(holder, valorAReceber, valorAdiantamento, valorSaldo);
     }
 
     private void configuraImgDeStatusDoRecebimento(ViewHolder holder, @NonNull BigDecimal valorAReceber, @NonNull BigDecimal valorAdiantamento, BigDecimal valorSaldo) {
@@ -130,7 +131,7 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     }
 
     private BigDecimal vinculaSaldo(ViewHolder holder, @NonNull Frete frete) {
-        List<RecebimentoDeFrete> listaRecebimentos = FiltraRecebimentoFrete.listaPeloIdDoFrete(recebimentoDao.todos(), frete.getId());
+        List<RecebimentoDeFrete> listaRecebimentos = recebimentoDao.listaPorFreteId(frete.getId());
 
         BigDecimal valorSaldo;
         try {

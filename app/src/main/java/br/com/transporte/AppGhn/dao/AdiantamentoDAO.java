@@ -13,14 +13,14 @@ public class AdiantamentoDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(Adiantamento adiantamento){
-        dao.add(adiantamento);
-        adiantamento.setId(contadorDeIds);
-        contadorDeIds++;
+/*    public void adiciona(Adiantamento adiantamento){
+        //dao.add(adiantamento);
+       // adiantamento.setId(contadorDeIds);
+       // contadorDeIds++;
     }
 
     public void edita(Adiantamento adiantamento) {
-        Adiantamento adiantamentoEncontrado = localizaPeloId(adiantamento.getId());
+    //    Adiantamento adiantamentoEncontrado = localizaPeloId(adiantamento.getId());
         if(adiantamentoEncontrado != null){
             int posicaoAdiantamento = dao.indexOf(adiantamentoEncontrado);
             dao.set(posicaoAdiantamento, adiantamento);
@@ -32,7 +32,7 @@ public class AdiantamentoDAO {
         if(adiantamentoEncontrado != null){
             dao.remove(adiantamentoEncontrado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

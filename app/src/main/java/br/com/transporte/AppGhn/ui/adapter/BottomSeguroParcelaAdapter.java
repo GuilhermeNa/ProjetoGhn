@@ -19,17 +19,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSeguroParcelaAdapter.ViewHolder> {
-    private final List<ParcelaDeSeguro> dataSet;
+    private final List<Parcela_seguroFrota> dataSet;
     private final Context context;
     private HashMap<Integer, Boolean> map;
     private OnItemCLickListener onItemCLickListener;
 
-    public BottomSeguroParcelaAdapter(List<ParcelaDeSeguro> lista, Context context) {
+    public BottomSeguroParcelaAdapter(List<Parcela_seguroFrota> lista, Context context) {
         this.dataSet = lista;
         this.context = context;
         map = criaMap();
@@ -39,7 +40,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
     private HashMap<Integer, Boolean> criaMap() {
         HashMap<Integer, Boolean> map = new HashMap<>();
 
-        for (ParcelaDeSeguro p : dataSet) {
+        for (Parcela_seguroFrota p : dataSet) {
             map.put(p.getNumeroDaParcela(), false);
         }
 
@@ -82,12 +83,12 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
 
     @Override
     public void onBindViewHolder(@NonNull BottomSeguroParcelaAdapter.ViewHolder holder, int position) {
-        ParcelaDeSeguro parcela = dataSet.get(position);
+        Parcela_seguroFrota parcela = dataSet.get(position);
         vincula(holder, parcela);
         configuraListeners(holder, parcela);
     }
 
-    private void vincula(@NonNull ViewHolder holder, @NonNull ParcelaDeSeguro parcela) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull Parcela_seguroFrota parcela) {
         holder.dataTxt.setText(ConverteDataUtil.dataParaString(parcela.getData()));
         holder.numeroParcelaTxt.setText(String.valueOf(parcela.getNumeroDaParcela()));
         holder.valorTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(parcela.getValor()));
@@ -101,7 +102,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
         }
     }
 
-    private void configuraListeners(@NonNull ViewHolder holder, ParcelaDeSeguro parcela) {
+    private void configuraListeners(@NonNull ViewHolder holder, Parcela_seguroFrota parcela) {
         holder.itemView.setOnClickListener(v -> onItemCLickListener.onItemClick(parcela));
 
         holder.checkBox.setOnClickListener(v -> {
@@ -112,7 +113,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
 
     }
 
-    private HashMap<Integer, Boolean> verificaSeTemCheckBoxMarcado(ParcelaDeSeguro parcela, boolean isChecked) {
+    private HashMap<Integer, Boolean> verificaSeTemCheckBoxMarcado(Parcela_seguroFrota parcela, boolean isChecked) {
         if(isChecked){
             map.replace(parcela.getNumeroDaParcela(), true);
         } else {
@@ -133,7 +134,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void atualiza(List<ParcelaDeSeguro> lista) {
+    public void atualiza(List<Parcela_seguroFrota> lista) {
         this.dataSet.clear();
         this.dataSet.addAll(lista);
         notifyDataSetChanged();
@@ -146,7 +147,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
     public interface OnItemCLickListener {
         void onBoxClick(HashMap<Integer, Boolean> map);
 
-        void onItemClick(ParcelaDeSeguro parcela);
+        void onItemClick(Parcela_seguroFrota parcela);
     }
 
 }

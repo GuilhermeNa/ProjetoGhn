@@ -17,13 +17,14 @@ import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.ManutencaoDetalhesFragment;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDetalhesAdapter.ViewHolder> {
     private final List<CustosDeManutencao> dataSet;
     private final ManutencaoDetalhesFragment context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -68,7 +69,7 @@ public class ManutencaoDetalhesAdapter extends RecyclerView.Adapter<ManutencaoDe
     public void onBindViewHolder(@NonNull ManutencaoDetalhesAdapter.ViewHolder holder, int position) {
         CustosDeManutencao manutencao = dataSet.get(position);
         vincula(holder, manutencao);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(manutencao));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(manutencao.getId()));
     }
 
     @Override

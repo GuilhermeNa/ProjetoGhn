@@ -11,6 +11,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment.KEY_ACTION_ADAPTER;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,36 +32,41 @@ import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaCustosDePercursoBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CustosDePercursoAdapter;
-import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class AreaMotoristaCustosDePercursoFragment extends Fragment implements DateRangePickerUtil.CallbackDatePicker{
+public class AreaMotoristaCustosDePercursoFragment extends Fragment implements DateRangePickerUtil.CallbackDatePicker {
     private FragmentAreaMotoristaCustosDePercursoBinding binding;
     private CustosDePercursoAdapter adapter;
-    private CustosDePercursoDAO custosDao;
+    private RoomCustosPercursoDao custosDao;
     private LinearLayout dataLayout, buscaVazia;
     private TextView dataInicialTxt, dataFinalTxt, despesaAcumuladaTxt;
     private LocalDate dataInicial, dataFinal;
     private Cavalo cavalo;
-    private List<CustosDePercurso> listaDeCustos;
+    private List<CustosDePercurso> dataSetCustos;
     private DateRangePickerUtil dateRange;
     private RecyclerView recycler;
     private boolean atualizacaoSolicitadaPelaActivity = false;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
+    private GhnDataBase dataBase;
+
     @NonNull
     @Contract(pure = true)
     private ActivityResultLauncher<Intent> getActivityResultLauncher() {
@@ -69,7 +75,7 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
                 result -> {
                     int resultCode = result.getResultCode();
 
-                    switch(resultCode){
+                    switch (resultCode) {
                         case RESULT_EDIT:
                             atualizaAposResultado(REGISTRO_EDITADO);
                             ui_totalCustos();
@@ -77,7 +83,7 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
                             break;
 
                         case RESULT_CANCELED:
-                            atualizaAposResultado(NENHUMA_ALTERACAO_REALIZADA);
+                            MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                             break;
 
                         case RESULT_DELETE:
@@ -90,10 +96,25 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
         );
     }
 
-    private void atualizaAposResultado(String msg){
-        listaDeCustos = getListaDeCustos();
-        adapter.atualiza(listaDeCustos);
+    private void atualizaAposResultado(String msg) {
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(dataSetCustos);
         MensagemUtil.toast(requireContext(), msg);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetCustos.size(), buscaVazia, recycler, VIEW_INVISIBLE);
+    }
+
+    private void atualizaDataSet(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataSetCustos == null) dataSetCustos = new ArrayList<>();
+        dataSetCustos.clear();
+        dataSetCustos.addAll(custosDao.listaPorCavaloId(cavaloId));
+        dataSetCustos = FiltraCustosPercurso.listaPorData(dataSetCustos, dataInicial, dataFinal);
+        dataSetCustos.sort(Comparator.comparing(CustosDePercurso::getData));
+        Collections.reverse(dataSetCustos);
+    }
+
+    @NonNull
+    private List<CustosDePercurso> getDataSet() {
+        return new ArrayList<>(dataSetCustos);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -103,30 +124,23 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        custosDao = new CustosDePercursoDAO();
+        dataBase = GhnDataBase.getInstance(requireContext());
+        custosDao = dataBase.getRoomCustosPercursoDao();
         configuracaoInicialDateRange();
         configuracaoInicialListaDeCustos();
     }
 
     private void configuracaoInicialListaDeCustos() {
-        CavaloDAO cavaloDao = new CavaloDAO();
-        int cavaloId = requireArguments().getInt(CHAVE_ID_CAVALO);
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+        Long cavaloId = requireArguments().getLong(CHAVE_ID_CAVALO);
         cavalo = cavaloDao.localizaPeloId(cavaloId);
-        listaDeCustos = getListaDeCustos();
+        atualizaDataSet(cavaloId, dataInicial, dataFinal);
     }
 
     private void configuracaoInicialDateRange() {
         dateRange = new DateRangePickerUtil(getParentFragmentManager());
         dataInicial = dateRange.getDataInicialEmLocalDate();
         dataFinal = dateRange.getDataFinalEmLocalDate();
-    }
-
-    @NonNull
-    private List<CustosDePercurso> getListaDeCustos() {
-        List<CustosDePercurso> lista = custosDao.listaFiltradaPorPlacaEData(cavalo.getId(), dataInicial, dataFinal);
-        lista.sort(Comparator.comparing(CustosDePercurso::getData));
-        Collections.reverse(lista);
-        return lista;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -167,18 +181,16 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     //-------------------------------------
 
     private void configuraRecycler() {
-        adapter = new CustosDePercursoAdapter(this, listaDeCustos);
+        adapter = new CustosDePercursoAdapter(this, getDataSet());
         recycler.setAdapter(adapter);
-        configuraRecyclerListener();
+        adapter.setOnItemClickListener(this::configuraRecyclerListener);
     }
 
-    private void configuraRecyclerListener() {
-        adapter.setOnItemClickListener((idDespesa) -> {
-            Intent intent = new Intent(getActivity(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_ID, (Integer) idDespesa);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_CUSTO_PERCURSO);
-            activityResultLauncher.launch(intent);
-        });
+    private void configuraRecyclerListener(long despesaId) {
+        Intent intent = new Intent(getActivity(), FormulariosActivity.class);
+        intent.putExtra(CHAVE_ID, despesaId);
+        intent.putExtra(CHAVE_FORMULARIO, VALOR_CUSTO_PERCURSO);
+        activityResultLauncher.launch(intent);
     }
 
     //--------------------------------
@@ -188,11 +200,11 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     private void configuraUi() {
         ui_data();
         ui_totalCustos();
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeCustos.size(), buscaVazia, recycler, "INVISIBLE");
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetCustos.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     private void ui_totalCustos() {
-        BigDecimal somaCustos = CalculoUtil.somaCustosDePercurso(listaDeCustos);
+        BigDecimal somaCustos = CalculoUtil.somaCustosDePercurso(dataSetCustos);
         despesaAcumuladaTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaCustos));
     }
 
@@ -202,8 +214,8 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     }
 
     private void configuraDateRangePicker() {
-      dateRange.build(dataLayout);
-      dateRange.setCallbackDatePicker(this);
+        dateRange.build(dataLayout);
+        dateRange.setCallbackDatePicker(this);
     }
 
     @Override
@@ -212,7 +224,6 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
         if (atualizacaoSolicitadaPelaActivity) {
             atualizaUi();
             resetaSolicitacaoDeAtualizacao();
-            ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeCustos.size(), buscaVazia, recycler, "INVISIBLE");
         }
     }
 
@@ -221,16 +232,17 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     }
 
     public void atualizaUi() {
-        listaDeCustos = getListaDeCustos();
-        adapter.atualiza(listaDeCustos);
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSet());
         ui_totalCustos();
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetCustos.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     //----------------------------------------------------------------------------------------------
     //                                       Metodos publicos                                     ||
     //----------------------------------------------------------------------------------------------
 
-    public void solicitaAtualizacao(){
+    public void solicitaAtualizacao() {
         this.atualizacaoSolicitadaPelaActivity = true;
     }
 
@@ -242,9 +254,8 @@ public class AreaMotoristaCustosDePercursoFragment extends Fragment implements D
     public void selecionaDataComSucesso(LocalDate dataInicial, LocalDate dataFinal) {
         this.dataInicial = dataInicial;
         this.dataFinal = dataFinal;
-        listaDeCustos = getListaDeCustos();
-        adapter.atualiza(listaDeCustos);
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(dataSetCustos);
         configuraUi();
     }
-
 }

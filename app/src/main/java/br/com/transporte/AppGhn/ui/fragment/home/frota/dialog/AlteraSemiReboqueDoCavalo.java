@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.home.frota.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -9,7 +10,9 @@ import android.widget.AutoCompleteTextView;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutorService;
 
+import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
@@ -18,6 +21,10 @@ import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
+import br.com.transporte.AppGhn.tasks.cavalo.AdicionaCavaloTask;
+import br.com.transporte.AppGhn.tasks.cavalo.BuscaTodosCavalosTask;
+import br.com.transporte.AppGhn.tasks.reboque.AdicionaReboqueTask;
+import br.com.transporte.AppGhn.tasks.reboque.AtualizaReboqueTask;
 
 public class AlteraSemiReboqueDoCavalo {
     private final Context context;
@@ -27,6 +34,9 @@ public class AlteraSemiReboqueDoCavalo {
     private AutoCompleteTextView autoComplete;
     private List<String> listaDePlacas;
     private RoomCavaloDao cavaloDao;
+    private List<Cavalo> listaDeCavalos;
+    private ExecutorService executorService;
+    private Handler handler;
 
     public AlteraSemiReboqueDoCavalo(Context context, SemiReboque sr) {
         this.context = context;
@@ -54,7 +64,7 @@ public class AlteraSemiReboqueDoCavalo {
                 .setTitle(reboque.getPlaca())
                 .setView(viewCriada)
                 .setPositiveButton("Alterar", (dialog, which) -> {
-                    String placaDoCavaloAtual = cavaloDao.localizaPeloId(reboque.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
+                    String placaDoCavaloAtual = FiltraCavalo.localizaPeloId(listaDeCavalos, reboque.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     String placaDoCavaloDestino = autoComplete.getText().toString().toUpperCase(Locale.ROOT);
 
                     if (placaDoCavaloAtual.equals(placaDoCavaloDestino)) {
@@ -62,12 +72,14 @@ public class AlteraSemiReboqueDoCavalo {
                     } else if (!listaDePlacas.contains(placaDoCavaloDestino)) {
                         dialogAlteraSrCallBack.quandoFalhaEmAlterarSr("Destino não localizado.");
                     } else {
-                        Cavalo cavaloAtual = cavaloDao.localizaPelaPlaca(placaDoCavaloAtual);
-                        Cavalo cavaloDestino = cavaloDao.localizaPelaPlaca(placaDoCavaloDestino);
+                        Cavalo cavaloDestino = FiltraCavalo.localizaPelaPlaca(listaDeCavalos, placaDoCavaloDestino);
 
                         reboque.setRefCavaloId(cavaloDestino.getId());
-                        reboqueDao.adiciona(reboque);
-                        dialogAlteraSrCallBack.quandoSucessoEmAlterarSr(reboque);
+
+                        AtualizaReboqueTask atualizaReboqueTask = new AtualizaReboqueTask(executorService, handler);
+                        atualizaReboqueTask.solicitaAtualizacao(reboqueDao, reboque, () -> {
+                            dialogAlteraSrCallBack.quandoSucessoEmAlterarSr(reboque);
+                        });
                     }
                 })
                 .setNegativeButton("Cancelar", null)
@@ -79,16 +91,22 @@ public class AlteraSemiReboqueDoCavalo {
     // -> Configura Adapter                    ||
     //-------------------------------------------
 
-    private void configuraAdapter() {
-        listaDePlacas = getListaDePlacas();
+    private void configuraLista() {
         String[] arrayDePlacas = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, arrayDePlacas);
         autoComplete.setAdapter(adapter);
     }
 
-    private List<String> getListaDePlacas() {
-        List<Cavalo> listaDeCavalos = cavaloDao.todos();
-        return listaDePlacas = FiltraCavalo.listaDePlacas(listaDeCavalos);
+    private void configuraAdapter() {
+        GhnApplication application = new GhnApplication();
+        executorService = application.getExecutorService();
+        handler = application.getMainThreadHandler();
+        BuscaTodosCavalosTask buscaTodosCavalosTask = new BuscaTodosCavalosTask(executorService, handler);
+        buscaTodosCavalosTask.solicitaBusca(cavaloDao, todosCavalos -> {
+            listaDeCavalos = todosCavalos;
+            listaDePlacas = FiltraCavalo.listaDePlacas(listaDeCavalos);
+            configuraLista();
+        });
     }
 
     //----------------------------------------------------------------------------------------------

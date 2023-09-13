@@ -13,9 +13,9 @@ import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaFreteFrag
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
-    private int cavaloId;
+    private Long cavaloId;
 
-    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, Integer cavaloId) {
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, Long cavaloId) {
         super(fragmentActivity);
         this.cavaloId = cavaloId;
     }
@@ -30,7 +30,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         Fragment fragment;
         Bundle bundle = new Bundle();
-        bundle.putInt("chave_id_cavalo", cavaloId);
+        bundle.putLong("chave_id_cavalo", cavaloId);
 
         switch (position) {
             case 0:

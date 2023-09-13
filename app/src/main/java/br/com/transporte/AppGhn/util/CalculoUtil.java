@@ -8,13 +8,14 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 
 public class CalculoUtil {
 
@@ -22,47 +23,40 @@ public class CalculoUtil {
     //                                          Frete                                             //
     //--------------------------------------------------------------------------------------------//
 
-   /* public static BigDecimal somaFreteBruto(@NonNull List<Frete> dataSet) {
+    public static BigDecimal somaFreteBruto(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getFreteBruto)
+                .map(Frete::getFreteBruto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
-    /*public static BigDecimal somaFreteLiquido(@NonNull List<Frete> dataSet) {
+    public static BigDecimal somaFreteLiquido(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getFreteLiquidoAReceber)
+                .map(Frete::getFreteLiquidoAReceber)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
-  /*  public static BigDecimal somaComissao(@NonNull List<Frete> dataSet) {
+    public static BigDecimal somaComissao(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
+                .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
-    /*public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago){
+    public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago){
         if(isPago) return dataSet.stream()
-                .map(Frete::getAdmFrete)
-                .filter(Frete.AdmFinanceiroFrete::isComissaoJaFoiPaga)
-                .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
+                .filter(Frete::isComissaoJaFoiPaga)
+                .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return dataSet.stream()
-                .map(Frete::getAdmFrete)
                 .filter(f -> !f.isComissaoJaFoiPaga())
-                .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
+                .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
-/*
-    public static BigDecimal somaDescontoNoFrete(List<Frete> dataSet){
+    }
+    public static BigDecimal somaDescontoNoFrete(@NonNull List<Frete> dataSet){
         return dataSet.stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getDescontos)
+                .map(Frete::getDescontos)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
     //--------------------------------------------------------------------------------------------//
     //                                          Custos                                            //
@@ -108,9 +102,15 @@ public class CalculoUtil {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static BigDecimal somaParcelasSeguro(@NonNull List<ParcelaDeSeguro> dataSet) {
+    public static BigDecimal somaParcelas_seguroFrota(@NonNull List<Parcela_seguroFrota> dataSet) {
         return dataSet.stream()
-                .map(ParcelaDeSeguro::getValor)
+                .map(Parcela_seguroFrota::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public static BigDecimal somaParcelas_seguroVida(@NonNull List<Parcela_seguroVida> dataSet) {
+        return dataSet.stream()
+                .map(Parcela_seguroVida::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -136,6 +136,13 @@ public class CalculoUtil {
                 .filter(a -> !a.isAdiantamentoJaFoiDescontado())
                 .map(Adiantamento::restaReembolsar)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public static BigDecimal somaAdiantamentoPorUltimoValorAbatido(@NonNull List<Adiantamento> dataSet) {
+      return dataSet.stream()
+                .map(Adiantamento::getUltimoValorAbatido)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     }
 
 

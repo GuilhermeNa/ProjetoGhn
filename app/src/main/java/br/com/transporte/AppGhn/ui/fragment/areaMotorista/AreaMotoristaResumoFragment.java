@@ -5,7 +5,6 @@ import static br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso.REEMBOLSA
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +15,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import org.jetbrains.annotations.Contract;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaResumoBinding;
 import br.com.transporte.AppGhn.filtros.FiltraAdiantamento;
 import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
@@ -49,14 +51,14 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     private TextView totalAReceberTxt, acumuladoTxt, jaRecebidoTxt, emAbertoTxt, reembolsoDespesasTxt, adiantamentoTxt,
             dataInicialTxt, dataFinalTxt, freteBrutoTxt, descontosFreteTxt, freteLiquidoTxt, abastecimentoTotalTxt,
             litragemTotalTxt, kmPercorridoTxt, despesaTotalTxt, despesaReembolsavelTxt, despesaNaoReembolsavelTxt;
-    private CustosDeAbastecimentoDAO abastecimentoDao;
-    private CustosDePercursoDAO custoDao;
-    private AdiantamentoDAO adiantamentoDao;
-    private FreteDAO freteDao;
-    private List<CustosDeAbastecimento> listaDeAbastecimentos;
-    private List<Adiantamento> listaAdiantamentos;
-    private List<CustosDePercurso> listaDeCustos;
-    private List<Frete> listaDeFretes;
+    private RoomCustosAbastecimentoDao abastecimentoDao;
+    private RoomCustosPercursoDao custoDao;
+    private RoomAdiantamentoDao adiantamentoDao;
+    private RoomFreteDao freteDao;
+    private List<CustosDeAbastecimento> dataSet_abastecimento;
+    private List<Adiantamento> dataSet_adiantamento;
+    private List<CustosDePercurso> dataSet_custoPercurso;
+    private List<Frete> dataSet_frete;
     private LocalDate dataInicial, dataFinal;
     private LinearLayout dataLayout;
     private Cavalo cavalo;
@@ -73,19 +75,19 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        abastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
+        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
+        custoDao = dataBase.getRoomCustosPercursoDao();
+        freteDao = dataBase.getRoomFreteDao();
 
-        abastecimentoDao = new CustosDeAbastecimentoDAO();
-        adiantamentoDao = new AdiantamentoDAO();
-        custoDao = new CustosDePercursoDAO();
-        freteDao = new FreteDAO();
         configuracaoInicialDateRange();
         cavalo = recebeCavaloEscolhidoParaVisualizacao(dataBase);
-        atualizaListas();
+        atualizaDataSet();
     }
 
     private Cavalo recebeCavaloEscolhidoParaVisualizacao(@NonNull GhnDataBase dataBase) {
         RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        int cavaloId = requireArguments().getInt(CHAVE_ID_CAVALO);
+        Long cavaloId = requireArguments().getLong(CHAVE_ID_CAVALO);
         return cavalo = cavaloDao.localizaPeloId(cavaloId);
     }
 
@@ -99,31 +101,48 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     // -> Configura Ui                ||
     //----------------------------------
 
-    private void atualizaListas() {
-        listaDeFretes = getListaDeFretes(cavalo);
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
-        listaDeCustos = getListaDeCustos(cavalo);
-        listaAdiantamentos = getListaAdiantamentos(cavalo);
+    private void atualizaDataSet() {
+        if (dataSet_frete == null) dataSet_frete = new ArrayList<>();
+        if (dataSet_abastecimento == null) dataSet_abastecimento = new ArrayList<>();
+        if (dataSet_custoPercurso == null) dataSet_custoPercurso = new ArrayList<>();
+        if (dataSet_adiantamento == null) dataSet_adiantamento = new ArrayList<>();
+
+        dataSet_frete.clear();
+        dataSet_frete.addAll(freteDao.listaPorCavaloId(cavalo.getId()));
+        dataSet_frete = FiltraFrete.listaPorData(dataSet_frete, dataInicial, dataFinal);
+
+        dataSet_abastecimento.clear();
+        dataSet_abastecimento.addAll(abastecimentoDao.listaPorCavaloId(cavalo.getId()));
+        dataSet_abastecimento = FiltraCustosAbastecimento.listaPorData(dataSet_abastecimento, dataInicial, dataFinal);
+
+        dataSet_custoPercurso.clear();
+        dataSet_custoPercurso.addAll(custoDao.listaPorCavaloId(cavalo.getId()));
+        dataSet_custoPercurso = FiltraCustosPercurso.listaPorData(dataSet_custoPercurso, dataInicial, dataFinal);
+
+        dataSet_adiantamento.clear();
+        dataSet_adiantamento.addAll(adiantamentoDao.listaPorCavaloId(cavalo.getId()));
+        dataSet_adiantamento = FiltraAdiantamento.listaPorStatus(dataSet_adiantamento, false);
     }
 
-    private List<Adiantamento> getListaAdiantamentos(@NonNull Cavalo cavalo) {
-        List<Adiantamento> dataSet = FiltraAdiantamento.listaPorCavaloId(adiantamentoDao.listaTodos(), cavalo.getId());
-        return FiltraAdiantamento.listaPorStatus(dataSet, false);
+    @NonNull
+    private List<Adiantamento> getDataSetAdiantamento() {
+        return new ArrayList<>(dataSet_adiantamento);
     }
 
-    private List<CustosDePercurso> getListaDeCustos(@NonNull Cavalo cavalo) {
-        List<CustosDePercurso> dataSet = FiltraCustosPercurso.listaPorCavaloId(custoDao.listaTodos(), cavalo.getId());
-        return FiltraCustosPercurso.listaPorData(dataSet, dataInicial, dataFinal);
+    @NonNull
+    private List<CustosDePercurso> getDataSetCustoPercurso() {
+        return new ArrayList<>(dataSet_custoPercurso);
     }
 
-    private List<CustosDeAbastecimento> getListaDeAbastecimentos(@NonNull Cavalo cavalo) {
-        List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.listaTodos(), cavalo.getId());
-        return FiltraCustosAbastecimento.listaPorData(dataSet, dataInicial, dataFinal);
+    @NonNull
+    private List<CustosDeAbastecimento> getDataSetAbastecimento() {
+        return new ArrayList<>(dataSet_abastecimento);
     }
 
-    private List<Frete> getListaDeFretes(@NonNull Cavalo cavalo) {
-        List<Frete> dataSet = FiltraFrete.listaPorCavaloId(freteDao.listaTodos(), cavalo.getId());
-        return FiltraFrete.listaPorData(dataSet, dataInicial, dataFinal);
+    @NonNull
+    @Contract(" -> new")
+    private List<Frete> getListaDeFretes() {
+        return new ArrayList<>(dataSet_frete);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -193,21 +212,21 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     }
 
     private void ui_configuraCardReembolso() {
-        UiCardReembolso.ui_despesaTotal(listaDeCustos, despesaTotalTxt);
-        UiCardReembolso.ui_semReembolso(listaDeCustos, despesaNaoReembolsavelTxt);
+        UiCardReembolso.ui_despesaTotal(dataSet_custoPercurso, despesaTotalTxt);
+        UiCardReembolso.ui_semReembolso(dataSet_custoPercurso, despesaNaoReembolsavelTxt);
         UiCardReembolso.ui_reembolso(custoEmAberto, despesaReembolsavelTxt);
     }
 
     private void ui_configuraCardAbastecimento() {
-        UiCardAbastecimento.ui_abastecimentoTotal(listaDeAbastecimentos, abastecimentoTotalTxt);
-        UiCardAbastecimento.ui_litragemTotal(listaDeAbastecimentos, litragemTotalTxt);
+        UiCardAbastecimento.ui_abastecimentoTotal(dataSet_abastecimento, abastecimentoTotalTxt);
+        UiCardAbastecimento.ui_litragemTotal(dataSet_abastecimento, litragemTotalTxt);
         UiCardAbastecimento.ui_kmPercorrido(cavalo.getId(), dataInicial, dataFinal, kmPercorridoTxt);
     }
 
     private void ui_configuraCardFrete() {
-        UiCardFrete.ui_FreteBruto(listaDeFretes, freteBrutoTxt);
-        UiCardFrete.ui_descontos(listaDeFretes, descontosFreteTxt);
-        UiCardFrete.ui_freteLiquido(listaDeFretes, freteLiquidoTxt);
+        UiCardFrete.ui_FreteBruto(dataSet_frete, freteBrutoTxt);
+        UiCardFrete.ui_descontos(dataSet_frete, descontosFreteTxt);
+        UiCardFrete.ui_freteLiquido(dataSet_frete, freteLiquidoTxt);
     }
 
     //---------------------- Configura Informaçoes de comissao
@@ -216,32 +235,30 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
         BigDecimal comissaoTotalAoMotorista = ui_acumulado();
         BigDecimal comissaoJaPaga = ui_jaRecebido();
 
-        BigDecimal adiantamentoADescontar = UiCardResumo.ui_adiantamento(listaAdiantamentos, adiantamentoTxt);
-        custoEmAberto = UiCardResumo.ui_reembolso(listaDeCustos, reembolsoDespesasTxt);
+        BigDecimal adiantamentoADescontar = UiCardResumo.ui_adiantamento(dataSet_adiantamento, adiantamentoTxt);
+        custoEmAberto = UiCardResumo.ui_reembolso(dataSet_custoPercurso, reembolsoDespesasTxt);
         BigDecimal comissaAReceber = UiCardResumo.ui_comissaoAReceber(comissaoTotalAoMotorista, comissaoJaPaga, emAbertoTxt);
 
         totalAReceber(adiantamentoADescontar, custoEmAberto, comissaAReceber);
     }
 
     private BigDecimal ui_acumulado() {
-    //    BigDecimal comissaoTotalAoMotorista = CalculoUtil.somaComissao(listaDeFretes);
-    //    acumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalAoMotorista));
-    //    return comissaoTotalAoMotorista;
-        return null;
+        BigDecimal comissaoTotalAoMotorista = CalculoUtil.somaComissao(dataSet_frete);
+        acumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalAoMotorista));
+        return comissaoTotalAoMotorista;
     }
 
     private void totalAReceber(
             BigDecimal adiantamentoADescontar, BigDecimal custoEmAberto, @NonNull BigDecimal comissaAReceber
     ) {
-//        BigDecimal valorAReceber = comissaAReceber.add(custoEmAberto).subtract(adiantamentoADescontar);
-  //      totalAReceberTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
+        BigDecimal valorAReceber = comissaAReceber.add(custoEmAberto).subtract(adiantamentoADescontar);
+        totalAReceberTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAReceber));
     }
 
     private BigDecimal ui_jaRecebido() {
-   //     BigDecimal comissaoJaPaga = CalculoUtil.somaComissaoPorStatus(listaDeFretes, true);
-    //    jaRecebidoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoJaPaga));
-    //    return comissaoJaPaga;
-        return null;
+        BigDecimal comissaoJaPaga = CalculoUtil.somaComissaoPorStatus(dataSet_frete, true);
+        jaRecebidoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoJaPaga));
+        return comissaoJaPaga;
     }
 
     @Override
@@ -253,10 +270,8 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
         }
     }
 
-    private void atualizaUi(){
-        listaDeFretes = getListaDeFretes(cavalo);
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
-        listaDeCustos = getListaDeCustos(cavalo);
+    private void atualizaUi() {
+        atualizaDataSet();
         ui_configuraComissionamento();
         ui_configuraCardFrete();
         ui_configuraCardAbastecimento();
@@ -271,8 +286,7 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     //                                       Metodos publicos                                     ||
     //----------------------------------------------------------------------------------------------
 
-    public void solicitaAtualizacao(){
-        Log.d("teste", "solicitacao");
+    public void solicitaAtualizacao() {
         this.atualizacaoSolicitadaPelaActivity = true;
     }
 
@@ -284,7 +298,7 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
     public void selecionaDataComSucesso(LocalDate dataInicial, LocalDate dataFinal) {
         this.dataInicial = dataInicial;
         this.dataFinal = dataFinal;
-        atualizaListas();
+        atualizaDataSet();
         configuraUi();
     }
 
@@ -294,18 +308,18 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
 
     private static class UiCardFrete {
         private static void ui_freteLiquido(List<Frete> dataSet, @NonNull TextView view) {
-         //   BigDecimal somaFreteLiquidoAReceber = CalculoUtil.somaFreteLiquido(dataSet);
-         //   view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteLiquidoAReceber));
+            BigDecimal somaFreteLiquidoAReceber = CalculoUtil.somaFreteLiquido(dataSet);
+            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteLiquidoAReceber));
         }
 
         private static void ui_descontos(List<Frete> dataSet, @NonNull TextView view) {
-      //      BigDecimal somaDescontosNoFrete = CalculoUtil.somaDescontoNoFrete(dataSet);
-      //      view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaDescontosNoFrete));
+            BigDecimal somaDescontosNoFrete = CalculoUtil.somaDescontoNoFrete(dataSet);
+            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaDescontosNoFrete));
         }
 
         private static void ui_FreteBruto(List<Frete> dataSet, @NonNull TextView view) {
-      //      BigDecimal somaFreteBruto = CalculoUtil.somaFreteBruto(dataSet);
-      //      view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteBruto));
+            BigDecimal somaFreteBruto = CalculoUtil.somaFreteBruto(dataSet);
+            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFreteBruto));
         }
     }
 
@@ -325,7 +339,7 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
             view.setText(FormataNumerosUtil.formataMoedaPadraoBr(abastecimentoTotal));
         }
 
-        private static void ui_kmPercorrido(int cavaloId, LocalDate dataInicial, LocalDate dataFinal, TextView view) {
+        private static void ui_kmPercorrido(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal, TextView view) {
             try {
                 BigDecimal kmPercorrido = calculaKmPercorrido(cavaloId, dataInicial, dataFinal);
                 if (kmPercorrido.compareTo(BigDecimal.ZERO) == 0) {
@@ -340,7 +354,7 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
             }
         }
 
-        private static BigDecimal calculaKmPercorrido(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+        private static BigDecimal calculaKmPercorrido(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
             CustosDeAbastecimentoDAO abastecimentoDao = new CustosDeAbastecimentoDAO();
             List<CustosDeAbastecimento> listaTodos = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.listaTodos(), cavaloId);
             List<CustosDeAbastecimento> listaFiltrada = FiltraCustosAbastecimento.listaPorData(listaTodos, dataInicial, dataFinal);
@@ -399,10 +413,9 @@ public class AreaMotoristaResumoFragment extends Fragment implements DateRangePi
 
     private static class UiCardResumo {
         private static BigDecimal ui_comissaoAReceber(@NonNull BigDecimal comissaoTotalAoMotorista, BigDecimal comissaoJaPaga, @NonNull TextView view) {
-          //  BigDecimal comissaAReceber = comissaoTotalAoMotorista.subtract(comissaoJaPaga);
-          //  view.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaAReceber));
-         //   return comissaAReceber;
-            return null;
+            BigDecimal comissaAReceber = comissaoTotalAoMotorista.subtract(comissaoJaPaga);
+            view.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaAReceber));
+            return comissaAReceber;
         }
 
         private static BigDecimal ui_reembolso(List<CustosDePercurso> dataSet, @NonNull TextView view) {

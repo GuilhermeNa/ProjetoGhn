@@ -1,18 +1,12 @@
 package br.com.transporte.AppGhn.model;
 
-import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_CEM;
-
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
-
-import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 
 @Entity(foreignKeys =
 @ForeignKey(
@@ -24,8 +18,8 @@ import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 ))
 public class Frete implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    private long id;
-    private Integer refCavaloId;
+    private Long id;
+    private Long refCavaloId;
     private String origem, destino, empresa, carga;
     private BigDecimal peso;
     private LocalDate data;
@@ -41,19 +35,19 @@ public class Frete implements Serializable {
 
     //---------------------------------- Getters and Setters --------------------------------------
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getRefCavaloId() {
+    public Long getRefCavaloId() {
         return refCavaloId;
     }
 
-    public void setRefCavaloId(Integer refCavaloId) {
+    public void setRefCavaloId(Long refCavaloId) {
         this.refCavaloId = refCavaloId;
     }
 

@@ -23,6 +23,8 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
@@ -30,6 +32,7 @@ import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragm
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.ViewHolder> {
     public static final int SITUACAO_ATENCAO = 1;
@@ -41,17 +44,17 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     private int situacaoDoCavalo;
     private final List<DespesaComSeguroFrota> dataSet;
     private final SeguroFrotaFragment context;
-    private OnItemClickListener onItemClickListener;
-    private final CavaloDAO cavaloDao;
+    private OnItemClickListenerNew onItemClickListener;
+    private final RoomCavaloDao cavaloDao;
     private int posicao;
 
-    public SeguroFrotaAdapter(SeguroFrotaFragment context, List<DespesaComSeguroFrota> lista) {
+    public SeguroFrotaAdapter(@NonNull SeguroFrotaFragment context, List<DespesaComSeguroFrota> lista) {
         this.dataSet = lista;
         this.context = context;
-        this.cavaloDao = new CavaloDAO();
+        cavaloDao = GhnDataBase.getInstance(context.requireContext()).getRoomCavaloDao();
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -104,7 +107,7 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     }
 
     private void configuraListeners(@NonNull ViewHolder holder, DespesaComSeguro seguros) {
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(seguros));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(seguros.getId()));
         holder.itemView.setOnLongClickListener(v -> {
             setPosicao(holder.getAdapterPosition());
             return false;
@@ -125,7 +128,7 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     //------------------------------------------------
 
     private void vincula(@NonNull ViewHolder holder, @NonNull DespesaComSeguro seguros) {
-        String placa = cavaloDao.localizaPeloId(seguros.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(seguros.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguros.getValorDespesa()));
         holder.dataInicialTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataInicial()));

@@ -32,23 +32,24 @@ import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
 import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;
+import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaVidaDialog;
 
 public class ExibeParcelasVidaDialog {
     public static final String TITULO_DIALOG = "Seguro Vida";
-    private final RoomParcelaSeguroDao parcelaDao;
+    private final RoomParcela_seguroVidaDao parcelaDao;
     private HashMap<Integer, Boolean> mapComParcelas;
-    private List<ParcelaDeSeguro> listaDeparcelas;
+    private List<Parcela_seguroVida> listaDeparcelas;
     private final Context context;
     private Button btn;
 
     public ExibeParcelasVidaDialog(Context context) {
         this.context = context;
-        parcelaDao = GhnDataBase.getInstance(context).getRoomParcelaSeguroDao();
+        parcelaDao = GhnDataBase.getInstance(context).getRoomParcela_seguroVidaDao();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -79,15 +80,18 @@ public class ExibeParcelasVidaDialog {
     }
 
     private void fazABaixaDaParcelaPaga(DespesaComSeguroDeVida seguro) {
-        List<ParcelaDeSeguro> listaDeParcelas = getListaDeparcelas(seguro);
+        List<Parcela_seguroVida> listaDeParcelas = getListaDeparcelas(seguro);
 
         for(Map.Entry<Integer, Boolean> pair: mapComParcelas.entrySet()){
             boolean estaParcelaPrecisaSerAlterada = pair.getValue();
 
             if(estaParcelaPrecisaSerAlterada){
-                Optional<ParcelaDeSeguro> parcelaOptional = listaDeParcelas.stream()
+                Optional<Parcela_seguroVida> parcelaOptional = listaDeParcelas.stream()
                         .filter(p -> p.getNumeroDaParcela() == pair.getKey()).findFirst();
-                parcelaOptional.ifPresent(p -> p.setPaga(true));
+                parcelaOptional.ifPresent(p -> {
+                    p.setPaga(true);
+                    parcelaDao.substitui(p);
+                });
             }
         }
     }
@@ -130,10 +134,10 @@ public class ExibeParcelasVidaDialog {
         RecyclerView recyclerDialog = dialog.findViewById(R.id.recycler_pagamento_seguro);
         listaDeparcelas = getListaDeparcelas(seguro);
 
-        BottomSeguroParcelaAdapter adapterParcela = new BottomSeguroParcelaAdapter(listaDeparcelas, context);
+        BottomSeguroVidaParcelaAdapter adapterParcela = new BottomSeguroVidaParcelaAdapter(listaDeparcelas, context);
         recyclerDialog.setAdapter(adapterParcela);
 
-        adapterParcela.setOnItemCLickListener(new BottomSeguroParcelaAdapter.OnItemCLickListener() {
+        adapterParcela.setOnItemCLickListener(new BottomSeguroVidaParcelaAdapter.OnItemCLickListener() {
             @Override
             public void onBoxClick(HashMap<Integer, Boolean> map) {
                 mapComParcelas = map;
@@ -145,11 +149,11 @@ public class ExibeParcelasVidaDialog {
             }
 
             @Override
-            public void onItemClick(ParcelaDeSeguro parcela) {
-                EditaParcelaDialog dialogParcela = new EditaParcelaDialog(context, parcela);
+            public void onItemClick(Parcela_seguroVida parcela) {
+                EditaParcelaVidaDialog dialogParcela = new EditaParcelaVidaDialog(context, parcela);
                 dialogParcela.dialogEditaParcela();
 
-                dialogParcela.setCallback(new EditaParcelaDialog.Callback() {
+                dialogParcela.setCallback(new EditaParcelaVidaDialog.Callback() {
                     @Override
                     public void quandoFunciona() {
                         listaDeparcelas = getListaDeparcelas(seguro);
@@ -166,7 +170,7 @@ public class ExibeParcelasVidaDialog {
         });
     }
 
-    private List<ParcelaDeSeguro> getListaDeparcelas(@NonNull DespesaComSeguroDeVida seguro) {
+    private List<Parcela_seguroVida> getListaDeparcelas(@NonNull DespesaComSeguroDeVida seguro) {
         return parcelaDao.listaPeloSeguroId(seguro.getId());
     }
 

@@ -71,7 +71,7 @@ public class DescontaAdiantamento {
     }
 
     public interface Callback {
-        void quandoFunciona(int id, BigDecimal novoValor, String msg);
+        void quandoFunciona(Long id, BigDecimal novoValor, String msg);
         void quandoFalha(String msg);
         void quandoCancela(String msg);
     }

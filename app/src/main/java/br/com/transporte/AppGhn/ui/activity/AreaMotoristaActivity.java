@@ -6,6 +6,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORM
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ABASTECIMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DEFAUT;
@@ -149,6 +150,8 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
 
                     switch (resultCode) {
                         case RESULT_OK:
+                        case RESULT_DELETE:
+                        case RESULT_EDIT:
                             if (resumoFragment == null) {
                                 resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + VIEW_PAGER_POS_RESUMO_FRAGMENT);
                             }
@@ -221,10 +224,10 @@ public class AreaMotoristaActivity extends AppCompatActivity implements MenuProv
         Cavalo cavalo;
         Intent dados = getIntent();
         RoomCavaloDao cavaloDao = GhnDataBase.getInstance(this).getRoomCavaloDao();
-        int cavaloId = 0;
+        long cavaloId = 0;
 
         if (dados.hasExtra(CHAVE_ID_CAVALO)) {
-            cavaloId = dados.getIntExtra(CHAVE_ID_CAVALO, VALOR_DEFAUT);
+            cavaloId = dados.getLongExtra(CHAVE_ID_CAVALO, VALOR_DEFAUT);
         }
 
         cavalo = cavaloDao.localizaPeloId(cavaloId);

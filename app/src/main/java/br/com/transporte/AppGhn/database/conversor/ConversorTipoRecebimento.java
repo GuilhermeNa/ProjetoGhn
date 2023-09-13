@@ -15,6 +15,7 @@ public class ConversorTipoRecebimento {
         switch (tipo) {
             case SALDO:
                 return SALDO.getDescricao();
+
             case ADIANTAMENTO:
                 return ADIANTAMENTO.getDescricao();
         }

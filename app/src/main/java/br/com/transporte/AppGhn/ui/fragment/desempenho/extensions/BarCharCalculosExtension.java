@@ -7,10 +7,12 @@ import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.CUSTOS_PERCU
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_ADM;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_IMPOSTOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_CERTIFICADOS;
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGUROS_DIRETOS;
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGUROS_INDIRETOS;
+import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_FROTA;
+import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_VIDA;
 import static br.com.transporte.AppGhn.model.enums.TipoDespesa.DIRETA;
 import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
+
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -21,16 +23,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.dao.CustosDeManutencaoDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
-import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.dao.SalarioDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeManutencaoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaAdmDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaComSeguroFrotaDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroFrotaDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.abstracts.Parcela;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
@@ -39,27 +47,45 @@ import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 
 public class BarCharCalculosExtension {
-    private static final FreteDAO freteDao = new FreteDAO();
-    private static final CustosDeManutencaoDAO custosManutencaoDao = new CustosDeManutencaoDAO();
-    private static final CustosDePercursoDAO custosPercursoDao = new CustosDePercursoDAO();
-    private static final CustosDeAbastecimentoDAO abastecimentoDao = new CustosDeAbastecimentoDAO();
-    private static final DespesasImpostoDAO impostoDao = new DespesasImpostoDAO();
-    private static final DespesasAdmDAO despesasAdmDao = new DespesasAdmDAO();
-    private static final DespesasCertificadoDAO certificadosDao = new DespesasCertificadoDAO();
-    private static final DespesasSeguroDAO seguroDao = new DespesasSeguroDAO();
-    private static final ParcelaDeSeguroDAO parcelaDao = new ParcelaDeSeguroDAO();
-    private static final CavaloDAO cavaloDao = new CavaloDAO();
+    private final RoomFreteDao freteDao;
+    private final RoomCustosDeManutencaoDao custosManutencaoDao;
+    private final RoomCustosPercursoDao custosPercursoDao;
+    private final RoomCustosAbastecimentoDao abastecimentoDao;
+    private final RoomDespesaImpostoDao impostoDao;
+    private final RoomDespesaAdmDao despesasAdmDao;
+    private final RoomDespesaCertificadoDao certificadosDao;
+    private final RoomDespesaComSeguroFrotaDao seguroFrotaDao;
+    private final RoomDespesaSeguroVidaDao seguroVidaDao;
+    private final RoomParcela_seguroFrotaDao parcela_seguroFrotaDao;
+    private final RoomParcela_seguroVidaDao parcela_seguroVidaDao;
+    private final RoomCavaloDao cavaloDao;
+    private final RoomCustosDeSalarioDao salarioDao;
+    public static final Long NAO_ESPECIFICA_BUSCA_POR_ID = 0L;
 
-    private static final SalarioDAO salarioDao = new SalarioDAO();
-    public static final int NAO_ESPECIFICA_BUSCA_POR_ID = 0;
-
+    public BarCharCalculosExtension(Context context) {
+        GhnDataBase dataBase = GhnDataBase.getInstance(context);
+        freteDao = dataBase.getRoomFreteDao();
+        custosManutencaoDao = dataBase.getRoomCustosDeManutencaoDao();
+        custosPercursoDao = dataBase.getRoomCustosPercursoDao();
+        abastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
+        impostoDao = dataBase.getRoomDespesaImpostoDao();
+        despesasAdmDao = dataBase.getRoomDespesaAdmDao();
+        certificadosDao = dataBase.getRoomDespesaCertificadoDao();
+        seguroFrotaDao = dataBase.getRoomDespesaComSeguroFrotaDao();
+        seguroVidaDao = dataBase.getRoomDespesaSeguroVidaDao();
+        parcela_seguroFrotaDao = dataBase.getRoomParcela_seguroFrotaDao();
+        parcela_seguroVidaDao = dataBase.getRoomParcela_seguroVidaDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+        salarioDao = dataBase.getRoomCustosDeSalarioDao();
+    }
 
     @NonNull
-    public static HashMap<Integer, BigDecimal> getHashMap_ChaveMes_ValorResultado(int ano, @NonNull TipoDeRequisicao tipo, int id) {
+    public HashMap<Integer, BigDecimal> getHashMap_ChaveMes_ValorResultado(int ano, @NonNull TipoDeRequisicao tipo, Long id) {
 
         HashMap<Integer, BigDecimal> hashMap = new HashMap<>();
 
@@ -73,42 +99,42 @@ public class BarCharCalculosExtension {
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-               /* for (int i = 0; i < 12; i++) {
+                for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(frete -> ((Frete) frete).getAdmFrete().getFreteBruto())
+                            .map(frete -> ((Frete) frete).getFreteBruto())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }*/
+                }
                 break;
 
-          /*  case FRETE_LIQUIDO:
+            case FRETE_LIQUIDO:
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
                 for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(frete -> ((Frete) frete).getAdmFrete().getFreteLiquidoAReceber())
+                            .map(frete -> ((Frete) frete).getFreteLiquidoAReceber())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }*/
-              /*  break;*/
+                }
+                break;
 
-         /*   case COMISSAO:
+            case COMISSAO:
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-               *//* for (int i = 0; i < 12; i++) {
+                for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(frete -> ((Frete) frete).getAdmFrete().getComissaoAoMotorista())
+                            .map(frete -> ((Frete) frete).getComissaoAoMotorista())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }*//*
-                break;*/
+                }
+                break;
 
 
             case LITRAGEM:
@@ -209,16 +235,26 @@ public class BarCharCalculosExtension {
                 }
                 break;
 
-            case DESPESA_SEGUROS_DIRETOS:
+            case DESPESA_SEGURO_FROTA:
+                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
+                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
+                for (int i = 0; i < 12; i++) {
+                    BigDecimal soma = listaDeListas_Meses.get(i).stream()
+                            .map(parcela -> ((Parcela_seguroFrota) parcela).getValor())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            case DESPESA_SEGUROS_INDIRETOS:
+                    hashMap.put(i, soma);
+                }
+                break;
+
+            case DESPESA_SEGURO_VIDA:
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, tipo, id);
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
                 for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
+                            .map(parcela -> ((Parcela_seguroVida) parcela).getValor())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
@@ -234,13 +270,13 @@ public class BarCharCalculosExtension {
 
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, tipo);
 
-               /* for (int i = 0; i < 12; i++) {
+                for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(frete -> ((Frete) frete).getAdmFrete().getFreteLiquidoAReceber())
+                            .map(frete -> ((Frete) frete).getFreteLiquidoAReceber())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                     hashMap.put(i, soma);
-                }*/
+                }
 
                 // ---------
                 listaDeObjetos.clear();
@@ -265,15 +301,15 @@ public class BarCharCalculosExtension {
                 listaDeListas_Meses = criaListaDeListas();
                 listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, COMISSAO, id);
                 separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, COMISSAO);
-              /*  for (int i = 0; i < 12; i++) {
+                for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(frete -> ((Frete) frete).getAdmFrete().getComissaoAoMotorista())
+                            .map(frete -> ((Frete) frete).getComissaoAoMotorista())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
                         hashMap.put(i, resultado);
                     }
-                }*/
+                }
 
                 // ---------
                 listaDeObjetos.clear();
@@ -343,11 +379,11 @@ public class BarCharCalculosExtension {
                 listaDeObjetos.clear();
                 listaDeListas_Meses.clear();
                 listaDeListas_Meses = criaListaDeListas();
-                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGUROS_DIRETOS, id);
-                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGUROS_DIRETOS);
+                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGURO_FROTA, id);
+                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGURO_FROTA);
                 for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
+                            .map(parcela -> ((Parcela_seguroFrota) parcela).getValor())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
@@ -360,11 +396,11 @@ public class BarCharCalculosExtension {
                 listaDeObjetos.clear();
                 listaDeListas_Meses.clear();
                 listaDeListas_Meses = criaListaDeListas();
-                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGUROS_INDIRETOS, id);
-                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGUROS_INDIRETOS);
+                listaDeObjetos = getListaDeDadosFiltradaPeloAnoDesejado(ano, DESPESA_SEGURO_VIDA, id);
+                separaOsDadosEmSeusRespectivosMeses(listaDeObjetos, listaDeListas_Meses, DESPESA_SEGURO_VIDA);
                 for (int i = 0; i < 12; i++) {
                     BigDecimal soma = listaDeListas_Meses.get(i).stream()
-                            .map(parcela -> ((ParcelaDeSeguro) parcela).getValor())
+                            .map(parcela -> ((Parcela_seguroVida) parcela).getValor())
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
                     if (soma != null) {
                         BigDecimal resultado = hashMap.get(i).subtract(soma);
@@ -404,7 +440,7 @@ public class BarCharCalculosExtension {
         return listaSeparadaPorMeses;
     }
 
-    private static void separaOsDadosEmSeusRespectivosMeses(List<Object> listaDeObjetos, List<List<Object>> listaDeListas_Meses, @NonNull TipoDeRequisicao tipo) {
+    private void separaOsDadosEmSeusRespectivosMeses(List<Object> listaDeObjetos, List<List<Object>> listaDeListas_Meses, @NonNull TipoDeRequisicao tipo) {
 
         switch (tipo) {
             case FRETE_BRUTO:
@@ -498,11 +534,22 @@ public class BarCharCalculosExtension {
                 }
                 break;
 
-            case DESPESA_SEGUROS_DIRETOS:
-
-            case DESPESA_SEGUROS_INDIRETOS:
+            case DESPESA_SEGURO_FROTA:
                 for (Object parcela : listaDeObjetos) {
-                    int mes = ((ParcelaDeSeguro) parcela).getData().getMonthValue();
+                    int mes = ((Parcela_seguroFrota) parcela).getData().getMonthValue();
+
+                    for (int i = 0; i < 12; i++) {
+                        if (mes == i + 1) {
+                            listaDeListas_Meses.get(i).add(parcela);
+                        }
+                    }
+                }
+
+                break;
+
+            case DESPESA_SEGURO_VIDA:
+                for (Object parcela : listaDeObjetos) {
+                    int mes = ((Parcela_seguroVida) parcela).getData().getMonthValue();
 
                     for (int i = 0; i < 12; i++) {
                         if (mes == i + 1) {
@@ -516,7 +563,7 @@ public class BarCharCalculosExtension {
 
 
     @NonNull
-    private static List<Object> getListaDeDadosFiltradaPeloAnoDesejado(int ano, @NonNull TipoDeRequisicao tipo, int id) {
+    private List<Object> getListaDeDadosFiltradaPeloAnoDesejado(int ano, @NonNull TipoDeRequisicao tipo, Long id) {
 
         switch (tipo) {
             case FRETE_BRUTO:
@@ -525,11 +572,11 @@ public class BarCharCalculosExtension {
             case LUCRO_LIQUIDO:
 
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return freteDao.listaTodos().stream()
+                    return freteDao.todos().stream()
                             .filter(frete -> frete.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return freteDao.listaTodos().stream()
+                    return freteDao.todos().stream()
                             .filter(frete -> frete.getData().getYear() == ano)
                             .filter(frete -> frete.getRefCavaloId() == id)
                             .collect(Collectors.toList());
@@ -538,100 +585,96 @@ public class BarCharCalculosExtension {
             case LITRAGEM:
             case CUSTOS_ABASTECIMENTO:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return abastecimentoDao.listaTodos().stream()
+                    return abastecimentoDao.todos().stream()
                             .filter(abastecimento -> abastecimento.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return abastecimentoDao.listaTodos().stream()
+                    return abastecimentoDao.todos().stream()
                             .filter(abastecimento -> abastecimento.getData().getYear() == ano)
-                            .filter(abastecimento -> abastecimento.getRefCavalo() == id)
+                            .filter(abastecimento -> abastecimento.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
             case CUSTOS_PERCURSO:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return custosPercursoDao.listaTodos().stream()
+                    return custosPercursoDao.todos().stream()
                             .filter(custosDePercurso -> custosDePercurso.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return custosPercursoDao.listaTodos().stream()
+                    return custosPercursoDao.todos().stream()
                             .filter(custosDePercurso -> custosDePercurso.getData().getYear() == ano)
-                            .filter(custosDePercurso -> custosDePercurso.getRefCavalo() == id)
+                            .filter(custosDePercurso -> custosDePercurso.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
             case CUSTOS_MANUTENCAO:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return custosManutencaoDao.listaTodos().stream()
+                    return custosManutencaoDao.todos().stream()
                             .filter(custosDeManutencao -> custosDeManutencao.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return custosManutencaoDao.listaTodos().stream()
+                    return custosManutencaoDao.todos().stream()
                             .filter(custosDeManutencao -> custosDeManutencao.getData().getYear() == ano)
-                            .filter(custosDeManutencao -> custosDeManutencao.getRefCavalo() == id)
+                            .filter(custosDeManutencao -> custosDeManutencao.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
             case DESPESAS_ADM:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return despesasAdmDao.listaTodos().stream()
+                    return despesasAdmDao.todos().stream()
                             .filter(despesaAdm -> despesaAdm.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return despesasAdmDao.listaTodos().stream()
+                    return despesasAdmDao.todos().stream()
                             .filter(despesaAdm -> despesaAdm.getData().getYear() == ano)
-                            .filter(despesaAdm -> despesaAdm.getRefCavalo() == id)
+                            .filter(despesaAdm -> despesaAdm.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
             case DESPESAS_IMPOSTOS:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return impostoDao.listaTodos().stream()
+                    return impostoDao.todos().stream()
                             .filter(despesaDeImposto -> despesaDeImposto.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return impostoDao.listaTodos().stream()
+                    return impostoDao.todos().stream()
                             .filter(despesaDeImposto -> despesaDeImposto.getData().getYear() == ano)
-                            .filter(despesaDeImposto -> despesaDeImposto.getRefCavalo() == id)
+                            .filter(despesaDeImposto -> despesaDeImposto.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
             case DESPESA_CERTIFICADOS:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return certificadosDao.listaTodos().stream()
+                    return certificadosDao.todos().stream()
                             .filter(despesaCertificado -> despesaCertificado.getDataDeEmissao().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return certificadosDao.listaTodos().stream()
+                    return certificadosDao.todos().stream()
                             .filter(despesaCertificado -> despesaCertificado.getDataDeEmissao().getYear() == ano)
-                            .filter(despesaCertificado -> despesaCertificado.getRefCavalo() == id)
+                            .filter(despesaCertificado -> despesaCertificado.getRefCavaloId() == id)
                             .collect(Collectors.toList());
                 }
 
-            case DESPESA_SEGUROS_DIRETOS:
+            case DESPESA_SEGURO_FROTA:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return parcelaDao.listaTodos().stream()
+                    return parcela_seguroFrotaDao.todos().stream()
                             .filter(p -> p.getTipoDespesa() == DIRETA)
                             .filter(p -> p.getData().getYear() == ano)
                             .filter(Parcela::isPaga)
                             .collect(Collectors.toList());
                 } else {
-                    return parcelaDao.listaParcelasDoCavalo(id).stream()
+                    return parcela_seguroFrotaDao.listaPeloCavaloId(id).stream()
                             .filter(p -> p.getTipoDespesa() == DIRETA)
                             .filter(p -> p.getData().getYear() == ano)
                             .filter(Parcela::isPaga)
                             .collect(Collectors.toList());
-
                 }
 
-            case DESPESA_SEGUROS_INDIRETOS:
-                if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return parcelaDao.listaTodos().stream()
-                            .filter(parcelaDeSeguro -> parcelaDeSeguro.getTipoDespesa() == INDIRETA)
-                            .filter(parcelaDeSeguro -> parcelaDeSeguro.getData().getYear() == ano)
-                            .filter(Parcela::isPaga)
-                            .collect(Collectors.toList());
-                }
+            case DESPESA_SEGURO_VIDA:
+                return parcela_seguroVidaDao.todos().stream()
+                        .filter(parcelaDeSeguro -> parcelaDeSeguro.getData().getYear() == ano)
+                        .filter(Parcela::isPaga)
+                        .collect(Collectors.toList());
         }
 
         return null;

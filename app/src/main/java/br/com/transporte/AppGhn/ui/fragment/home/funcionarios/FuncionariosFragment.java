@@ -46,6 +46,7 @@ import br.com.transporte.AppGhn.ui.fragment.ConstantesFragment;
 import br.com.transporte.AppGhn.util.AnimationUtil;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class FuncionariosFragment extends Fragment {
@@ -185,12 +186,13 @@ public class FuncionariosFragment extends Fragment {
         recycler.setAdapter(adapter);
         LinearLayoutManager LayoutManager = new GridLayoutManager(getContext(), 2);
         recycler.setLayoutManager(LayoutManager);
+        adapter.setonItemClickListener(this::configuraListener);
+    }
 
-        adapter.setonItemClickListener((idMotorista) -> {
-            Intent intent = new Intent(this.getActivity(), FormulariosActivity.class);
-            intent.putExtra(ConstantesFragment.CHAVE_ID, (Integer) idMotorista);
-            intent.putExtra(ConstantesFragment.CHAVE_FORMULARIO, ConstantesFragment.VALOR_MOTORISTA);
-            activityResultLauncher.launch(intent);
-        });
+    private void configuraListener(long id) {
+        Intent intent = new Intent(this.getActivity(), FormulariosActivity.class);
+        intent.putExtra(ConstantesFragment.CHAVE_ID, id);
+        intent.putExtra(ConstantesFragment.CHAVE_FORMULARIO, ConstantesFragment.VALOR_MOTORISTA);
+        activityResultLauncher.launch(intent);
     }
 }

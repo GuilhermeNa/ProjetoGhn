@@ -1,7 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
+import java.util.List;
+
+import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSemiReboqueBinding;
@@ -21,6 +27,11 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.dao.SemiReboqueDAO;
+import br.com.transporte.AppGhn.tasks.reboque.AdicionaReboqueTask;
+import br.com.transporte.AppGhn.tasks.reboque.AtualizaReboqueTask;
+import br.com.transporte.AppGhn.tasks.reboque.BuscaTodosReboquesTask;
+import br.com.transporte.AppGhn.tasks.reboque.DeletaReboqueTask;
+import br.com.transporte.AppGhn.tasks.reboque.LocalizaReboqueTask;
 
 public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     private FragmentFormularioSemiReboqueBinding binding;
@@ -37,9 +48,12 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GhnApplication application = new GhnApplication();
+        executorService = application.getExecutorService();
+        handler = application.getMainThreadHandler();
         srDao = GhnDataBase.getInstance(this.requireContext()).getRoomReboqueDao();
         cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
-        int srId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long srId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(srId);
         sr = (SemiReboque) criaOuRecuperaObjeto(srId);
     }
@@ -80,9 +94,14 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Integer reboqueId = (Integer)id;
+        Long reboqueId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            sr = srDao.localizaPeloId(reboqueId);
+            LocalizaReboqueTask localizaReboqueTask = new LocalizaReboqueTask(executorService, handler);
+            localizaReboqueTask.solicitaBusca(srDao, reboqueId, reboque -> {
+                sr = reboque;
+                bind();
+            });
+
         } else {
             sr = new SemiReboque();
         }
@@ -140,23 +159,35 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        srDao.adiciona(sr);
+        AtualizaReboqueTask atualizaReboqueTask = new AtualizaReboqueTask(executorService, handler);
+        atualizaReboqueTask.solicitaAtualizacao(srDao, sr, () -> {
+            requireActivity().setResult(RESULT_EDIT);
+            requireActivity().finish();
+        });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        srDao.adiciona(sr);
+        AdicionaReboqueTask adicionaReboqueTask = new AdicionaReboqueTask(executorService, handler);
+        adicionaReboqueTask.solicitaAdicao(srDao, sr, id -> {
+            requireActivity().setResult(RESULT_OK);
+            requireActivity().finish();
+        });
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         sr.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
-        return 0;
+        return null;
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        srDao.deleta(sr);
+        DeletaReboqueTask deletaReboqueTask = new DeletaReboqueTask(executorService, handler);
+        deletaReboqueTask.solicitaAtualizacao(srDao, sr, () -> {
+            requireActivity().setResult(RESULT_DELETE);
+            requireActivity().finish();
+        });
     }
 }

@@ -112,7 +112,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         motoristaDao = GhnDataBase.getInstance(this.requireContext()).getRoomMotoristaDao();
-        int motoristaId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long motoristaId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(motoristaId);
         motorista = (Motorista) criaOuRecuperaObjeto(motoristaId);
     }
@@ -168,7 +168,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Integer motoristaId = (Integer)id;
+        Long motoristaId = (Long)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             motorista = motoristaDao.localizaPeloId(motoristaId);
             if(motorista.getImg() != null) recebeuImagem = true;
@@ -253,7 +253,7 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
             imgEmString = BitmapImagem.codificaBitmapEmString(imgRecebidaEmBitmap);
             motorista.setImg(imgEmString);
         }
-        motoristaDao.adiciona(motorista);
+        motoristaDao.substitui(motorista);
     }
 
     @Override
@@ -262,8 +262,8 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
-        return 0;
+    public Long configuraObjetoNaCriacao() {
+        return null;
     }
 
     @Override

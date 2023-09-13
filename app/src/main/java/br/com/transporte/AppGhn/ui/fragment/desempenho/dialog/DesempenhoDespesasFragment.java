@@ -3,8 +3,8 @@ package br.com.transporte.AppGhn.ui.fragment.desempenho.dialog;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_ADM;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_IMPOSTOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_CERTIFICADOS;
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGUROS_DIRETOS;
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGUROS_INDIRETOS;
+import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_FROTA;
+import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_VIDA;
 import static br.com.transporte.AppGhn.ui.fragment.desempenho.extensions.Extensions.setResult;
 
 import android.os.Bundle;
@@ -45,8 +45,8 @@ public class DesempenhoDespesasFragment extends Fragment {
 
         binding.administrativoLayout.setOnClickListener(v -> setResult(DESPESAS_ADM, bundle, parentFragmentManager));
         binding.certificadoLayout.setOnClickListener(v -> setResult(DESPESA_CERTIFICADOS, bundle, parentFragmentManager));
-        binding.frotaLayout.setOnClickListener(v -> setResult(DESPESA_SEGUROS_DIRETOS, bundle, parentFragmentManager));
-        binding.segurosLayout.setOnClickListener(v -> setResult(DESPESA_SEGUROS_INDIRETOS, bundle, parentFragmentManager));
+        binding.frotaLayout.setOnClickListener(v -> setResult(DESPESA_SEGURO_FROTA, bundle, parentFragmentManager));
+        binding.segurosLayout.setOnClickListener(v -> setResult(DESPESA_SEGURO_VIDA, bundle, parentFragmentManager));
         binding.impostosLayout.setOnClickListener(v -> setResult(DESPESAS_IMPOSTOS, bundle, parentFragmentManager));
 
     }

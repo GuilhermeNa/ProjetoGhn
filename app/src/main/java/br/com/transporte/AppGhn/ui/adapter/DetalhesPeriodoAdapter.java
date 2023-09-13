@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCav
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriodoAdapter.ViewHolder>{
-
     private final Context context;
     private final List<ObjetoTemporario_representaCavalo> dataSet;
 
@@ -85,8 +85,15 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
 
     @NonNull
     private String formataPercentual(@NonNull BigDecimal valor) {
-        String percentual = valor.toPlainString();
-        percentual = percentual.replace(".00", " %");
+        Log.d("teste", "getPercentual"+valor);
+        String percentual;
+        try{
+            percentual = valor.toPlainString();
+            percentual = percentual.replace(".00", " %");
+        } catch (NullPointerException e){
+            percentual = "-";
+        }
+
         return percentual;
     }
 

@@ -22,16 +22,17 @@ import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFr
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class CertificadoIndiretoAdapter extends RecyclerView.Adapter<CertificadoIndiretoAdapter.ViewHolder> {
     private final CertificadosIndiretosFragment context;
-    public OnItemClickListener onItemClickListener;
+    public OnItemClickListenerNew onItemClickListener;
     private final List<DespesaCertificado> dataSet;
     public static final int DIAS_SEMANA = 7;
     public static final int DIAS_MES = 30;
     private int posicao;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -94,7 +95,7 @@ public class CertificadoIndiretoAdapter extends RecyclerView.Adapter<Certificado
     }
 
     private void configuraListeners(@NonNull ViewHolder holder, DespesaCertificado certificado) {
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(certificado));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(certificado.getId()));
         holder.itemView.setOnLongClickListener(v -> {
             setPosicao(holder.getAdapterPosition());
             return false;

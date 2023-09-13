@@ -10,6 +10,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_VIDA;
+import static br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro.VIDA;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -27,7 +28,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -39,11 +39,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
 import br.com.transporte.AppGhn.databinding.FragmentSeguroVidaBinding;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
@@ -51,11 +52,13 @@ import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.SeguroVidaAdapter;
 import br.com.transporte.AppGhn.ui.fragment.extensions.BuscaDeDadosSemResultado;
 import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class SeguroVidaFragment extends Fragment {
+    public static final String SEGUROS = "Seguros";
     private FragmentSeguroVidaBinding binding;
-    private DespesasSeguroDAO seguroDao;
-    private List<DespesaComSeguroDeVida> listaDeSegurosVida;
+    private RoomDespesaSeguroVidaDao seguroDao;
+    private List<DespesaComSeguroDeVida> dataSet;
     private SeguroVidaAdapter adapter;
     private RecyclerView recyclerView;
     private LinearLayout avisoDeListaVaziaLayout;
@@ -69,7 +72,7 @@ public class SeguroVidaFragment extends Fragment {
                 result -> {
                     int resultCode = result.getResultCode();
 
-                    switch(resultCode){
+                    switch (resultCode) {
                         case RESULT_UPDATE:
                             atualizaAdapter(REGISTRO_RENOVADO);
                             break;
@@ -83,9 +86,9 @@ public class SeguroVidaFragment extends Fragment {
 
     //------------------------------------ Metodos Publicos ----------------------------------------
 
-    public void atualizaAdapter(String msg){
-        listaDeSegurosVida = getListaDeSegurosVida();
-        adapter.atualiza(listaDeSegurosVida);
+    public void atualizaAdapter(String msg) {
+        atualizaDataSet();
+        adapter.atualiza(getDataSet());
         configuraUiBuscaSemResultados();
         MensagemUtil.toast(requireContext(), msg);
     }
@@ -97,12 +100,24 @@ public class SeguroVidaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        seguroDao = new DespesasSeguroDAO();
-        listaDeSegurosVida = getListaDeSegurosVida();
+        inicializaDataBase();
+        atualizaDataSet();
     }
 
-    private List<DespesaComSeguroDeVida> getListaDeSegurosVida() {
-        return seguroDao.listaSegurosVidaValidos();
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = seguroDao.listaPorValidade(true);
+    }
+
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        seguroDao = dataBase.getRoomDespesaSeguroVidaDao();
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesaComSeguroDeVida> getDataSet() {
+        return new ArrayList<>(dataSet);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -130,7 +145,7 @@ public class SeguroVidaFragment extends Fragment {
     }
 
     private void configuraUiBuscaSemResultados() {
-        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(listaDeSegurosVida.size(), recyclerView, avisoDeListaVaziaLayout);
+        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(dataSet.size(), recyclerView, avisoDeListaVaziaLayout);
     }
 
     private void inicializaCampos() {
@@ -139,23 +154,20 @@ public class SeguroVidaFragment extends Fragment {
     }
 
     private void configuraRecycler() {
-        adapter = new SeguroVidaAdapter(this, listaDeSegurosVida);
+        adapter = new SeguroVidaAdapter(this, getDataSet());
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(seguro -> {
             NavController controlador = Navigation.findNavController(requireView());
-            NavDirections direction = SeguroVidaFragmentDirections.actionNavSeguroOutrosToSeguroResumoFragment(((DespesaComSeguro) seguro).getId());
+            NavDirections direction = SeguroVidaFragmentDirections.actionNavSeguroOutrosToSeguroResumoFragment(((DespesaComSeguro) seguro).getId(), VIDA);
             controlador.navigate(direction);
         });
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Seguros");
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        ToolbarUtil toolbarUtil = new ToolbarUtil(SEGUROS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -184,10 +196,10 @@ public class SeguroVidaFragment extends Fragment {
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
-       posicao = adapter.getPosicao();
-        DespesaComSeguroDeVida seguro = listaDeSegurosVida.get(posicao);
+        posicao = adapter.getPosicao();
+        DespesaComSeguroDeVida seguro = dataSet.get(posicao);
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.visualizaParcelas:
                 ExibeParcelasVidaDialog dialog = new ExibeParcelasVidaDialog(this.requireContext());
                 dialog.showBottomDialog(seguro);
@@ -212,6 +224,6 @@ public class SeguroVidaFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        listaDeSegurosVida = getListaDeSegurosVida();
+        atualizaDataSet();
     }
 }

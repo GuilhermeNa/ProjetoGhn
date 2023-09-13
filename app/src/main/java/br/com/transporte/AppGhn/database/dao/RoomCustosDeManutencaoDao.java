@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 
 @Dao
@@ -20,5 +22,10 @@ public interface RoomCustosDeManutencaoDao {
     @Query("SELECT * FROM custosDeManutencao WHERE id = :manutencaoId")
     CustosDeManutencao localizaPeloId(Long manutencaoId);
 
+    @Query("SELECT * FROM custosDeManutencao WHERE refCavaloId = :cavaloId")
+    List<CustosDeManutencao> listaPeloCavaloId(Long cavaloId);
+
+    @Query("SELECT * FROM CustosDeManutencao")
+    List<CustosDeManutencao> todos();
 
 }

@@ -12,6 +12,7 @@ import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,8 +31,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
@@ -85,10 +84,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
 
         bundle = getArguments();
         frete = recebeReferenciaDeFreteExterno();
-        int recebimentoId = verificaSeRecebeDadosExternos(CHAVE_ID_RECEBIMENTO);
+        long recebimentoId = verificaSeRecebeDadosExternos(CHAVE_ID_RECEBIMENTO);
         defineTipoEditandoOuCriando(recebimentoId);
         recebimento = (RecebimentoDeFrete) criaOuRecuperaObjeto(recebimentoId);
-
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
         configuracoesAdicionaisUi();
@@ -96,11 +94,10 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     private void configuracoesAdicionaisUi() {
-        //BigDecimal freteLiquidoAReceber = frete.getAdmFrete().getFreteLiquidoAReceber();
-        //BigDecimal recebido = recebimentoDao.valorRecebido(frete.getId());
-      //  BigDecimal emAberto = freteLiquidoAReceber.subtract(recebido);
-
-       // restaReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(emAberto));
+        BigDecimal freteLiquidoAReceber = frete.getFreteLiquidoAReceber();
+        BigDecimal recebido = FiltraRecebimentoFrete.valorTotalRecebido(recebimentoDao.listaPorFreteId(frete.getId()));
+        BigDecimal emAberto = freteLiquidoAReceber.subtract(recebido);
+        restaReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(emAberto));
     }
 
     private void configuraCheckBox() {
@@ -109,7 +106,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     private Frete recebeReferenciaDeFreteExterno() {
-        int freteId = bundle.getInt(CHAVE_ID);
+        Long freteId = bundle.getLong(CHAVE_ID);
         frete = freteDao.localizaPeloId(freteId);
         return frete;
     }
@@ -128,7 +125,7 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        long recebimentoId = (long)id;
+        long recebimentoId = (long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             recebimento = recebimentoDao.localizaPeloId(recebimentoId);
         } else {
@@ -201,8 +198,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         List<RecebimentoDeFrete> listaDeRecebimentos = recebimentoDao.listaPorFreteId(frete.getId());
         RecebimentoDeFrete adiantamento = null;
         try {
-            adiantamento =  FiltraRecebimentoFrete.localizaPorTipo(listaDeRecebimentos, ADIANTAMENTO);
-        } catch (ObjetoNaoEncontrado ignore){}
+            adiantamento = FiltraRecebimentoFrete.localizaPorTipo(listaDeRecebimentos, ADIANTAMENTO);
+        } catch (ObjetoNaoEncontrado ignore) {
+        }
 
         boolean jaExisteAdiantamento = adiantamento != null;
         boolean naoExisteAdiantamento = adiantamento == null;
@@ -240,72 +238,66 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case android.R.id.home:
-                new AlertDialog.Builder(this.getContext()).
-                        setTitle(CANCELAR_REGISTRO_TITULO).
-                        setMessage(CANCELA_REGISTRO_TXT).
-                        setPositiveButton(SIM, (dialog, which) -> {
-                            requireActivity().setResult(RESULT_CANCELED);
-                            requireActivity().finish();
-                        }).
-                        setNegativeButton(NAO, null).show();
+                requireActivity().setResult(RESULT_CANCELED);
+                requireActivity().finish();
                 break;
 
 
             case R.id.menu_formulario_salvar:
-                new AlertDialog.Builder(this.getContext()).
-                        setTitle(ADICIONANDO_REGISTRO_TITULO).
-                        setMessage(ADICIONA_REGISTRO_TXT).
-                        setPositiveButton(SIM, (dialog, which) -> {
-                            verificaSeCamposEstaoPreenchidos(this.requireView());
-                            verificaSeJaExisteRegistrosDeAdiantamento(this.requireView());
-                            if (isCompletoParaSalvar()) {
+                verificaSeCamposEstaoPreenchidos(requireView());
+                verificaSeJaExisteRegistrosDeAdiantamento(requireView());
+
+                if (isCompletoParaSalvar()) {
+                    new AlertDialog.Builder(this.getContext()).
+                            setTitle(ADICIONANDO_REGISTRO_TITULO).
+                            setMessage(ADICIONA_REGISTRO_TXT).
+                            setPositiveButton(SIM, (dialog, which) -> {
                                 vinculaDadosAoObjeto();
                                 adicionaObjetoNoBancoDeDados();
                                 requireActivity().setResult(RESULT_OK);
                                 requireActivity().finish();
-                            } else {
-                                setCompletoParaSalvar(true);
-                            }
-                        }).
-                        setNegativeButton(NAO, null).
-                        show();
+                            }).setNegativeButton(NAO, null).
+                            show();
+                } else {
+                    setCompletoParaSalvar(true);
+                }
                 break;
 
 
             case R.id.menu_formulario_editar:
-                new AlertDialog.Builder(this.getContext()).
-                        setTitle(EDITANDO_REGISTRO_TITULO).
-                        setMessage(EDITANDO_REGISTRO_TXT).
-                        setPositiveButton(SIM, (dialog, which) -> {
-                            verificaSeCamposEstaoPreenchidos(this.getView());
-                            if (isCompletoParaSalvar()) {
+                verificaSeCamposEstaoPreenchidos(requireView());
+
+                if (isCompletoParaSalvar()) {
+                    new AlertDialog.Builder(this.getContext()).
+                            setTitle(EDITANDO_REGISTRO_TITULO).
+                            setMessage(EDITANDO_REGISTRO_TXT).
+                            setPositiveButton(SIM, (dialog, which) -> {
                                 vinculaDadosAoObjeto();
                                 editaObjetoNoBancoDeDados();
                                 requireActivity().setResult(RESULT_EDIT);
                                 requireActivity().finish();
-                            } else {
-                                setCompletoParaSalvar(true);
-                            }
-                        }).
-                        setNegativeButton(NAO, null).
-                        show();
-                break;
+                            }).setNegativeButton(NAO, null).
+                            show();
+                } else {
+                    setCompletoParaSalvar(true);
+                }
+        break;
 
 
-            case R.id.menu_formulario_apagar:
-                new AlertDialog.Builder(this.getContext()).
-                        setTitle(APAGA_REGISTRO_TITULO).
-                        setMessage(APAGA_REGISTRO_TXT).
-                        setPositiveButton(SIM, (dialog, which) -> {
-                            deletaObjetoNoBancoDeDados();
-                            requireActivity().setResult(RESULT_DELETE);
-                            requireActivity().finish();
-                        }).
-                        setNegativeButton(NAO, null).show();
-                break;
-        }
-        return false;
+        case R.id.menu_formulario_apagar:
+        new AlertDialog.Builder(this.getContext()).
+                setTitle(APAGA_REGISTRO_TITULO).
+                setMessage(APAGA_REGISTRO_TXT).
+                setPositiveButton(SIM, (dialog, which) -> {
+                    deletaObjetoNoBancoDeDados();
+                    requireActivity().setResult(RESULT_DELETE);
+                    requireActivity().finish();
+                }).
+                setNegativeButton(NAO, null).show();
+        break;
     }
+        return false;
+}
 
     @Override
     public void editaObjetoNoBancoDeDados() {
@@ -319,9 +311,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         recebimento.setRefFreteId(frete.getId());
-        return 0;
+        return null;
     }
 
     @Override

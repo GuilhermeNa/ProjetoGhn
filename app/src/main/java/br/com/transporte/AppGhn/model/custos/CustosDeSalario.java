@@ -18,22 +18,22 @@ import br.com.transporte.AppGhn.model.abstracts.Custos;
         onUpdate = ForeignKey.CASCADE
 ))
 public class CustosDeSalario extends Custos {
-    private Integer refMotoristaId;
-    public List<Integer> refAdiantamentos = new ArrayList<>();
+    private Long refMotoristaId;
+    public List<Long> refAdiantamentos = new ArrayList<>();
     public List<Long> refReembolsos = new ArrayList<>();
     public List<Long> refFretes = new ArrayList<>();
 
     //---------------------------------- Getters Setters -------------------------------------------
 
-    public void setRefMotoristaId(Integer refMotorista) {
+    public void setRefMotoristaId(Long refMotorista) {
         this.refMotoristaId = refMotorista;
     }
 
-    public Integer getRefMotoristaId(){
+    public Long getRefMotoristaId(){
         return this.refMotoristaId;
     }
 
-    public List<Integer> getRefAdiantamentos() {
+    public List<Long> getRefAdiantamentos() {
         return new ArrayList<>(refAdiantamentos);
     }
 
@@ -55,7 +55,7 @@ public class CustosDeSalario extends Custos {
         refFretes.add(i);
     }
 
-    public void listaAdiantamentosAdiciona(Integer i){
+    public void listaAdiantamentosAdiciona(Long i){
         refAdiantamentos.add(i);
     }
 

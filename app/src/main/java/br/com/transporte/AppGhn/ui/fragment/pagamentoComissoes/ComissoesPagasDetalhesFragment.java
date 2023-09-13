@@ -41,17 +41,13 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.dao.SalarioDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
 import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Frete;
@@ -61,6 +57,7 @@ import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.AdiantamentoPagoAdapter;
 import br.com.transporte.AppGhn.ui.adapter.FretePagoAdapter;
 import br.com.transporte.AppGhn.ui.adapter.ReembolsoPagoAdapter;
+import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
@@ -89,7 +86,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         salario = salarioDao.localizaPeloId(salarioId);
 
         listaDeAdiantamentos = new ArrayList<>();
-        for (Integer i : salario.getRefAdiantamentos()) {
+        for (Long i : salario.getRefAdiantamentos()) {
             Adiantamento adiantamento = adiantamentoDao.localizaPeloId(i);
             listaDeAdiantamentos.add(adiantamento);
         }
@@ -128,24 +125,16 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
 
     private void configuraUi() {
         RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
-        String motorista = cavaloDao.localizaPeloId(salario.getRefCavalo()).getMotorista().getNome();
+        RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
 
+        String placa = cavaloDao.localizaPeloId(salario.getRefCavaloId()).getPlaca();
+        String motorista = motoristaDao.localizaPeloId(salario.getRefMotoristaId()).getNome();
 
-        BigDecimal somaAdiantamento = listaDeAdiantamentos.stream()
-                .map(Adiantamento::getUltimoValorAbatido)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal somaAdiantamento = CalculoUtil.somaAdiantamentoPorUltimoValorAbatido(listaDeAdiantamentos);
 
-        BigDecimal somaReembolso = listaDeReembolsos.stream()
-                .map(CustosDePercurso::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal somaReembolso = CalculoUtil.somaCustosDePercurso(listaDeReembolsos);
 
-
-
- /*       BigDecimal somaFrete = listaDeFretes.stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
+        BigDecimal somaFrete = CalculoUtil.somaComissao(listaDeFretes);
 
         dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
         placaTxtView.setText(placa);
@@ -157,7 +146,7 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         String valorReembolso = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso);
         valorReembolsosTxtView.setText(valorReembolso);
 
-       // valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
+        valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
     }
 
     private void configuraRecyclerFretes() {
@@ -168,15 +157,6 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
         recycler.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(frete -> {
-            Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
-            intent.putExtra(CHAVE_ID_CAVALO, ((Frete) frete).getRefCavaloId());
-            intent.putExtra(CHAVE_ID, ((Frete) frete).getId());
-            startActivity(intent);
-        });
-
     }
 
     private void recyclerLinhaVerticalDecoration(@NonNull RecyclerView recycler) {
@@ -194,14 +174,6 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
         recycler.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(custo -> {
-            Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_CUSTO_PERCURSO);
-            intent.putExtra(CHAVE_ID_CAVALO, ((CustosDePercurso) custo).getRefCavalo());
-            intent .putExtra(CHAVE_ID, ((CustosDePercurso) custo).getId());
-            startActivity(intent);
-        });
     }
 
     private void configuraRecyclerAdiantamentos() {
@@ -212,14 +184,6 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
         recycler.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(adiantamento -> {
-            Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_ADIANTAMENTO);
-            intent.putExtra(CHAVE_ID_CAVALO, ((Adiantamento) adiantamento).getRefCavaloId());
-            intent.putExtra(CHAVE_ID, ((Adiantamento) adiantamento).getId());
-            startActivity(intent);
-        });
     }
 
     private void inicializaCamposDaView() {

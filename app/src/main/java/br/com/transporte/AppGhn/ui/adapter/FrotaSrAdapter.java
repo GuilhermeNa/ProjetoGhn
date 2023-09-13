@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +13,34 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraReboque;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.tasks.cavalo.LocalizaCavaloTask;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHolder>{
     private final FrotaFragment context;
     private final List<SemiReboque> dataSet;
-    private final CavaloDAO cavaloDao;
+    private final RoomCavaloDao cavaloDao;
+    private final Handler handler;
+    private final ExecutorService executor;
 
-    public FrotaSrAdapter(FrotaFragment context, List<SemiReboque> lista) {
+    public FrotaSrAdapter(@NonNull FrotaFragment context, List<SemiReboque> lista) {
         this.context = context;
         this.dataSet = lista;
-        cavaloDao = new CavaloDAO();
+        cavaloDao = GhnDataBase.getInstance(context.requireContext()).getRoomCavaloDao();
+        GhnApplication application = new GhnApplication();
+        handler = application.getMainThreadHandler();
+        executor = application.getExecutorService();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -79,9 +93,13 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
-        String placa = cavaloDao.localizaPeloId(sr.getRefCavaloId()).getPlaca();
-        holder.placaCavaloRefTxtView.setText(placa);
-        holder.placaSrTxtView.setText(sr.getPlaca());
+        LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executor, handler);
+        localizaCavaloTask.solicitaBusca(cavaloDao, sr.getRefCavaloId(), cavalo -> {
+            String placa = cavalo.getPlaca();
+            holder.placaCavaloRefTxtView.setText(placa);
+            holder.placaSrTxtView.setText(sr.getPlaca());
+        });
+       ;
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

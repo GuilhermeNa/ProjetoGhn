@@ -10,27 +10,23 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_FROTA;
+import static br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro.FROTA;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
@@ -42,30 +38,31 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaComSeguroFrotaDao;
 import br.com.transporte.AppGhn.databinding.FragmentSeguroFrotaBinding;
-import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.SeguroFrotaAdapter;
-import br.com.transporte.AppGhn.ui.fragment.extensions.BuscaDeDadosSemResultado;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class SeguroFrotaFragment extends Fragment {
-    private List<DespesaComSeguroFrota> listaDeSegurosFrota;
+    public static final String SEGUROS = "Seguros";
+    private List<DespesaComSeguroFrota> dataSet;
     private FragmentSeguroFrotaBinding binding;
-    private DespesasSeguroDAO segurosDao;
+    private RoomDespesaComSeguroFrotaDao segurosDao;
     private RecyclerView recyclerView;
     private NavDirections direction;
     private SeguroFrotaAdapter adapter;
-    private CavaloDAO cavaloDao;
-    private LinearLayout listaVaziaLayout;
+    private RoomCavaloDao cavaloDao;
+    private LinearLayout buscaVazia;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
+    private ToolbarUtil toolbarUtil;
 
     @NonNull
     @Contract(" -> new")
@@ -81,23 +78,17 @@ public class SeguroFrotaFragment extends Fragment {
                             break;
 
                         case RESULT_CANCELED:
-                            MensagemUtil.toast(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA);
+                            MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                             break;
                     }
                 });
     }
 
-    //--------------------------------------- Metodos Publicos -------------------------------------
-
-    public void atualizaAdapter(String msg) {
-        listaDeSegurosFrota = getListaDeSegurosFrota();
-        adapter.atualiza(listaDeSegurosFrota);
-        configuraUiBuscaSemResultados();
+    private void atualizaAdapter(String msg) {
+        atualizaDataSet();
+        adapter.atualiza(getDataSet());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
         MensagemUtil.toast(requireContext(), msg);
-    }
-
-    public void atualizaLista() {
-        listaDeSegurosFrota = getListaDeSegurosFrota();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -107,13 +98,25 @@ public class SeguroFrotaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        segurosDao = new DespesasSeguroDAO();
-        listaDeSegurosFrota = getListaDeSegurosFrota();
-        cavaloDao = new CavaloDAO();
+        inicializaDataBase();
+        atualizaDataSet();
     }
 
-    private List<DespesaComSeguroFrota> getListaDeSegurosFrota() {
-        return segurosDao.listaSegurosFrota();
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        segurosDao = dataBase.getRoomDespesaComSeguroFrotaDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesaComSeguroFrota> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = segurosDao.listaPorValidade(true);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -138,25 +141,25 @@ public class SeguroFrotaFragment extends Fragment {
         NavController controlador = Navigation.findNavController(view);
         configuraRecycler(controlador);
         configuraToolbar();
-        configuraUiBuscaSemResultados();
+        configuraMenuProvider();
+        configuraUi();
     }
 
     private void inicializaCamposDaView() {
-        listaVaziaLayout = binding.fragSegurosVazio;
+        buscaVazia = binding.fragSegurosVazio;
+        recyclerView = binding.fragSegurosRecycler;
     }
 
-    private void configuraUiBuscaSemResultados() {
-        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(listaDeSegurosFrota.size(), recyclerView, listaVaziaLayout);
+    private void configuraUi() {
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
     }
 
     private void configuraRecycler(NavController controlador) {
-        recyclerView = binding.fragSegurosRecycler;
-
-        adapter = new SeguroFrotaAdapter(this, listaDeSegurosFrota);
+        adapter = new SeguroFrotaAdapter(this, getDataSet());
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener(seguro -> {
-            direction = SeguroFrotaFragmentDirections.actionNavSegurosFragmentToSeguroResumoFragment(((DespesaComSeguro) seguro).getId());
+        adapter.setOnItemClickListener(seguroId -> {
+            direction = SeguroFrotaFragmentDirections.actionNavSegurosFragmentToSeguroResumoFragment(seguroId, FROTA);
             controlador.navigate(direction);
         });
     }
@@ -166,7 +169,7 @@ public class SeguroFrotaFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaComSeguroFrota seguro = listaDeSegurosFrota.get(posicao);
+        DespesaComSeguroFrota seguro = dataSet.get(posicao);
 
         switch (item.getItemId()) {
             case R.id.visualizaParcelas:
@@ -188,95 +191,48 @@ public class SeguroFrotaFragment extends Fragment {
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Seguros");
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-        requireActivity().addMenuProvider(new MenuProvider() {
+        toolbarUtil = new ToolbarUtil(SEGUROS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    }
 
-            private SearchView search;
-            private MenuItem logout;
+    private void configuraMenuProvider() {
+        SeguroFrotaMenuProviderHelper menuProviderHelper = new SeguroFrotaMenuProviderHelper(getDataSet(), cavaloDao);
+        requireActivity().addMenuProvider(menuProviderHelper, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        menuProviderHelper.setCallbackMenuProvider(new SeguroFrotaMenuProviderHelper.CallbackMenuProvider() {
+            @Override
+            public void realizaBusca(List<DespesaComSeguroFrota> dataSet_search) {
+                ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet_search.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
+                adapter.atualiza(dataSet_search);
+            }
 
             @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                configuracaoInicialDeMenu(menu, menuInflater);
-                inicializaCamposDaToolbar(menu);
-                configuraUiAoClicarNaLupa();
-                configuraInteracaoComSearchView();
+            public void searchViewAtiva() {
+                toolbarUtil.setTitleAtivo(false);
             }
 
-            private void configuraInteracaoComSearchView() {
-
-                search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        List<DespesaComSeguroFrota> dataSet = new ArrayList<>();
-                        realizaBuscaNoBancoDeDados(newText, dataSet);
-                        configuraUiDuranteABusca(dataSet);
-                        return false;
-                    }
-
-                    private void realizaBuscaNoBancoDeDados(String newText, List<DespesaComSeguroFrota> lista) {
-                        for (DespesaComSeguroFrota d : getListaDeSegurosFrota()) {
-                            String placa = cavaloDao.localizaPeloId(d.getRefCavalo()).getPlaca();
-                            if (placa.toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
-                                lista.add(d);
-                            }
-                        }
-                    }
-
-                    private void configuraUiDuranteABusca(List<DespesaComSeguroFrota> lista) {
-                        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(lista.size(), recyclerView, listaVaziaLayout);
-                        adapter.atualiza(lista);
-                    }
-
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-                });
-            }
-
-            private void configuraUiAoClicarNaLupa() {
-                search.setOnSearchClickListener(v -> {
-                    logout.setVisible(false);
-                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(false);
-                });
-                search.setOnCloseListener(() -> {
-                    logout.setVisible(true);
-                    Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-                    return false;
-                });
-            }
-
-            private void inicializaCamposDaToolbar(@NonNull Menu menu) {
-                logout = menu.findItem(R.id.menu_padrao_logout);
-                MenuItem busca = menu.findItem(R.id.menu_padrao_search);
-                search = (SearchView) busca.getActionView();
-            }
-
-            private void configuracaoInicialDeMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_padrao, menu);
-                menu.removeItem(R.id.menu_padrao_editar);
-            }
-
-            @SuppressLint("NonConstantResourceId")
             @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case android.R.id.home:
-                        requireActivity().finish();
-                        break;
-                }
-                return false;
+            public void searchViewInativa() {
+                toolbarUtil.setTitleAtivo(true);
             }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
+            @Override
+            public void logoutClick() {
+                MensagemUtil.toast(requireContext(), LOGOUT);
+            }
+
+            @Override
+            public void homeClick() {
+                requireActivity().finish();
+            }
+        });
+    }
+    //----------------------------------------------------------------------------------------------
+    //                                     Metodos Publicos                                       ||
+    //----------------------------------------------------------------------------------------------
+
+    public void solicitaAtualizacao(String msg) {
+        //Usado pela activity para solicitar atualizacao
+        atualizaAdapter(msg);
     }
 
 

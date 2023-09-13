@@ -20,18 +20,19 @@ import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecim
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdapter.ViewHolder> {
     private final List<CustosDeAbastecimento> dataSet;
     private final AreaMotoristaAbastecimentoFragment context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
 
     public AbastecimentoAdapter(AreaMotoristaAbastecimentoFragment context, List<CustosDeAbastecimento> dataSet) {
         this.context = context;
         this.dataSet = dataSet;
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -75,7 +76,7 @@ public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CustosDeAbastecimento abastecimento = dataSet.get(position);
         vincula(holder, abastecimento);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(abastecimento.getId()));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(abastecimento.getId()));
     }
 
     @Override

@@ -30,6 +30,6 @@ public interface RoomDespesaCertificadoDao {
     List<DespesaCertificado> listaPorTipo(TipoDespesa tipo);
 
     @Query("SELECT * FROM despesaCertificado WHERE refCavaloId = :cavaloId")
-    List<DespesaCertificado> listaPorCavaloId(Integer cavaloId);
+    List<DespesaCertificado> listaPorCavaloId(Long cavaloId);
 
 }

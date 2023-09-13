@@ -61,17 +61,17 @@ public class CustosDePercursoDAO {
         return lista;
     }
 
-    public List<CustosDePercurso> listaPorCavalo(int cavaloId) {
+    public List<CustosDePercurso> listaPorCavalo(Long cavaloId) {
         List<CustosDePercurso> lista = new ArrayList<>();
         for (CustosDePercurso c : dao) {
-            if (c.getRefCavalo() == cavaloId) {
+            if (c.getRefCavaloId() == cavaloId) {
                 lista.add(c);
             }
         }
         return lista;
     }
 // esse cara VVVVVV
-    public List<CustosDePercurso> listaPorCavaloEAberto(int cavaloId) {
+    public List<CustosDePercurso> listaPorCavaloEAberto(Long cavaloId) {
         List<CustosDePercurso> listaPorPlaca = listaPorCavalo(cavaloId);
         List<CustosDePercurso> listaEmAberto = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class CustosDePercursoDAO {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<CustosDePercurso> listaFiltradaPorPlacaEData(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+    public List<CustosDePercurso> listaFiltradaPorPlacaEData(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
         List<CustosDePercurso> listaPorPlaca = listaPorCavalo(cavaloId);
         List<CustosDePercurso> lista = new ArrayList<>();
         for (CustosDePercurso c: listaPorPlaca) {

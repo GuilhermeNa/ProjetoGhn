@@ -1,6 +1,9 @@
 package br.com.transporte.AppGhn.ui.activity;
 
+import static br.com.transporte.AppGhn.model.enums.TipoDespesa.DIRETA;
+import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_TIPO_DESPESA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DESPESA_ADM;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,7 +38,6 @@ public class DespesasAdmActivity extends AppCompatActivity {
         StatusBarUtil.setStatusBarColor(this, getWindow());
         configuraFabs();
         configuraNavControler();
-
     }
 
     private void configuraNavControler() {
@@ -51,6 +53,7 @@ public class DespesasAdmActivity extends AppCompatActivity {
             animacaoFabs();
             Intent intent = new Intent(this, FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_DESPESA_ADM);
+            intent.putExtra(CHAVE_TIPO_DESPESA, DIRETA);
             startActivity(intent);
         });
 
@@ -58,11 +61,9 @@ public class DespesasAdmActivity extends AppCompatActivity {
             animacaoFabs();
             Intent intent = new Intent(this, FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_DESPESA_ADM);
+            intent.putExtra(CHAVE_TIPO_DESPESA, INDIRETA);
             startActivity(intent);
-
         });
-
-
     }
 
     private void animacaoFabs() {
@@ -91,9 +92,5 @@ public class DespesasAdmActivity extends AppCompatActivity {
         fabDireto = binding.fabDireta;
         fabIndireto = binding.fabIndireta;
     }
-
-
-
-
 
 }

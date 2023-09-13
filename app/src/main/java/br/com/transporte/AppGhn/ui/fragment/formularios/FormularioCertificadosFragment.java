@@ -44,14 +44,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCertificadosBinding;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
@@ -91,7 +88,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         certificadoDao = dataBase.getRoomDespesaCertificadoDao();
         cavaloDao = dataBase.getRoomCavaloDao();
         listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
-        int certificadoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long certificadoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
         certificado = (DespesaCertificado) criaOuRecuperaObjeto(certificadoId);
     }
@@ -213,7 +210,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         String subTitulo;
 
         if (tipoDespesa == DIRETA) {
-            String placa = cavaloDao.localizaPeloId(certificadoQueEstaSendoSubstituido.getRefCavalo()).getPlaca();
+            String placa = cavaloDao.localizaPeloId(certificadoQueEstaSendoSubstituido.getRefCavaloId()).getPlaca();
             subTitulo = SUB_TITULO_APP_BAR_RENOVANDO + " " + certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao() + PARA_A_PLACA + placa;
             placaAutoComplete.setText(placa);
 
@@ -244,7 +241,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if (tipoDespesa == DIRETA) {
-            String placa = cavaloDao.localizaPeloId(certificado.getRefCavalo()).getPlaca();
+            String placa = cavaloDao.localizaPeloId(certificado.getRefCavaloId()).getPlaca();
             placaAutoComplete.setText(placa);
         }
 
@@ -321,14 +318,14 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         if (tipoDespesa == DIRETA) {
-            int cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
-            certificado.setRefCavalo(cavaloId);
+            Long cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
+            certificado.setRefCavaloId(cavaloId);
             certificado.setTipoDespesa(DIRETA);
 
         } else {
-            certificado.setRefCavalo(0);
+            certificado.setRefCavaloId(0L);
             certificado.setTipoDespesa(INDIRETA);
 
         }
@@ -337,7 +334,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         if (getTipoFormulario() == RENOVANDO) {
             certificadoQueEstaSendoSubstituido.setValido(false);
         }
-        return 0;
+        return null;
     }
 
     private void configuraDropDownMenuDeCertificados() {
@@ -465,7 +462,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
         } else if (getTipoFormulario() == ADICIONANDO && tipoDespesa == DIRETA) {
 
-            Integer cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
+            Long cavaloId = cavaloDao.localizaPelaPlaca(placaAutoComplete.getText().toString()).getId();
 
             List<DespesaCertificado> listaDeCertificadosPorCavalo = certificadoDao.listaPorCavaloId(cavaloId);
 

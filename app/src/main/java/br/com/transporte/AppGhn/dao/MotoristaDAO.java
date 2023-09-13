@@ -12,7 +12,7 @@ public class MotoristaDAO {
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(Motorista motorista) {
+   /* public void adiciona(Motorista motorista) {
         dao.add(motorista);
         motorista.setId(contadorDeIds);
         contadorDeIds++;
@@ -31,7 +31,7 @@ public class MotoristaDAO {
         if(motoristaEncontrado != null){
             dao.remove(motoristaEncontrado);
         }
-    }
+    }*/
 
     //---------------------------------- Retorna Listas ---------------------------------------------
 

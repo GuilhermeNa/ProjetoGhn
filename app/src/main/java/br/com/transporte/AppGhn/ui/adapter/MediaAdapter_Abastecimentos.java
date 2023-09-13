@@ -73,7 +73,8 @@ public class MediaAdapter_Abastecimentos extends RecyclerView.Adapter<MediaAdapt
         holder.dataTxt.setText(data);
 
         String marcacaoKm = FormataNumerosUtil.formataNumero(abastecimento.getMarcacaoKm());
-        String marcacaoKmFormatada = R.string.km + " " + marcacaoKm;
+
+        String marcacaoKmFormatada = "Km " + marcacaoKm;
         holder.kmTxt.setText(marcacaoKmFormatada);
     }
 

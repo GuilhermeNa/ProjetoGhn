@@ -42,11 +42,24 @@ public class FiltraDespesasSeguro {
                 .collect(Collectors.toList());
     }
 
+    public static List<DespesaComSeguroFrota> listaFrota_ano(List<DespesaComSeguroFrota> dataSet, int ano){
+        return dataSet.stream()
+                .filter(s -> s.getData().getYear() == ano)
+                .collect(Collectors.toList());
+    }
+
+
     @NonNull
     public static List<DespesaComSeguroDeVida> listaVida_valida() {
         return Collections.singletonList((DespesaComSeguroDeVida) dao.listaTodos().stream()
                 .filter(d -> d instanceof DespesaComSeguroDeVida && d.isValido())
                 .collect(Collectors.toList()));
+    }
+
+    public static List<DespesaComSeguroDeVida> listaVida_ano(@NonNull List<DespesaComSeguroDeVida> dataSet, int ano){
+        return dataSet.stream()
+                .filter(s -> s.getData().getYear() == ano)
+                .collect(Collectors.toList());
     }
 
 }

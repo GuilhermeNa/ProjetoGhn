@@ -13,7 +13,7 @@ public class SemiReboqueDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(SemiReboque sr){
+  /*  public void adiciona(SemiReboque sr){
         dao.add(sr);
         sr.setId(contadorDeIds);
         contadorDeIds++;
@@ -32,7 +32,7 @@ public class SemiReboqueDAO {
             int posicaoSr = dao.indexOf(srEncontrado);
             dao.set(posicaoSr, sr);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------

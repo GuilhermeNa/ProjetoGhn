@@ -35,9 +35,9 @@ public class FiltraCustosPercurso {
 
     }
 
-    public static List<CustosDePercurso> listaPorCavaloId(@NonNull List<CustosDePercurso> dataSet, int cavaloId) {
+    public static List<CustosDePercurso> listaPorCavaloId(@NonNull List<CustosDePercurso> dataSet, Long cavaloId) {
         return dataSet.stream()
-                .filter(c -> c.getRefCavalo() == cavaloId)
+                .filter(c -> c.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 

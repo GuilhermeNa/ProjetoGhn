@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.freteReceber;
 
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,11 +27,12 @@ import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
+import org.jetbrains.annotations.Contract;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -42,8 +44,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
@@ -53,6 +53,7 @@ import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.adapter.FreteAReceberPagoAdapter;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 
 public class FreteAReceberPagosFragment extends Fragment implements MenuProvider {
     public static final String FRETE_RECEBIDO = "Frete Recebido";
@@ -61,17 +62,47 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
     private FreteAReceberPagoAdapter adapter;
     private TextView dataInicialTxt, dataFinalTxt;
     private LinearLayout dataLayout, buscaVazia;
-    private List<Frete> listaFiltrada;
+    private List<Frete> dataSet_freteRecebido;
     private RecyclerView recyclerView;
     private RoomFreteDao freteDao;
     private GhnDataBase dataBase;
 
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create                                         ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        inicializaDataBase();
+        atualizaData_inicialEFinal();
+        atualizaDataSet();
+    }
+
+    private void atualizaData_inicialEFinal() {
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
+    }
+
+    private void inicializaDataBase() {
         dataBase = GhnDataBase.getInstance(requireContext());
         freteDao = dataBase.getRoomFreteDao();
     }
+
+    private void atualizaDataSet() {
+        dataSet_freteRecebido = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
+        dataSet_freteRecebido = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(dataSet_freteRecebido, true);
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<Frete> getDataSet() {
+        return new ArrayList<>(dataSet_freteRecebido);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -80,21 +111,18 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-
-
-        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
-        listaFiltrada = getListaPagos();
-
         configuraToolbar();
         configuraRecycler();
         configuraUi();
         configuraDateRangePicker();
-
     }
 
     private void configuraToolbar() {
@@ -142,21 +170,13 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
     }
 
     private void configuraMudancasAposSelecaoDeData() {
-        listaFiltrada = getListaPagos();
+        atualizaDataSet();
         configuraUi();
-        adapter.atualiza(listaFiltrada);
+        adapter.atualiza(getDataSet());
     }
 
     private void configuraUi() {
-
-        if (listaFiltrada.isEmpty()) {
-            buscaVazia.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
-        } else if (buscaVazia.getVisibility() == View.VISIBLE) {
-            buscaVazia.setVisibility(View.INVISIBLE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet_freteRecebido.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
         configuraUiMutavel();
     }
 
@@ -173,26 +193,15 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
         buscaVazia = binding.buscaVazia;
     }
 
-    private List<Frete> getListaPagos() {
-        List<Frete> listaFretes = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
-        // listaFretes = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(listaFretes, true);
-        return listaFretes;
-    }
-
     private void configuraRecycler() {
-        adapter = new FreteAReceberPagoAdapter(this, listaFiltrada);
-
+        adapter = new FreteAReceberPagoAdapter(this, getDataSet());
         recyclerView.setAdapter(adapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
         NavController controlador = Navigation.findNavController(requireView());
-        adapter.setOnItemClickListener(frete -> {
-            NavDirections direction = FreteAReceberPagosFragmentDirections.actionNavFreteReceberPagoToNavFreteAReceberResumo(((Frete) frete).getId());
+        adapter.setOnItemClickListener(freteId -> {
+            NavDirections direction = FreteAReceberPagosFragmentDirections.actionNavFreteReceberPagoToNavFreteAReceberResumo(freteId);
             controlador.navigate(direction);
         });
-
     }
 
     @Override
@@ -221,36 +230,25 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
                 RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
                 String placa;
 
-                List<Frete> listaFretes = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
-               // listaFretes = FiltraFrete.listaPorStatusDeRecebimentoDoFrete(listaFretes, true);
-
-                for (Frete f : listaFretes) {
+                for (Frete f : getDataSet()) {
                     placa = cavaloDao.localizaPeloId(f.getRefCavaloId()).getPlaca().toUpperCase(Locale.ROOT);
                     if (placa.contains(newText.toUpperCase(Locale.ROOT))) {
                         lista.add(f);
                     }
                 }
 
-                if (lista.isEmpty()) {
-                    buscaVazia.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.INVISIBLE);
-                } else {
-                    if (buscaVazia.getVisibility() == View.VISIBLE) {
-                        buscaVazia.setVisibility(View.INVISIBLE);
-                        recyclerView.setVisibility(View.VISIBLE);
-                    }
-                    adapter.atualiza(lista);
-                }
+                ExibirResultadoDaBusca_sucessoOuAlerta.configura(lista.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
+                adapter.atualiza(lista);
                 return false;
             }
 
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-        });
+        @Override
+        public boolean onQueryTextSubmit (String query){
+            return false;
+        }
+    });
 
-    }
+}
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
@@ -259,7 +257,7 @@ public class FreteAReceberPagosFragment extends Fragment implements MenuProvider
         } else if (menuItem.getItemId() == android.R.id.home) {
             requireActivity().finish();
         }
-
         return false;
     }
+
 }

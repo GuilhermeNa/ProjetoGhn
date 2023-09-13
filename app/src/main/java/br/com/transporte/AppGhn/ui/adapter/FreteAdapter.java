@@ -19,20 +19,22 @@ import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class FreteAdapter extends RecyclerView.Adapter<FreteAdapter.ViewHolder> {
     public static final String DRAWABLE_DONE = "done";
     public static final String DRAWABLE_UNDONE = "undone";
     private final List<Frete> dataSet;
     private final AreaMotoristaFreteFragment context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
+
 
     public FreteAdapter(AreaMotoristaFreteFragment context, List<Frete> lista) {
         this.context = context;
         this.dataSet = lista;
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -76,7 +78,7 @@ public class FreteAdapter extends RecyclerView.Adapter<FreteAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull FreteAdapter.ViewHolder holder, int position) {
         Frete frete = dataSet.get(position);
         vincula(holder, frete);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(frete.getId()));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(frete.getId()));
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
@@ -85,13 +87,13 @@ public class FreteAdapter extends RecyclerView.Adapter<FreteAdapter.ViewHolder> 
         holder.destinoTxtView.setText(frete.getDestino());
         holder.cargaTxtView.setText(frete.getCarga());
         holder.empresaTxtView.setText(frete.getEmpresa());
-      /*  holder.freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
-        holder.descontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getDescontos()));
-        if (frete.getAdmFrete().isComissaoJaFoiPaga()) {
+        holder.freteBrutoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getFreteBruto()));
+        holder.descontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getDescontos()));
+        if (frete.isComissaoJaFoiPaga()) {
             holder.xvImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_DONE));
         } else {
             holder.xvImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_UNDONE));
-        }*/
+        }
     }
 
     @Override

@@ -30,9 +30,9 @@ import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 public class Adiantamento implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
-    private Integer refCavaloId;
-    private Integer refMotoristaId;
+    private Long id;
+    private Long refCavaloId;
+    private Long refMotoristaId;
 
     private LocalDate data;
     private BigDecimal valorTotal, saldoRestituido, ultimoValorAbatido;
@@ -40,7 +40,7 @@ public class Adiantamento implements Serializable {
     private boolean adiantamentoJaFoiPago;
 
     @Ignore
-    public Adiantamento(LocalDate data, BigDecimal valorTotal, String descricao, int refCavalo, Integer refMotorista) {
+    public Adiantamento(LocalDate data, BigDecimal valorTotal, String descricao, Long refCavalo, Long refMotorista) {
         this.data = data;
         this.valorTotal = valorTotal;
         this.descricao = descricao;
@@ -83,27 +83,27 @@ public class Adiantamento implements Serializable {
         this.descricao = descricao;
     }
 
-    public int getRefCavaloId() {
+    public Long getRefCavaloId() {
         return refCavaloId;
     }
 
-    public void setRefCavaloId(int refCavaloId) {
+    public void setRefCavaloId(Long refCavaloId) {
         this.refCavaloId = refCavaloId;
     }
 
-    public Integer getRefMotoristaId() {
+    public Long getRefMotoristaId() {
         return refMotoristaId;
     }
 
-    public void setRefMotoristaId(Integer refMotoristaId) {
+    public void setRefMotoristaId(Long refMotoristaId) {
         this.refMotoristaId = refMotoristaId;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

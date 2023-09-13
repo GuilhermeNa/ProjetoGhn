@@ -17,25 +17,20 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CERTIFICADOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.ATIVOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.TODOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.TODOS_E_ANO;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,45 +39,50 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import org.jetbrains.annotations.Contract;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosDiretosDetalhesBinding;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoDiretoAdapter;
-import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.CallbackCertificadoDialog;
+import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.DialogCertificadoDiretoDetalhe;
+import br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
+import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class CertificadoDiretosDetalhesFragment extends Fragment {
     public static final String CERTIFICADO_JA_RENOVADO = "Certificado já renovado";
     private FragmentCertificadosDiretosDetalhesBinding binding;
-    private List<DespesaCertificado> listaDeCertificados_Todos, listaDeCertificadosDiretos;
+    private List<DespesaCertificado> dataSet;
     private CertificadoDiretoAdapter adapter;
-    private DespesasCertificadoDAO certificadoDao;
+    private RoomDespesaCertificadoDao certificadoDao;
     private TextView motoristaTxtView;
+    private int anoDeRequisicao_dataSet;
     private Cavalo cavalo;
-    private int ano;
-
+    private LinearLayout buscaVazia;
+    private GhnDataBase dataBase;
+    private RecyclerView recycler;
+    private TipoDeRequisicao_dataSet tipoDeRequisicao_dataSet;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -90,7 +90,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
 
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaAdapter(REGISTRO_EDITADO);
+                        atualizaAdapterAposResultLauncher(REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
@@ -98,22 +98,18 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
                         break;
 
                     case RESULT_DELETE:
-                        atualizaAdapter(REGISTRO_APAGADO);
+                        atualizaAdapterAposResultLauncher(REGISTRO_APAGADO);
                         break;
 
                     case RESULT_UPDATE:
-                        atualizaAdapter(REGISTRO_RENOVADO);
+                        atualizaAdapterAposResultLauncher(REGISTRO_RENOVADO);
                 }
             });
-    private LinearLayout buscaVazia;
 
-    //------------------------------------------ Metodos Publicos ----------------------------------
-
-    public void atualizaAdapter(String msg) {
-        listaDeCertificados_Todos = getListaDeCertificadosPorCavalo();
-        listaDeCertificadosDiretos = getListaDeCertificados_Ativos();
-        atualizaUiRecycler();
-        Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
+    private void atualizaAdapterAposResultLauncher(String msg) {
+        atualizaDataSet();
+        solicitaAtualizacaoAdapter();
+        MensagemUtil.toast(requireContext(), msg);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -123,27 +119,47 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        inicializaDataBase();
+        tipoDeRequisicao_dataSet = ATIVOS;
         cavalo = recebeIdArguments();
-        certificadoDao = new DespesasCertificadoDAO();
-        listaDeCertificados_Todos = getListaDeCertificadosPorCavalo();
-        listaDeCertificadosDiretos = getListaDeCertificados_Ativos();
+        atualizaDataSet();
     }
 
-    private List<DespesaCertificado> getListaDeCertificadosPorCavalo() {
-        return certificadoDao.listaFiltradaPorCavalo(cavalo.getId());
+    private void inicializaDataBase() {
+        dataBase = GhnDataBase.getInstance(requireContext());
+        certificadoDao = dataBase.getRoomDespesaCertificadoDao();
     }
 
-    private List<DespesaCertificado> getListaDeCertificados_Ativos() {
-        return listaDeCertificados_Todos.stream()
-                .filter(DespesaCertificado::isValido)
-                .collect(Collectors.toList());
+    private void atualizaDataSet() {
+        // Atualiza o dataSet com base no tipo de solicitacao de busca que está em vigor,
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = FiltraDespesasCertificado.listaPorTipoDespesa(certificadoDao.listaPorCavaloId(cavalo.getId()), DIRETA);
+
+        switch (tipoDeRequisicao_dataSet){
+            case ATIVOS:
+                dataSet = FiltraDespesasCertificado.listaPorStatus(dataSet, true);
+            break;
+
+            case TODOS:
+                dataSet = FiltraDespesasCertificado.listaPorTipoDespesa(certificadoDao.listaPorCavaloId(cavalo.getId()), DIRETA);
+                break;
+
+            case TODOS_E_ANO:
+                dataSet = FiltraDespesasCertificado.listaPorAno(dataSet, anoDeRequisicao_dataSet);
+                break;
+        }
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesaCertificado> getDataSet() {
+        return new ArrayList<>(dataSet);
     }
 
     private Cavalo recebeIdArguments() {
-        CavaloDAO dao = new CavaloDAO();
-
-        int cavaloId = (int) CertificadoDiretosDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
-        cavalo = dao.localizaPeloId(cavaloId);
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+        Long cavaloId = CertificadoDiretosDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
+        cavalo = cavaloDao.localizaPeloId(cavaloId);
         return cavalo;
     }
 
@@ -169,34 +185,18 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         configuraRecycler();
         configuraUi();
         configuraToolbar();
+        configuraMenuProvider();
     }
 
-    private void configuraUi() {
-       if(cavalo.getMotorista() != null){
-           motoristaTxtView.setText(cavalo.getMotorista().getNome());
-       } else {
-           motoristaTxtView.setText(" ");
-       }
-
-        verificaSeListaEstaVazia(listaDeCertificadosDiretos, buscaVazia);
-    }
-
-    public void verificaSeListaEstaVazia(List<DespesaCertificado> lista, LinearLayout layout){
-        if (lista.isEmpty()) {
-            layout.setVisibility(View.VISIBLE);
-        } else if (!lista.isEmpty() && layout.getVisibility() == View.VISIBLE) {
-            layout.setVisibility(View.INVISIBLE);
-        }
+    private void inicializaCamposDaView() {
+        motoristaTxtView = binding.fragCertificadoDetalhesNome;
+        buscaVazia = binding.buscaVazia;
+        recycler = binding.fragCertificadoDetalhesRecycler;
     }
 
     private void configuraRecycler() {
-        RecyclerView recycler = binding.fragCertificadoDetalhesRecycler;
-
-        adapter = new CertificadoDiretoAdapter(this, listaDeCertificadosDiretos);
+        adapter = new CertificadoDiretoAdapter(this, getDataSet());
         recycler.setAdapter(adapter);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recycler.setLayoutManager(layoutManager);
 
         adapter.setOnItemClickListener(certificado -> {
             Intent intent = new Intent(this.requireActivity(), FormulariosActivity.class);
@@ -208,18 +208,25 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         });
     }
 
-    private void inicializaCamposDaView() {
-        motoristaTxtView = binding.fragCertificadoDetalhesNome;
-        buscaVazia = binding.buscaVazia;
+    private void configuraUi() {
+        if (cavalo.getRefMotoristaId() != null) {
+            RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
+            String nome = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
+            motoristaTxtView.setText(nome);
+        } else {
+            motoristaTxtView.setText(" ");
+        }
+
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(cavalo.getPlaca());
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        ToolbarUtil toolbarUtil = new ToolbarUtil(cavalo.getPlaca());
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    }
+
+    private void configuraMenuProvider() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -253,7 +260,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaCertificado certificado = listaDeCertificadosDiretos.get(posicao);
+        DespesaCertificado certificado = getDataSet().get(posicao);
 
         if (item.getItemId() == R.id.renovarCertificado && !certificado.isValido()) {
             Toast.makeText(this.requireContext(), CERTIFICADO_JA_RENOVADO, Toast.LENGTH_SHORT).show();
@@ -270,86 +277,42 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
+    //---------------------------------------------------------------------------------------
+
     private void showBottomDialog() {
-        final Dialog dialog = new Dialog(this.requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_layout_certificado);
-
-        SwitchMaterial switchExibicao = dialog.findViewById(R.id.switch_btn);
-        SwitchMaterial switchData = dialog.findViewById(R.id.switch_btn2);
-        TextView data = dialog.findViewById(R.id.ano);
-        ImageView cancelBtn = dialog.findViewById(R.id.cancelButton);
-        ImageView setaEsquerda = dialog.findViewById(R.id.esquerda);
-        ImageView setaDireita = dialog.findViewById(R.id.direita);
-        Button btnfiltrar = dialog.findViewById(R.id.btn_filtrar);
-        ConstraintLayout layoutSelecionaAno = dialog.findViewById(R.id.dialog_layout_data);
-        Animation animacima = AnimationUtils.loadAnimation(this.requireContext(), R.anim.slide_in);
-        Animation animabaixo = AnimationUtils.loadAnimation(this.requireContext(), R.anim.slide_out);
-
-        switchExibicao.setChecked(true);
-        String dataEmString = data.getText().toString();
-        ano = Integer.parseInt(dataEmString);
-        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
-
-        cancelBtn.setOnClickListener(v -> dialog.dismiss());
-
-        switchData.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                layoutSelecionaAno.setVisibility(View.VISIBLE);
-                layoutSelecionaAno.startAnimation(animacima);
-            } else {
-                layoutSelecionaAno.setVisibility(View.INVISIBLE);
-                layoutSelecionaAno.startAnimation(animabaixo);
-            }
-        });
-
-        setaEsquerda.setOnClickListener(v -> {
-            ano = ano - 1;
-            data.setText(String.valueOf(ano));
-        });
-
-        setaDireita.setOnClickListener(v -> {
-            if (ano < anoAtual) {
-                ano = ano + 1;
-                data.setText(String.valueOf(ano));
-            } else {
-                Toast.makeText(this.requireContext(), "Data limite para busca", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        btnfiltrar.setOnClickListener(v -> {
-            if (switchExibicao.isChecked() && switchData.isChecked()) {
-                listaDeCertificadosDiretos = listaDeCertificados_Todos.stream()
-                        .filter(c -> c.getDataDeEmissao().getYear() == ano)
-                        .collect(Collectors.toList());
-                atualizaUiRecycler();
-
-            } else if (switchExibicao.isChecked() && !switchData.isChecked()) {
-                listaDeCertificadosDiretos = getListaDeCertificadosPorCavalo();
-                Collections.sort(listaDeCertificadosDiretos, Comparator.comparing(DespesaCertificado::getDataDeEmissao));
-                atualizaUiRecycler();
-
-            } else {
-                listaDeCertificadosDiretos = getListaDeCertificados_Ativos();
-                atualizaUiRecycler();
-
-            }
-
-            dialog.dismiss();
-
-        });
-
+        DialogCertificadoDiretoDetalhe dialog = new DialogCertificadoDiretoDetalhe(requireContext());
         dialog.show();
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.setCallbackDialog(new CallbackCertificadoDialog() {
+            @Override
+            public void buscaPor_todosEAno(int ano) {
+                tipoDeRequisicao_dataSet = TODOS_E_ANO;
+                anoDeRequisicao_dataSet = ano;
+                atualizaDataSet();
+                solicitaAtualizacaoAdapter();
+            }
+
+            @Override
+            public void buscaPor_todos() {
+                tipoDeRequisicao_dataSet = TODOS;
+                anoDeRequisicao_dataSet = 0;
+                atualizaDataSet();
+                solicitaAtualizacaoAdapter();
+            }
+
+            @Override
+            public void buscaPor_ativos() {
+                tipoDeRequisicao_dataSet = ATIVOS;
+                anoDeRequisicao_dataSet = 0;
+                atualizaDataSet();
+                solicitaAtualizacaoAdapter();
+            }
+        });
     }
 
-    private void atualizaUiRecycler() {
-        adapter.atualiza(listaDeCertificadosDiretos);
-        verificaSeListaEstaVazia(listaDeCertificadosDiretos, buscaVazia);
+    private void solicitaAtualizacaoAdapter() {
+        adapter.atualiza(getDataSet());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
 }
+

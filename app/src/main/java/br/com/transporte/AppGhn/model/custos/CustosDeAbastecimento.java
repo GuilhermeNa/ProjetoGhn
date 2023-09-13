@@ -18,7 +18,7 @@ public class CustosDeAbastecimento extends Custos implements Serializable {
     private String posto;
 
     public CustosDeAbastecimento(LocalDate data, String posto, BigDecimal marcacaoKm, BigDecimal quantidadeLitros,
-                                 BigDecimal valorLitro, BigDecimal totalAbastecimento, TipoAbastecimento tipo, int refCavalo, boolean flagAbastecimentoTotal) {
+                                 BigDecimal valorLitro, BigDecimal totalAbastecimento, TipoAbastecimento tipo, Long refCavalo, boolean flagAbastecimentoTotal) {
         super.setData(data);
         this.posto = posto;
         this.marcacaoKm = marcacaoKm;
@@ -26,7 +26,7 @@ public class CustosDeAbastecimento extends Custos implements Serializable {
         this.valorLitro = valorLitro;
         super.setValorCusto(totalAbastecimento);
         this.tipo = tipo;
-        super.setRefCavalo(refCavalo);
+        super.setRefCavaloId(refCavalo);
         this.flagAbastecimentoTotal = flagAbastecimentoTotal;
     }
 

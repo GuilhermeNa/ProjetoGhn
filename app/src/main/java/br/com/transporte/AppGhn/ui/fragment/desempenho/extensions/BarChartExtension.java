@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.ui.fragment.desempenho.extensions;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
@@ -20,6 +22,7 @@ public abstract class BarChartExtension {
         return meses;
     }
 
+    @NonNull
     public static List<BigDecimal> removeValoresVaziosDaLista(List<BigDecimal> listaRecebida) {
         List<BigDecimal> listaDeDadosAtualizada = new ArrayList<>(listaRecebida);
 
@@ -50,10 +53,13 @@ public abstract class BarChartExtension {
         }
 
         @NonNull
-        public static List<BigDecimal> filtraListaParaExibicao ( int ano, TipoDeRequisicao tipo, int id){
+        public static List<BigDecimal> filtraListaParaExibicao (int ano, TipoDeRequisicao tipo, Long id, Context context){
             List<BigDecimal> listaInterna = new ArrayList<>();
+            BarCharCalculosExtension barCharCalculosExtension = new BarCharCalculosExtension(context);
 
-            HashMap<Integer, BigDecimal> mapComValoresMensaisCalculados = BarCharCalculosExtension.getHashMap_ChaveMes_ValorResultado(ano, tipo, id);
+            HashMap<Integer, BigDecimal> mapComValoresMensaisCalculados = barCharCalculosExtension.getHashMap_ChaveMes_ValorResultado(ano, tipo, id);
+
+
 
             for (int i = 0; i < mapComValoresMensaisCalculados.size(); i++) {
                 listaInterna.add(mapComValoresMensaisCalculados.get(i));

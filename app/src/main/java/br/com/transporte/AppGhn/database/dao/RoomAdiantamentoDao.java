@@ -23,6 +23,9 @@ public interface RoomAdiantamentoDao {
     List<Adiantamento> todos();
 
     @Query("SELECT * FROM adiantamento WHERE id = :adiantamentoId")
-    Adiantamento localizaPeloId(int adiantamentoId);
+    Adiantamento localizaPeloId(Long adiantamentoId);
+
+    @Query("SELECT * FROM adiantamento WHERE refCavaloId = :cavaloId")
+    List<Adiantamento> listaPorCavaloId(Long cavaloId);
 
 }

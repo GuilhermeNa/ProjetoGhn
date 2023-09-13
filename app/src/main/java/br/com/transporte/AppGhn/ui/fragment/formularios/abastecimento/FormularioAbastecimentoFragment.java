@@ -23,7 +23,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAbastecimentoBinding;
@@ -53,7 +52,7 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         super.onCreate(savedInstanceState);
         abastecimentoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosAbastecimentoDao();
 
-        int abastecimentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long abastecimentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(abastecimentoId);
         abastecimento = (CustosDeAbastecimento) criaOuRecuperaObjeto(abastecimentoId);
     }
@@ -100,7 +99,7 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Long idAbastecimento = (Long)id;
+        long idAbastecimento = (long)id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             abastecimento = abastecimentoDao.localizaPeloId(idAbastecimento);
         } else {
@@ -298,9 +297,9 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
-        abastecimento.setRefCavalo(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
+    public Long configuraObjetoNaCriacao() {
+        abastecimento.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
         abastecimento.setApenasAdmEdita(false);
-        return 0;
+        return null;
     }
 }

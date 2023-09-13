@@ -1,10 +1,12 @@
 package br.com.transporte.AppGhn.ui.fragment.despesasAdm;
 
+import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.SELECIONE_O_PERIODO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DESPESA_ADM;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -27,56 +29,87 @@ import androidx.core.util.Pair;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+
+import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaAdmDao;
 import br.com.transporte.AppGhn.databinding.FragmentDespesasAdmIndiretasBinding;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
-import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.DespesasAdmIndiretasAdapter;
-import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class DespesasAdmIndiretasFragment extends Fragment {
     public static final String DESPESAS_INDIRETAS = "Despesas indiretas";
     private FragmentDespesasAdmIndiretasBinding binding;
     private LocalDate dataInicial;
     private LocalDate dataFinal;
-    private DespesasAdmDAO despesaDao;
-    private List<DespesaAdm> listaDeDespesasIndiretas;
+    private RoomDespesaAdmDao despesaDao;
+    private List<DespesaAdm> dataSet;
     private TextView dataFinalTxtView, dataInicialTxtView, valorPagoTxtView;
-    private LinearLayout dataLayout;
-    private LinearLayout vazioLayout;
+    private LinearLayout dataLayout, buscaSemResultado_alerta;
     private RecyclerView recyclerView;
     private DespesasAdmIndiretasAdapter adapter;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        despesaDao = new DespesasAdmDAO();
-        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
-        listaDeDespesasIndiretas = getListaDespesasIndiretasFiltradaPorData(dataInicial, dataFinal);
+        inicializaDataBase();
+        configuraData();
+        atualizaDataSet();
     }
 
-    private List<DespesaAdm> getListaDespesasIndiretasFiltradaPorData(LocalDate dataInicial, LocalDate dataFinal) {
-        return despesaDao.listaFiltradaPorTipoEData(TipoDespesa.INDIRETA, dataInicial, dataFinal);
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = despesaDao.todos();
+        dataSet = FiltraDespesasAdm.listaPorTipo(dataSet, INDIRETA);
+        dataSet = FiltraDespesasAdm.listaPorData(dataSet, dataInicial, dataFinal);
     }
+
+    private void configuraData() {
+        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
+    }
+
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        despesaDao = dataBase.getRoomDespesaAdmDao();
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesaAdm> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -85,26 +118,22 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
         configuraRecycler();
-        configuraValoresMutaveisDaUi();
+        configuraUi();
         configuraDateRangePicker();
         configuraToolbar();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        listaDeDespesasIndiretas = getListaDespesasIndiretasFiltradaPorData(dataInicial, dataFinal);
-        configuraValoresMutaveisDaUi();
-        configuraAdapterAposAtualizarData();
-    }
-
-    private void configuraValoresMutaveisDaUi() {
-        BigDecimal somaTotalValorPago = listaDeDespesasIndiretas.stream()
+    private void configuraUi() {
+        BigDecimal somaTotalValorPago = dataSet.stream()
                 .map(DespesaAdm::getValorDespesa)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -115,23 +144,20 @@ public class DespesasAdmIndiretasFragment extends Fragment {
     }
 
     private void configuraRecycler() {
-        adapter = new DespesasAdmIndiretasAdapter(this, listaDeDespesasIndiretas);
+        adapter = new DespesasAdmIndiretasAdapter(this, getDataSet());
         recyclerView.setAdapter(adapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(despesa -> {
+        adapter.setOnItemClickListener(despesaId -> {
             Intent intent = new Intent(this.getContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_DESPESA_ADM);
-            intent.putExtra(CHAVE_ID, ((DespesaAdm) despesa).getId());
+            intent.putExtra(CHAVE_ID, (despesaId));
             startActivity(intent);
         });
     }
 
     private void inicializaCamposDaView() {
         recyclerView = binding.fragItemDespesasFinanceirasRecycler;
-        vazioLayout = binding.fragCertificadoVazio;
+        buscaSemResultado_alerta = binding.fragCertificadoVazio;
         valorPagoTxtView = binding.fragDespesasFinanceirasTotalPagoValor;
         dataLayout = binding.fragDespesasFinanceirasDataLayout;
         dataInicialTxtView = binding.fragDespesasFinanceirasMesDtInicial;
@@ -139,10 +165,10 @@ public class DespesasAdmIndiretasFragment extends Fragment {
     }
 
     private void configuraDateRangePicker() {
-        MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(
-                        new Pair(
+                        new Pair<>(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
                                 MaterialDatePicker.todayInUtcMilliseconds()
                         )
@@ -170,25 +196,16 @@ public class DespesasAdmIndiretasFragment extends Fragment {
     }
 
     private void configuraAdapterAposAtualizarData() {
-        listaDeDespesasIndiretas = getListaDespesasIndiretasFiltradaPorData(dataInicial, dataFinal);
-        configuraValoresMutaveisDaUi();
-        adapter.atualiza(listaDeDespesasIndiretas);
-
-        if (listaDeDespesasIndiretas.isEmpty()) {
-            vazioLayout.setVisibility(View.VISIBLE);
-        } else if (!listaDeDespesasIndiretas.isEmpty() && vazioLayout.getVisibility() == View.VISIBLE) {
-            vazioLayout.setVisibility(View.INVISIBLE);
-        }
-
+        atualizaDataSet();
+        configuraUi();
+        adapter.atualiza(getDataSet());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet.size(), buscaSemResultado_alerta, recyclerView, VIEW_INVISIBLE);
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(DESPESAS_INDIRETAS);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        ToolbarUtil toolbarUtil = new ToolbarUtil(DESPESAS_INDIRETAS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -202,7 +219,7 @@ public class DespesasAdmIndiretasFragment extends Fragment {
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), LOGOUT);
                         break;
 
                     case android.R.id.home:
@@ -214,5 +231,14 @@ public class DespesasAdmIndiretasFragment extends Fragment {
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnResume                                          ||
+    //----------------------------------------------------------------------------------------------
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        configuraAdapterAposAtualizarData();
+    }
 
 }

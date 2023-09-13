@@ -6,11 +6,20 @@ import java.math.RoundingMode;
 
 public class ObjetoTemporario_representaCavalo {
 
-    private int id;
+    private Long id;
     private static BigDecimal valorAcumulado = BigDecimal.ZERO;
     private String placa, nome;
     private BigDecimal valor, percentual;
 
+    public ObjetoTemporario_representaCavalo(String nome, String placa, Long id) {
+        this.nome = nome;
+        this.placa = placa;
+        this.id = id;
+    }
+
+    public ObjetoTemporario_representaCavalo() {
+
+    }
 
     public String getPlaca() {
         return placa;
@@ -44,11 +53,11 @@ public class ObjetoTemporario_representaCavalo {
         this.percentual = percentual;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

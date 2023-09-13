@@ -10,18 +10,20 @@ import br.com.transporte.AppGhn.util.ConverteDataUtil;
 public class ConversorLocalDate {
 
     @TypeConverter
-    public String paraString(LocalDate date){
-        return ConverteDataUtil.dataParaString(date);
+    public String paraString(LocalDate date) {
+        if (date != null)
+            return ConverteDataUtil.dataParaString(date);
+        else
+            return null;
     }
 
     @TypeConverter
-    public LocalDate paraDate(String date){
-        if(date != null){
+    public LocalDate paraDate(String date) {
+        if (date != null)
             return ConverteDataUtil.stringParaData(date);
-        }
-        return null;
+        else
+            return null;
     }
-
 
 
 }

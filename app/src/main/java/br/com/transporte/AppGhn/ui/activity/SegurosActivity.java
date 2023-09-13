@@ -11,6 +11,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGU
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -58,7 +59,7 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
                         case RESULT_OK:
 
                             if (Objects.requireNonNull(controlador.getCurrentDestination()).getId() == R.id.navSeguroFrota) {
-                                fragmentFrota.atualizaAdapter(REGISTRO_CRIADO);
+                                fragmentFrota.solicitaAtualizacao(REGISTRO_CRIADO);
                             } else {
                                 MensagemUtil.toast(this, REGISTRO_CRIADO);
                             }
@@ -192,8 +193,8 @@ public class SegurosActivity extends AppCompatActivity implements SegurosInforma
     }
 
     @Override
-    public void atualizaFrotaAdapter() {
-        fragmentFrota.atualizaLista();
+    public void atualizaFrotaAdapter(String msg) {
+        fragmentFrota.solicitaAtualizacao(msg);
     }
 
 }

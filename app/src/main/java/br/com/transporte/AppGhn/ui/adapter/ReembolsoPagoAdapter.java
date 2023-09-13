@@ -12,7 +12,6 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
@@ -21,11 +20,6 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
     public static final String VALOR_POSITIVO = "(+) ";
     private final ComissoesPagasDetalhesFragment context;
     private final List<CustosDePercurso> dataSet;
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.onItemClickListener = onItemClickListener;
-    }
 
     public ReembolsoPagoAdapter(ComissoesPagasDetalhesFragment context, List<CustosDePercurso> lista) {
         this.context = context;
@@ -38,12 +32,12 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView dataTxtView, valorReemboloTxtView;
+        private final TextView dataTxtView, valorReembolsoTxtView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             dataTxtView = itemView.findViewById(R.id.rec_item_pagos_reembolso_data);
-            valorReemboloTxtView = itemView.findViewById(R.id.rec_item_pagos_reembolso_valor);
+            valorReembolsoTxtView = itemView.findViewById(R.id.rec_item_pagos_reembolso_valor);
         }
     }
 
@@ -66,7 +60,6 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
     public void onBindViewHolder(@NonNull ReembolsoPagoAdapter.ViewHolder holder, int position) {
         CustosDePercurso custo = dataSet.get(position);
         vincula(holder, custo);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(custo));
     }
 
     @Override
@@ -77,7 +70,7 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
     private void vincula(@NonNull ViewHolder holder, @NonNull CustosDePercurso custo) {
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(custo.getData()));
         String custoFormatado = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(custo.getValorCusto());
-        holder.valorReemboloTxtView.setText(custoFormatado);
+        holder.valorReembolsoTxtView.setText(custoFormatado);
     }
 
 }

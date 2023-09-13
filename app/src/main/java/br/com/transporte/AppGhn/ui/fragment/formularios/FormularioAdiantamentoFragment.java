@@ -29,10 +29,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAdiantamentoBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
@@ -51,11 +50,13 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     private TextInputLayout dataLayout;
     private Cavalo cavalo;
     private TextView placa, motorista;
+    private GhnDataBase dataBase;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adiantamentoDao = GhnDataBase.getInstance(requireContext()).getRoomAdiantamentoDao();
+        dataBase = GhnDataBase.getInstance(requireContext());
+        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
     }
 
     @Nullable
@@ -71,25 +72,29 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         inicializaCamposDaView();
 
         cavalo = recebeReferenciaExternaDeCavalo();
-        int adiantamentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long adiantamentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(adiantamentoId);
         adiantamento = (Adiantamento) criaOuRecuperaObjeto(adiantamentoId);
 
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
         configuracoesAdicionaisUi();
-
     }
 
     private void configuracoesAdicionaisUi() {
         placa.setText(cavalo.getPlaca());
-        motorista.setText(cavalo.getMotorista().getNome());
+
+        try{
+            String nome = dataBase.getRoomMotoristaDao().localizaPeloId(cavalo.getRefMotoristaId()).getNome();
+            motorista.setText(nome);
+        } catch (NullPointerException ignore){
+            motorista.setText("S/M");
+        }
     }
 
     private Cavalo recebeReferenciaExternaDeCavalo() {
-        CavaloDAO cavaloDao = new CavaloDAO();
-        int cavaloId = getArguments().getInt(CHAVE_ID_CAVALO);
-
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+        Long cavaloId = getArguments().getLong(CHAVE_ID_CAVALO);
         return cavaloDao.localizaPeloId(cavaloId);
     }
 
@@ -105,7 +110,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        int adiantamentoId = (int) id;
+        Long adiantamentoId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             adiantamento = adiantamentoDao.localizaPeloId(adiantamentoId);
         } else {
@@ -122,7 +127,6 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public void alteraUiParaModoCriacao() {
-
     }
 
     @Override
@@ -165,12 +169,12 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         adiantamento.setAdiantamentoJaFoiPago(false);
         adiantamento.setRefCavaloId(cavalo.getId());
-        adiantamento.setRefMotoristaId(cavalo.getMotorista().getId());
+        adiantamento.setRefMotoristaId(cavalo.getRefMotoristaId());
         adiantamento.setSaldoRestituido(new BigDecimal(BigInteger.ZERO));
-        return 0;
+        return null;
     }
 
     @Override

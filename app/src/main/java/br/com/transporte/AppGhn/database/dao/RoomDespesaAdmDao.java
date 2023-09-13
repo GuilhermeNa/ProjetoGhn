@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 
 @Dao
@@ -19,5 +21,8 @@ public interface RoomDespesaAdmDao {
 
     @Query("SELECT * FROM despesaAdm WHERE id = :despesaId")
     DespesaAdm localizaPeloId(Long despesaId);
+
+    @Query("SELECT * FROM DespesaAdm")
+    List<DespesaAdm> todos();
 
 }

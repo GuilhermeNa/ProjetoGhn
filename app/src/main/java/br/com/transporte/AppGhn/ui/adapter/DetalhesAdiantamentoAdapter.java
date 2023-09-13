@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,16 +23,17 @@ import br.com.transporte.AppGhn.ui.adapter.listener.OnLongClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAdiantamentoAdapter.ViewHolder> {
     private final List<Adiantamento> dataSet;
-    private final ComissoesDetalhesFragment context;
-    private OnItemClickListener onItemClickListener;
+    private final Context context;
+    private OnItemClickListenerNew onItemClickListener;
     private OnLongClickListener onLongClickListener;
-    private final Map<Integer, BigDecimal> map;
+    private Map<Long, BigDecimal> map;
     private int posicao;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -39,7 +41,7 @@ public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAd
         this.onLongClickListener = onLongClickListener;
     }
 
-    public DetalhesAdiantamentoAdapter(List<Adiantamento> lista, ComissoesDetalhesFragment context, Map<Integer, BigDecimal> map) {
+    public DetalhesAdiantamentoAdapter(List<Adiantamento> lista, Context context, Map<Long, BigDecimal> map) {
         this.dataSet = lista;
         this.context = context;
         this.map = map;
@@ -75,7 +77,7 @@ public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAd
     @NonNull
     @Override
     public DetalhesAdiantamentoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context.getContext()).inflate(R.layout.recycler_comissoes_detalhes_item_adiantamento, parent, false);
+        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_comissoes_detalhes_item_adiantamento, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -91,7 +93,7 @@ public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAd
     }
 
     private void configuraListeners(@NonNull ViewHolder holder, Adiantamento adiantamento) {
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(adiantamento));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(adiantamento.getId()));
         holder.itemView.setOnLongClickListener(v -> {
             onLongClickListener.onLongClick(ComissoesDetalhesFragment.TipoDeAdapterPressionado.ADIANTAMENTO);
             setPosicao(holder.getAdapterPosition());
@@ -120,7 +122,9 @@ public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAd
     //------------------------------------- Metodos Publicos ---------------------------------------
 
     @SuppressLint("NotifyDataSetChanged")
-    public void atualizaMap() {
+    public void atualizaMap(Map<Long, BigDecimal> map) {
+        this.map.clear();
+        this.map = map;
         notifyDataSetChanged();
     }
 

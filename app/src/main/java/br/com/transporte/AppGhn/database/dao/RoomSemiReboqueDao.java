@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import br.com.transporte.AppGhn.model.SemiReboque;
 public interface RoomSemiReboqueDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void adiciona(SemiReboque sr);
+    long adiciona(SemiReboque sr);
 
     @Delete
     void deleta(SemiReboque sr);
@@ -23,8 +24,11 @@ public interface RoomSemiReboqueDao {
     List<SemiReboque> todos();
 
     @Query("SELECT * FROM semireboque WHERE refCavaloId = :cavaloId")
-    List<SemiReboque> listaPorCavaloId(int cavaloId);
+    List<SemiReboque> listaPorCavaloId(Long cavaloId);
 
     @Query("SELECT * FROM semireboque WHERE id = :srId")
-    SemiReboque localizaPeloId(int srId);
+    SemiReboque localizaPeloId(Long srId);
+
+    @Update
+    void substitui(SemiReboque reboque);
 }

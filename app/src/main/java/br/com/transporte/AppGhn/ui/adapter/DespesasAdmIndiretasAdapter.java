@@ -13,23 +13,23 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmIndiretasFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class DespesasAdmIndiretasAdapter extends RecyclerView.Adapter <DespesasAdmIndiretasAdapter.ViewHolder>{
     private final DespesasAdmIndiretasFragment context;
-    private final List<DespesaAdm> dataSet;
-    private OnItemClickListener onItemClickListener;
+    private final List<DespesaAdm> copiaDataSet;
+    private OnItemClickListenerNew onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 
     public DespesasAdmIndiretasAdapter(DespesasAdmIndiretasFragment context, List<DespesaAdm> lista) {
         this.context = context;
-        this.dataSet = lista;
+        this.copiaDataSet = lista;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -65,13 +65,13 @@ public class DespesasAdmIndiretasAdapter extends RecyclerView.Adapter <DespesasA
 
     @Override
     public void onBindViewHolder(@NonNull DespesasAdmIndiretasAdapter.ViewHolder holder, int position) {
-    DespesaAdm despesa = dataSet.get(position);
+    DespesaAdm despesa = copiaDataSet.get(position);
     vincula(holder, despesa);
-    holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(despesa));
+    holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(despesa.getId()));
 
     }
 
-    private void vincula(ViewHolder holder, DespesaAdm despesa) {
+    private void vincula(@NonNull ViewHolder holder, @NonNull DespesaAdm despesa) {
         holder.placaTxtView.setVisibility(View.GONE);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(despesa.getValorDespesa()));
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(despesa.getData()));
@@ -80,27 +80,27 @@ public class DespesasAdmIndiretasAdapter extends RecyclerView.Adapter <DespesasA
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return copiaDataSet.size();
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------
 
     @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<DespesaAdm> lista){
-        this.dataSet.clear();
-        this.dataSet.addAll(lista);
+        this.copiaDataSet.clear();
+        this.copiaDataSet.addAll(lista);
         notifyDataSetChanged();
     }
 
     public void adiciona(DespesaAdm despesaAdm) {
-        this.dataSet.add(despesaAdm);
+        this.copiaDataSet.add(despesaAdm);
         notifyItemInserted(getItemCount()-1);
     }
 
     public void remove(DespesaAdm despesaAdm){
         int posicao = -1;
-        posicao = this.dataSet.indexOf(despesaAdm);
-        this.dataSet.remove(despesaAdm);
+        posicao = this.copiaDataSet.indexOf(despesaAdm);
+        this.copiaDataSet.remove(despesaAdm);
         notifyItemRemoved(posicao);
     }
 

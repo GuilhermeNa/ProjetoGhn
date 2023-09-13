@@ -23,9 +23,14 @@ public interface RoomRecebimentoFreteDao {
     List<RecebimentoDeFrete> todos();
 
     @Query("SELECT * FROM recebimentoDeFrete WHERE id = :recebimentoId")
-    RecebimentoDeFrete localizaPeloId(long recebimentoId);
+    RecebimentoDeFrete localizaPeloId(Long recebimentoId);
 
     @Query("SELECT * FROM recebimentoDeFrete WHERE refFreteId = :freteId")
-    List<RecebimentoDeFrete> listaPorFreteId(long freteId);
+    List<RecebimentoDeFrete> listaPorFreteId(Long freteId);
+
+    @Query("SELECT * FROM recebimentoDeFrete WHERE tipoRecebimentoFrete = :tipo")
+    List<RecebimentoDeFrete> listaPorTipo(String tipo);
+
+
 
 }

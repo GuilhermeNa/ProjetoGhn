@@ -85,7 +85,7 @@ public class DespesasSeguroDAO {
         Log.d("teste", "Cavalo Id ->" +id);
         Optional<DespesaComSeguro> seguroOptional = dao.stream()
                 .filter(s -> s.getTipoDespesa() == DIRETA)
-                .filter(s -> s.getRefCavalo() == id)
+                .filter(s -> s.getRefCavaloId() == id)
                 .filter(DespesaComSeguro::isValido)
                 .findAny();
         Log.d("teste", "Optional ->" +seguroOptional);

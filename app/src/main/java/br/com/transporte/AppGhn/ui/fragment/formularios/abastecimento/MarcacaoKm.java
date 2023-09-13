@@ -25,7 +25,7 @@ public abstract class MarcacaoKm {
     private static BigDecimal ultimaMarcacao;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static boolean verificaMarcacaoKm(LocalDate dataASalvar, BigDecimal marcacaoASalvar, int cavaloId) throws MarcacaoKmInvalida, DataInvalida, RegistroDuplicado {
+    public static boolean verificaMarcacaoKm(LocalDate dataASalvar, BigDecimal marcacaoASalvar, Long cavaloId) throws MarcacaoKmInvalida, DataInvalida, RegistroDuplicado {
         List<CustosDeAbastecimento> listaPorCavalo = abastecimentoDao.listaPorCavalo(cavaloId);
         Comparator<CustosDeAbastecimento> ordenaPorDatas = Comparator.comparing(CustosDeAbastecimento::getData);
         Collections.sort(listaPorCavalo, ordenaPorDatas);

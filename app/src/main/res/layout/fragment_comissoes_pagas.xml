@@ -100,7 +100,8 @@
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/recycler_item_comissoes"/>
+                tools:listitem="@layout/recycler_item_comissoes"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
 
         </ScrollView>

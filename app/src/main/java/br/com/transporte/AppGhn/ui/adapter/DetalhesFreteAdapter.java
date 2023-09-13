@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,10 +24,10 @@ import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdapter.ViewHolder> {
     private final List<Frete> dataSet;
     private int posicao;
-    private final ComissoesDetalhesFragment context;
+    private final Context context;
     private OnLongClickListener onLongClickListener;
 
-    public DetalhesFreteAdapter(ComissoesDetalhesFragment context, List<Frete> lista) {
+    public DetalhesFreteAdapter(Context context, List<Frete> lista) {
         this.dataSet = lista;
         this.context = context;
     }
@@ -54,7 +55,7 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         }
 
         @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        public void onCreateContextMenu(@NonNull ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.add(Menu.NONE, R.id.editarComissao, Menu.NONE, R.string.editar_comissao);
         }
     }
@@ -66,7 +67,7 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
     @NonNull
     @Override
     public DetalhesFreteAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context.getContext()).inflate(R.layout.recycler_comissoes_detalhes_item_frete, parent, false);
+        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_comissoes_detalhes_item_frete, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -98,11 +99,11 @@ public class DetalhesFreteAdapter extends RecyclerView.Adapter<DetalhesFreteAdap
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
         holder.destinoTxtView.setText(frete.getDestino());
-        //holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getFreteBruto()));
-        //holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+        holder.freteTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getFreteBruto()));
+        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getComissaoAoMotorista()));
 
-        //String comissaoPercentual = R.string.comissao +" "+ frete.getAdmFrete().getComissaoPercentualAplicada() + " %";
-        //holder.comissaoPercentualTxtView.setText(comissaoPercentual);
+        String comissaoPercentual = "Comissão "+ frete.getComissaoPercentualAplicada() + " %";
+        holder.comissaoPercentualTxtView.setText(comissaoPercentual);
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

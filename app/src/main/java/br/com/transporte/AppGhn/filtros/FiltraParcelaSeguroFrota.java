@@ -9,18 +9,18 @@ import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.abstracts.Parcela;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
-public class FiltraParcelasSeguro {
+public class FiltraParcelaSeguroFrota {
     private static final ParcelaDeSeguroDAO dao = new ParcelaDeSeguroDAO();
 
     @NonNull
-    public static ParcelaDeSeguro localizaPeloId(int parcelaId) throws ObjetoNaoEncontrado {
-        ParcelaDeSeguro parcelaLocalizada = null;
+    public static Parcela_seguroFrota localizaPeloId(int parcelaId) throws ObjetoNaoEncontrado {
+        Parcela_seguroFrota parcelaLocalizada = null;
 
-        for (ParcelaDeSeguro p : dao.listaTodos()) {
+        for (Parcela_seguroFrota p : dao.listaTodos()) {
             if (p.getId() == parcelaId) {
                 parcelaLocalizada = p;
             }
@@ -34,37 +34,37 @@ public class FiltraParcelasSeguro {
 
     }
 
-    public static List<ParcelaDeSeguro> listaPeloIdDoSeguro(@NonNull List<ParcelaDeSeguro> dataSet, int seguroId) {
+    public static List<Parcela_seguroFrota> listaPeloIdDoSeguro(@NonNull List<Parcela_seguroFrota> dataSet, int seguroId) {
         return dataSet.stream()
                 .filter(p -> p.getRefSeguro() == seguroId)
                 .collect(Collectors.toList());
     }
 
-    public static List<ParcelaDeSeguro> listaPeloCavaloId(@NonNull List<ParcelaDeSeguro> dataSet, int cavaloId) {
+    public static List<Parcela_seguroFrota> listaPeloCavaloId(@NonNull List<Parcela_seguroFrota> dataSet, Long cavaloId) {
         return dataSet.stream()
                 .filter(p -> p.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-    public static List<ParcelaDeSeguro> listaPorAno(@NonNull List<ParcelaDeSeguro> dataSet, int ano){
+    public static List<Parcela_seguroFrota> listaPorAno(@NonNull List<Parcela_seguroFrota> dataSet, int ano){
         return dataSet.stream()
                 .filter(p -> p.getData().getYear() == ano)
                 .collect(Collectors.toList());
     }
 
-    public static List<ParcelaDeSeguro> listaPorTipo(@NonNull List<ParcelaDeSeguro> dataSet, TipoDespesa tipo){
+    public static List<Parcela_seguroFrota> listaPorTipo(@NonNull List<Parcela_seguroFrota> dataSet, TipoDespesa tipo){
         return dataSet.stream()
                 .filter(p -> p.getTipoDespesa() == tipo)
                 .collect(Collectors.toList());
     }
 
-    public static List<ParcelaDeSeguro> listaPorMes(@NonNull List<ParcelaDeSeguro> dataSet, int mes){
+    public static List<Parcela_seguroFrota> listaPorMes(@NonNull List<Parcela_seguroFrota> dataSet, int mes){
         return dataSet.stream()
                 .filter(p -> p.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());
     }
 
-    public static List<ParcelaDeSeguro> listaPorStatusDePagamento(@NonNull List<ParcelaDeSeguro> dataSet, boolean isPago){
+    public static List<Parcela_seguroFrota> listaPorStatusDePagamento(@NonNull List<Parcela_seguroFrota> dataSet, boolean isPago){
         if(isPago) return dataSet.stream()
                 .filter(Parcela::isPaga)
                 .collect(Collectors.toList());

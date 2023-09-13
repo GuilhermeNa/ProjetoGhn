@@ -18,67 +18,63 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDI
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CERTIFICADOS;
 import static br.com.transporte.AppGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment.CERTIFICADO_JA_RENOVADO;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.ATIVOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.TODOS;
+import static br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet.TODOS_E_ANO;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import org.jetbrains.annotations.Contract;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosIndiretosBinding;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoIndiretoAdapter;
-import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.CallbackCertificadoDialog;
+import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.DialogCertificadoIndireto;
+import br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
+import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class CertificadosIndiretosFragment extends Fragment {
-    public static final String DATA_LIMITE_PARA_BUSCA = "Data limite para busca";
     public static final String CERTIFICADOS = "Certificados";
     private FragmentCertificadosIndiretosBinding binding;
-    private List<DespesaCertificado> listaDeCertificadosIndiretos_Todos, listaDeCertificadosIndiretos;
+    private List<DespesaCertificado> dataSet;
     private CertificadoIndiretoAdapter adapter;
-    private DespesasCertificadoDAO certificadoDao;
+    private RoomDespesaCertificadoDao certificadoDao;
     private LinearLayout buscaVazia;
-    private int ano;
+    private TipoDeRequisicao_dataSet tipoDeRequisicao_dataSet;
+    private int anoDeRequisicao_dataSet;
+    private RecyclerView recycler;
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -91,7 +87,7 @@ public class CertificadosIndiretosFragment extends Fragment {
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
 
                     case RESULT_DELETE:
@@ -104,24 +100,12 @@ public class CertificadosIndiretosFragment extends Fragment {
                 }
             });
 
-    private List<DespesaCertificado> getListaDeTodosOsIndiretos() {
-        return certificadoDao.listaTodosOsCertificadosIndiretos();
-    }
-
-    @NonNull
-    private List<DespesaCertificado> getListaDeCertificadosIndiretos_Ativos() {
-        return listaDeCertificadosIndiretos_Todos.stream()
-                .filter(DespesaCertificado::isValido)
-                .collect(Collectors.toList());
-    }
-
     //------------------------------------- Metodos Publicos ---------------------------------------
 
     public void atualizaAdapter(String msg) {
-        Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
-        listaDeCertificadosIndiretos_Todos = getListaDeTodosOsIndiretos();
-        listaDeCertificadosIndiretos = getListaDeCertificadosIndiretos_Ativos();
+        atualizaDataSet();
         atualizaUiRecycler();
+        MensagemUtil.toast(requireContext(), msg);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -131,10 +115,33 @@ public class CertificadosIndiretosFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        certificadoDao = new DespesasCertificadoDAO();
-        listaDeCertificadosIndiretos_Todos = getListaDeTodosOsIndiretos();
-        listaDeCertificadosIndiretos = getListaDeCertificadosIndiretos_Ativos();
+        GhnDataBase database = GhnDataBase.getInstance(requireContext());
+        certificadoDao = database.getRoomDespesaCertificadoDao();
+        tipoDeRequisicao_dataSet = ATIVOS;
+        anoDeRequisicao_dataSet = 0;
+        atualizaDataSet();
+    }
 
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = certificadoDao.listaPorTipo(INDIRETA);
+        switch (tipoDeRequisicao_dataSet) {
+            case TODOS_E_ANO:
+                dataSet = FiltraDespesasCertificado.listaPorAno(dataSet, anoDeRequisicao_dataSet);
+                break;
+            case TODOS:
+                //Lista já vem com todos por padrão.
+                break;
+            case ATIVOS:
+                dataSet = FiltraDespesasCertificado.listaPorStatus(dataSet, true);
+                break;
+        }
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesaCertificado> getDataSet() {
+        return new ArrayList<>(dataSet);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -158,45 +165,37 @@ public class CertificadosIndiretosFragment extends Fragment {
         inicializaCamposDaView();
         configuraRecycler();
         configuraToolbar();
-        verificaSeListaEstaVazia(listaDeCertificadosIndiretos, buscaVazia);
+        configuraUi();
+    }
+
+    private void configuraUi() {
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     private void inicializaCamposDaView() {
         buscaVazia = binding.buscaVazia;
+        recycler = binding.recycler;
     }
 
     private void configuraRecycler() {
-        RecyclerView recyclerView = binding.recycler;
+        adapter = new CertificadoIndiretoAdapter(this, getDataSet());
+        recycler.setAdapter(adapter);
 
-        adapter = new CertificadoIndiretoAdapter(this, listaDeCertificadosIndiretos);
-        recyclerView.setAdapter(adapter);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(certificado -> {
+        adapter.setOnItemClickListener(certificadoId -> {
             Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_CERTIFICADOS);
-            intent.putExtra(CHAVE_ID, ((DespesaCertificado) certificado).getId());
+            intent.putExtra(CHAVE_ID, certificadoId);
             intent.putExtra(CHAVE_REQUISICAO, EDITANDO);
             intent.putExtra(CHAVE_DESPESA, INDIRETA);
             activityResultLauncher.launch(intent);
         });
     }
 
-    private void verificaSeListaEstaVazia(List<DespesaCertificado> lista, LinearLayout layout) {
-        if (lista.isEmpty()) {
-            layout.setVisibility(View.VISIBLE);
-        } else if (!lista.isEmpty() && layout.getVisibility() == View.VISIBLE) {
-            layout.setVisibility(View.INVISIBLE);
-        }
-    }
-
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaCertificado certificado = listaDeCertificadosIndiretos.get(posicao);
+        DespesaCertificado certificado = dataSet.get(posicao);
 
         if (item.getItemId() == R.id.renovarCertificado && !certificado.isValido()) {
             Toast.makeText(this.requireContext(), CERTIFICADO_JA_RENOVADO, Toast.LENGTH_SHORT).show();
@@ -215,12 +214,8 @@ public class CertificadosIndiretosFragment extends Fragment {
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(CERTIFICADOS);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-
+        ToolbarUtil toolbarUtil = new ToolbarUtil(CERTIFICADOS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -250,87 +245,39 @@ public class CertificadosIndiretosFragment extends Fragment {
     }
 
     private void showBottomDialog() {
-        final Dialog dialog = new Dialog(this.requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_layout_certificado);
-
-        SwitchMaterial switchExibicao = dialog.findViewById(R.id.switch_btn);
-        SwitchMaterial switchData = dialog.findViewById(R.id.switch_btn2);
-        TextView data = dialog.findViewById(R.id.ano);
-        ImageView cancelBtn = dialog.findViewById(R.id.cancelButton);
-        ImageView setaEsquerda = dialog.findViewById(R.id.esquerda);
-        ImageView setaDireita = dialog.findViewById(R.id.direita);
-        Button btnfiltrar = dialog.findViewById(R.id.btn_filtrar);
-        ConstraintLayout layoutSelecionaAno = dialog.findViewById(R.id.dialog_layout_data);
-        Animation animacima = AnimationUtils.loadAnimation(this.requireContext(), R.anim.slide_in);
-        Animation animabaixo = AnimationUtils.loadAnimation(this.requireContext(), R.anim.slide_out);
-
-        switchExibicao.setChecked(true);
-        String dataEmString = data.getText().toString();
-        ano = Integer.parseInt(dataEmString);
-        int anoAtual = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
-
-        cancelBtn.setOnClickListener(v -> dialog.dismiss());
-
-        switchData.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                layoutSelecionaAno.setVisibility(View.VISIBLE);
-                layoutSelecionaAno.startAnimation(animacima);
-            } else {
-                layoutSelecionaAno.setVisibility(View.INVISIBLE);
-                layoutSelecionaAno.startAnimation(animabaixo);
-            }
-        });
-
-        setaEsquerda.setOnClickListener(v -> {
-            ano = ano - 1;
-            data.setText(String.valueOf(ano));
-        });
-
-        setaDireita.setOnClickListener(v -> {
-            if (ano < anoAtual) {
-                ano = ano + 1;
-                data.setText(String.valueOf(ano));
-            } else {
-                Toast.makeText(this.requireContext(), DATA_LIMITE_PARA_BUSCA, Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-        btnfiltrar.setOnClickListener(v -> {
-            if (switchExibicao.isChecked() && switchData.isChecked()) {
-                listaDeCertificadosIndiretos = listaDeCertificadosIndiretos_Todos.stream()
-                        .filter(c -> c.getDataDeEmissao().getYear() == ano)
-                        .collect(Collectors.toList());
-                atualizaUiRecycler();
-
-            } else if (switchExibicao.isChecked() && !switchData.isChecked()) {
-                listaDeCertificadosIndiretos = getListaDeTodosOsIndiretos();
-                Collections.sort(listaDeCertificadosIndiretos, Comparator.comparing(DespesaCertificado::getDataDeEmissao));
-                atualizaUiRecycler();
-
-            } else {
-                listaDeCertificadosIndiretos = getListaDeCertificadosIndiretos_Ativos();
-                atualizaUiRecycler();
-
-            }
-
-            dialog.dismiss();
-
-        });
-
+        DialogCertificadoIndireto dialog = new DialogCertificadoIndireto(requireContext());
         dialog.show();
-        Objects.requireNonNull(dialog.getWindow()).setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.setCallbackDialog(new CallbackCertificadoDialog() {
+            @Override
+            public void buscaPor_todosEAno(int ano) {
+                tipoDeRequisicao_dataSet = TODOS_E_ANO;
+                anoDeRequisicao_dataSet = ano;
+                atualizaDataSet();
+                atualizaUiRecycler();
+            }
 
+            @Override
+            public void buscaPor_todos() {
+                tipoDeRequisicao_dataSet = TODOS;
+                anoDeRequisicao_dataSet = 0;
+                atualizaDataSet();
+                atualizaUiRecycler();
+            }
+
+            @Override
+            public void buscaPor_ativos() {
+                tipoDeRequisicao_dataSet = ATIVOS;
+                anoDeRequisicao_dataSet = 0;
+                atualizaDataSet();
+                atualizaUiRecycler();
+            }
+        });
 
     }
 
     private void atualizaUiRecycler() {
-        adapter.atualiza(listaDeCertificadosIndiretos);
-        verificaSeListaEstaVazia(listaDeCertificadosIndiretos, buscaVazia);
+        adapter.atualiza(getDataSet());
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
 }

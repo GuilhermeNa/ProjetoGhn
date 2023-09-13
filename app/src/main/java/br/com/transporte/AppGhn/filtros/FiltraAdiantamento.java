@@ -29,7 +29,7 @@ public class FiltraAdiantamento {
 
     }
 
-    public static List<Adiantamento> listaPorCavaloId(@NonNull List<Adiantamento> dataSet, int cavaloId) {
+    public static List<Adiantamento> listaPorCavaloId(@NonNull List<Adiantamento> dataSet, Long cavaloId) {
         return dataSet.stream()
                 .filter(adiantamento -> adiantamento.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());

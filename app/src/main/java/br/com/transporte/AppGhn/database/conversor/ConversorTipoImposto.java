@@ -22,69 +22,44 @@ import br.com.transporte.AppGhn.model.enums.TipoDeImposto;
 public class ConversorTipoImposto {
 
     @TypeConverter
-    public String paraString(@NonNull TipoDeImposto tipo){
-        switch (tipo){
-            case IRRF:
-                return tipo.getDescricao();
-
-            case INSS:
-
-            case FGTS:
-
-            case SIMPLES_NAC:
-
-            case IPVA:
-
-            case ICMS:
-
-            case ISS:
-
-            case PIS:
-
-            case PASEP:
-
-            case CSLL:
-
-            case COFINS:
-
-            case IPI:
-
-            case IRPJ:
-
-
-        }
-        return null;
+    public String paraString(TipoDeImposto tipo) {
+        if (tipo != null)
+            return tipo.getDescricao();
+        else
+            return null;
     }
 
     @TypeConverter
-    public TipoDeImposto paraTipo(@NonNull String tipo){
-        switch (tipo){
-            case "IRRF":
-                return IRRF;
-            case "INSS":
-                return INSS;
-            case "FGTS":
-                return FGTS;
-            case "SIMPLES_NAC":
-                return SIMPLES_NAC;
-            case "IPVA":
-                return IPVA;
-            case "ICMS":
-                return ICMS;
-            case "ISS":
-                return ISS;
-            case "PIS":
-                return PIS;
-            case "PASEP":
-                return PASEP;
-            case "CSLL":
-                return CSLL;
-            case "COFINS":
-                return COFINS;
-            case "IPI":
-                return IPI;
-            case "IRPJ":
-                return IRPJ;
+    public TipoDeImposto paraTipo(String tipo) {
+        if (tipo != null) {
+            switch (tipo) {
+                case "IRRF":
+                    return IRRF;
+                case "INSS":
+                    return INSS;
+                case "FGTS":
+                    return FGTS;
+                case "SIMPLES_NAC":
+                    return SIMPLES_NAC;
+                case "IPVA":
+                    return IPVA;
+                case "ICMS":
+                    return ICMS;
+                case "ISS":
+                    return ISS;
+                case "PIS":
+                    return PIS;
+                case "PASEP":
+                    return PASEP;
+                case "CSLL":
+                    return CSLL;
+                case "COFINS":
+                    return COFINS;
+                case "IPI":
+                    return IPI;
+                case "IRPJ":
+                    return IRPJ;
+            }
         }
         return null;
     }

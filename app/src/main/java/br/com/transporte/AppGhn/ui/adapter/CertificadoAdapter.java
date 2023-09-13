@@ -23,18 +23,21 @@ import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
 import br.com.transporte.AppGhn.util.ImagemUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.ViewHolder> {
     public static final int DIAS_MES = 30;
     public static final int DIAS_ANO = 365;
     public static final int DIAS_SEMANA = 7;
     private final CertificadosDiretosFragment context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
     private final List<Cavalo> dataSet;
     private static final int SITUACAO_OK = 0;
     private static final int SITUACAO_AVISO = 2;
@@ -46,7 +49,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
         this.context = context;
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -90,7 +93,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     }
 
     private void configuraListeners(@NonNull ViewHolder holder, Cavalo cavalo) {
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(cavalo.getId()));
     }
 
     private void configuraUi(@NonNull ViewHolder holder) {
@@ -136,8 +139,8 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     }
 
     private int verificaVencimentoDosCertificados(@NonNull Cavalo cavalo) {
-        DespesasCertificadoDAO certificado = new DespesasCertificadoDAO();
-        List<DespesaCertificado> listaTodosCertificadosDoCavalo = certificado.listaFiltradaPorCavalo(cavalo.getId());
+        RoomDespesaCertificadoDao certificadoDao = GhnDataBase.getInstance(context.requireContext()).getRoomDespesaCertificadoDao();
+        List<DespesaCertificado> listaTodosCertificadosDoCavalo = certificadoDao.listaPorCavaloId(cavalo.getId());
         int diasAteVencimento = 0;
 
         List<DespesaCertificado> listaDeCertificadosAtivos = listaTodosCertificadosDoCavalo.stream()

@@ -16,12 +16,12 @@ public class CustosDePercurso extends Custos implements Serializable {
     private TipoCustoDePercurso tipo;
 
     @Ignore
-    public CustosDePercurso(LocalDate data, BigDecimal valorCusto, String descricao, TipoCustoDePercurso tipo, Integer refCavalo) {
+    public CustosDePercurso(LocalDate data, BigDecimal valorCusto, String descricao, TipoCustoDePercurso tipo, Long refCavalo) {
         super.setData(data);
         super.setValorCusto(valorCusto);
         this.descricao = descricao;
         this.tipo = tipo;
-        super.setRefCavalo(refCavalo);
+        super.setRefCavaloId(refCavalo);
     }
 
     public CustosDePercurso() {}

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -35,7 +36,10 @@ import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.BottomLayoutDesempenhoBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.ui.adapter.viewpager.ViewPagerDesempenhoAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
@@ -55,6 +59,7 @@ public class BottomDialogDesempenho {
     private SwitchMaterial switchMaterial;
     private boolean validoParaFiltrar;
     private AutoCompleteTextView autoComplete;
+    private RoomCavaloDao cavaloDao;
 
     public void setCallback(Callback callback) {
         this.callback = callback;
@@ -63,13 +68,13 @@ public class BottomDialogDesempenho {
     public BottomDialogDesempenho(Context context, Fragment fragment) {
         this.context = context;
         this.fragment = fragment;
+        cavaloDao = GhnDataBase.getInstance(context).getRoomCavaloDao();
     }
 
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public void showBottomDialog() {
         final Dialog dialog = getDialog();
         configuraParametrosDeExibicaoDoDialog(dialog);
@@ -83,7 +88,7 @@ public class BottomDialogDesempenho {
 
     private void configuraRequisicaoDeFiltragem(Dialog dialog) {
         fragment.getChildFragmentManager().setFragmentResultListener(SELECIONA_TIPO, this.fragment, (requestKey, result) -> {
-            int cavaloId = getCavaloId();
+            Long cavaloId = getCavaloId();
 
             if (validoParaFiltrar) {
                 TipoDeRequisicao tipo = (TipoDeRequisicao) result.getSerializable(CHAVE_TIPO);
@@ -103,30 +108,27 @@ public class BottomDialogDesempenho {
         cancela.setOnClickListener(v -> dialog.dismiss());
     }
 
-    private int getCavaloId() {
+    @Nullable
+    private Long getCavaloId() {
         validoParaFiltrar = true;
 
         if (switchMaterial.isChecked()) {
             return verificaValidadeDaPlaca();
         } else {
-            return 0;
+            return 0L;
         }
     }
 
-    private int verificaValidadeDaPlaca() {
+    @Nullable
+    private Long verificaValidadeDaPlaca() {
         String placa = autoComplete.getText().toString();
 
         if (listaPlacas().contains(placa.toUpperCase(Locale.ROOT))) {
-
-            CavaloDAO cavaloDao = new CavaloDAO();
-            return cavaloDao.retornaCavaloAtravesDaPlaca(placa).getId();
-
+            return cavaloDao.localizaPelaPlaca(placa).getId();
         } else {
-
             MensagemUtil.toast(context, "Placa não encontrada.");
             validoParaFiltrar = false;
-            return 0;
-
+            return null;
         }
     }
 
@@ -164,15 +166,13 @@ public class BottomDialogDesempenho {
         String[] cavalos = listaPlacas().toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, cavalos);
         autoComplete.setAdapter(adapterCavalos);
-
     }
 
+    @NonNull
     private List<String> listaPlacas() {
-        CavaloDAO cavaloDao = new CavaloDAO();
-        return cavaloDao.listaPlacas();
+        return FiltraCavalo.listaDePlacas(cavaloDao.todos());
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraLayoutAno() {
         TextView anoTxtParaAnimacao = binding.anoAnimation;
         ImageView esquerdaImg = binding.esquerda;
@@ -186,7 +186,6 @@ public class BottomDialogDesempenho {
         clickDireita(anoTxtParaAnimacao, direitaImg, anoTxt, anoAtual);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void clickDireita(TextView anoTxtParaAnimacao, @NonNull ImageView direitaImg, TextView anoTxt, int anoAtual) {
         direitaImg.setOnClickListener(v -> {
             if (ano < anoAtual) {
@@ -206,7 +205,6 @@ public class BottomDialogDesempenho {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void clickEsquerda(TextView anoTxtParaAnimacao, @NonNull ImageView esquerdaImg, TextView anoTxt) {
         esquerdaImg.setOnClickListener(v -> {
             anoTxtParaAnimacao.setText(String.valueOf(ano));
@@ -221,7 +219,6 @@ public class BottomDialogDesempenho {
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void configuraAno(int ano, @NonNull TextView anoTxt) {
         this.ano = ano;
         String anoEmString = Integer.toString(this.ano);
@@ -272,7 +269,7 @@ public class BottomDialogDesempenho {
     }
 
     public interface Callback {
-        void filtragemConcluida(TipoDeRequisicao tipo, int ano, int cavaloId);
+        void filtragemConcluida(TipoDeRequisicao tipo, int ano, Long cavaloId);
     }
 
 

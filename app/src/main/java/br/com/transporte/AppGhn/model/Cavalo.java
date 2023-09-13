@@ -15,12 +15,13 @@ import br.com.transporte.AppGhn.model.abstracts.Frota;
         childColumns = "refMotoristaId",
         onUpdate = ForeignKey.CASCADE,
         onDelete = ForeignKey.SET_NULL
+
 ))
 public class Cavalo extends Frota {
     private String versao;
     private BigDecimal comissaoBase;
     private boolean valido;
-    private Integer refMotoristaId;
+    private Long refMotoristaId;
 
     //---------------------------------------------------------------------------------------------
     @Ignore
@@ -65,11 +66,11 @@ public class Cavalo extends Frota {
         this.versao = versao;
     }
 
-    public Integer getRefMotoristaId() {
+    public Long getRefMotoristaId() {
         return refMotoristaId;
     }
 
-    public void setRefMotoristaId(Integer refMotoristaId) {
+    public void setRefMotoristaId(Long refMotoristaId) {
         this.refMotoristaId = refMotoristaId;
     }
 

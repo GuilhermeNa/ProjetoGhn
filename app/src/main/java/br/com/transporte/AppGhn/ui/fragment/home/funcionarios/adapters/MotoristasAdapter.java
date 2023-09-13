@@ -15,21 +15,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment;
 import br.com.transporte.AppGhn.model.Motorista;
+import br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.ViewHolder> {
     private final FuncionariosFragment context;
     private List<Motorista> dataSet;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
 
     public MotoristasAdapter(FuncionariosFragment context, List<Motorista> lista) {
         this.context = context;
         this.dataSet = lista;
     }
 
-    public void setonItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setonItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -67,7 +67,7 @@ public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Motorista motorista = dataSet.get(position);
         vincula(holder, motorista);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(motorista.getId()));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(motorista.getId()));
     }
 
     @Override

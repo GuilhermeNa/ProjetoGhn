@@ -1,8 +1,12 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +19,15 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.math.BigDecimal;
 
+import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCavaloBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.tasks.cavalo.AdicionaCavaloTask;
+import br.com.transporte.AppGhn.tasks.cavalo.AtualizaCavaloTask;
+import br.com.transporte.AppGhn.tasks.cavalo.LocalizaCavaloTask;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 
 public class FormularioCavaloFragment extends FormularioBaseFragment {
@@ -27,16 +35,20 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de cavalo que já existe";
     private EditText placaEdit, versaoEdit, marcaEdit, anoEdit, modeloEdit, corEdit, renavamEdit, chassiEdit;
     private Cavalo cavalo;
-    private RoomCavaloDao cavaloDataBase;
+    private RoomCavaloDao cavaloDao;
     private EditText comissaoEdit;
+    private AtualizaCavaloTask atualizaCavaloTask;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDataBase = GhnDataBase.getInstance(requireContext()).getRoomCavaloDao();
+        GhnApplication application = new GhnApplication();
+        executorService = application.getExecutorService();
+        handler = application.getMainThreadHandler();
+        cavaloDao = GhnDataBase.getInstance(requireContext()).getRoomCavaloDao();
 
-        int cavaloId = verificaSeRecebeDadosExternos(CHAVE_ID_CAVALO);
+        long cavaloId = verificaSeRecebeDadosExternos(CHAVE_ID_CAVALO);
         defineTipoEditandoOuCriando(cavaloId);
         cavalo = (Cavalo) criaOuRecuperaObjeto(cavaloId);
     }
@@ -71,9 +83,15 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        int cavaloId = (Integer)id;
+        Long cavaloId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            cavalo = cavaloDataBase.localizaPeloId(cavaloId);
+            LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executorService, handler);
+            localizaCavaloTask.solicitaBusca(cavaloDao, cavaloId, cavaloRecebido -> {
+                        cavalo = cavaloRecebido;
+                        bind();
+                    }
+            );
+
         } else {
             cavalo = new Cavalo();
         }
@@ -137,23 +155,36 @@ public class FormularioCavaloFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        cavaloDataBase.adiciona(cavalo);
+        atualizaCavaloTask = new AtualizaCavaloTask(executorService, handler);
+        atualizaCavaloTask.solicitaAtualizacao(cavaloDao, cavalo, () -> {
+            requireActivity().setResult(RESULT_EDIT);
+            requireActivity().finish();
+        });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        cavaloDataBase.adiciona(cavalo);
+        AdicionaCavaloTask adicionaCavaloTask = new AdicionaCavaloTask(executorService, handler);
+        adicionaCavaloTask.solicitaAdicao(cavaloDao, cavalo, id -> {
+            requireActivity().setResult(RESULT_OK);
+            requireActivity().finish();
+        });
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         cavalo.setValido(true);
-        return 0;
+        return null;
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
         cavalo.setValido(false);
+        atualizaCavaloTask.solicitaAtualizacao(cavaloDao, cavalo, () -> {
+            requireActivity().setResult(RESULT_DELETE);
+            requireActivity().finish();
+        });
     }
+
 }

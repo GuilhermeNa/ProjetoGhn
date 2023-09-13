@@ -24,6 +24,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.Contract;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,35 +34,47 @@ import java.util.Objects;
 import java.util.Optional;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroFrotaDao;
 import br.com.transporte.AppGhn.model.Cavalo;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.ui.adapter.BottomSeguroParcelaAdapter;
 import br.com.transporte.AppGhn.ui.fragment.seguros.dialog.EditaParcelaDialog;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class ExibeParcelasFrotaDialog {
     private final Context context;
-    private final RoomParcelaSeguroDao parcelaDao;
+    private final RoomParcela_seguroFrotaDao parcelaDao;
     private final GhnDataBase dataBase;
     private HashMap<Integer, Boolean> mapComParcelas;
     private Button btn;
-    private List<ParcelaDeSeguro> listaDeparcelas;
+    private List<Parcela_seguroFrota> dataSet;
 
     public ExibeParcelasFrotaDialog(Context context) {
         this.context = context;
         dataBase = GhnDataBase.getInstance(context);
-        parcelaDao = dataBase.getRoomParcelaSeguroDao();
+        parcelaDao = dataBase.getRoomParcela_seguroFrotaDao();
     }
+
+    private void atualizaDataSet(@NonNull DespesaComSeguroFrota seguro) {
+        dataSet = parcelaDao.listaPeloSeguroId(seguro.getId());
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<Parcela_seguroFrota> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
 
     public void showBottomDialog(DespesaComSeguroFrota seguro) {
+        atualizaDataSet(seguro);
         final Dialog dialog = getDialog();
         inicializaCamposDaView(dialog);
         Cavalo cavalo = getCavalo(seguro);
@@ -73,7 +88,7 @@ public class ExibeParcelasFrotaDialog {
     private void configuraBtnPagar(DespesaComSeguroFrota seguro, Dialog dialog) {
         btn.setOnClickListener(v -> {
             boolean precisaBaixar = verificaSeExisteAlgumaParcelaASerBaixada();
-            if(precisaBaixar){
+            if (precisaBaixar) {
                 fazABaixaDaParcelaPaga(seguro);
             }
 
@@ -84,15 +99,19 @@ public class ExibeParcelasFrotaDialog {
     }
 
     private void fazABaixaDaParcelaPaga(DespesaComSeguroFrota seguro) {
-        List<ParcelaDeSeguro> listaDeParcelas = getListaDeparcelas(seguro);
+        //atualizaDataSet(seguro);
 
-        for(Map.Entry<Integer, Boolean> pair: mapComParcelas.entrySet()){
+        for (Map.Entry<Integer, Boolean> pair : mapComParcelas.entrySet()) {
             boolean estaParcelaPrecisaSerAlterada = pair.getValue();
 
-            if(estaParcelaPrecisaSerAlterada){
-               Optional<ParcelaDeSeguro> parcelaOptional = listaDeParcelas.stream()
-                       .filter(p -> p.getNumeroDaParcela() == pair.getKey()).findFirst();
-                parcelaOptional.ifPresent(p -> p.setPaga(true));
+            if (estaParcelaPrecisaSerAlterada) {
+                Optional<Parcela_seguroFrota> parcelaOptional = getDataSet().stream()
+                        .filter(p -> p.getNumeroDaParcela() == pair.getKey()).findFirst();
+                parcelaOptional.ifPresent(p -> {
+                            p.setPaga(true);
+                            parcelaDao.substitui(p);
+                        }
+                );
             }
         }
     }
@@ -125,7 +144,7 @@ public class ExibeParcelasFrotaDialog {
 
     private Cavalo getCavalo(@NonNull DespesaComSeguroFrota seguro) {
         RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        return cavaloDao.localizaPeloId(seguro.getRefCavalo());
+        return cavaloDao.localizaPeloId(seguro.getRefCavaloId());
     }
 
     @NonNull
@@ -138,9 +157,8 @@ public class ExibeParcelasFrotaDialog {
 
     private void configuraRecyclerDialog(DespesaComSeguroFrota seguro, @NonNull Dialog dialog) {
         RecyclerView recyclerDialog = dialog.findViewById(R.id.recycler_pagamento_seguro);
-        listaDeparcelas = getListaDeparcelas(seguro);
 
-        BottomSeguroParcelaAdapter adapterParcela = new BottomSeguroParcelaAdapter(listaDeparcelas, context);
+        BottomSeguroParcelaAdapter adapterParcela = new BottomSeguroParcelaAdapter(getDataSet(), context);
         recyclerDialog.setAdapter(adapterParcela);
 
         adapterParcela.setOnItemCLickListener(new BottomSeguroParcelaAdapter.OnItemCLickListener() {
@@ -155,29 +173,25 @@ public class ExibeParcelasFrotaDialog {
             }
 
             @Override
-            public void onItemClick(ParcelaDeSeguro parcela) {
+            public void onItemClick(Parcela_seguroFrota parcela) {
                 EditaParcelaDialog dialogParcela = new EditaParcelaDialog(context, parcela);
                 dialogParcela.dialogEditaParcela();
 
                 dialogParcela.setCallback(new EditaParcelaDialog.Callback() {
                     @Override
                     public void quandoFunciona() {
-                        listaDeparcelas = getListaDeparcelas(seguro);
-                        adapterParcela.atualiza(listaDeparcelas);
-                        Toast.makeText(context, REGISTRO_ALTERADO, Toast.LENGTH_SHORT).show();
+                        atualizaDataSet(seguro);
+                        adapterParcela.atualiza(getDataSet());
+                        MensagemUtil.toast(context, REGISTRO_ALTERADO);
                     }
 
                     @Override
                     public void quandoFalha() {
-                        Toast.makeText(context, NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(context, NENHUMA_ALTERACAO_REALIZADA);
                     }
                 });
             }
         });
-    }
-
-    private List<ParcelaDeSeguro> getListaDeparcelas(@NonNull DespesaComSeguroFrota seguro) {
-        return parcelaDao.listaPeloSeguroId(seguro.getId());
     }
 
     private void configuraVisualizacaoDoBtn(Button btn, Animation animaCima, Animation animaBaixo, boolean atualizacaoNecessaria) {

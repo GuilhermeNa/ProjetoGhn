@@ -20,7 +20,7 @@ public class DespesaCertificado extends Despesas {
 
     @Ignore
     public DespesaCertificado(TipoCertificado tipoCertificado, String ano, long numeroDoDocumento, LocalDate dataDeEmissao,
-                              LocalDate dataDeVencimento, int refCaminhao, BigDecimal valorDespesa,
+                              LocalDate dataDeVencimento, Long refCaminhao, BigDecimal valorDespesa,
                               TipoDespesa tipoDespesa, boolean valido) {
         this.tipoCertificado = tipoCertificado;
         this.ano = ano;
@@ -28,7 +28,7 @@ public class DespesaCertificado extends Despesas {
         this.dataDeEmissao = dataDeEmissao;
         this.dataDeVencimento = dataDeVencimento;
         super.setValorDespesa(valorDespesa);
-        super.setRefCavalo(refCaminhao);
+        super.setRefCavaloId(refCaminhao);
         super.setTipoDespesa(tipoDespesa);
         this.valido = valido;
     }

@@ -11,6 +11,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ABASTECIMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment.KEY_ACTION_ADAPTER;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,12 +32,14 @@ import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaAbastecimentoBinding;
 import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
 import br.com.transporte.AppGhn.model.Cavalo;
@@ -52,16 +55,17 @@ import br.com.transporte.AppGhn.util.MensagemUtil;
 public class AreaMotoristaAbastecimentoFragment extends Fragment implements DateRangePickerUtil.CallbackDatePicker {
     private FragmentAreaMotoristaAbastecimentoBinding binding;
     private AbastecimentoAdapter adapter;
-    private CustosDeAbastecimentoDAO abastecimentoDao;
+    private RoomCustosAbastecimentoDao abastecimentoDao;
     private TextView dataInicialTxt, dataFinalTxt, abastecimentoAcumuladoTxt;
     private LocalDate dataInicial, dataFinal;
     private LinearLayout dataLayout, buscaVazia;
-    private List<CustosDeAbastecimento> listaDeAbastecimentos;
+    private List<CustosDeAbastecimento> dataSetAbastecimento;
     private Cavalo cavalo;
     private DateRangePickerUtil dateRange;
     private RecyclerView recycler;
     private boolean atualizacaoSolicitadaPelaActivity = false;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
+    private GhnDataBase dataBase;
 
     @NonNull
     @Contract(pure = true)
@@ -79,7 +83,7 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
                             break;
 
                         case RESULT_CANCELED:
-                            atualizaAposResultado(NENHUMA_ALTERACAO_REALIZADA);
+                            MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                             break;
 
                         case RESULT_DELETE:
@@ -93,10 +97,26 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     }
 
     private void atualizaAposResultado(String msg) {
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
-        adapter.atualiza(listaDeAbastecimentos);
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(dataSetAbastecimento);
         MensagemUtil.toast(requireContext(), msg);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetAbastecimento.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
+
+    private void atualizaDataSet(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataSetAbastecimento == null) dataSetAbastecimento = new ArrayList<>();
+        dataSetAbastecimento.clear();
+        dataSetAbastecimento.addAll(abastecimentoDao.listaPorCavaloId(cavaloId));
+        dataSetAbastecimento = FiltraCustosAbastecimento.listaPorData(dataSetAbastecimento, dataInicial, dataFinal);
+        dataSetAbastecimento.sort(Comparator.comparing(CustosDeAbastecimento::getMarcacaoKm));
+        Collections.reverse(dataSetAbastecimento);
+    }
+
+    @NonNull
+    private List<CustosDeAbastecimento> getDataSetAbastecimento() {
+        return new ArrayList<>(dataSetAbastecimento);
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -105,31 +125,23 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        abastecimentoDao = new CustosDeAbastecimentoDAO();
+        dataBase = GhnDataBase.getInstance(requireContext());
+        abastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
         configuracaoInicialDateRange();
-        configuracaoInicialListaDeAbastecimentos();
+        configuracaoInicialDataSet();
     }
 
-    private void configuracaoInicialListaDeAbastecimentos() {
-        CavaloDAO cavaloDao = new CavaloDAO();
-        int cavaloId = requireArguments().getInt(CHAVE_ID_CAVALO);
+    private void configuracaoInicialDataSet() {
+        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+        Long cavaloId = requireArguments().getLong(CHAVE_ID_CAVALO);
         cavalo = cavaloDao.localizaPeloId(cavaloId);
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
+        atualizaDataSet(cavaloId, dataInicial, dataFinal);
     }
 
     private void configuracaoInicialDateRange() {
         dateRange = new DateRangePickerUtil(getParentFragmentManager());
         dataInicial = dateRange.getDataInicialEmLocalDate();
         dataFinal = dateRange.getDataFinalEmLocalDate();
-    }
-
-    @NonNull
-    private List<CustosDeAbastecimento> getListaDeAbastecimentos(@NonNull Cavalo cavalo) {
-        List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.listaTodos(), cavalo.getId());
-        dataSet = FiltraCustosAbastecimento.listaPorData(dataSet, dataInicial, dataFinal);
-        dataSet.sort(Comparator.comparing(CustosDeAbastecimento::getMarcacaoKm));
-        Collections.reverse(dataSet);
-        return dataSet;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -175,18 +187,16 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     //-------------------------------------
 
     private void configuraRecycler() {
-        adapter = new AbastecimentoAdapter(this, listaDeAbastecimentos);
+        adapter = new AbastecimentoAdapter(this, dataSetAbastecimento);
         recycler.setAdapter(adapter);
-        configuraRecyclerListener();
+        adapter.setOnItemClickListener(this::configuraRecyclerListener);
     }
 
-    private void configuraRecyclerListener() {
-        adapter.setOnItemClickListener((idAbastecimento) -> {
-            Intent intent = new Intent(getActivity(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_ID, (Integer) idAbastecimento);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_ABASTECIMENTO);
-            activityResultLauncher.launch(intent);
-        });
+    private void configuraRecyclerListener(long abastecimentoId) {
+        Intent intent = new Intent(getActivity(), FormulariosActivity.class);
+        intent.putExtra(CHAVE_ID, abastecimentoId);
+        intent.putExtra(CHAVE_FORMULARIO, VALOR_ABASTECIMENTO);
+        activityResultLauncher.launch(intent);
     }
 
     //--------------------------------
@@ -196,11 +206,11 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     private void configuraUi() {
         ui_data();
         ui_totalAbastecimento();
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeAbastecimentos.size(), buscaVazia, recycler, "INVISIBLE");
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetAbastecimento.size(), buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
     private void ui_totalAbastecimento() {
-        BigDecimal somaAbastecimento = CalculoUtil.somaCustosDeAbastecimento(listaDeAbastecimentos);
+        BigDecimal somaAbastecimento = CalculoUtil.somaCustosDeAbastecimento(dataSetAbastecimento);
         abastecimentoAcumuladoTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaAbastecimento));
     }
 
@@ -216,7 +226,7 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
             atualizaUi();
             resetaSolicitacaoDeAtualizacao();
             ui_totalAbastecimento();
-            ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaDeAbastecimentos.size(), buscaVazia, recycler, "INVISIBLE");
+            ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetAbastecimento.size(), buscaVazia, recycler, "INVISIBLE");
         }
     }
 
@@ -225,8 +235,8 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     }
 
     private void atualizaUi() {
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
-        adapter.atualiza(listaDeAbastecimentos);
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSetAbastecimento());
     }
 
     //----------------------------------------------------------------------------------------------
@@ -245,8 +255,8 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment implements Date
     public void selecionaDataComSucesso(LocalDate dataInicial, LocalDate dataFinal) {
         this.dataInicial = dataInicial;
         this.dataFinal = dataFinal;
-        listaDeAbastecimentos = getListaDeAbastecimentos(cavalo);
-        adapter.atualiza(listaDeAbastecimentos);
+        atualizaDataSet(cavalo.getId(), dataInicial, dataFinal);
+        adapter.atualiza(getDataSetAbastecimento());
         configuraUi();
     }
 

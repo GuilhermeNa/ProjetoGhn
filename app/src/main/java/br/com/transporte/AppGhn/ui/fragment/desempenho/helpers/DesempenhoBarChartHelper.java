@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.desempenho.helpers;
 
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.FRETE_BRUTO;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.view.MotionEvent;
 
@@ -30,7 +31,8 @@ import br.com.transporte.AppGhn.ui.fragment.desempenho.extensions.BarChartExtens
 import br.com.transporte.AppGhn.util.DataUtil;
 
 public class DesempenhoBarChartHelper {
-    public static final int SEM_REF_CAVALO = 0;
+    public static final long SEM_REF_CAVALO = 0;
+    private final Context context;
     private List<BarEntry> listaDeBarras;
     private List<String> listaDeMesesParaExibicao;
     private List<BigDecimal> listaDeValoresParaExibicao, listaDeDados;
@@ -45,7 +47,8 @@ public class DesempenhoBarChartHelper {
         this.callback = callback;
     }
 
-    public DesempenhoBarChartHelper(BarChart barChart) {
+    public DesempenhoBarChartHelper(Context context, BarChart barChart) {
+        this.context = context;
         this.barChart = barChart;
     }
 
@@ -113,8 +116,8 @@ public class DesempenhoBarChartHelper {
         atualizaData(anoRequisitado, FRETE_BRUTO, SEM_REF_CAVALO);
     }
 
-    private void atualizaData(int ano, TipoDeRequisicao tipoDeRequisicao, int cavaloId) {
-        listaDeDados = BarChartExtension.filtraListaParaExibicao(ano, tipoDeRequisicao, cavaloId);
+    private void atualizaData(int ano, TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
+        listaDeDados = BarChartExtension.filtraListaParaExibicao(ano, tipoDeRequisicao, cavaloId, context);
         listaDeValoresParaExibicao = BarChartExtension.removeValoresVaziosDaLista(listaDeDados);
         listaDeMesesParaExibicao = BarChartExtension.removeMesesVaziosDaLista(listaDeDados);
         listaDeBarras = criaListaDeBarras(listaDeValoresParaExibicao);
@@ -261,7 +264,7 @@ public class DesempenhoBarChartHelper {
     //                                    Metodos Publicos                                        ||
     //----------------------------------------------------------------------------------------------
 
-    public void atualizaChart(int ano, TipoDeRequisicao tipoDeRequisicao, int id) {
+    public void atualizaChart(int ano, TipoDeRequisicao tipoDeRequisicao, Long id) {
         dataSet.clear();
         barData.removeDataSet(dataSet);
         barChart.removeAllViews();

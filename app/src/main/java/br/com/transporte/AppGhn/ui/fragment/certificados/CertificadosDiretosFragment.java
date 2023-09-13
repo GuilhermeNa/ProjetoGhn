@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.ui.fragment.certificados;
 
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -28,29 +29,61 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosDiretosBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoAdapter;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class CertificadosDiretosFragment extends Fragment {
-    private List<Cavalo> listaDeCavalos;
+    public static final String CERTIFICADOS = "Certificados";
+    private List<Cavalo> dataSet;
     private FragmentCertificadosDiretosBinding binding;
     private CertificadoAdapter adapter;
     private RecyclerView recycler;
-    private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDao;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create                                         ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
+        inicializaDataBase();
+        atualizaDataSet();
     }
+
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = cavaloDao.todos();
+    }
+
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<Cavalo> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -58,6 +91,10 @@ public class CertificadosDiretosFragment extends Fragment {
         binding = FragmentCertificadosDiretosBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                        OnViewCreated                                       ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -72,28 +109,23 @@ public class CertificadosDiretosFragment extends Fragment {
     }
 
     private void configuraRecycler(View view) {
-        listaDeCavalos = cavaloDao.listaTodos();
-        adapter = new CertificadoAdapter(listaDeCavalos, this);
+        adapter = new CertificadoAdapter(getDataSet(), this);
         recycler.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         recycler.setLayoutManager(layoutManager);
 
-        adapter.setOnItemClickListener(cavalo -> {
+        adapter.setOnItemClickListener(cavaloId -> {
             NavController controlador = Navigation.findNavController(view);
-            NavDirections direction = CertificadosDiretosFragmentDirections.actionNavCertificadosDiretosToNavCertificadosDiretosDetalhes(((Cavalo) cavalo).getId());
+            NavDirections direction = CertificadosDiretosFragmentDirections.actionNavCertificadosDiretosToNavCertificadosDiretosDetalhes(cavaloId);
             controlador.navigate(direction);
         });
     }
 
-    private void configuraToolbar () {
+    private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Certificados");
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-
+        ToolbarUtil toolbarUtil = new ToolbarUtil(CERTIFICADOS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -119,25 +151,15 @@ public class CertificadosDiretosFragment extends Fragment {
                     public boolean onQueryTextChange(String newText) {
                         LinearLayout vazio = binding.fragCertificadoVazio;
                         List<Cavalo> listaFiltrada = new ArrayList<>();
-                        CavaloDAO cavaloDao = new CavaloDAO();
 
-                        for (Cavalo c : cavaloDao.listaTodos()) {
+                        for (Cavalo c : getDataSet()) {
                             if (c.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
                                 listaFiltrada.add(c);
                             }
                         }
 
-                        if (listaFiltrada.isEmpty()) {
-                            vazio.setVisibility(View.VISIBLE);
-                            recycler.setVisibility(View.INVISIBLE);
-                        } else {
-                            if (vazio.getVisibility() == View.VISIBLE) {
-                                vazio.setVisibility(View.INVISIBLE);
-                                recycler.setVisibility(View.VISIBLE);
-                            }
-                            adapter.atualiza(listaFiltrada);
-                        }
-
+                        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaFiltrada.size(), vazio, recycler, VIEW_INVISIBLE);
+                        adapter.atualiza(listaFiltrada);
                         return false;
                     }
 
@@ -162,14 +184,14 @@ public class CertificadosDiretosFragment extends Fragment {
                 }
                 return false;
             }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED );
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
     }
 
-    public void atualizaAdapter(String msg){
+    public void atualizaAdapter(String msg) {
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
-        listaDeCavalos = cavaloDao.listaTodos();
-        adapter.atualiza(listaDeCavalos);
-    };
+        atualizaDataSet();
+        adapter.atualiza(getDataSet());
+    }
 
 }

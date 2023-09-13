@@ -46,7 +46,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         custosDao = GhnDataBase.getInstance(requireContext()).getRoomCustosPercursoDao();
-        int custoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long custoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(custoId);
         custo = (CustosDePercurso) criaOuRecuperaObjeto(custoId);
     }
@@ -163,10 +163,10 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
-        custo.setRefCavalo(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
+    public Long configuraObjetoNaCriacao() {
+        custo.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
         custo.setApenasAdmEdita(false);
-        return 0;
+        return null;
     }
 
     @Override

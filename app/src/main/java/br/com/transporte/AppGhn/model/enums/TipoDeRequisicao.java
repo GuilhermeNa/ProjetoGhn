@@ -15,8 +15,8 @@ public enum TipoDeRequisicao {
     DESPESAS_ADM("Despesas administrativas"),
     DESPESAS_IMPOSTOS("Despesas de impostos"),
     DESPESA_CERTIFICADOS("Despesas de certificados"),
-    DESPESA_SEGUROS_DIRETOS("Despesas de Seguros Diretos"),
-    DESPESA_SEGUROS_INDIRETOS("Despesas de Seguros Indiretos");
+    DESPESA_SEGURO_FROTA("Despesas de Seguros Diretos"),
+    DESPESA_SEGURO_VIDA("Despesas de Seguros Indiretos");
 
     private final String descricao;
 

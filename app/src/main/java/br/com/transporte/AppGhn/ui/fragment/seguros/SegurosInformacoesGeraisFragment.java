@@ -12,6 +12,8 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_FROTA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_SEGURO_VIDA;
+import static br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro.FROTA;
+import static br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro.VIDA;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -31,7 +33,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -39,11 +40,11 @@ import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import java.util.Objects;
-
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasSeguroDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaComSeguroFrotaDao;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
 import br.com.transporte.AppGhn.databinding.FragmentSegurosInformacoesGeraisBinding;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
@@ -51,6 +52,8 @@ import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class SegurosInformacoesGeraisFragment extends Fragment {
 
@@ -62,6 +65,10 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
     private NavController controlador;
     private DespesaComSeguro seguro;
     private Callback callback;
+    private RoomDespesaComSeguroFrotaDao segurosFrotaDao;
+    private RoomDespesaSeguroVidaDao seguroVidaDao;
+    private TipoDeSeguro tipoDeSeguroRecebido;
+    private GhnDataBase dataBase;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
 
     @NonNull
@@ -75,7 +82,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
                         case RESULT_DELETE:
                             Toast.makeText(requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
                             controlador.popBackStack();
-                            callback.atualizaFrotaAdapter();
+                            callback.atualizaFrotaAdapter(REGISTRO_APAGADO);
                             break;
 
                         case RESULT_EDIT:
@@ -91,7 +98,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
 
     private void atualizaUiAposRetornoResult() {
         configuraUi(seguro);
-        Toast.makeText(requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
+        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -101,8 +108,35 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DespesasSeguroDAO segurosDao = new DespesasSeguroDAO();
-        seguro = recebeReferenciaExternaDeSeguro(segurosDao);
+        inicializaDataBase();
+        long seguroId = recebeReferenciaExternaDeSeguro();
+        recuperaSeguroAPartirDoId(seguroId);
+    }
+
+
+    private void recuperaSeguroAPartirDoId(long seguroId) {
+        switch (tipoDeSeguroRecebido) {
+            case FROTA:
+                seguro = segurosFrotaDao.localizaPeloId(seguroId);
+                break;
+
+            case VIDA:
+                seguro = seguroVidaDao.localizaPeloId(seguroId);
+                break;
+        }
+    }
+
+
+    private void inicializaDataBase() {
+        dataBase = GhnDataBase.getInstance(requireContext());
+        segurosFrotaDao = dataBase.getRoomDespesaComSeguroFrotaDao();
+        seguroVidaDao = dataBase.getRoomDespesaSeguroVidaDao();
+    }
+
+    private long recebeReferenciaExternaDeSeguro() {
+        long seguroId = SegurosInformacoesGeraisFragmentArgs.fromBundle(getArguments()).getSeguroId();
+        tipoDeSeguroRecebido = SegurosInformacoesGeraisFragmentArgs.fromBundle(getArguments()).getTipoSeguro();
+        return seguroId;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -127,10 +161,11 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         controlador = Navigation.findNavController(requireView());
         configuraUi(seguro);
         configuraToolbar();
+        configuraMenuProvider();
     }
 
     private void configuraUi(@NonNull DespesaComSeguro seguro) {
-        String sub = R.string.seguro_auto + " "+ seguro.getRefCavalo();
+        String sub = R.string.seguro_auto + " " + seguro.getRefCavaloId();
         subTxtView.setText(sub);
         tituloTxtView.setText(R.string.seguro_compreensivo);
         dataInicioTxtView.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
@@ -141,7 +176,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         companhiaTxtView.setText(seguro.getCompanhia());
         nContratoTxtView.setText(String.valueOf(seguro.getNContrato()));
 
-        if (seguro instanceof DespesaComSeguroFrota) {
+        if (tipoDeSeguroRecebido == FROTA) {
             LinearLayout seguroAutoLayout = binding.fragSalarioDetalhesLayoutCoberturasAuto;
             seguroAutoLayout.setVisibility(View.VISIBLE);
 
@@ -154,7 +189,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
             coberturaDanosMoraisTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguroAuto.getCoberturaDanosMorais()));
             coberturaVidrosTxtView.setText(seguroAuto.getCoberturaVidros());
             assistencia24HTxtView.setText(seguroAuto.getAssistencia24H());
-        } else if (seguro instanceof DespesaComSeguroDeVida) {
+        } else if (tipoDeSeguroRecebido == VIDA) {
             LinearLayout seguroVidaLayout = binding.fragSalarioDetalhesLayoutCoberturasVida;
             seguroVidaLayout.setVisibility(View.VISIBLE);
 
@@ -164,11 +199,6 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
             subTxtView.setText(R.string.seguro_de_vida);
             tituloTxtView.setText(R.string.demais_ramos);
         }
-    }
-
-    private DespesaComSeguro recebeReferenciaExternaDeSeguro(@NonNull DespesasSeguroDAO segurosDao) {
-        int seguroId = (int) SegurosInformacoesGeraisFragmentArgs.fromBundle(getArguments()).getSeguroId();
-        return segurosDao.localizaPeloId(seguroId);
     }
 
     private void inicializaCamposDaView() {
@@ -181,7 +211,6 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         parcelaValorTxtView = binding.fragSalarioDetalhesValorParcela;
         companhiaTxtView = binding.fragSalarioDetalhesCompanhia;
         nContratoTxtView = binding.fragSalarioDetalhesNumeroContrato;
-
         coberturaCascoTxtView = binding.fragSalarioDetalhesCoberturaCasco;
         coberturaRcfMateriaisTxtView = binding.fragSalarioDetalhesCoberturaRcfMateriais;
         coberturaRcfCorporaisTxtView = binding.fragSalarioDetalhesCoberturaRcfCorporais;
@@ -190,27 +219,29 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         coberturaDanosMoraisTxtView = binding.fragSalarioDetalhesCoberturaDanosMorais;
         coberturaVidrosTxtView = binding.fragSalarioDetalhesCoberturaVidros;
         assistencia24HTxtView = binding.fragSalarioDetalhesCoberturaAssistencia;
-
         sociosTxtView = binding.fragSalarioDetalhesCoberturaSocios;
         motoristasTxtView = binding.fragSalarioDetalhesCoberturaMotoristas;
-
     }
 
     private void configuraToolbar() {
+        String placa = identificaSeExistePlaca();
+        Toolbar toolbar = binding.toolbar;
+        ToolbarUtil toolbarUtil = new ToolbarUtil(placa);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    }
+
+    private String identificaSeExistePlaca() {
         String placa;
-        if (seguro instanceof DespesaComSeguroFrota) {
-            CavaloDAO cavaloDao = new CavaloDAO();
-            placa = cavaloDao.localizaPeloId(seguro.getRefCavalo()).getPlaca();
+        if (tipoDeSeguroRecebido == FROTA) {
+            RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
+            placa = cavaloDao.localizaPeloId(seguro.getRefCavaloId()).getPlaca();
         } else {
             placa = "-";
         }
+        return placa;
+    }
 
-        Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(placa);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+    private void configuraMenuProvider() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -229,10 +260,10 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
                     case R.id.menu_padrao_editar:
                         Intent intent = new Intent(requireContext(), FormulariosActivity.class);
 
-                        if (seguro instanceof DespesaComSeguroFrota) {
+                        if (tipoDeSeguroRecebido == FROTA) {
                             intent.putExtra(CHAVE_FORMULARIO, VALOR_SEGURO_FROTA);
 
-                        } else if (seguro instanceof DespesaComSeguroDeVida) {
+                        } else if (tipoDeSeguroRecebido == VIDA) {
                             intent.putExtra(CHAVE_FORMULARIO, VALOR_SEGURO_VIDA);
                         }
 
@@ -258,7 +289,7 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        if(context instanceof Callback){
+        if (context instanceof Callback) {
             callback = (Callback) context;
         } else {
             throw new ClassCastException();
@@ -270,7 +301,8 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     public interface Callback {
-        void atualizaFrotaAdapter();
+        void atualizaFrotaAdapter(String msg);
     }
 
 }
+

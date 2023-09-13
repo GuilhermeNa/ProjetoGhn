@@ -1,11 +1,14 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.view.View.VISIBLE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_TIPO_DESPESA;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.INCORRETO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.SELECIONE_UM_CAVALO_VALIDO;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +28,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasAdmDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaAdmDao;
@@ -53,6 +54,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     private RoomCavaloDao cavaloDao;
     private DespesaAdm despesa;
     private List<String> listaDePlacas;
+    private TipoDespesa tipoDespesa;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,9 +64,17 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
         cavaloDao = dataBase.getRoomCavaloDao();
         listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
 
-        int despesaId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long despesaId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(despesaId);
         despesa = (DespesaAdm) criaOuRecuperaObjeto(despesaId);
+        defineTipoDespesa(despesaId);
+    }
+
+    private void defineTipoDespesa(long id) {
+        if(id == 0) {
+            Bundle bundle = getArguments();
+            tipoDespesa = (TipoDespesa) bundle.getSerializable(CHAVE_TIPO_DESPESA);
+        }
     }
 
     @Nullable
@@ -87,7 +97,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     private void configuraCheckBox() {
         diretaBox.setOnClickListener(v -> {
             desmarcaBox(indiretaBox);
-            refLayout.setVisibility(View.VISIBLE);
+            refLayout.setVisibility(VISIBLE);
             despesaTxtView.setError(null);
         });
 
@@ -99,7 +109,6 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDePlacas() {
-
         String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloEdit.setAdapter(adapterCavalos);
@@ -137,13 +146,19 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
     @Override
     public void alteraUiParaModoCriacao() {
-
+        if(tipoDespesa == TipoDespesa.DIRETA){
+            diretaBox.setChecked(true);
+            refLayout.setVisibility(VISIBLE);
+        } else {
+            indiretaBox.setChecked(true);
+        }
     }
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if(despesa.getTipoDespesa() == TipoDespesa.DIRETA){
-            String placa = cavaloDao.localizaPeloId(despesa.getRefCavalo()).getPlaca();
+            String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
+            refLayout.setVisibility(VISIBLE);
             refCavaloEdit.setText(placa);
             diretaBox.setChecked(true);
         } else if (despesa.getTipoDespesa() == TipoDespesa.INDIRETA){
@@ -195,11 +210,11 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
 
         if(diretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.DIRETA);
-            int cavaloId = cavaloDao.localizaPelaPlaca(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT)).getId();
-            despesa.setRefCavalo(cavaloId);
+            Long cavaloId = cavaloDao.localizaPelaPlaca(refCavaloEdit.getText().toString().toUpperCase(Locale.ROOT)).getId();
+            despesa.setRefCavaloId(cavaloId);
         } else if (indiretaBox.isChecked()){
             despesa.setTipoDespesa(TipoDespesa.INDIRETA);
-            despesa.setRefCavalo(0);
+            despesa.setRefCavaloId(0L);
         }
     }
 
@@ -219,9 +234,9 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
 
-        return 0;
+        return null;
     }
 
 }

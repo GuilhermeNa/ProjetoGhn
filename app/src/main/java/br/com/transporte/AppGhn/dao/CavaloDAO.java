@@ -19,7 +19,7 @@ public class CavaloDAO {
     //---------------------------------- Manipula dao ----------------------------------------------
 
 
-    public void adiciona(Cavalo cavalo) {
+  /*  public void adiciona(Cavalo cavalo) {
         cavalo.setId(contadorDeIds);
         dao.add(cavalo);
         contadorDeIds++;
@@ -38,7 +38,7 @@ public class CavaloDAO {
         if (cavaloEncontrado != null) {
             dao.remove(cavaloEncontrado);
         }
-    }
+    }*/
 
 
     //---------------------------------- Retorna Listas ---------------------------------------------
@@ -67,7 +67,7 @@ public class CavaloDAO {
     //---------------------------------- Outros Metodos ---------------------------------------------
 
 
-    public Cavalo localizaPeloId(int idCavalo) {
+    public Cavalo localizaPeloId(Long idCavalo) {
         Cavalo cavaloEncontrado = null;
         for (Cavalo c : dao) {
             if (c.getId() == idCavalo) {

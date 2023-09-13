@@ -1,19 +1,14 @@
 package br.com.transporte.AppGhn.dao;
 
-import android.os.Build;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 
 public class ParcelaDeSeguroDAO {
-    private static final List<ParcelaDeSeguro> dao = new ArrayList<>();
+    private static final List<Parcela_seguroFrota> dao = new ArrayList<>();
     private static int contadorDeIds = 1;
 
   /*  public void adiciona(@NonNull ParcelaDeSeguro parcela){
@@ -36,19 +31,19 @@ public class ParcelaDeSeguroDAO {
         parcelaOptional.ifPresent(dao::remove);
     }*/
 
-    public List<ParcelaDeSeguro> listaTodos() {
+    public List<Parcela_seguroFrota> listaTodos() {
         return new ArrayList<>(dao);
     }
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    public List<ParcelaDeSeguro> listaParcelasDoSeguro(int id) {
+    public List<Parcela_seguroFrota> listaParcelasDoSeguro(Long id) {
         return dao.stream()
                 .filter(p -> p.getRefSeguro() == id)
                 .collect(Collectors.toList());
     }
 
-    public List<ParcelaDeSeguro> listaParcelasDoCavalo(int id) {
+    public List<Parcela_seguroFrota> listaParcelasDoCavalo(Long id) {
         return dao.stream()
                 .filter(p -> p.getRefCavaloId() == id)
                 .collect(Collectors.toList());
@@ -56,7 +51,7 @@ public class ParcelaDeSeguroDAO {
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    private Optional<ParcelaDeSeguro> localizaPeloId(int parcelaId){
+    private Optional<Parcela_seguroFrota> localizaPeloId(Long parcelaId){
         return dao.stream()
                 .filter(p -> p.getId() == parcelaId)
                 .findAny();

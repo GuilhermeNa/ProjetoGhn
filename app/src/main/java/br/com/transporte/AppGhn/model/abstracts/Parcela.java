@@ -19,10 +19,9 @@ import br.com.transporte.AppGhn.model.enums.TipoDespesa;
         onUpdate = ForeignKey.CASCADE
 ))
 public abstract class Parcela {
-
     @PrimaryKey(autoGenerate = true)
     private long id;
-    private Integer refCavaloId;
+    private Long refCavaloId;
     private int numeroDaParcela;
     private LocalDate data;
     private BigDecimal valor;
@@ -86,11 +85,11 @@ public abstract class Parcela {
         this.tipoDespesa = tipoDespesa;
     }
 
-    public int getRefCavaloId() {
+    public Long getRefCavaloId() {
         return refCavaloId;
     }
 
-    public void setRefCavaloId(int refCavaloId) {
+    public void setRefCavaloId(Long refCavaloId) {
         this.refCavaloId = refCavaloId;
     }
 }

@@ -6,6 +6,7 @@ import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_DEZ
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +82,7 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        long freteId = (long)id;
+        Long freteId = (Long)id;
 
         if(getTipoFormulario() == TipoFormulario.EDITANDO){
             frete = freteDao.localizaPeloId(freteId);
@@ -151,7 +152,8 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        freteDao.adiciona(frete);
+        recalculoDeValoresAposEdicao();
+        freteDao.substitui(frete);
     }
 
     @Override
@@ -166,8 +168,9 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
         Cavalo cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
+
         BigDecimal comissaoPercentual;
         try{
             comissaoPercentual = FreteHelper.vinculaComissaoAplicada(cavalo.getComissaoBase());
@@ -187,7 +190,17 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
         frete.setFreteJaFoiPago(false);
         frete.setApenasAdmEdita(false);
         frete.setRefCavaloId(cavalo.getId());
-        return 0;
+        return null;
+    }
+
+    private void recalculoDeValoresAposEdicao(){
+        BigDecimal valorLiquido = FreteHelper.calculaFreteLiquidoAReceber(this.frete.getFreteBruto(), this.frete.getDescontos(), this.frete.getSeguroDeCarga());
+        frete.setFreteLiquidoAReceber(valorLiquido);
+
+        BigDecimal comissaoPercentual = frete.getComissaoPercentualAplicada();
+        BigDecimal valorComissao = FreteHelper.calculaComissao(comissaoPercentual, this.frete.getFreteBruto());
+        frete.setComissaoAoMotorista(valorComissao);
+
     }
 
 }

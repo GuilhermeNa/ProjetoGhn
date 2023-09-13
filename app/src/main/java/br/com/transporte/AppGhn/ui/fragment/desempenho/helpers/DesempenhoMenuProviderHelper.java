@@ -16,7 +16,7 @@ import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.dialog.BottomDialogDesempenho;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class DesempenhoMenuProviderHelper implements MenuProvider, BottomDialogDesempenho.Callback {
+public class DesempenhoMenuProviderHelper implements MenuProvider {
     private final Fragment fragment;
     private Callback callback;
 
@@ -45,7 +45,9 @@ public class DesempenhoMenuProviderHelper implements MenuProvider, BottomDialogD
             case R.id.menu_padrao_editar:
                 BottomDialogDesempenho dialog = new BottomDialogDesempenho(fragment.requireContext(), fragment);
                 dialog.showBottomDialog();
-                dialog.setCallback(this);
+                dialog.setCallback((tipo, ano, cavaloId) ->
+                        callback.repassaRequisicaoDeFiltragem(tipo, ano, cavaloId)
+                );
                 break;
 
             case android.R.id.home:
@@ -57,20 +59,11 @@ public class DesempenhoMenuProviderHelper implements MenuProvider, BottomDialogD
     }
 
     //----------------------------------------------------------------------------------------------
-    //                                    CallBack -> BottomDialog                                   ||
-    //----------------------------------------------------------------------------------------------
-
-    @Override
-    public void filtragemConcluida(TipoDeRequisicao tipo, int ano, int cavaloId) {
-        callback.repassaRequisicaoDeFiltragem(tipo, ano, cavaloId);
-    }
-
-    //----------------------------------------------------------------------------------------------
     //                                          CallBack::this                                    ||
     //----------------------------------------------------------------------------------------------
 
     public interface Callback {
-        void repassaRequisicaoDeFiltragem(TipoDeRequisicao tipo, int ano, int cavaloId);
+        void repassaRequisicaoDeFiltragem(TipoDeRequisicao tipo, int ano, Long cavaloId);
     }
 
 }

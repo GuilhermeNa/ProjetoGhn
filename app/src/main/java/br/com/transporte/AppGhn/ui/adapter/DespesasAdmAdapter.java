@@ -12,27 +12,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmDiretasFragment;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.ViewHolder> {
     private final DespesasAdmDiretasFragment context;
     private final List<DespesaAdm> dataSet;
-    private final CavaloDAO cavaloDao;
-    private OnItemClickListener onItemClickListener;
+    private final RoomCavaloDao cavaloDao;
+    private OnItemClickListenerNew onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public DespesasAdmAdapter(DespesasAdmDiretasFragment context, List<DespesaAdm> lista) {
+    public DespesasAdmAdapter(@NonNull DespesasAdmDiretasFragment context, List<DespesaAdm> lista) {
         this.context = context;
         this.dataSet = lista;
-        cavaloDao = new CavaloDAO();
+        cavaloDao = GhnDataBase.getInstance(context.requireContext()).getRoomCavaloDao();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -70,7 +73,7 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
     public void onBindViewHolder(@NonNull DespesasAdmAdapter.ViewHolder holder, int position) {
         DespesaAdm despesa = dataSet.get(position);
         vincula(holder, despesa);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(despesa));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(despesa.getId()));
     }
 
     @Override
@@ -79,7 +82,7 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
     }
 
     public void vincula(@NonNull ViewHolder holder, @NonNull DespesaAdm despesa) {
-        String placa = cavaloDao.localizaPeloId(despesa.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(despesa.getValorDespesa()));
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(despesa.getData()));

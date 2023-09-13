@@ -16,8 +16,8 @@ public class DespesaComSeguroFrota extends DespesaComSeguro {
     public DespesaComSeguroFrota(LocalDate dataInicial, LocalDate dataFinal, LocalDate dataPrimeiraParcela, BigDecimal valorTotal, int parcelas,
                                  BigDecimal valorParcela, String companhia, int nContrato, String coberturaCasco, BigDecimal coberturaRcfMateriais,
                                  BigDecimal coberturaRcfCorporais, BigDecimal coberturaAppMorte, BigDecimal coberturaAppinvalidez,
-                                 BigDecimal coberturaDanosMorais, String coberturaVidros, String assistencia24H, int refCavalo) {
-
+                                 BigDecimal coberturaDanosMorais, String coberturaVidros, String assistencia24H, Long refCavalo) {
+        super.setData(dataInicial);
         super.setDataInicial(dataInicial);
         super.setDataFinal(dataFinal);
         super.setDataPrimeiraParcela(dataPrimeiraParcela);
@@ -34,7 +34,7 @@ public class DespesaComSeguroFrota extends DespesaComSeguro {
         this.coberturaDanosMorais = coberturaDanosMorais;
         this.coberturaVidros = coberturaVidros;
         this.assistencia24H = assistencia24H;
-        super.setRefCavalo(refCavalo);
+        super.setRefCavaloId(refCavalo);
     }
 
     public DespesaComSeguroFrota() {

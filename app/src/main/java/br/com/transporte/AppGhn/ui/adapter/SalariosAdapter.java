@@ -19,11 +19,13 @@ import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHolder> {
     private final ComissoesPagasFragment context;
@@ -32,7 +34,8 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
     private final RoomAdiantamentoDao adiantamentoDao;
     private final RoomCustosPercursoDao custosDePercursoDao;
     private final RoomCavaloDao cavaloDao;
-    private OnItemClickListener onItemClickListener;
+    private final RoomMotoristaDao motoristaDao;
+    private OnItemClickListenerNew onItemClickListener;
     private BigDecimal totalAdiantamentos, totalReembolsos, totalFretes;
 
     public SalariosAdapter(@NonNull ComissoesPagasFragment context, List<CustosDeSalario> lista) {
@@ -43,9 +46,10 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         cavaloDao = dataBase.getRoomCavaloDao();
         adiantamentoDao = dataBase.getRoomAdiantamentoDao();
         custosDePercursoDao = dataBase.getRoomCustosPercursoDao();
+        motoristaDao = dataBase.getRoomMotoristaDao();
     }
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -91,7 +95,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         CustosDeSalario salario = lista.get(position);
         configuraUi(holder);
         vincula(holder, salario);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(salario));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(salario.getId()));
     }
 
     @Override
@@ -108,10 +112,10 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
     private void vincula(@NonNull ViewHolder holder, CustosDeSalario salario) {
         calculaValoresParaExibir(salario);
 
-        String placa = cavaloDao.localizaPeloId(salario.getRefCavalo()).getPlaca();
+        String placa = cavaloDao.localizaPeloId(salario.getRefCavaloId()).getPlaca();
         holder.placaTxtView.setText(placa);
 
-        String nome = cavaloDao.localizaPeloId(salario.getRefCavalo()).getMotorista().getNome();
+        String nome = motoristaDao.localizaPeloId(salario.getRefMotoristaId()).getNome();
         holder.nomeTxtView.setText(nome);
 
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
@@ -126,7 +130,7 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
         BigDecimal valorEncontrado;
 
         List<BigDecimal> listaAdiantamentos = new ArrayList<>();
-        for (int i : salario.getRefAdiantamentos()) {
+        for (Long i : salario.getRefAdiantamentos()) {
             valorEncontrado = adiantamentoDao.localizaPeloId(i).getUltimoValorAbatido();
             listaAdiantamentos.add(valorEncontrado);
         }
@@ -139,8 +143,8 @@ public class SalariosAdapter extends RecyclerView.Adapter<SalariosAdapter.ViewHo
 
         List<BigDecimal> listaFretes = new ArrayList<>();
         for (Long i : salario.getRefFretes()) {
-            //valorEncontrado = freteDao.localizaPeloId(i).getAdmFrete().getComissaoAoMotorista();
-            //listaFretes.add(valorEncontrado);
+            valorEncontrado = freteDao.localizaPeloId(i).getComissaoAoMotorista();
+            listaFretes.add(valorEncontrado);
         }
 
         totalAdiantamentos = listaAdiantamentos.stream()

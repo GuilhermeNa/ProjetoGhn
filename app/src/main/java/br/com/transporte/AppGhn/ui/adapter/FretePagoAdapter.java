@@ -20,11 +20,6 @@ import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.ViewHolder>{
     private final ComissoesPagasDetalhesFragment context;
     private final List<Frete> dataSet;
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.onItemClickListener = onItemClickListener;
-    }
 
     public FretePagoAdapter(ComissoesPagasDetalhesFragment context, List<Frete> lista) {
         this.context = context;
@@ -65,7 +60,6 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
     public void onBindViewHolder(@NonNull FretePagoAdapter.ViewHolder holder, int position) {
         Frete frete = dataSet.get(position);
         vincula(holder, frete);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(frete));
     }
 
     @Override
@@ -76,6 +70,6 @@ public class FretePagoAdapter extends RecyclerView.Adapter <FretePagoAdapter.Vie
     private void vincula(@NonNull ViewHolder holder, @NonNull Frete frete) {
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(frete.getData()));
         holder.origemTxtView.setText(frete.getOrigem());
-        //holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getAdmFrete().getComissaoAoMotorista()));
+        holder.comissaoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getComissaoAoMotorista()));
     }
 }

@@ -14,18 +14,18 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.ImpostosFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
 
 public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewHolder> {
     private final List<DespesasDeImposto> dataSet;
     private final ImpostosFragment context;
     private final CavaloDAO cavaloDao;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListenerNew onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -70,7 +70,7 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
     public void onBindViewHolder(@NonNull ImpostosAdapter.ViewHolder holder, int position) {
         DespesasDeImposto imposto = dataSet.get(position);
         vincula(holder, imposto);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(imposto));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(imposto.getId()));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
 
     private void vincula(ViewHolder holder, DespesasDeImposto imposto) {
         try{
-            String placa = cavaloDao.localizaPeloId(imposto.getRefCavalo()).getPlaca();
+            String placa = cavaloDao.localizaPeloId(imposto.getRefCavaloId()).getPlaca();
             holder.placaTxtView.setText(placa);
         } catch (NullPointerException e){
             e.printStackTrace();

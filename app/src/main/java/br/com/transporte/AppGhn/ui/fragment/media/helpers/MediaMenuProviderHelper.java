@@ -22,7 +22,6 @@ import br.com.transporte.AppGhn.ui.fragment.media.MediaFragment;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class MediaMenuProviderHelper implements MenuProvider {
-
     private final List<Cavalo> dataSet;
     private final MediaFragment fragment;
     private MenuProviderCallback menuProviderCallback;

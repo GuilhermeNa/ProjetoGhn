@@ -40,33 +40,32 @@ public class FiltraFrete {
                 .collect(Collectors.toList());
     }
 
-    public static List<Frete> listaPorCavaloId(@NonNull List<Frete> dataSet, int cavaloId) {
+    public static List<Frete> listaPorCavaloId(@NonNull List<Frete> dataSet, Long cavaloId) {
         return dataSet.stream()
                 .filter(f -> f.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-   /* public static List<Frete> listaPorStatusDePagamentoDaComissao(@NonNull List<Frete> dataSet, boolean isPago) {
-
+    public static List<Frete> listaPorStatusDePagamentoDaComissao(@NonNull List<Frete> dataSet, boolean isPago) {
         if (isPago) return dataSet.stream()
-                .filter(f -> Frete.getAdmFrete().isComissaoJaFoiPaga())
+                .filter(Frete::isComissaoJaFoiPaga)
                 .collect(Collectors.toList());
 
         return dataSet.stream()
-                .filter(f -> !f.getAdmFrete().isComissaoJaFoiPaga())
+                .filter(f -> !f.isComissaoJaFoiPaga())
                 .collect(Collectors.toList());
-    }*/
+    }
 
 
-  /*  public static List<Frete> listaPorStatusDeRecebimentoDoFrete(@NonNull List<Frete> dataSet, boolean isPago) {
+    public static List<Frete> listaPorStatusDeRecebimentoDoFrete(@NonNull List<Frete> dataSet, boolean isPago) {
         if (isPago) return dataSet.stream()
-                .filter(f -> f.getAdmFrete().isFreteJaFoiPago())
+                .filter(Frete::isFreteJaFoiPago)
                 .collect(Collectors.toList());
 
         return dataSet.stream()
-                .filter(f -> !f.getAdmFrete().isFreteJaFoiPago())
+                .filter(f -> !f.isFreteJaFoiPago())
                 .collect(Collectors.toList());
-    }*/
+    }
 
     public static List<Frete> listaPorAno(@NonNull List<Frete> dataSet, int ano) {
         return dataSet.stream()

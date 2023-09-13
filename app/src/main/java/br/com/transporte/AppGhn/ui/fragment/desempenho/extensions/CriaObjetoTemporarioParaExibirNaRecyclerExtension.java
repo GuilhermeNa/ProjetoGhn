@@ -33,16 +33,16 @@ import br.com.transporte.AppGhn.filtros.FiltraDespesasAdm;
 import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.filtros.FiltraDespesasImposto;
 import br.com.transporte.AppGhn.filtros.FiltraFrete;
-import br.com.transporte.AppGhn.filtros.FiltraParcelasSeguro;
+import br.com.transporte.AppGhn.filtros.FiltraParcelaSeguroFrota;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
@@ -50,7 +50,7 @@ import br.com.transporte.AppGhn.util.CalculoUtil;
 
 public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
 
-    public static final int SEM_REF_CAVALO = 0;
+    public static final long SEM_REF_CAVALO = 0;
     private static ObjetoTemporario_representaCavaloDAO objTemporarioDao;
     private static TipoDeRequisicao tipo;
     private static int ano, mes, cavaloSize;
@@ -110,7 +110,7 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
     private static void configuraListaDeObjetosDeAcordoComSolicitacao(boolean switchIsChecked) {
         FreteDAO freteDao;
         ParcelaDeSeguroDAO parcelaDao;
-        List<ParcelaDeSeguro> listaAnualParcelasPagas;
+        List<Parcela_seguroFrota> listaAnualParcelasPagas;
 
         switch (getTipo()) {
             case FRETE_BRUTO:
@@ -222,9 +222,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 break;
 
 
-            case DESPESA_SEGUROS_DIRETOS:
+            case DESPESA_SEGURO_FROTA:
                 parcelaDao = new ParcelaDeSeguroDAO();
-                listaAnualParcelasPagas = FiltraParcelasSeguro.listaPorAno(parcelaDao.listaTodos(), ano);
+                listaAnualParcelasPagas = FiltraParcelaSeguroFrota.listaPorAno(parcelaDao.listaTodos(), ano);
 
                 if (mes == MES_DEFAULT.getRef())
                     ConfiguraObjetosQuandoBuscaAnual.despesasSeguro(listaAnualParcelasPagas, DIRETA);
@@ -233,9 +233,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 break;
 
 
-            case DESPESA_SEGUROS_INDIRETOS:
+            case DESPESA_SEGURO_VIDA:
                 parcelaDao = new ParcelaDeSeguroDAO();
-                listaAnualParcelasPagas = FiltraParcelasSeguro.listaPorAno(parcelaDao.listaTodos(), ano);
+                listaAnualParcelasPagas = FiltraParcelaSeguroFrota.listaPorAno(parcelaDao.listaTodos(), ano);
 
                 if (mes == MES_DEFAULT.getRef()) {
                     ConfiguraObjetosQuandoBuscaAnual.despesasSeguro(listaAnualParcelasPagas, INDIRETA);
@@ -404,15 +404,15 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             }
         }
 
-        private static void despesasSeguro(List<ParcelaDeSeguro> listaAnual, TipoDespesa tipo) {
-            List<ParcelaDeSeguro> lista = FiltraParcelasSeguro.listaPorTipo(listaAnual, tipo);
-            lista = FiltraParcelasSeguro.listaPorStatusDePagamento(lista, true);
+        private static void despesasSeguro(List<Parcela_seguroFrota> listaAnual, TipoDespesa tipo) {
+            List<Parcela_seguroFrota> lista = FiltraParcelaSeguroFrota.listaPorTipo(listaAnual, tipo);
+            lista = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(lista, true);
 
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
-                List<ParcelaDeSeguro> dataSet = FiltraParcelasSeguro.listaPeloCavaloId(lista, obj.getId());
-                valor = CalculoUtil.somaParcelasSeguro(dataSet);
+                List<Parcela_seguroFrota> dataSet = FiltraParcelaSeguroFrota.listaPeloCavaloId(lista, obj.getId());
+                valor = CalculoUtil.somaParcelas_seguroFrota(dataSet);
 
                 adicionaValorAoObjetoTemporario(valor, obj);
             }
@@ -436,9 +436,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(despesaAdmDao.listaTodos(), ano);
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(despesaCertificadoDao.listaTodos(), ano);
 
-            List<ParcelaDeSeguro> listaParcelaSeguro = FiltraParcelasSeguro.listaPorAno(parcelaDao.listaTodos(), ano);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorStatusDePagamento(listaParcelaSeguro, true);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorTipo(listaParcelaSeguro, DIRETA);
+            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaDao.listaTodos(), ano);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorTipo(listaParcelaSeguro, DIRETA);
 
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.listaTodos(), ano);
 
@@ -470,8 +470,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
                 subtraiValorAoObjetoTemporario(certificado, obj);
 
-                List<ParcelaDeSeguro> dataSetParcelaSeguro = FiltraParcelasSeguro.listaPeloCavaloId(listaParcelaSeguro, obj.getId());
-                BigDecimal parcela = CalculoUtil.somaParcelasSeguro(dataSetParcelaSeguro);
+                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, obj.getId());
+                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
                 subtraiValorAoObjetoTemporario(parcela, obj);
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
@@ -500,21 +500,21 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             }
         }
 
-        private static void despesasSeguro(List<ParcelaDeSeguro> listaAnual, int mes, TipoDespesa tipo) {
-            List<ParcelaDeSeguro> lista = configuraListaConformeParametrosBuscados_seguro(listaAnual, mes, tipo);
+        private static void despesasSeguro(List<Parcela_seguroFrota> listaAnual, int mes, TipoDespesa tipo) {
+            List<Parcela_seguroFrota> lista = configuraListaConformeParametrosBuscados_seguro(listaAnual, mes, tipo);
 
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
-                List<ParcelaDeSeguro> dataSet = FiltraParcelasSeguro.listaPeloCavaloId(lista, obj.getId());
-                valor = CalculoUtil.somaParcelasSeguro(dataSet);
+                List<Parcela_seguroFrota> dataSet = FiltraParcelaSeguroFrota.listaPeloCavaloId(lista, obj.getId());
+                valor = CalculoUtil.somaParcelas_seguroFrota(dataSet);
                 adicionaValorAoObjetoTemporario(valor, obj);
             }
         }
 
-        private static List<ParcelaDeSeguro> configuraListaConformeParametrosBuscados_seguro(List<ParcelaDeSeguro> listaAnual, int mes, TipoDespesa tipo) {
-            List<ParcelaDeSeguro> lista = FiltraParcelasSeguro.listaPorMes(listaAnual, mes);
-            lista = FiltraParcelasSeguro.listaPorTipo(lista, tipo);
-            lista = FiltraParcelasSeguro.listaPorStatusDePagamento(lista, true);
+        private static List<Parcela_seguroFrota> configuraListaConformeParametrosBuscados_seguro(List<Parcela_seguroFrota> listaAnual, int mes, TipoDespesa tipo) {
+            List<Parcela_seguroFrota> lista = FiltraParcelaSeguroFrota.listaPorMes(listaAnual, mes);
+            lista = FiltraParcelaSeguroFrota.listaPorTipo(lista, tipo);
+            lista = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(lista, true);
             return lista;
         }
 
@@ -627,10 +627,10 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(despesaCertificadoDao.listaTodos(), ano);
             listaDespesaCertificado = FiltraDespesasCertificado.listaPorMes(listaDespesaCertificado, mes);
 
-            List<ParcelaDeSeguro> listaParcelaSeguro = FiltraParcelasSeguro.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), ano);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorMes(listaParcelaSeguro, mes);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorTipo(listaParcelaSeguro, DIRETA);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorStatusDePagamento(listaParcelaSeguro, true);
+            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), ano);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorMes(listaParcelaSeguro, mes);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorTipo(listaParcelaSeguro, DIRETA);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.listaTodos(), ano);
             listaDespesaImposto = FiltraDespesasImposto.listaPorMes(listaDespesaImposto, mes);
@@ -664,8 +664,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
                 subtraiValorAoObjetoTemporario(certificado, obj);
 
-                List<ParcelaDeSeguro> dataSetParcelaSeguro = FiltraParcelasSeguro.listaPeloCavaloId(listaParcelaSeguro, obj.getId());
-                BigDecimal parcela = CalculoUtil.somaParcelasSeguro(dataSetParcelaSeguro);
+                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, obj.getId());
+                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
                 subtraiValorAoObjetoTemporario(parcela, obj);
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
@@ -684,21 +684,21 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
 
     private static class ConfiguraRateioDeDespesasIndiretasQuandoBuscaAnual {
 
-        private static void despesasSeguroIndireto(List<ParcelaDeSeguro> listaAnual) {
-            List<ParcelaDeSeguro> lista = configuraListaConformeParametrosBuscado_rateioMensalSeguro(listaAnual);
+        private static void despesasSeguroIndireto(List<Parcela_seguroFrota> listaAnual) {
+            List<Parcela_seguroFrota> lista = configuraListaConformeParametrosBuscado_rateioMensalSeguro(listaAnual);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
-                List<ParcelaDeSeguro> dataSet = FiltraParcelasSeguro.listaPeloCavaloId(lista, SEM_REF_CAVALO);
-                valorRateio = CalculoUtil.somaParcelasSeguro(dataSet);
+                List<Parcela_seguroFrota> dataSet = FiltraParcelaSeguroFrota.listaPeloCavaloId(lista, SEM_REF_CAVALO);
+                valorRateio = CalculoUtil.somaParcelas_seguroFrota(dataSet);
                 valorRateio = getRateio(valorRateio);
                 adicionaRateioAoObjetoTemporario(valorRateio, obj);
             }
         }
 
-        private static List<ParcelaDeSeguro> configuraListaConformeParametrosBuscado_rateioMensalSeguro(List<ParcelaDeSeguro> listaAnual) {
-            List<ParcelaDeSeguro> lista = FiltraParcelasSeguro.listaPorTipo(listaAnual, INDIRETA);
-            lista = FiltraParcelasSeguro.listaPorStatusDePagamento(lista, true);
+        private static List<Parcela_seguroFrota> configuraListaConformeParametrosBuscado_rateioMensalSeguro(List<Parcela_seguroFrota> listaAnual) {
+            List<Parcela_seguroFrota> lista = FiltraParcelaSeguroFrota.listaPorTipo(listaAnual, INDIRETA);
+            lista = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(lista, true);
             return lista;
         }
 
@@ -745,9 +745,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(despesaCertificadoDao.listaTodos(), ano);
             listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
 
-            List<ParcelaDeSeguro> listaParcelaSeguro = FiltraParcelasSeguro.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), ano);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorStatusDePagamento(listaParcelaSeguro, true);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorTipo(listaParcelaSeguro, INDIRETA);
+            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), ano);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorTipo(listaParcelaSeguro, INDIRETA);
 
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.listaTodos(), ano);
             listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
@@ -764,8 +764,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 valorRateio = getRateio(certificado);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<ParcelaDeSeguro> dataSetParcelaSeguro = FiltraParcelasSeguro.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
-                BigDecimal parcela = CalculoUtil.somaParcelasSeguro(dataSetParcelaSeguro);
+                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
+                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
                 valorRateio = getRateio(parcela);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 
@@ -802,22 +802,22 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             return lista;
         }
 
-        private static void despesasSeguroIndireto(List<ParcelaDeSeguro> listaAnual, int mes) {
-            List<ParcelaDeSeguro> lista = configuraListaConformeParametrosBuscado_rateioMensalSeguro(listaAnual, mes);
+        private static void despesasSeguroIndireto(List<Parcela_seguroFrota> listaAnual, int mes) {
+            List<Parcela_seguroFrota> lista = configuraListaConformeParametrosBuscado_rateioMensalSeguro(listaAnual, mes);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
-                List<ParcelaDeSeguro> dataSet = FiltraParcelasSeguro.listaPeloCavaloId(lista, SEM_REF_CAVALO);
-                valorRateio = CalculoUtil.somaParcelasSeguro(dataSet);
+                List<Parcela_seguroFrota> dataSet = FiltraParcelaSeguroFrota.listaPeloCavaloId(lista, SEM_REF_CAVALO);
+                valorRateio = CalculoUtil.somaParcelas_seguroFrota(dataSet);
                 valorRateio = getRateio(valorRateio);
                 adicionaRateioAoObjetoTemporario(valorRateio, obj);
             }
         }
 
-        private static List<ParcelaDeSeguro> configuraListaConformeParametrosBuscado_rateioMensalSeguro(List<ParcelaDeSeguro> listaAnual, int mes) {
-            List<ParcelaDeSeguro> lista = FiltraParcelasSeguro.listaPorMes(listaAnual, mes);
-            lista = FiltraParcelasSeguro.listaPorTipo(lista, INDIRETA);
-            lista = FiltraParcelasSeguro.listaPorStatusDePagamento(lista, true);
+        private static List<Parcela_seguroFrota> configuraListaConformeParametrosBuscado_rateioMensalSeguro(List<Parcela_seguroFrota> listaAnual, int mes) {
+            List<Parcela_seguroFrota> lista = FiltraParcelaSeguroFrota.listaPorMes(listaAnual, mes);
+            lista = FiltraParcelaSeguroFrota.listaPorTipo(lista, INDIRETA);
+            lista = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(lista, true);
             return lista;
         }
 
@@ -864,9 +864,9 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(despesaCertificadoDao.listaTodos(), mes);
             listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
 
-            List<ParcelaDeSeguro> listaParcelaSeguro = FiltraParcelasSeguro.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), mes);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorStatusDePagamento(listaParcelaSeguro, true);
-            listaParcelaSeguro = FiltraParcelasSeguro.listaPorTipo(listaParcelaSeguro, INDIRETA);
+            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(ConfiguraObjetosQuandoBuscaAnual.parcelaDao.listaTodos(), mes);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
+            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorTipo(listaParcelaSeguro, INDIRETA);
 
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.listaTodos(), mes);
             listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
@@ -883,8 +883,8 @@ public class CriaObjetoTemporarioParaExibirNaRecyclerExtension {
                 valorRateio = getRateio(certificado);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<ParcelaDeSeguro> dataSetParcelaSeguro = FiltraParcelasSeguro.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
-                BigDecimal parcela = CalculoUtil.somaParcelasSeguro(dataSetParcelaSeguro);
+                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
+                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
                 valorRateio = getRateio(parcela);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 

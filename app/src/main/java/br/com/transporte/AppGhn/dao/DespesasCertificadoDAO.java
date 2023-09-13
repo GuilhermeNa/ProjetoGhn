@@ -49,9 +49,9 @@ public class DespesasCertificadoDAO {
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public List<DespesaCertificado> listaFiltradaPorCavalo(int cavaloId) {
+    public List<DespesaCertificado> listaFiltradaPorCavalo(Long cavaloId) {
         return dao.stream()
-                .filter(c -> c.getRefCavalo() == cavaloId)
+                .filter(c -> c.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 

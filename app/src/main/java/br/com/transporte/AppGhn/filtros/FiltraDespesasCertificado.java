@@ -39,9 +39,9 @@ public class FiltraDespesasCertificado {
                 .collect(Collectors.toList());
     }
 
-    public static List<DespesaCertificado> listaPorCavaloId(@NonNull List<DespesaCertificado> dataSet, int cavaloId) {
+    public static List<DespesaCertificado> listaPorCavaloId(@NonNull List<DespesaCertificado> dataSet, Long cavaloId) {
         return dataSet.stream()
-                .filter(c -> c.getRefCavalo() == cavaloId)
+                .filter(c -> c.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 
@@ -56,5 +56,14 @@ public class FiltraDespesasCertificado {
                 .filter(d -> d.getDataDeEmissao().getMonthValue() == mes)
                 .collect(Collectors.toList());
     }
+
+    public static List<DespesaCertificado> listaPorStatus(@NonNull List<DespesaCertificado> dataSet, boolean isValido) {
+        if (isValido) return dataSet.stream()
+                .filter(DespesaCertificado::isValido)
+                .collect(Collectors.toList());
+        else
+            return dataSet;
+    }
+
 
 }

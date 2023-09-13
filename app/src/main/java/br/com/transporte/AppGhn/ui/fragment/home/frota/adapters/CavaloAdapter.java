@@ -2,6 +2,7 @@ package br.com.transporte.AppGhn.ui.fragment.home.frota.adapters;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,40 +16,61 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
-import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
+import br.com.transporte.AppGhn.filtros.FiltraMotorista;
 import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.model.Motorista;
+import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
-public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder> implements CavaloAdapterInnerAdapterHelper.InterfaceCavaloInnerAdapter {
+public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder> {
     public static final String MOTORISTA_NULO_MSG = "Não há motorista vinculado a este Cavalo";
-    private final List<Cavalo> dataSet;
+    private final List<Cavalo> copiaDataSet_cavalo;
+    private final List<Motorista> copiaDataSet_motorista;
+    private final List<SemiReboque> copiaDataSet_reboque;
     private final FrotaFragment context;
     private OnItemClickListener onItemClickListener;
-    private RoomMotoristaDao motoristaDao;
-    private RoomSemiReboqueDao reboqueDao;
     private boolean janelaFechada = true;
     private int posicao;
     private CavaloAdapterInnerAdapterHelper innerAdapter;
 
-    public CavaloAdapter(@NonNull FrotaFragment context, List<Cavalo> lista) {
-        this.dataSet = lista;
+    public CavaloAdapter(@NonNull FrotaFragment context) {
+        Log.d("teste", "Construtor Cavalo Adapter");
         this.context = context;
-        motoristaDao = GhnDataBase.getInstance(context.requireContext()).getRoomMotoristaDao();
-        reboqueDao = GhnDataBase.getInstance(context.requireContext()).getRoomReboqueDao();
+        copiaDataSet_cavalo = new ArrayList<>();
+        copiaDataSet_motorista = new ArrayList<>();
+        copiaDataSet_reboque = new ArrayList<>();
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
+    public interface OnItemClickListener {
+        void onCLickEditaCavalo(Long cavaloId);
+
+        void onClickAdicionaReboque(Long cavaloId);
+
+        // Id do semireboque que foi clicado para realizar alterações
+        // será enviado de volta ao Fragment para abrir Formulario modo Edição
+        void onClickEditaReboque(Long reboqueId, Long cavaloId);
+    }
+
+    public void atualizaDataSet_motorista(List<Motorista> lista){
+       this.copiaDataSet_motorista.clear();
+       this.copiaDataSet_motorista.addAll(lista);
+    }
+
+    public void atualizaDataSet_reboque(List<SemiReboque> lista) {
+        this.copiaDataSet_reboque.clear();
+        this.copiaDataSet_reboque.addAll(lista);
+    }
 
     //----------------------------------------------------------------------------------------------
     //                                          ViewHolder                                        ||
@@ -98,7 +120,7 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull CavaloAdapter.ViewHolder holder, int position) {
-        Cavalo cavalo = dataSet.get(position);
+        Cavalo cavalo = copiaDataSet_cavalo.get(position);
         configuraUi(holder);
         configuraAnimacaoSubListaSr(holder);
         vincula(holder, cavalo);
@@ -106,15 +128,9 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         configuraInnerAdapter(holder, cavalo);
     }
 
-    private void configuraInnerAdapter(ViewHolder holder, Cavalo cavalo) {
-        innerAdapter = new CavaloAdapterInnerAdapterHelper(context);
-        innerAdapter.configuraRecycler(holder, cavalo);
-        innerAdapter.setCallbackCavaloInnerAdapter(this);
-    }
-
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return copiaDataSet_cavalo.size();
     }
 
     private void configuraAnimacaoSubListaSr(@NonNull ViewHolder holder) {
@@ -163,15 +179,14 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
     private void vincula(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
         String motoristaString = tentaPegarMotorista(cavalo);
         holder.motorista.setText(motoristaString);
-
         holder.placaTxt.setText(cavalo.getPlaca());
     }
 
     private String tentaPegarMotorista(@NonNull Cavalo cavalo) {
         String motoristaString;
         try {
-            motoristaString = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
-        } catch (NullPointerException e) {
+            motoristaString = FiltraMotorista.localizaPeloId(copiaDataSet_motorista, cavalo.getRefMotoristaId()).getNome();
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
             motoristaString = MOTORISTA_NULO_MSG;
         }
@@ -210,49 +225,41 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
 
     @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<Cavalo> lista) {
-        this.dataSet.clear();
-        this.dataSet.addAll(lista);
+        this.copiaDataSet_cavalo.clear();
+        this.copiaDataSet_cavalo.addAll(lista);
         notifyDataSetChanged();
     }
 
     public void adiciona(Cavalo cavalo) {
-        this.dataSet.add(cavalo);
+        this.copiaDataSet_cavalo.add(cavalo);
         notifyItemInserted(getItemCount() - 1);
     }
 
     public void remove(Cavalo cavalo) {
         int posicao = -1;
-        posicao = this.dataSet.indexOf(cavalo);
-        this.dataSet.remove(cavalo);
+        posicao = this.copiaDataSet_cavalo.indexOf(cavalo);
+        this.copiaDataSet_cavalo.remove(cavalo);
         notifyItemRemoved(posicao);
     }
 
     //----------------------------------------------------------------------------------------------
-    //                       Callback -> CavaloAdapterInnerAdapterHelper                          ||
+    //                                           InnerAdapter                                     ||
     //----------------------------------------------------------------------------------------------
 
-    @Override
-    public void solicitaAlteracao_clickEmEditarReboque(int reboqueId, int cavaloId) {
-        onItemClickListener.onClickEditaReboque(reboqueId, cavaloId);
-    }
+    private void configuraInnerAdapter(ViewHolder holder, Cavalo cavalo) {
+        innerAdapter = new CavaloAdapterInnerAdapterHelper(context, copiaDataSet_reboque);
+        innerAdapter.configuraRecycler(holder, cavalo);
+        innerAdapter.setCallbackCavaloInnerAdapter(new CavaloAdapterInnerAdapterHelper.InterfaceCavaloInnerAdapter() {
+            @Override
+            public void solicitaAlteracao_clickEmEditarReboque(Long reboqueId, Long cavaloId) {
+                onItemClickListener.onClickEditaReboque(reboqueId, cavaloId);
+            }
 
-    @Override
-    public void solicitaAlteracao_mudaReferenciaDeCavalo(int reboqueId) {
-        notifyDataSetChanged();
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                        Interface                                           ||
-    //----------------------------------------------------------------------------------------------
-
-    public interface OnItemClickListener {
-        void onCLickEditaCavalo(Integer cavaloId);
-
-        void onClickAdicionaReboque(Integer cavaloId);
-
-        // Id do semireboque que foi clicado para realizar alterações
-        // será enviado de volta ao Fragment para abrir Formulario modo Edição
-        void onClickEditaReboque(Integer reboqueId, Integer cavaloId);
+            @Override
+            public void solicitaAlteracao_mudaReferenciaDeCavalo(Long reboqueId) {
+                notifyDataSetChanged();
+            }
+        });
     }
 
 }

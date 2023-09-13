@@ -59,7 +59,7 @@ public class CustosDeManutencaoDAO {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public List<CustosDeManutencao> listaFiltradaPorPlacaEData(int cavaloId, LocalDate dataInicial, LocalDate dataFinal){
+    public List<CustosDeManutencao> listaFiltradaPorPlacaEData(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal){
         List<CustosDeManutencao> listaPorPlaca = listaFiltradaPorCavalo(cavaloId);
         List<CustosDeManutencao> listaPorData= new ArrayList<>();
 
@@ -72,10 +72,10 @@ public class CustosDeManutencaoDAO {
     }
 
 
-    public List<CustosDeManutencao> listaFiltradaPorCavalo(int cavaloId){
+    public List<CustosDeManutencao> listaFiltradaPorCavalo(Long cavaloId){
         List<CustosDeManutencao> lista = new ArrayList<>();
         for(CustosDeManutencao c: dao){
-            if(c.getRefCavalo() == cavaloId){
+            if(c.getRefCavaloId() == cavaloId){
                 lista.add(c);
             }
         }

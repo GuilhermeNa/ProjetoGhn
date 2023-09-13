@@ -38,30 +38,37 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.jetbrains.annotations.Contract;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentImpostosBinding;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasImposto;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ImpostosAdapter;
+import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class ImpostosFragment extends Fragment {
     public static final String IMPOSTOS = "Impostos";
@@ -72,8 +79,8 @@ public class ImpostosFragment extends Fragment {
     private RecyclerView recyclerView;
     private ImpostosAdapter adapter;
     private LocalDate dataInicial, dataFinal;
-    private DespesasImpostoDAO impostoDao;
-    private List<DespesasDeImposto> listaDeImpostos;
+    private RoomDespesaImpostoDao impostoDao;
+    private List<DespesasDeImposto> dataSet;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -96,25 +103,49 @@ public class ImpostosFragment extends Fragment {
             });
 
     private void atualizaUiAposRetornoResult(String msg) {
-        listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
-        adapter.atualiza(listaDeImpostos);
-        configuraUiMutavel();
-        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+        atualizaDataSet();
+        adapter.atualiza(getDataSet());
+        configuraUi();
+        MensagemUtil.toast(requireContext(), msg);
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        impostoDao = new DespesasImpostoDAO();
+        inicializaDataBase();
+        inicializaData_inicialEFinal();
+        atualizaDataSet();
+    }
 
+    private void inicializaData_inicialEFinal() {
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
         dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
-        listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
     }
 
-    private List<DespesasDeImposto> getListaDeImpostos(LocalDate dataInicial, LocalDate dataFinal) {
-        return impostoDao.listaFiltradaPorData(dataInicial, dataFinal);
+    private void inicializaDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        impostoDao = dataBase.getRoomDespesaImpostoDao();
     }
+
+    private void atualizaDataSet() {
+        if (dataSet == null) dataSet = new ArrayList<>();
+        dataSet = impostoDao.todos();
+        dataSet = FiltraDespesasImposto.listaFiltradaPorData(dataSet, dataInicial, dataFinal);
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<DespesasDeImposto> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -123,6 +154,10 @@ public class ImpostosFragment extends Fragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -130,15 +165,33 @@ public class ImpostosFragment extends Fragment {
         configuraRecycler();
         configuraDateRangePicker();
         configuraFab();
-        configuraUiMutavel();
+        configuraUi();
         configuraToolbar();
     }
 
+    private void inicializaCamposDaView() {
+        valorPagoTxtView = binding.fragImpostosPrevisaoTotalPagoValor;
+        dataLayout = binding.fragImpostosData;
+        dataInicialTxtView = binding.fragImpostosMesDtInicial;
+        dataFinalTxtView = binding.fragImpostosMesDtFinal;
+        fab = binding.fragImpostosFab;
+        recyclerView = binding.fragItemImpostosRecycler;
+    }
 
-    private void configuraUiMutavel() {
-        BigDecimal somaValorTotalDeImpostosPagos = listaDeImpostos.stream()
-                .map(DespesasDeImposto::getValorDespesa)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    private void configuraRecycler() {
+        adapter = new ImpostosAdapter(dataSet, this);
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener(impostoId -> {
+            Intent intent = new Intent(getContext(), FormulariosActivity.class);
+            intent.putExtra(CHAVE_FORMULARIO, VALOR_IMPOSTOS);
+            intent.putExtra(CHAVE_ID, (impostoId));
+            activityResultLauncher.launch(intent);
+        });
+    }
+
+    private void configuraUi() {
+        BigDecimal somaValorTotalDeImpostosPagos = CalculoUtil.somaDespesaImposto(dataSet);
 
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaValorTotalDeImpostosPagos));
         dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
@@ -154,10 +207,10 @@ public class ImpostosFragment extends Fragment {
     }
 
     private void configuraDateRangePicker() {
-        MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Selecione o periodo")
                 .setSelection(
-                        new Pair(
+                        new Pair<>(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
                                 MaterialDatePicker.todayInUtcMilliseconds()
                         )
@@ -167,7 +220,7 @@ public class ImpostosFragment extends Fragment {
         dataLayout.setOnClickListener(v -> {
             dateRangePicker.show(getParentFragmentManager(), "DataRange");
 
-            dateRangePicker.addOnPositiveButtonClickListener((MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>) selection -> {
+            dateRangePicker.addOnPositiveButtonClickListener(selection -> {
                 LocalDate dataInicialAtualizada = Instant.ofEpochMilli(Long.parseLong(String.valueOf(selection.first))).atZone(ZoneId.of("America/Sao_Paulo"))
                         .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
                         .toLocalDate();
@@ -190,42 +243,15 @@ public class ImpostosFragment extends Fragment {
     }
 
     private void configuraMudancasAposSelecaoDeData() {
-        listaDeImpostos = getListaDeImpostos(dataInicial, dataFinal);
-        adapter.atualiza(listaDeImpostos);
-        configuraUiMutavel();
-    }
-
-    private void configuraRecycler() {
-        adapter = new ImpostosAdapter(listaDeImpostos, this);
-        recyclerView.setAdapter(adapter);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter.setOnItemClickListener(imposto -> {
-            Intent intent = new Intent(getContext(), FormulariosActivity.class);
-            intent.putExtra(CHAVE_FORMULARIO, VALOR_IMPOSTOS);
-            intent.putExtra(CHAVE_ID, ((DespesasDeImposto) imposto).getId());
-            activityResultLauncher.launch(intent);
-        });
-    }
-
-    private void inicializaCamposDaView() {
-        valorPagoTxtView = binding.fragImpostosPrevisaoTotalPagoValor;
-        dataLayout = binding.fragImpostosData;
-        dataInicialTxtView = binding.fragImpostosMesDtInicial;
-        dataFinalTxtView = binding.fragImpostosMesDtFinal;
-        fab = binding.fragImpostosFab;
-        recyclerView = binding.fragItemImpostosRecycler;
+        atualizaDataSet();
+        adapter.atualiza(getDataSet());
+        configuraUi();
     }
 
     private void configuraToolbar() {
         Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(IMPOSTOS);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        ToolbarUtil toolbarUtil = new ToolbarUtil(IMPOSTOS);
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -238,20 +264,18 @@ public class ImpostosFragment extends Fragment {
             @Override
             public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
 
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.menu_padrao_logout:
-
                         Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
                         break;
 
                     case android.R.id.home:
                         NavController controlador = Navigation.findNavController(requireView());
                         controlador.popBackStack();
-                    }
+                }
                 return false;
             }
         }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-
-
     }
+
 }

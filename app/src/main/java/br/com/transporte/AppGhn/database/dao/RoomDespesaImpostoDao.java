@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 
 @Dao
@@ -20,5 +22,6 @@ public interface RoomDespesaImpostoDao {
     @Query("SELECT * FROM despesasDeImposto WHERE id = :impostoId")
     DespesasDeImposto localizaPeloId(Long impostoId);
 
-
+    @Query("SELECT * FROM despesasDeImposto")
+    List<DespesasDeImposto> todos();
 }

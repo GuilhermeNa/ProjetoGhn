@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.ui.fragment.media.dialog;
 
+import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_UM;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -20,8 +22,13 @@ import java.util.Objects;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
+import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
+import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
@@ -34,7 +41,7 @@ public class MediaBottomDialog {
     private final CustosDeAbastecimento flag1, flag2;
     private final Cavalo cavalo;
     private TextView data01Txt, km01Txt, data02Txt, km02Txt, kmRodadoTxT, litrosTxt, freteTxt,
-            abastecimentoTxt, comissaoTxt, custosPercursoTxt, percentualTxt, mediaTxt ;
+            abastecimentoTxt, comissaoTxt, custosPercursoTxt, percentualTxt, mediaTxt;
 
     public MediaBottomDialog(Context context, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2, Cavalo cavalo) {
         this.context = context;
@@ -51,9 +58,7 @@ public class MediaBottomDialog {
 
     @NonNull
     private CustosDeAbastecimento organizaPorDatasFlag1(@NonNull CustosDeAbastecimento flag1, @NonNull CustosDeAbastecimento flag2) {
-
         if (flag1.getData().isBefore(flag2.getData())) return flag1;
-
         return flag2;
     }
 
@@ -110,7 +115,7 @@ public class MediaBottomDialog {
     //-----------------------------
 
     private void ui_Configura() {
-        ManipulaDados dados = new ManipulaDados(cavalo, flag1, flag2);
+        ManipulaDados dados = new ManipulaDados(context, cavalo, flag1, flag2);
 
         ui_configuraPeriodoAnalisado(flag1, data01Txt, km01Txt);
         ui_configuraPeriodoAnalisado(flag2, data02Txt, km02Txt);
@@ -121,14 +126,14 @@ public class MediaBottomDialog {
         BigDecimal totalLitros = dados.getTotalDeLitrosUsadosNoIntervalo();
         ui_configuraNumeros(litrosTxt, totalLitros);
 
-     //   BigDecimal frete = dados.getFreteBrutoAuferidoNoPeriodo();
-        //ui_configuraValores(freteTxt, frete);
+        BigDecimal frete = dados.getFreteBrutoAuferidoNoPeriodo();
+        ui_configuraValores(freteTxt, frete);
 
         BigDecimal abastecimento = dados.getAbastecimentoAcumuladoNoPeriodo();
         ui_configuraValores(abastecimentoTxt, abastecimento);
 
-      //  BigDecimal comissao = dados.getComissaoPagaNoPeriodo();
-        //ui_configuraValores(comissaoTxt, comissao);
+        BigDecimal comissao = dados.getComissaoPagaNoPeriodo();
+        ui_configuraValores(comissaoTxt, comissao);
 
         BigDecimal custosPercurso = dados.getCustosDePercursoAcumuladoNoPeriodo();
         ui_configuraValores(custosPercursoTxt, custosPercurso);
@@ -136,9 +141,9 @@ public class MediaBottomDialog {
         BigDecimal media = dados.getMediaDoPeriodo();
         mediaTxt.setText(media.toPlainString());
 
-       // BigDecimal percentual = dados.getPercentualDeLucroDoPeriodo();
-       // String percentualEmString = percentual.toPlainString() + " %";
-      //  percentualTxt.setText(percentualEmString);
+        BigDecimal percentual = dados.getPercentualDeLucroDoPeriodo();
+        String percentualEmString = percentual.toPlainString() + " %";
+        percentualTxt.setText(percentualEmString);
 
     }
 
@@ -167,16 +172,20 @@ public class MediaBottomDialog {
 //--------------------------------------------------------------------------------------------------
 
 class ManipulaDados {
-    private final FreteDAO freteDao = new FreteDAO();
-    private final CustosDeAbastecimentoDAO abastecimentoDao = new CustosDeAbastecimentoDAO();
-    private final CustosDePercursoDAO custosPercursoDao = new CustosDePercursoDAO();
+    private final RoomFreteDao freteDao;
+    private final RoomCustosAbastecimentoDao abastecimentoDao;
+    private final RoomCustosPercursoDao custosPercursoDao;
     private final CustosDeAbastecimento flag1, flag2;
     private final Cavalo cavalo;
 
-    public ManipulaDados(Cavalo cavalo, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2) {
+    public ManipulaDados(Context context, Cavalo cavalo, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2) {
         this.cavalo = cavalo;
         this.flag1 = flag1;
         this.flag2 = flag2;
+        GhnDataBase dataBase = GhnDataBase.getInstance(context);
+        freteDao = dataBase.getRoomFreteDao();
+        abastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
+        custosPercursoDao = dataBase.getRoomCustosPercursoDao();
     }
 
     //----------------------------------------
@@ -191,40 +200,42 @@ class ManipulaDados {
     }
 
     protected BigDecimal getTotalDeLitrosUsadosNoIntervalo() {
-        List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.listaTodos(), cavalo.getId());
-        CustosDeAbastecimento primeiroAbastConsiderado = dataSet.get(dataSet.indexOf(flag1)+1);
+        List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
+        CustosDeAbastecimento primeiroAbastConsiderado = dataSet.get(dataSet.indexOf(flag1) + 1);
         dataSet = FiltraCustosAbastecimento.listaPorData(dataSet, primeiroAbastConsiderado.getData(), flag2.getData());
         return dataSet.stream()
                 .map(CustosDeAbastecimento::getQuantidadeLitros)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-  /*  protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
-        return freteDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
-                .stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getFreteBruto)
+    protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
+        List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+        fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
+        return fretes.stream()
+                .map(Frete::getFreteBruto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
     protected BigDecimal getAbastecimentoAcumuladoNoPeriodo() {
-        return abastecimentoDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
-                .stream()
+        List<CustosDeAbastecimento> abastecimentos = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
+        abastecimentos = FiltraCustosAbastecimento.listaPorData(abastecimentos, flag1.getData(), flag2.getData());
+        return abastecimentos.stream()
                 .map(CustosDeAbastecimento::getValorCusto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-   /* protected BigDecimal getComissaoPagaNoPeriodo() {
-        return freteDao.listaFiltradaPorCavaloEData(cavalo.getId(), flag1.getData(), flag2.getData())
-                .stream()
-                .map(Frete::getAdmFrete)
-                .map(Frete.AdmFinanceiroFrete::getComissaoAoMotorista)
+    protected BigDecimal getComissaoPagaNoPeriodo() {
+        List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+        fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
+        return fretes.stream()
+                .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }*/
+    }
 
     protected BigDecimal getCustosDePercursoAcumuladoNoPeriodo() {
-        return custosPercursoDao.listaFiltradaPorPlacaEData(cavalo.getId(), flag1.getData(), flag2.getData())
-                .stream()
+        List<CustosDePercurso> custoPercurso = FiltraCustosPercurso.listaPorCavaloId(custosPercursoDao.todos(), cavalo.getId());
+        custoPercurso = FiltraCustosPercurso.listaPorData(custoPercurso, flag1.getData(), flag2.getData());
+        return custoPercurso.stream()
                 .map(CustosDePercurso::getValorCusto)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -232,25 +243,23 @@ class ManipulaDados {
     protected BigDecimal getMediaDoPeriodo() {
         BigDecimal kmRodado = getKmRodadoNoIntervalo();
         BigDecimal litrosUsados = getTotalDeLitrosUsadosNoIntervalo();
-
         return kmRodado.divide(litrosUsados, 2, RoundingMode.HALF_EVEN);
     }
 
-   /* protected BigDecimal getPercentualDeLucroDoPeriodo() {
-        BigDecimal BIGDECIMAL_ONE = new BigDecimal("1.00");
+    protected BigDecimal getPercentualDeLucroDoPeriodo() {
         BigDecimal freteBruto = getFreteBrutoAuferidoNoPeriodo();
         BigDecimal abastecimento = getAbastecimentoAcumuladoNoPeriodo();
         BigDecimal comissao = getComissaoPagaNoPeriodo();
         BigDecimal custosPercurso = getCustosDePercursoAcumuladoNoPeriodo();
 
-        BigDecimal custos =
-                abastecimento
-                        .add(comissao)
-                        .add(custosPercurso);
+        BigDecimal custos = abastecimento
+                .add(comissao)
+                .add(custosPercurso);
 
-        return BIGDECIMAL_ONE.subtract(
-                custos.divide(freteBruto, 2, RoundingMode.HALF_EVEN)
-        );
-    }*/
-
+        if (Objects.equals(freteBruto, BigDecimal.ZERO)) return BigDecimal.ZERO;
+        else
+            return BIG_DECIMAL_UM.subtract(
+                    custos.divide(freteBruto, 2, RoundingMode.HALF_EVEN)
+            );
+    }
 }

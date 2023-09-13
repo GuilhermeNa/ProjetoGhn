@@ -12,7 +12,6 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Adiantamento;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
@@ -20,11 +19,6 @@ import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPagoAdapter.ViewHolder> {
     private final ComissoesPagasDetalhesFragment context;
     private final List<Adiantamento> dataSet;
-    private OnItemClickListener onItemClickListener;
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
 
     public AdiantamentoPagoAdapter(ComissoesPagasDetalhesFragment context, List<Adiantamento> lista) {
         this.context = context;
@@ -65,7 +59,6 @@ public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPa
     public void onBindViewHolder(@NonNull AdiantamentoPagoAdapter.ViewHolder holder, int position) {
         Adiantamento adiantamento = dataSet.get(position);
         vincula(holder, adiantamento);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(adiantamento));
     }
 
     @Override

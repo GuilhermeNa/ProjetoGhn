@@ -45,7 +45,7 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         manutencaoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosDeManutencaoDao();
-        int manutencaoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        long manutencaoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(manutencaoId);
         manutencao = (CustosDeManutencao) criaOuRecuperaObjeto(manutencaoId);
     }
@@ -175,8 +175,8 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
-        manutencao.setRefCavalo(recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO).getId());
-        return 0;
+    public Long configuraObjetoNaCriacao() {
+        manutencao.setRefCavaloId(recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO).getId());
+        return null;
     }
 }

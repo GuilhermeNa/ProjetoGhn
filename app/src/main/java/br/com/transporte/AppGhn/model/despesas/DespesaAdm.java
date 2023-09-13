@@ -13,11 +13,11 @@ public class DespesaAdm extends Despesas {
     private String descricao;
 
     @Ignore
-    public DespesaAdm(LocalDate data, BigDecimal valor, String descricao, Integer refPlacaCavalo) {
+    public DespesaAdm(LocalDate data, BigDecimal valor, String descricao, Long refPlacaCavalo) {
         super.setData(data);
         super.setValorDespesa(valor);
         this.descricao = descricao;
-        super.setRefCavalo(refPlacaCavalo);
+        super.setRefCavaloId(refPlacaCavalo);
     }
 
     public DespesaAdm() {

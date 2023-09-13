@@ -16,11 +16,11 @@ import br.com.transporte.AppGhn.model.abstracts.Frota;
 ))
 public class SemiReboque extends Frota {
 
-    private int refCavaloId;
+    private Long refCavaloId;
 
     @Ignore
     public SemiReboque(String placa, String marcaModelo, String ano, String modelo, String cor,
-                       String renavam, String chassi, int referenciaCavalo) {
+                       String renavam, String chassi, Long referenciaCavalo) {
         setPlaca(placa);
         setMarcaModelo(marcaModelo);
         setAno(ano);
@@ -35,11 +35,11 @@ public class SemiReboque extends Frota {
 
     }
 
-    public int getRefCavaloId() {
+    public Long getRefCavaloId() {
         return refCavaloId;
     }
 
-    public void setRefCavaloId(int refCavaloId) {
+    public void setRefCavaloId(Long refCavaloId) {
         this.refCavaloId = refCavaloId;
     }
 }

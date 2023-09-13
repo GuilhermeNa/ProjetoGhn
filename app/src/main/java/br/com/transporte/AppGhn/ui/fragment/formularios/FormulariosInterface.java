@@ -26,6 +26,6 @@ public interface FormulariosInterface {
 
     void adicionaObjetoNoBancoDeDados();
 
-    int configuraObjetoNaCriacao();
+    Long configuraObjetoNaCriacao();
 
 }

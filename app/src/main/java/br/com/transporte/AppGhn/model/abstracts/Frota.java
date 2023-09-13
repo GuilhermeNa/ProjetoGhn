@@ -9,8 +9,7 @@ import java.io.Serializable;
 @Entity
 public abstract class Frota implements Serializable {
     @PrimaryKey(autoGenerate = true)
-    private Integer id;
-
+    private Long id;
     private String placa;
     private String documentoEmString;
     private String marcaModelo;
@@ -85,11 +84,11 @@ public abstract class Frota implements Serializable {
         this.cor = cor;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

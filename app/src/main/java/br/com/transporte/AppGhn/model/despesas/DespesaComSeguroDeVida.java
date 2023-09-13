@@ -12,7 +12,7 @@ public class DespesaComSeguroDeVida extends DespesaComSeguro {
     private BigDecimal coberturaSocios, coberturaMotoristas, coberturaOutrosFuncionarios;
 
     public DespesaComSeguroDeVida(LocalDate dataInicial, LocalDate dataFinal,LocalDate dataPrimeiraParcela, BigDecimal valorParcela, BigDecimal valorDespesa, String companhia,
-                                  boolean valido, int parcelas, int nContrato, int refCavalo, BigDecimal coberturaSocios,
+                                  boolean valido, int parcelas, int nContrato, Long refCavalo, BigDecimal coberturaSocios,
                                   BigDecimal coberturaMotoristas, BigDecimal coberturaOutrosFuncionarios) {
         super();
         super.setDataInicial(dataInicial);
@@ -24,7 +24,7 @@ public class DespesaComSeguroDeVida extends DespesaComSeguro {
         super.setValido(valido);
         super.setParcelas(parcelas);
         super.setNContrato(nContrato);
-        super.setRefCavalo(refCavalo);
+        super.setRefCavaloId(refCavalo);
         this.coberturaSocios = coberturaSocios;
         this.coberturaMotoristas = coberturaMotoristas;
         this.coberturaOutrosFuncionarios = coberturaOutrosFuncionarios;

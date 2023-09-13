@@ -15,11 +15,10 @@ import androidx.annotation.NonNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomParcelaSeguroDao;
+import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroFrotaDao;
 import br.com.transporte.AppGhn.databinding.DialogSeguroParcelaBinding;
-import br.com.transporte.AppGhn.model.ParcelaDeSeguro;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
@@ -32,11 +31,11 @@ public class EditaParcelaDialog {
     public static final String MESSAGE = "Nº da parcela : ";
     private DialogSeguroParcelaBinding binding;
     private final Context context;
-    private final ParcelaDeSeguro parcela;
+    private final Parcela_seguroFrota parcela;
     private Callback callback;
-    private RoomParcelaSeguroDao parcelaDao;
+    private RoomParcela_seguroFrotaDao parcelaDao;
 
-    public EditaParcelaDialog(Context context, ParcelaDeSeguro parcela) {
+    public EditaParcelaDialog(Context context, Parcela_seguroFrota parcela) {
         this.context = context;
         this.parcela = parcela;
     }
@@ -51,7 +50,7 @@ public class EditaParcelaDialog {
         EditText valorEdit = binding.valor;
         CheckBox checkBox = binding.checkbox;
         TextView boxTxt = binding.boxTxt;
-        parcelaDao = GhnDataBase.getInstance(context).getRoomParcelaSeguroDao();
+        parcelaDao = GhnDataBase.getInstance(context).getRoomParcela_seguroFrotaDao();
 
         configuraUiCheckBox(checkBox, boxTxt);
         aplicaMascarasAosEditTexts(dataEdit, valorEdit);
@@ -81,7 +80,7 @@ public class EditaParcelaDialog {
         boolean novoStatusDePagamento = defineNovoStatusDePagamento(checkBox);
         parcela.setPaga(novoStatusDePagamento);
 
-        parcelaDao.adiciona(parcela);
+        parcelaDao.substitui(parcela);
     }
 
     private boolean defineNovoStatusDePagamento(@NonNull CheckBox checkBox) {

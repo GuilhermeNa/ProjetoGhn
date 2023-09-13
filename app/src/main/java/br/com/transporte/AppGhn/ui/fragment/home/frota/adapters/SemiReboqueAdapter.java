@@ -11,28 +11,38 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.dialog.AlteraSemiReboqueDoCavalo;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.ViewHolder> implements AlteraSemiReboqueDoCavalo.DialogAlteraSrCallBack {
+public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.ViewHolder> {
     private final Context context;
-    private final List<SemiReboque> dataSet;
+    private final List<SemiReboque> copiaDataSet_reboque;
     private OnItemClickListener onItemClickListener;
     private ViewHolder holder;
-
-    public SemiReboqueAdapter(Context context, List<SemiReboque> lista) {
+    public SemiReboqueAdapter(Context context, List<SemiReboque> copiaDataSet_reboque) {
         this.context = context;
-        this.dataSet = lista;
+        this.copiaDataSet_reboque = copiaDataSet_reboque;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        // Id do semireboque que foi clicado para realizar alterações
+        // será enviado de volta ao Fragment para abrir Formulario modo Edição
+        void onEditaSrClick(Long idSr);
+
+        // Id do semireboque que teve seu cavalo alterado,
+        // será enviado :
+        // -> Inner Adapter para aplicar comportamento de remoção da Recycler
+        // -> Adapter Pai para atualizar o novo cavalo que está recebendo o reboque
+        void onAlteraReferenciaDeCavalo(Long reboqueAlteradoId);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -68,7 +78,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
     @Override
     public void onBindViewHolder(@NonNull SemiReboqueAdapter.ViewHolder holder, int position) {
         this.holder = holder;
-        SemiReboque sr = dataSet.get(position);
+        SemiReboque sr = copiaDataSet_reboque.get(position);
         configuraUi(holder);
         vincula(holder, sr);
         configuraClickListeners(holder, sr);
@@ -80,7 +90,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return copiaDataSet_reboque.size();
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
@@ -92,53 +102,35 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
         holder.alteraRefCavaloImgIc.setOnClickListener(v -> {
             AlteraSemiReboqueDoCavalo dialog = new AlteraSemiReboqueDoCavalo(context, sr);
             dialog.dialogAlteraSrCavalo();
-            dialog.setDialogAlteraSrCallBack(this);
+            dialog.setDialogAlteraSrCallBack(new AlteraSemiReboqueDoCavalo.DialogAlteraSrCallBack() {
+                public void quandoFalhaEmAlterarSr(String txt) {
+                    MensagemUtil.snackBar(holder.itemView, txt);
+                }
+
+                @Override
+                public void quandoSucessoEmAlterarSr(SemiReboque reboque) {
+                    removeItem(reboque);
+                    onItemClickListener.onAlteraReferenciaDeCavalo(reboque.getId());
+                }
+            });
         });
-    }
-
-    //---------------------------------------- Metodos publicos ------------------------------------
-
-    public void atualiza() {
-
-    }
-
-
-    //----------------------------------------------------------------------------------------------
-    //               Callback retorna resultado do Dialog que altera o Reboque                    ||
-    //----------------------------------------------------------------------------------------------
-
-    public void quandoFalhaEmAlterarSr(String txt) {
-        MensagemUtil.snackBar(holder.itemView, txt);
-    }
-
-    @Override
-    public void quandoSucessoEmAlterarSr(SemiReboque reboque) {
-        removeItem(reboque);
-        onItemClickListener.onAlteraReferenciaDeCavalo(reboque.getId());
     }
 
     private void removeItem(SemiReboque reboque) {
         int posicao = -1;
-        posicao = dataSet.indexOf(reboque);
-        dataSet.remove(posicao);
+        posicao = copiaDataSet_reboque.indexOf(reboque);
+        copiaDataSet_reboque.remove(posicao);
         notifyItemRemoved(posicao);
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          Interface                                         ||
-    //----------------------------------------------------------------------------------------------
+    //---------------------------------------- Metodos publicos ------------------------------------
 
-    public interface OnItemClickListener {
-        // Id do semireboque que foi clicado para realizar alterações
-        // será enviado de volta ao Fragment para abrir Formulario modo Edição
-        void onEditaSrClick(int idSr);
-
-        // Id do semireboque que teve seu cavalo alterado,
-        // será enviado :
-        // -> Inner Adapter para aplicar comportamento de remoção da Recycler
-        // -> Adapter Pai para atualizar o novo cavalo que está recebendo o reboque
-        void onAlteraReferenciaDeCavalo(int reboqueAlteradoId);
+    public void atualiza(List<SemiReboque> copiaDataSet_reboque) {
+        this.copiaDataSet_reboque.clear();
+        this.copiaDataSet_reboque.addAll(copiaDataSet_reboque);
+        notifyDataSetChanged();
     }
+
 
 
 }

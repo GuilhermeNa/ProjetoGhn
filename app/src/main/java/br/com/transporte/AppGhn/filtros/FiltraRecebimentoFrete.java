@@ -24,10 +24,8 @@ public class FiltraRecebimentoFrete {
                 recebimentoLocalizado = r;
             }
         }
-
         if (recebimentoLocalizado != null) return recebimentoLocalizado;
         else throw new ObjetoNaoEncontrado(OBJETO_NULL);
-
     }
 
     public static List<RecebimentoDeFrete> listaPeloIdDoFrete(@NonNull List<RecebimentoDeFrete> dataSet, long freteId) {

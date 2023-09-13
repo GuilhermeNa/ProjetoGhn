@@ -2,11 +2,7 @@ package br.com.transporte.AppGhn.dao;
 
 import static br.com.transporte.AppGhn.model.enums.TipoAbastecimento.TOTAL;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.room.Ignore;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -60,7 +56,7 @@ public class CustosDeAbastecimentoDAO {
     public List<CustosDeAbastecimento> listaCriaFlag(int cavaloId) {
         return dao.stream()
                 .filter(a -> a.getTipo() == TOTAL)
-                .filter(a -> a.getRefCavalo() == cavaloId)
+                .filter(a -> a.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 
@@ -74,17 +70,17 @@ public class CustosDeAbastecimentoDAO {
         return lista;
     }
 
-    public List<CustosDeAbastecimento> listaPorCavalo(int cavaloId) {
+    public List<CustosDeAbastecimento> listaPorCavalo(Long cavaloId) {
         List<CustosDeAbastecimento> lista = new ArrayList<>();
         for (CustosDeAbastecimento c : dao) {
-            if (c.getRefCavalo() == cavaloId) {
+            if (c.getRefCavaloId() == cavaloId) {
                 lista.add(c);
             }
         }
         return lista;
     }
 
-    public List<CustosDeAbastecimento> listaFiltradaPorCavaloEData(int cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
+    public List<CustosDeAbastecimento> listaFiltradaPorCavaloEData(Long cavaloId, LocalDate dataInicial, LocalDate dataFinal) {
         List<CustosDeAbastecimento> listaPorCavalo = listaPorCavalo(cavaloId);
         List<CustosDeAbastecimento> lista = new ArrayList<>();
 
@@ -111,7 +107,7 @@ public class CustosDeAbastecimentoDAO {
 
     //----------------------------------------------------------------------------------------------
 
-    public boolean getMarcacaoKmDoUltimoAbastecimento(BigDecimal marcacaoAtual, int cavaloId, LocalDate novaData)
+    public boolean getMarcacaoKmDoUltimoAbastecimento(BigDecimal marcacaoAtual, Long cavaloId, LocalDate novaData)
             throws MarcacaoKmInvalida, MarcacaoKmComDataJaRegistrada, ListaNaoEncontrada {
         List<CustosDeAbastecimento> listaPorCavalo = listaPorCavalo(cavaloId);
         Comparator<CustosDeAbastecimento> ordenaPorDatas = Comparator.comparing(CustosDeAbastecimento::getData);

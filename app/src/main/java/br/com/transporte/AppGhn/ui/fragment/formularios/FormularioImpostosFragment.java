@@ -24,9 +24,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.DespesasImpostoDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.conversor.ConversorTipoImposto;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioImpostosBinding;
@@ -52,16 +51,28 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     private DespesasDeImposto imposto;
     private RoomCavaloDao cavaloDao;
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        impostoDao = dataBase.getRoomDespesaImpostoDao();
-        cavaloDao = dataBase.getRoomCavaloDao();
-        int impostoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        configuraDataBase();
+        long impostoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(impostoId);
         imposto = (DespesasDeImposto) criaOuRecuperaObjeto(impostoId);
     }
+
+    private void configuraDataBase() {
+        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
+        impostoDao = dataBase.getRoomDespesaImpostoDao();
+        cavaloDao = dataBase.getRoomCavaloDao();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -69,6 +80,10 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         binding = FragmentFormularioImpostosBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -107,7 +122,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     public void alteraUiParaModoEdicao() {
         TextView subTxtView = binding.fragFormularioImpostoSub;
         subTxtView.setText(SUB_TITULO_APP_BAR_EDITANDO);
-        if(imposto.getRefCavalo() > 0){
+        if(imposto.getRefCavaloId() > 0){
             layoutRef.setVisibility(View.VISIBLE);
         }
     }
@@ -120,7 +135,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if(imposto.getNome().toUpperCase(Locale.ROOT).equals(IPVA)){
-            String placa = cavaloDao.localizaPeloId(imposto.getRefCavalo()).getPlaca();
+            String placa = cavaloDao.localizaPeloId(imposto.getRefCavaloId()).getPlaca();
             referenciaEdit.setText(placa);
         }
 
@@ -162,11 +177,11 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         imposto.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
         if (layoutRef.getVisibility() == View.VISIBLE) {
-            Integer cavaloId = cavaloDao.localizaPelaPlaca(referenciaEdit.getText().toString()).getId();
-            imposto.setRefCavalo(cavaloId);
+            Long cavaloId = cavaloDao.localizaPelaPlaca(referenciaEdit.getText().toString()).getId();
+            imposto.setRefCavaloId(cavaloId);
             imposto.setTipoDespesa(TipoDespesa.DIRETA);
         } else {
-            imposto.setRefCavalo(0);
+            imposto.setRefCavaloId(0L);
             imposto.setTipoDespesa(TipoDespesa.INDIRETA);
         }
     }
@@ -187,9 +202,9 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public int configuraObjetoNaCriacao() {
+    public Long configuraObjetoNaCriacao() {
 
-        return 0;
+        return null;
     }
 
     private void configuraVisibilidadeDoCampoReferenciasParaCavalos() {

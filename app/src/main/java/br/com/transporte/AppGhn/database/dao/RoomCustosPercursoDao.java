@@ -25,4 +25,7 @@ public interface RoomCustosPercursoDao {
     @Query("SELECT * FROM custosdepercurso WHERE id = :custoId" )
     CustosDePercurso localizaPeloId(Long custoId);
 
+    @Query("SELECT * FROM custosdepercurso WHERE refCavaloId = :cavaloId")
+    List<CustosDePercurso> listaPorCavaloId(Long cavaloId);
+
 }

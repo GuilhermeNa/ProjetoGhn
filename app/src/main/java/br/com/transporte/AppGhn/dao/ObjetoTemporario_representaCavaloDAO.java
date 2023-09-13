@@ -23,7 +23,7 @@ public class ObjetoTemporario_representaCavaloDAO {
         }
     }
 
-    public void deleta(int detalheId) {
+    public void deleta(Long detalheId) {
         ObjetoTemporario_representaCavalo detalheLocalizado = localizaPeloid(detalheId);
         if(detalheLocalizado != null){
             dao.remove(detalheLocalizado);
@@ -31,8 +31,8 @@ public class ObjetoTemporario_representaCavaloDAO {
     }
 
     public void clear(){
-        dao.clear();
-        ObjetoTemporario_representaCavalo.resetaAcumulado();
+            dao.clear();
+            ObjetoTemporario_representaCavalo.resetaAcumulado();
     }
 
     //---------------------------------- Retorna Lista ---------------------------------------------
@@ -43,7 +43,7 @@ public class ObjetoTemporario_representaCavaloDAO {
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    public ObjetoTemporario_representaCavalo localizaPeloid(int detalheId){
+    public ObjetoTemporario_representaCavalo localizaPeloid(Long detalheId){
         ObjetoTemporario_representaCavalo detalheLocalizado = null;
         for(ObjetoTemporario_representaCavalo d: dao){
             if(d.getId() == detalheId){

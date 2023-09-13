@@ -13,6 +13,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_C
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ADIANTAMENTO;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -48,6 +49,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
+import org.jetbrains.annotations.Contract;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -59,9 +62,12 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.dao.FreteDAO;
+import br.com.transporte.AppGhn.database.GhnDataBase;
+import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
+import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesBinding;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
@@ -69,6 +75,7 @@ import br.com.transporte.AppGhn.ui.adapter.ComissoesAdapter;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ComissoesFragment extends Fragment implements MenuProvider {
@@ -78,11 +85,11 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     private ProgressBar progressBarView;
     private TextView valorPagoTxtView, valorTotalTxtView, valorEmAbertoTxtView, dataFinalTxt, dataInicialTxt;
     private RecyclerView recycler;
-    private List<Cavalo> listaCavalos;
+    private List<Cavalo> dataSet;
     private BigDecimal evolucaoProgressBar;
     private LinearLayout dataLayout;
     private LocalDate dataInicial, dataFinal;
-    private CavaloDAO cavaloDao;
+    private RoomCavaloDao cavaloDao;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -106,20 +113,48 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
                         break;
                 }
             });
+    private GhnDataBase dataBase;
 
     private void atualizaAposRetornoDeResult(String msg) {
         atualizaAdapter();
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
-    
+
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create                                         ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cavaloDao = new CavaloDAO();
+        inicializaDataBase();
+        inicializaData_InicialEFinal();
+        atualizaDataSet();
+    }
+
+    private void inicializaDataBase() {
+        dataBase = GhnDataBase.getInstance(requireContext());
+        cavaloDao = dataBase.getRoomCavaloDao();
+    }
+
+    private void inicializaData_InicialEFinal() {
         dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
         dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
-        listaCavalos = cavaloDao.listaTodos();
     }
+
+    private void atualizaDataSet(){
+        dataSet = cavaloDao.todos();
+    }
+
+    @NonNull
+    @Contract(" -> new")
+    private List<Cavalo> getDataSet() {
+        return new ArrayList<>(dataSet);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreateView                                      ||
+    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -127,7 +162,11 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         binding = FragmentComissoesBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
-    
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -136,7 +175,6 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         configuraRecycler();
         configuraUi();
         configuraDateRangePicker();
-
     }
     
     @Override
@@ -146,10 +184,10 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     }
     
     public void configuraDateRangePicker() {
-        MaterialDatePicker dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Selecione o periodo")
                 .setSelection(
-                        new Pair(
+                        new Pair<>(
                                 MaterialDatePicker.thisMonthInUtcMilliseconds(),
                                 MaterialDatePicker.todayInUtcMilliseconds()
                         )
@@ -180,13 +218,13 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     }
     
     private void configuraMudancasAposSelecaoDeData() {
+        atualizaDataSet();
         configuraUi();
         atualizaAdapter();
     }
 
     private void atualizaAdapter() {
-        listaCavalos = cavaloDao.listaTodos();
-        adapter.atualiza(listaCavalos, dataInicial, dataFinal);
+        adapter.atualiza(getDataSet(), dataInicial, dataFinal);
     }
 
     private void configuraToolbar() {
@@ -207,13 +245,13 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         dataInicialTxt.setText(ConverteDataUtil.dataParaString(dataInicial));
         dataFinalTxt.setText(ConverteDataUtil.dataParaString(dataFinal));
 
-        FreteDAO daoFrete = new FreteDAO();
-        List<Frete> listaFiltradaPorData = daoFrete.listaFiltradaPorData(dataInicial, dataFinal);
+        RoomFreteDao freteDao = dataBase.getRoomFreteDao();
+        List<Frete> listaFiltradaPorData = FiltraFrete.listaPorData(freteDao.todos(), dataInicial, dataFinal);
 
-       // BigDecimal comissaoTotalDevidaAosMotoristas = CalculoUtil.somaComissao(listaFiltradaPorData);
-        //valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalDevidaAosMotoristas));
+        BigDecimal comissaoTotalDevidaAosMotoristas = CalculoUtil.somaComissao(listaFiltradaPorData);
+        valorTotalTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalDevidaAosMotoristas));
 
-    /*    BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CalculoUtil.somaComissaoPorStatus(listaFiltradaPorData, true);
+        BigDecimal comissaoTotalQueJaFoiPagaAosMotoristas = CalculoUtil.somaComissaoPorStatus(listaFiltradaPorData, true);
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(comissaoTotalQueJaFoiPagaAosMotoristas));
 
         BigDecimal comissaoEmAbertoASerPaga = comissaoTotalDevidaAosMotoristas.subtract(comissaoTotalQueJaFoiPagaAosMotoristas);
@@ -225,7 +263,7 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
         } catch (ArithmeticException e) {
             evolucaoProgressBar = BigDecimal.ZERO;
             e.printStackTrace();
-        }*/
+        }
     }
 
     private void atualizaProgressBar() {
@@ -244,15 +282,15 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     }
 
     private void configuraRecycler() {
-        adapter = new ComissoesAdapter(listaCavalos, this, dataInicial, dataFinal);
+        adapter = new ComissoesAdapter(getDataSet(), this, dataInicial, dataFinal);
         recycler.setAdapter(adapter);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recycler.setLayoutManager(layoutManager);
 
         NavController controlador = Navigation.findNavController(requireView());
-        adapter.setOnItemClickListener(cavalo -> {
-            NavDirections direction = ComissoesFragmentDirections.actionNavComissoesToNavComissoesDetalhes(((Cavalo) cavalo).getId());
+        adapter.setOnItemClickListener(cavaloId -> {
+            NavDirections direction = ComissoesFragmentDirections.actionNavComissoesToNavComissoesDetalhes(cavaloId);
             controlador.navigate(direction);
         });
     }
@@ -261,7 +299,7 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        Cavalo cavalo = listaCavalos.get(posicao);
+        Cavalo cavalo = dataSet.get(posicao);
 
         if (item.getItemId() == R.id.concedeAdiantamento) {
             Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
@@ -298,21 +336,14 @@ public class ComissoesFragment extends Fragment implements MenuProvider {
                 List<Cavalo> listaFiltrada = new ArrayList<>();
                 LinearLayout buscaVaziaLayout = binding.buscaVazia;
 
-                for (Cavalo c : cavaloDao.listaTodos()) {
+                for (Cavalo c : getDataSet()) {
                     if (c.getPlaca().toLowerCase().contains(newText.toLowerCase())) {
                         listaFiltrada.add(c);
                     }
                 }
-                if (listaFiltrada.isEmpty()) {
-                    buscaVaziaLayout.setVisibility(View.VISIBLE);
-                    recycler.setVisibility(View.INVISIBLE);
-                } else {
-                    if (buscaVaziaLayout.getVisibility() == View.VISIBLE) {
-                        buscaVaziaLayout.setVisibility(View.INVISIBLE);
-                        recycler.setVisibility(View.VISIBLE);
-                    }
-                    adapter.setListaCavalos(listaFiltrada);
-                }
+
+                ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaFiltrada.size(), buscaVaziaLayout, recycler, VIEW_INVISIBLE);
+                adapter.setListaCavalos(listaFiltrada);
                 return false;
             }
 
