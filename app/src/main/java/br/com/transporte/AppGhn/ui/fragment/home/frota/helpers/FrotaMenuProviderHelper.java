@@ -16,10 +16,8 @@ import java.util.Locale;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
-import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class FrotaMenuProviderHelper implements MenuProvider {
-
     private List<Cavalo> copiaDataSetCavalos;
     private List<SemiReboque> copiaDataSetReboques;
     private List<Cavalo> dataSet_searchView_cavalo;
@@ -102,7 +100,7 @@ public class FrotaMenuProviderHelper implements MenuProvider {
             @Override
             public boolean onQueryTextChange(String newText) {
                 dataSet_searchView_cavalo = buscaPorCavalosNoBd(newText);
-                dataSet_searchView_semiReboque = buscaPorSrNoBd(newText);
+                dataSet_searchView_semiReboque = buscaPorReboquesNoBd(newText);
                 callBack.realizaBusca(dataSet_searchView_cavalo, dataSet_searchView_semiReboque);
                 return false;
             }
@@ -119,7 +117,7 @@ public class FrotaMenuProviderHelper implements MenuProvider {
             }
 
             @NonNull
-            private List<SemiReboque> buscaPorSrNoBd(String newText) {
+            private List<SemiReboque> buscaPorReboquesNoBd(String newText) {
                 List<SemiReboque> lista = new ArrayList<>();
                 for (SemiReboque s : copiaDataSetReboques) {
                     if (s.getPlaca().toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {

@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -23,13 +24,12 @@ public interface RoomCavaloDao {
     void substitui(Cavalo cavalo);
 
     @Query("SELECT * FROM cavalo")
-    List<Cavalo> todos();
+    LiveData<List<Cavalo>> todos();
 
     @Query("SELECT * FROM cavalo WHERE id = :cavaloId")
-    Cavalo localizaPeloId(Long cavaloId);
+    LiveData<Cavalo> localizaPeloId(Long cavaloId);
 
     @Query("SELECT * FROM cavalo WHERE placa = :placa")
     Cavalo localizaPelaPlaca(String placa);
-
 
 }

@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.ui.fragment.home.frota.adapters;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,10 +37,8 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
     private OnItemClickListener onItemClickListener;
     private boolean janelaFechada = true;
     private int posicao;
-    private CavaloAdapterInnerAdapterHelper innerAdapter;
 
     public CavaloAdapter(@NonNull FrotaFragment context) {
-        Log.d("teste", "Construtor Cavalo Adapter");
         this.context = context;
         copiaDataSet_cavalo = new ArrayList<>();
         copiaDataSet_motorista = new ArrayList<>();
@@ -193,30 +190,6 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         return motoristaString;
     }
 
-    //--------------------------------------------------
-    // -> Configura Recycler SemiReboque              ||
-    //--------------------------------------------------
-
-    /*private void configuraRecycler(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
-        SemiReboqueAdapter adapter = configuraAdapter(holder, cavalo);
-        configuraItemDecoration(holder);
-        adapter.setOnItemClickListener((idSr) -> onItemClickListener.onEditaSrClick((Integer) idSr, cavalo.getId()));
-    }
-
-    private void configuraItemDecoration(@NonNull ViewHolder holder) {
-        Drawable divider = ContextCompat.getDrawable(context.requireContext(), R.drawable.divider);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(context.requireContext(), DividerItemDecoration.VERTICAL);
-        if (divider != null) itemDecoration.setDrawable(divider);
-        holder.recyclerFilha.addItemDecoration(itemDecoration);
-    }
-    @NonNull
-    private SemiReboqueAdapter configuraAdapter(@NonNull ViewHolder holder, @NonNull Cavalo cavalo) {
-        List<SemiReboque> listaSrPorCavalo = semiReboqueDao.listaPorCavaloId(cavalo.getId());
-        SemiReboqueAdapter adapter = new SemiReboqueAdapter(context.getContext(), listaSrPorCavalo);
-        holder.recyclerFilha.setAdapter(adapter);
-        return adapter;
-    }*/
-
     //------------------------------------- Metodos Publicos ---------------------------------------
 
     public int getPosicao() {
@@ -247,7 +220,7 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
     //----------------------------------------------------------------------------------------------
 
     private void configuraInnerAdapter(ViewHolder holder, Cavalo cavalo) {
-        innerAdapter = new CavaloAdapterInnerAdapterHelper(context, copiaDataSet_reboque);
+        CavaloAdapterInnerAdapterHelper innerAdapter = new CavaloAdapterInnerAdapterHelper(context, copiaDataSet_reboque, copiaDataSet_cavalo);
         innerAdapter.configuraRecycler(holder, cavalo);
         innerAdapter.setCallbackCavaloInnerAdapter(new CavaloAdapterInnerAdapterHelper.InterfaceCavaloInnerAdapter() {
             @Override

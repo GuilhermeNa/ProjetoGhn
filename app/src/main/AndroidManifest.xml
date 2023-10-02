@@ -35,14 +35,14 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.activity.ComissoesActivity"
+            android:name=".ui.activity.comissao.ComissoesActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.activity.FreteAReceberActivity"
+            android:name=".ui.activity.freteAReceberActivity.FreteAReceberActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -56,7 +56,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".ui.activity.AreaMotoristaActivity"
+            android:name=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

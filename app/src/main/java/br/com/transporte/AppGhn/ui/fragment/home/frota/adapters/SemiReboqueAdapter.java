@@ -11,10 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.dialog.AlteraSemiReboqueDoCavalo;
 import br.com.transporte.AppGhn.util.MensagemUtil;
@@ -22,11 +22,13 @@ import br.com.transporte.AppGhn.util.MensagemUtil;
 public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.ViewHolder> {
     private final Context context;
     private final List<SemiReboque> copiaDataSet_reboque;
+    private final List<Cavalo> listaCavalos;
     private OnItemClickListener onItemClickListener;
     private ViewHolder holder;
-    public SemiReboqueAdapter(Context context, List<SemiReboque> copiaDataSet_reboque) {
+    public SemiReboqueAdapter(Context context, List<SemiReboque> copiaDataSet_reboque, List<Cavalo> listaCavalos) {
         this.context = context;
         this.copiaDataSet_reboque = copiaDataSet_reboque;
+        this.listaCavalos = listaCavalos;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -100,7 +102,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
     private void configuraClickListeners(@NonNull ViewHolder holder, SemiReboque sr) {
         holder.placaEdit.setOnClickListener(v -> onItemClickListener.onEditaSrClick(sr.getId()));
         holder.alteraRefCavaloImgIc.setOnClickListener(v -> {
-            AlteraSemiReboqueDoCavalo dialog = new AlteraSemiReboqueDoCavalo(context, sr);
+            AlteraSemiReboqueDoCavalo dialog = new AlteraSemiReboqueDoCavalo(context, sr, listaCavalos);
             dialog.dialogAlteraSrCavalo();
             dialog.setDialogAlteraSrCallBack(new AlteraSemiReboqueDoCavalo.DialogAlteraSrCallBack() {
                 public void quandoFalhaEmAlterarSr(String txt) {

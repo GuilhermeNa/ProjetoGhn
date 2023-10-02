@@ -16,30 +16,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
-import java.util.List;
-
-import br.com.transporte.AppGhn.GhnApplication;
-import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioSemiReboqueBinding;
-import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.SemiReboqueDAO;
+import br.com.transporte.AppGhn.repository.ReboqueRepository;
 import br.com.transporte.AppGhn.tasks.reboque.AdicionaReboqueTask;
 import br.com.transporte.AppGhn.tasks.reboque.AtualizaReboqueTask;
-import br.com.transporte.AppGhn.tasks.reboque.BuscaTodosReboquesTask;
 import br.com.transporte.AppGhn.tasks.reboque.DeletaReboqueTask;
-import br.com.transporte.AppGhn.tasks.reboque.LocalizaReboqueTask;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioReboqueViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioReboqueViewModelFactory;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     private FragmentFormularioSemiReboqueBinding binding;
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de semi-reboque que já existe.";
     private EditText placaEdit, marcaEdit, anoEdit, modeloEdit, corEdit, renavamEdit, chassiEdit;
-    private RoomSemiReboqueDao srDao;
     private SemiReboque sr;
-    private Cavalo cavalo;
+    private FormularioReboqueViewModel viewModel;
 
     //----------------------------------------------------------------------------------------------
     //                                          On Create                                         ||
@@ -48,19 +44,18 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GhnApplication application = new GhnApplication();
-        executorService = application.getExecutorService();
-        handler = application.getMainThreadHandler();
-        srDao = GhnDataBase.getInstance(this.requireContext()).getRoomReboqueDao();
-        cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
+        inicializaViewModel();
         long srId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(srId);
         sr = (SemiReboque) criaOuRecuperaObjeto(srId);
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          On Create View                                    ||
-    //----------------------------------------------------------------------------------------------
+    private void inicializaViewModel() {
+        final ReboqueRepository repository = new ReboqueRepository(requireContext());
+        final FormularioReboqueViewModelFactory factory = new FormularioReboqueViewModelFactory(repository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioReboqueViewModel.class);
+    }
 
     @Nullable
     @Override
@@ -96,12 +91,14 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
     public Object criaOuRecuperaObjeto(Object id) {
         Long reboqueId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            LocalizaReboqueTask localizaReboqueTask = new LocalizaReboqueTask(executorService, handler);
-            localizaReboqueTask.solicitaBusca(srDao, reboqueId, reboque -> {
-                sr = reboque;
-                bind();
-            });
-
+            viewModel.localizaReboque(reboqueId).observe(this,
+                    semiReboque -> {
+                        if (semiReboque != null) {
+                            viewModel.reboqueArmazenado = semiReboque;
+                            sr = semiReboque;
+                            bind();
+                        }
+                    });
         } else {
             sr = new SemiReboque();
         }
@@ -159,21 +156,23 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        AtualizaReboqueTask atualizaReboqueTask = new AtualizaReboqueTask(executorService, handler);
-        atualizaReboqueTask.solicitaAtualizacao(srDao, sr, () -> {
-            requireActivity().setResult(RESULT_EDIT);
-            requireActivity().finish();
-        });
+        viewModel.salva(sr).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        AdicionaReboqueTask adicionaReboqueTask = new AdicionaReboqueTask(executorService, handler);
-        adicionaReboqueTask.solicitaAdicao(srDao, sr, id -> {
-            requireActivity().setResult(RESULT_OK);
-            requireActivity().finish();
-        });
+        viewModel.salva(sr).observe(this,
+                id -> {
+                    if (id != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
@@ -184,10 +183,14 @@ public class FormularioSemiReboqueFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        DeletaReboqueTask deletaReboqueTask = new DeletaReboqueTask(executorService, handler);
-        deletaReboqueTask.solicitaAtualizacao(srDao, sr, () -> {
-            requireActivity().setResult(RESULT_DELETE);
-            requireActivity().finish();
-        });
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 }

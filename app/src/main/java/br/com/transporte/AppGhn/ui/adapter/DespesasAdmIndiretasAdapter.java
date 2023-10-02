@@ -16,14 +16,14 @@ import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmIndiretasFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class DespesasAdmIndiretasAdapter extends RecyclerView.Adapter <DespesasAdmIndiretasAdapter.ViewHolder>{
     private final DespesasAdmIndiretasFragment context;
     private final List<DespesaAdm> copiaDataSet;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener){
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 

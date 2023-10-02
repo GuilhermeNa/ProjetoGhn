@@ -18,22 +18,21 @@ import java.util.Map;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Adiantamento;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.adapter.listener.OnLongClickListener;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class DetalhesAdiantamentoAdapter extends RecyclerView.Adapter<DetalhesAdiantamentoAdapter.ViewHolder> {
     private final List<Adiantamento> dataSet;
     private final Context context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
     private OnLongClickListener onLongClickListener;
     private Map<Long, BigDecimal> map;
     private int posicao;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

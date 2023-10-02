@@ -1,38 +1,20 @@
 package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 
-import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ADIANTAMENTO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_FRETE;
+import static android.view.View.GONE;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.math.BigDecimal;
@@ -41,68 +23,115 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
-import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesPagasDetalhesBinding;
+import br.com.transporte.AppGhn.filtros.FiltraAdiantamento;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
+import br.com.transporte.AppGhn.filtros.FiltraFrete;
+import br.com.transporte.AppGhn.filtros.FiltraMotorista;
 import br.com.transporte.AppGhn.model.Adiantamento;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.AdiantamentoPagoAdapter;
 import br.com.transporte.AppGhn.ui.adapter.FretePagoAdapter;
 import br.com.transporte.AppGhn.ui.adapter.ReembolsoPagoAdapter;
+import br.com.transporte.AppGhn.ui.viewmodel.ComissaoActViewModel;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class ComissoesPagasDetalhesFragment extends Fragment {
-    public static final String VALOR_NEGATIVO = "(-) ";
-    public static final String VALOR_POSITIVO = "(+) ";
-    public static final String DETALHES_PAGAMENTO = "Detalhes Pagamento";
     private FragmentComissoesPagasDetalhesBinding binding;
-    private TextView motoristaTxtView, placaTxtView, dataTxtView, valorAdiantamentosTxtView, valorReembolsosTxtView, valorFretesTxtView;
-    private List<Adiantamento> listaDeAdiantamentos;
-    private List<CustosDePercurso> listaDeReembolsos;
-    private List<Frete> listaDeFretes;
-    private CustosDeSalario salario;
-    private GhnDataBase dataBase;
+    private ComissaoActViewModel viewModel;
+    private List<Adiantamento> dataSetAdiantamentoRelacionadoAEstePagamento;
+    private List<CustosDePercurso> dataSetReembolsoRelacionadoAEstePagamento;
+    private List<Frete> dataSetFreteRelacionadoAEstePagamento;
+    private TextView campoMotorista, campoPlaca, campoData,
+            campoAdiantamento, campoReembolso, campoFrete;
+    private AdiantamentoPagoAdapter adapterAdiantamento;
+    private ReembolsoPagoAdapter adapterReembolso;
+    private FretePagoAdapter adapterFrete;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataBase = GhnDataBase.getInstance(this.requireContext());
-        RoomAdiantamentoDao adiantamentoDao = dataBase.getRoomAdiantamentoDao();
-        RoomCustosPercursoDao custoPercursoDao = dataBase.getRoomCustosPercursoDao();
-        RoomFreteDao freteDao = dataBase.getRoomFreteDao();
-        RoomCustosDeSalarioDao salarioDao = dataBase.getRoomCustosDeSalarioDao();
+        final Long salarioId = ComissoesPagasDetalhesFragmentArgs.fromBundle(getArguments()).getSalarioId();
+        viewModel = new ViewModelProvider(requireActivity()).get(ComissaoActViewModel.class);
+        viewModel.localizaSalario(salarioId).observe(this,
+                salarioRecebido -> {
+                    if (salarioRecebido != null) {
+                        getListaDeAdiantamentoRelacionadaAEstePagamentoDeSalario(salarioRecebido);
+                        getListaDeReembolsoRelacionadaAEstePagamentoDeSalario(salarioRecebido);
+                        getListaDeFreteRelacinadaAEstePagamentoDeSalario(salarioRecebido);
+                        configuraLayoutsQueDevemSerExibidos(salarioRecebido);
+                        enviaDataParaRecyclers();
+                        vincula(salarioRecebido);
+                    }
+                });
+    }
 
-        Long salarioId = (Long) ComissoesPagasDetalhesFragmentArgs.fromBundle(getArguments()).getSalarioId();
-        salario = salarioDao.localizaPeloId(salarioId);
-
-        listaDeAdiantamentos = new ArrayList<>();
-        for (Long i : salario.getRefAdiantamentos()) {
-            Adiantamento adiantamento = adiantamentoDao.localizaPeloId(i);
-            listaDeAdiantamentos.add(adiantamento);
+    private void configuraLayoutsQueDevemSerExibidos(@NonNull final CustosDeSalario salarioRecebido) {
+        if(salarioRecebido.getRefAdiantamentos().size() == 0){
+            binding.layoutAdiantamento.setVisibility(GONE);
         }
-
-        listaDeReembolsos = new ArrayList<>();
-        for (Long i : salario.getRefReembolsos()) {
-            CustosDePercurso custo = custoPercursoDao.localizaPeloId(i);
-            listaDeReembolsos.add(custo);
+        if(salarioRecebido.getRefReembolsos().size() == 0) {
+            binding.layoutReembolso.setVisibility(GONE);
         }
-
-        listaDeFretes = new ArrayList<>();
-        for (Long i : salario.getRefFretes()) {
-            Frete frete = freteDao.localizaPeloId(i);
-            listaDeFretes.add(frete);
+        if(salarioRecebido.getRefFretes().size() == 0) {
+            binding.layoutFrete.setVisibility(GONE);
         }
+    }
 
+    private void enviaDataParaRecyclers() {
+        adapterAdiantamento.atualizaData(new ArrayList<>(dataSetAdiantamentoRelacionadoAEstePagamento));
+        adapterReembolso.atualizaData(new ArrayList<>(dataSetReembolsoRelacionadoAEstePagamento));
+        adapterFrete.atualizaData(new ArrayList<>(dataSetFreteRelacionadoAEstePagamento));
+    }
+
+    private void getListaDeFreteRelacinadaAEstePagamentoDeSalario(CustosDeSalario salarioRecebido) {
+        if (dataSetFreteRelacionadoAEstePagamento == null)
+            dataSetFreteRelacionadoAEstePagamento = new ArrayList<>();
+
+        if (salarioRecebido.getRefFretes().size() > 0) {
+            for (Long i : salarioRecebido.getRefFretes()) {
+                final Frete frete =
+                        FiltraFrete.localizaPeloId(viewModel.getDataSetBaseFrete(), i);
+                dataSetFreteRelacionadoAEstePagamento.add(frete);
+            }
+        }
+    }
+
+    private void getListaDeReembolsoRelacionadaAEstePagamentoDeSalario(CustosDeSalario salarioRecebido) {
+        if (dataSetReembolsoRelacionadoAEstePagamento == null)
+            dataSetReembolsoRelacionadoAEstePagamento = new ArrayList<>();
+
+        if (salarioRecebido.getRefReembolsos().size() > 0) {
+            for (Long i : salarioRecebido.getRefReembolsos()) {
+                final CustosDePercurso custo =
+                        FiltraCustosPercurso.localizaPeloId(viewModel.getDataSetReembolso(), i);
+                dataSetReembolsoRelacionadoAEstePagamento.add(custo);
+            }
+        }
+    }
+
+    private void getListaDeAdiantamentoRelacionadaAEstePagamentoDeSalario(CustosDeSalario salarioRecebido) {
+        if (dataSetAdiantamentoRelacionadoAEstePagamento == null)
+            dataSetAdiantamentoRelacionadoAEstePagamento = new ArrayList<>();
+
+        if (salarioRecebido.getRefAdiantamentos().size() > 0) {
+            for (Long i : salarioRecebido.getRefAdiantamentos()) {
+                final Adiantamento adiantamento =
+                        FiltraAdiantamento.localizaPeloId(viewModel.getDataSetAdiantamento(), i);
+                dataSetAdiantamentoRelacionadoAEstePagamento.add(adiantamento);
+            }
+        }
     }
 
     @Nullable
@@ -112,120 +141,236 @@ public class ComissoesPagasDetalhesFragment extends Fragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaCamposDaView();
+        inicializaCamposDaViewCompartilhadosPorMetodos();
         configuraRecyclerAdiantamentos();
         configuraRecyclerReembolsos();
         configuraRecyclerFretes();
-        configuraUi();
-        configuraToolbar();
     }
 
-    private void configuraUi() {
-        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
+    private void inicializaCamposDaViewCompartilhadosPorMetodos() {
+        campoMotorista = binding.motorista;
+        campoPlaca = binding.placa;
+        campoData = binding.dataPagamento;
+        campoAdiantamento = binding.totalAdiantamento;
+        campoReembolso = binding.totalReembolso;
+        campoFrete = binding.totalFrete;
+    }
 
-        String placa = cavaloDao.localizaPeloId(salario.getRefCavaloId()).getPlaca();
-        String motorista = motoristaDao.localizaPeloId(salario.getRefMotoristaId()).getNome();
+    private void vincula(final CustosDeSalario salarioRecebido) {
+        final DetalhesDePagamentosGeraValoresParaUi calculaValores = new DetalhesDePagamentosGeraValoresParaUi(
+                viewModel.getDataSet_cavalo(),
+                viewModel.getDataSet_motorista(),
+                dataSetFreteRelacionadoAEstePagamento,
+                dataSetAdiantamentoRelacionadoAEstePagamento,
+                dataSetReembolsoRelacionadoAEstePagamento
+        );
+        final ResourceDetalhesDePagamentos resource = calculaValores.run(salarioRecebido);
 
-        BigDecimal somaAdiantamento = CalculoUtil.somaAdiantamentoPorUltimoValorAbatido(listaDeAdiantamentos);
+        final String data = resource.getData();
+        campoData.setText(data);
 
-        BigDecimal somaReembolso = CalculoUtil.somaCustosDePercurso(listaDeReembolsos);
+        final String motorista = resource.getMotorista();
+        campoMotorista.setText(motorista);
 
-        BigDecimal somaFrete = CalculoUtil.somaComissao(listaDeFretes);
+        final String placa = resource.getPlaca();
+        campoPlaca.setText(placa);
 
-        dataTxtView.setText(ConverteDataUtil.dataParaString(salario.getData()));
-        placaTxtView.setText(placa);
-        motoristaTxtView.setText(motorista);
+        final String frete = resource.getFrete();
+        campoFrete.setText(frete);
 
-        String valorAdiantamento = VALOR_NEGATIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaAdiantamento);
-        valorAdiantamentosTxtView.setText(valorAdiantamento);
+        final String reembolso = resource.getReembolso();
+        campoReembolso.setText(reembolso);
 
-        String valorReembolso = VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso);
-        valorReembolsosTxtView.setText(valorReembolso);
-
-        valorFretesTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaFrete));
+        final String adiantamento = resource.getAdiantamento();
+        campoAdiantamento.setText(adiantamento);
     }
 
     private void configuraRecyclerFretes() {
-        RecyclerView recycler = binding.recyclerFretes;
-        FretePagoAdapter adapter = new FretePagoAdapter(this, listaDeFretes);
-        recycler.setAdapter(adapter);
+        final RecyclerView recycler = binding.recyclerFretes;
+        adapterFrete = new FretePagoAdapter(this, new ArrayList<>());
+        recycler.setAdapter(adapterFrete);
         recyclerLinhaVerticalDecoration(recycler);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
-        recycler.setLayoutManager(layoutManager);
     }
 
     private void recyclerLinhaVerticalDecoration(@NonNull RecyclerView recycler) {
-        Drawable divider = ContextCompat.getDrawable(requireContext(), R.drawable.divider);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        final Drawable divider = ContextCompat.getDrawable(requireContext(), R.drawable.divider);
+        final DividerItemDecoration itemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         itemDecoration.setDrawable(Objects.requireNonNull(divider));
         recycler.addItemDecoration(itemDecoration);
     }
 
     private void configuraRecyclerReembolsos() {
-        RecyclerView recycler = binding.recyclerReembolsos;
-        ReembolsoPagoAdapter adapter = new ReembolsoPagoAdapter(this, listaDeReembolsos);
-        recycler.setAdapter(adapter);
+        final RecyclerView recycler = binding.recyclerReembolsos;
+        adapterReembolso = new ReembolsoPagoAdapter(this, new ArrayList<>());
+        recycler.setAdapter(adapterReembolso);
         recyclerLinhaVerticalDecoration(recycler);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
-        recycler.setLayoutManager(layoutManager);
     }
 
     private void configuraRecyclerAdiantamentos() {
-        RecyclerView recycler = binding.recyclerAdiantamentos;
-        AdiantamentoPagoAdapter adapter = new AdiantamentoPagoAdapter(this, listaDeAdiantamentos);
-        recycler.setAdapter(adapter);
+        final RecyclerView recycler = binding.recyclerAdiantamentos;
+        adapterAdiantamento = new AdiantamentoPagoAdapter(this, new ArrayList<>());
+        recycler.setAdapter(adapterAdiantamento);
         recyclerLinhaVerticalDecoration(recycler);
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this.requireContext());
-        recycler.setLayoutManager(layoutManager);
     }
 
-    private void inicializaCamposDaView() {
-        motoristaTxtView = binding.motorista;
-        placaTxtView = binding.placa;
-        dataTxtView = binding.dataPagamento;
-        valorAdiantamentosTxtView = binding.totalAdiantamento;
-        valorReembolsosTxtView = binding.totalReembolso;
-        valorFretesTxtView = binding.totalFrete;
-    }
-
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle(DETALHES_PAGAMENTO);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
-        requireActivity().addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_padrao, menu);
-                menu.removeItem(R.id.menu_padrao_search);
-                menu.removeItem(R.id.menu_padrao_editar);
-            }
-
-            @SuppressLint("NonConstantResourceId")
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.menu_padrao_logout:
-                        Toast.makeText(requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
-                        break;
-
-                    case android.R.id.home:
-                        NavController controlador = Navigation.findNavController(requireView());
-                        controlador.popBackStack();
-                }
-                return false;
-            }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-
+    public void actNotificaAtualizacao_frete() {
 
     }
+
+    public void actSolicitaAtt_adiantamento() {
+
+    }
+
+    public void actSolicitaAtt_custoPercurso() {
+
+    }
+
+}
+
+class DetalhesDePagamentosGeraValoresParaUi {
+    public static final String VALOR_NEGATIVO = "(-) ";
+    public static final String VALOR_POSITIVO = "(+) ";
+    private final List<Frete> dataSet_frete;
+    private final List<Cavalo> dataSet_cavalo;
+    private final List<Motorista> dataSet_motorista;
+    private final List<Adiantamento> dataSet_adiantamento;
+    private final List<CustosDePercurso> dataSet_custoPercurso;
+
+    DetalhesDePagamentosGeraValoresParaUi(
+            List<Cavalo> dataSetCavalo,
+            List<Motorista> dataSetMotorista,
+            List<Frete> dataSet_frete,
+            List<Adiantamento> dataSetAdiantamento,
+            List<CustosDePercurso> dataSetCustoPercurso
+    ) {
+        this.dataSet_frete = dataSet_frete;
+        this.dataSet_cavalo = dataSetCavalo;
+        this.dataSet_motorista = dataSetMotorista;
+        this.dataSet_adiantamento = dataSetAdiantamento;
+        this.dataSet_custoPercurso = dataSetCustoPercurso;
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public ResourceDetalhesDePagamentos run(final CustosDeSalario salario) {
+        final ResourceDetalhesDePagamentos resource = new ResourceDetalhesDePagamentos();
+
+        final String placa = getPlaca(salario);
+        resource.setPlaca(placa);
+
+        final String data = ConverteDataUtil.dataParaString(salario.getData());
+        resource.setData(data);
+
+        final String motorista = getMotorista(salario);
+        resource.setMotorista(motorista);
+
+        final String adiantamento_string = getAdiantamento();
+        resource.setAdiantamento(adiantamento_string);
+
+        final String reembolso_string = getReembolso();
+        resource.setReembolso(reembolso_string);
+
+        final String frete_string = getFrete();
+        resource.setFrete(frete_string);
+
+        return resource;
+    }
+
+    private String getMotorista(@NonNull final CustosDeSalario salario) {
+        final Motorista motorista = FiltraMotorista.localizaPeloId(dataSet_motorista, salario.getRefMotoristaId());
+        return motorista.getNome();
+    }
+
+    @NonNull
+    private String getFrete() {
+        final BigDecimal somaFrete = CalculoUtil.somaComissao(dataSet_frete);
+        return FormataNumerosUtil.formataMoedaPadraoBr(somaFrete);
+    }
+
+    @NonNull
+    private String getReembolso() {
+        final BigDecimal somaReembolso = CalculoUtil.somaCustosDePercurso(dataSet_custoPercurso);
+        return VALOR_POSITIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaReembolso);
+    }
+
+    @NonNull
+    private String getAdiantamento() {
+        final BigDecimal somaAdiantamento = CalculoUtil.somaAdiantamentoPorUltimoValorAbatido(dataSet_adiantamento);
+        return VALOR_NEGATIVO + FormataNumerosUtil.formataMoedaPadraoBr(somaAdiantamento);
+    }
+
+    private String getPlaca(@NonNull final CustosDeSalario salario) {
+        String placa = null;
+        final Cavalo cavalo = (Cavalo) FiltraCavalo.localizaPeloId(dataSet_cavalo, salario.getRefCavaloId());
+        if (cavalo != null) {
+            placa = cavalo.getPlaca();
+        }
+        return placa;
+    }
+
+}
+
+class ResourceDetalhesDePagamentos {
+    private String placa;
+    private String data;
+    private String motorista;
+    private String adiantamento;
+    private String reembolso;
+    private String frete;
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public void setPlaca(String placa) {
+        this.placa = placa;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getMotorista() {
+        return motorista;
+    }
+
+    public void setMotorista(String motorista) {
+        this.motorista = motorista;
+    }
+
+    public String getAdiantamento() {
+        return adiantamento;
+    }
+
+    public void setAdiantamento(String adiantamento) {
+        this.adiantamento = adiantamento;
+    }
+
+    public String getReembolso() {
+        return reembolso;
+    }
+
+    public void setReembolso(String reembolso) {
+        this.reembolso = reembolso;
+    }
+
+    public String getFrete() {
+        return frete;
+    }
+
+    public void setFrete(String frete) {
+        this.frete = frete;
+    }
+
 }

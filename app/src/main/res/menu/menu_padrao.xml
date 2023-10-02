@@ -13,7 +13,8 @@
         android:id="@+id/menu_padrao_editar"
         android:icon="@drawable/ic_baseline_mode_edit_24"
         android:title="@string/editar"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
         android:id="@+id/menu_padrao_logout"

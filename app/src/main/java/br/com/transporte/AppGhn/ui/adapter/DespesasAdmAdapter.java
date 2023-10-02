@@ -15,20 +15,18 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmDiretasFragment;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.ViewHolder> {
     private final DespesasAdmDiretasFragment context;
     private final List<DespesaAdm> dataSet;
     private final RoomCavaloDao cavaloDao;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -82,8 +80,8 @@ public class DespesasAdmAdapter extends RecyclerView.Adapter<DespesasAdmAdapter.
     }
 
     public void vincula(@NonNull ViewHolder holder, @NonNull DespesaAdm despesa) {
-        String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
-        holder.placaTxtView.setText(placa);
+     //   String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
+     //   holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(despesa.getValorDespesa()));
         holder.dataTxtView.setText(ConverteDataUtil.dataParaString(despesa.getData()));
         holder.descricaoTxtView.setText(despesa.getDescricao());

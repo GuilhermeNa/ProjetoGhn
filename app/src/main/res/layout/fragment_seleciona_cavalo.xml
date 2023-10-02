@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:bind="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.SelecionaCavalo">
+    tools:context=".ui.fragment.selecionaCavalo.SelecionaCavalo">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

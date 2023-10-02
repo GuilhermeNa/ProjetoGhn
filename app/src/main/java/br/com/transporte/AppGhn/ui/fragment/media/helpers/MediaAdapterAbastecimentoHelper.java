@@ -6,6 +6,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -67,10 +68,11 @@ public class MediaAdapterAbastecimentoHelper {
 
     private List<CustosDeAbastecimento> getListaDeAbastecimentosComFlags(Long cavaloId) {
         RoomCustosAbastecimentoDao abastecimentoDao = GhnDataBase.getInstance(context).getRoomCustosAbastecimentoDao();
-        return abastecimentoDao.todos().stream()
+        /*return abastecimentoDao.todos().stream()
                 .filter(c -> c.getRefCavaloId() == cavaloId)
                 .filter(CustosDeAbastecimento::isFlagAbastecimentoTotal)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
+        return new ArrayList<>();
     }
 
     private String armazenaItemSelecionado(CustosDeAbastecimento abastecimento) {

@@ -43,9 +43,8 @@ public class DescontaAdiantamento {
                     try {
                         novoValorADescontar = new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString()));
                         verificaValidadeDoNovoDesconto(novoValorADescontar);
-                        callback.quandoFunciona(adiantamento.getId(), novoValorADescontar,
-                                "Valor alterado com sucesso");
-                    } catch(ArrayIndexOutOfBoundsException e){
+                        callback.quandoFunciona(adiantamento.getId(), novoValorADescontar,"Valor alterado com sucesso");
+                    } catch(ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e){
                         e.printStackTrace();
                         callback.quandoFalha("Preencha o campo valor.");
                     }

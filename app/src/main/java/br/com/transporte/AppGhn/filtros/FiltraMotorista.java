@@ -14,17 +14,24 @@ import br.com.transporte.AppGhn.model.Motorista;
 public class FiltraMotorista {
 
     @NonNull
-    public static Motorista localizaPeloId(@NonNull List<Motorista> dataSet, Long morotistaId) {
-        return dataSet.stream()
-                .filter(m -> m.getId() == morotistaId)
-                .findAny().get();
+    public static Motorista localizaPeloId(
+            @NonNull final List<Motorista> dataSet,
+            final Long morotistaId
+    ) {
+        Motorista motoristaLocalizado = null;
+        for (Motorista m : dataSet) {
+            if (m.getId() == morotistaId) {
+                motoristaLocalizado = m;
+            }
+        }
+        return motoristaLocalizado;
     }
 
     @NonNull
-    public static List<String> listaDeNomes(@NonNull List<Motorista> listaDeMotoristas){
+    public static List<String> listaDeNomes(@NonNull List<Motorista> listaDeMotoristas) {
         List<String> dataSet = new ArrayList<>();
 
-        for (Motorista m: listaDeMotoristas){
+        for (Motorista m : listaDeMotoristas) {
             dataSet.add(m.getNome());
         }
 
@@ -33,8 +40,8 @@ public class FiltraMotorista {
 
     public static Motorista localizaPeloNome(@NonNull List<Motorista> dataSet, String nome) {
         Motorista motoristaEncontrado = null;
-        for (Motorista m: dataSet) {
-            if(m.getNome().toUpperCase(Locale.ROOT).equals(nome.toUpperCase(Locale.ROOT))){
+        for (Motorista m : dataSet) {
+            if (m.getNome().toUpperCase(Locale.ROOT).equals(nome.toUpperCase(Locale.ROOT))) {
                 motoristaEncontrado = m;
             }
         }

@@ -5,19 +5,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.activity.FreteAReceberActivity">
+    tools:context=".ui.activity.freteAReceberActivity.FreteAReceberActivity">
+
+   <include
+       android:id="@+id/toolbar_layout"
+       android:layout_height="wrap_content"
+       android:layout_width="fill_parent"
+       layout="@layout/toolbar"/>
+
+    <include
+        android:id="@+id/date_picker_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_marginHorizontal="64dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        layout="@layout/datepicker"/>
 
     <fragment
         android:id="@+id/nav_host_fragment_container_frete_receber"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+
         app:defaultNavHost="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/nav_graph_frete_receber" />
+        app:layout_constraintTop_toBottomOf="@id/date_picker_layout"
+        app:navGraph="@navigation/nav_graph_frete_receber"
+        tools:ignore="FragmentTagUsage" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -26,5 +45,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:menu="@menu/menu_frete_receber_bottomapp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

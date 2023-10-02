@@ -22,7 +22,6 @@ import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,34 +42,36 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
-import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.databinding.FragmentFrotaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.SemiReboque;
-import br.com.transporte.AppGhn.tasks.cavalo.BuscaTodosCavalosTask;
-import br.com.transporte.AppGhn.tasks.BuscaTodosMotoristasTask;
-import br.com.transporte.AppGhn.tasks.reboque.BuscaTodosReboquesTask;
+import br.com.transporte.AppGhn.repository.CavaloRepository;
+import br.com.transporte.AppGhn.repository.MotoristaRepository;
+import br.com.transporte.AppGhn.repository.ReboqueRepository;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.FrotaSrAdapter;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.adapters.CavaloAdapter;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.dialog.DefineMotorista;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.helpers.FrotaMenuProviderHelper;
+import br.com.transporte.AppGhn.ui.viewmodel.FrotaViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FrotaViewModelFactory;
 import br.com.transporte.AppGhn.util.AnimationUtil;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
@@ -85,63 +86,45 @@ public class FrotaFragment extends Fragment {
     private Button btnNovoCavalo;
     private RecyclerView recyclerReboques;
     private LinearLayout buscaVazia;
-    // --------- DataBase
-    private RoomCavaloDao cavaloDao;
-    private RoomSemiReboqueDao reboqueDao;
     // --------- Listas
     private List<Cavalo> dataSetCavalo;
-    private List<SemiReboque> dataSetReboque;
     private List<Motorista> dataSetMotorista;
 
     // --------- Variaveis de Fragment
     private boolean janelaFechada = true;
-    private ExecutorService executorService;
-    private Handler handler;
     private FrotaMenuProviderHelper menuProviderHelper;
     private CavaloAdapter adapterCavalo;
     private FrotaSrAdapter adapterReboques;
-    private RoomMotoristaDao motoristaDao;
+    private FrotaViewModel viewModel;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-
                 switch (codigoResultado) {
                     case RESULT_OK:
-                        Toast.makeText(requireContext(), REGISTRO_CRIADO, Toast.LENGTH_SHORT).show();
-                        atualizaAposResultLauncher();
+                        MensagemUtil.toast(requireContext(), REGISTRO_CRIADO);
                         break;
                     case RESULT_DELETE:
-                        Toast.makeText(requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
-                        atualizaAposResultLauncher();
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
                     case RESULT_EDIT:
-                        Toast.makeText(requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
-                        atualizaAposResultLauncher();
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
                 }
             });
 
-    private void atualizaAposResultLauncher() {
-        atualizaDataSetCavalo(executorService, handler);
-        atualizaDataSetReboque(executorService, handler);
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(this.dataSetCavalo.size(), buscaVazia, recyclerCavalos, VIEW_INVISIBLE);
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(this.dataSetReboque.size(), null, recyclerReboques, VIEW_GONE);
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(this.dataSetReboque.size(), null, headerRecyclerReboque, VIEW_GONE);
-    }
-
-    protected List<Cavalo> getDataSetCavalo() {
+    @NonNull
+    @Contract(" -> new")
+    private List<Cavalo> getDataSetCavalo() {
         return new ArrayList<>(this.dataSetCavalo);
     }
 
-    protected List<SemiReboque> getDataSetReboque() {
-        return new ArrayList<>(this.dataSetReboque);
-    }
-
-    protected List<Motorista> getDataSetMotorista(){
+    @NonNull
+    @Contract(" -> new")
+    private List<Motorista> getDataSetMotorista() {
         return new ArrayList<>(this.dataSetMotorista);
     }
 
@@ -152,62 +135,95 @@ public class FrotaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
-        inicializaThreadSecundaria();
-        atualizaDataSetMotorista(executorService, handler);
-        atualizaDataSetReboque(executorService, handler);
-        atualizaDataSetCavalo(executorService, handler);
+        inicializaViewModel();
+        solicitaDataParaViewModel();
     }
 
-    private void inicializaThreadSecundaria() {
-        final GhnApplication application = new GhnApplication();
-        executorService = application.getExecutorService();
-        handler = application.getMainThreadHandler();
+    private void inicializaViewModel() {
+        final MotoristaRepository motoristaRepository = new MotoristaRepository(requireContext());
+        final CavaloRepository cavaloRepository = new CavaloRepository(requireContext());
+        final ReboqueRepository reboqueRepository = new ReboqueRepository(requireContext());
+        final FrotaViewModelFactory factory =
+                new FrotaViewModelFactory(
+                        reboqueRepository,
+                        motoristaRepository,
+                        cavaloRepository
+                );
+        final ViewModelProvider provedor = new ViewModelProvider(this, factory);
+        viewModel = provedor.get(FrotaViewModel.class);
     }
 
-    private void inicializaDataBase() {
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        cavaloDao = dataBase.getRoomCavaloDao();
-        reboqueDao = dataBase.getRoomReboqueDao();
-        motoristaDao = dataBase.getRoomMotoristaDao();
+    private void solicitaDataParaViewModel() {
+        dataMotorista();
+        dataCavalo();
+        dataReboque();
     }
 
-    private void atualizaDataSetMotorista(ExecutorService executorService, Handler handler) {
-        BuscaTodosMotoristasTask buscaMotoristaTask = new BuscaTodosMotoristasTask(executorService, handler);
-        buscaMotoristaTask.solicitaBusca(motoristaDao, todosMotoristas -> {
-            if (dataSetMotorista == null) dataSetMotorista = new ArrayList<>();
-            this.dataSetMotorista.clear();
-            this.dataSetMotorista.addAll(todosMotoristas);
-            adapterCavalo.atualizaDataSet_motorista(getDataSetMotorista());
-        });
+    private void dataMotorista() {
+        viewModel.buscaMotoristas().observe(this,
+                resource -> {
+                    final List<Motorista> listaMotorista = resource.getDado();
+                    final String erro = resource.getErro();
+                    if (listaMotorista != null) {
+                        configuraDataSetMotoristaParaContextMenu(listaMotorista);
+                        adapterCavalo.atualizaDataSet_motorista(listaMotorista);
+                    }
+                    if (erro != null) {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
-    protected void atualizaDataSetReboque(ExecutorService executorService, Handler handler) {
-        final BuscaTodosReboquesTask reboqueTask = new BuscaTodosReboquesTask(executorService, handler);
-        reboqueTask.solicitaBusca(reboqueDao, todosReboques -> {
-            if (dataSetReboque == null) dataSetReboque = new ArrayList<>();
-            this.dataSetReboque.clear();
-            this.dataSetReboque.addAll(todosReboques);
-            menuProviderHelper.atualizaReboques(getDataSetReboque());
-            adapterReboques.atualiza(getDataSetReboque());
-            adapterCavalo.atualizaDataSet_reboque(getDataSetReboque());
-        });
+    private void configuraDataSetMotoristaParaContextMenu(List<Motorista> listaMotorista) {
+        if (dataSetMotorista == null) dataSetMotorista = new ArrayList<>();
+        this.dataSetMotorista.clear();
+        this.dataSetMotorista.addAll(listaMotorista);
     }
 
-    protected void atualizaDataSetCavalo(ExecutorService executorService, Handler handler) {
-        final BuscaTodosCavalosTask cavalosTask = new BuscaTodosCavalosTask(executorService, handler);
-        cavalosTask.solicitaBusca(cavaloDao, todosCavalos -> {
-            if (dataSetCavalo == null) dataSetCavalo = new ArrayList<>();
-            this.dataSetCavalo.clear();
-            this.dataSetCavalo.addAll(todosCavalos);
-            menuProviderHelper.atualizaCavalos(getDataSetCavalo());
-            adapterCavalo.atualiza(getDataSetCavalo());
-        });
+    private void dataCavalo() {
+        viewModel.buscaCavalos().observe(this,
+                resource -> {
+                    final List<Cavalo> listaCavalos = resource.getDado();
+                    final String erro = resource.getErro();
+                    int listaSize = 0;
+                    if (listaCavalos != null) {
+                        listaSize = listaCavalos.size();
+                        configuraDataSetCavaloParaContextMenu(listaCavalos);
+                        menuProviderHelper.atualizaCavalos(listaCavalos);
+                        adapterCavalo.atualiza(listaCavalos);
+                    }
+                    if (erro != null) {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                    ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaSize, buscaVazia, recyclerCavalos, VIEW_INVISIBLE);
+                });
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          On Create View                                    ||
-    //----------------------------------------------------------------------------------------------
+    private void configuraDataSetCavaloParaContextMenu(List<Cavalo> listaCavalos) {
+        if (dataSetCavalo == null) dataSetCavalo = new ArrayList<>();
+        this.dataSetCavalo.clear();
+        this.dataSetCavalo.addAll(listaCavalos);
+    }
+
+    private void dataReboque() {
+        viewModel.buscaReboques().observe(this,
+                resource -> {
+                    final List<SemiReboque> listaReboques = resource.getDado();
+                    final String erro = resource.getErro();
+                    int listaSize = 0;
+                    if (listaReboques != null) {
+                        listaSize = listaReboques.size();
+                        menuProviderHelper.atualizaReboques(listaReboques);
+                        adapterReboques.atualiza(listaReboques);
+                        adapterCavalo.atualizaDataSet_reboque(listaReboques);
+                    }
+                    if (erro != null) {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                    ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaSize, null, recyclerReboques, VIEW_GONE);
+                    ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaSize, null, headerRecyclerReboque, VIEW_GONE);
+                });
+    }
 
     @Nullable
     @Override
@@ -355,7 +371,7 @@ public class FrotaFragment extends Fragment {
 
                 @Override
                 public void quandoSucesso() {
-                    atualizaDataSetCavalo(executorService, handler);
+                    MensagemUtil.toast(requireContext(), "Motorista definido com sucesso");
                 }
             });
         }

@@ -144,7 +144,8 @@ public class ExibeParcelasFrotaDialog {
 
     private Cavalo getCavalo(@NonNull DespesaComSeguroFrota seguro) {
         RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        return cavaloDao.localizaPeloId(seguro.getRefCavaloId());
+    //    return cavaloDao.localizaPeloId(seguro.getRefCavaloId());
+        return new Cavalo();
     }
 
     @NonNull

@@ -1,7 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_DEZ;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 
@@ -16,22 +19,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioFreteBinding;
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
-import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.helpers.FreteHelper;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.FreteRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioFreteViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioFreteViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioFreteFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de frete que já existe.";
@@ -39,22 +43,30 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     private EditText dataEdit, origemEdit, destinoEdit, empresaEdit, cargaEdit, freteBrutoEdit,
             descontosEdit, seguroCargaEdit, pesoEdit;
     private Frete frete;
-    private RoomFreteDao freteDao;
     private TextInputLayout dataLayout;
+    private FormularioFreteViewModel viewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        freteDao = GhnDataBase.getInstance(requireContext()).getRoomFreteDao();
+        inicializaViewModel();
+        recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         long freteId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(freteId);
         frete = (Frete) criaOuRecuperaObjeto(freteId);
     }
 
+    private void inicializaViewModel() {
+        final FreteRepository freteRepository = new FreteRepository(requireContext());
+        final FormularioFreteViewModelFactory factory = new FormularioFreteViewModelFactory(freteRepository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioFreteViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       binding = FragmentFormularioFreteBinding.inflate(getLayoutInflater());
+        binding = FragmentFormularioFreteBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
 
@@ -82,10 +94,17 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Long freteId = (Long)id;
+        Long freteId = (Long) id;
 
-        if(getTipoFormulario() == TipoFormulario.EDITANDO){
-            frete = freteDao.localizaPeloId(freteId);
+        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
+            viewModel.localizaFrete(freteId).observe(this,
+                    freteRecebido -> {
+                        if (freteRecebido != null) {
+                            viewModel.freteArmazenado = freteRecebido;
+                            frete = freteRecebido;
+                            bind();
+                        }
+                    });
         } else {
             frete = new Frete();
         }
@@ -99,7 +118,8 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public void alteraUiParaModoCriacao() {}
+    public void alteraUiParaModoCriacao() {
+    }
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
@@ -153,54 +173,59 @@ public class FormularioFreteFragment extends FormularioBaseFragment {
     @Override
     public void editaObjetoNoBancoDeDados() {
         recalculoDeValoresAposEdicao();
-        freteDao.substitui(frete);
+        viewModel.salva(frete).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        freteDao.deleta(frete);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        freteDao.adiciona(frete);
+        viewModel.salva(frete).observe(this,
+                freteId -> {
+                    if (freteId != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
-        Cavalo cavalo = recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
-
-        BigDecimal comissaoPercentual;
-        try{
-            comissaoPercentual = FreteHelper.vinculaComissaoAplicada(cavalo.getComissaoBase());
-            frete.setComissaoPercentualAplicada(comissaoPercentual);
+        try {
+            frete.vinculaComissaoAplicada(cavaloRecebido.getComissaoBase());
         } catch (ValorInvalidoException e) {
             e.printStackTrace();
-            comissaoPercentual = BIG_DECIMAL_DEZ;
+            frete.setComissaoPercentualAplicada(BIG_DECIMAL_DEZ);
         }
-
-        BigDecimal valorComissao = FreteHelper.calculaComissao(comissaoPercentual, this.frete.getFreteBruto());
-        frete.setComissaoAoMotorista(valorComissao);
-
-        BigDecimal valorLiquido = FreteHelper.calculaFreteLiquidoAReceber(this.frete.getFreteBruto(), this.frete.getDescontos(), this.frete.getSeguroDeCarga());
-        frete.setFreteLiquidoAReceber(valorLiquido);
+        frete.calculaComissao();
+        frete.calculaFreteLiquidoAReceber();
 
         frete.setComissaoJaFoiPaga(false);
         frete.setFreteJaFoiPago(false);
         frete.setApenasAdmEdita(false);
-        frete.setRefCavaloId(cavalo.getId());
+        frete.setRefCavaloId(cavaloRecebido.getId());
         return null;
     }
 
-    private void recalculoDeValoresAposEdicao(){
-        BigDecimal valorLiquido = FreteHelper.calculaFreteLiquidoAReceber(this.frete.getFreteBruto(), this.frete.getDescontos(), this.frete.getSeguroDeCarga());
-        frete.setFreteLiquidoAReceber(valorLiquido);
-
-        BigDecimal comissaoPercentual = frete.getComissaoPercentualAplicada();
-        BigDecimal valorComissao = FreteHelper.calculaComissao(comissaoPercentual, this.frete.getFreteBruto());
-        frete.setComissaoAoMotorista(valorComissao);
-
+    private void recalculoDeValoresAposEdicao() {
+        frete.calculaFreteLiquidoAReceber();
+        frete.calculaComissao();
     }
 
 }

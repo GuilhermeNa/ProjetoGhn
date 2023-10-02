@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,13 @@ public class ReembolsoPagoAdapter extends RecyclerView.Adapter <ReembolsoPagoAda
     public ReembolsoPagoAdapter(ComissoesPagasDetalhesFragment context, List<CustosDePercurso> lista) {
         this.context = context;
         this.dataSet = lista;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualizaData(final List<CustosDePercurso> dataSet) {
+        this.dataSet.clear();
+        this.dataSet.addAll(dataSet);
+        notifyDataSetChanged();
     }
 
     //----------------------------------------------------------------------------------------------

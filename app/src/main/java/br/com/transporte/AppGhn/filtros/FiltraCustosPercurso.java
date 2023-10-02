@@ -1,7 +1,5 @@
 package br.com.transporte.AppGhn.filtros;
 
-import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
-
 import androidx.annotation.NonNull;
 
 import java.time.LocalDate;
@@ -9,30 +7,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.util.DataUtil;
 
 public class FiltraCustosPercurso {
-    private final static CustosDePercursoDAO dao = new CustosDePercursoDAO();
 
     @NonNull
-    public static CustosDePercurso localizaPeloId(int custoId) throws ObjetoNaoEncontrado {
+    public static CustosDePercurso localizaPeloId(@NonNull final List<CustosDePercurso> dataSet, final Long custoId) {
         CustosDePercurso custoLocalizado = null;
-
-        for (CustosDePercurso c : dao.listaTodos()) {
+        for (CustosDePercurso c : dataSet) {
             if (c.getId() == custoId) {
                 custoLocalizado = c;
             }
         }
-
-        if (custoLocalizado != null) {
-            return custoLocalizado;
-        }
-
-        throw new ObjetoNaoEncontrado(OBJETO_NULL);
-
+        return custoLocalizado;
     }
 
     public static List<CustosDePercurso> listaPorCavaloId(@NonNull List<CustosDePercurso> dataSet, Long cavaloId) {
@@ -53,13 +42,13 @@ public class FiltraCustosPercurso {
                 .collect(Collectors.toList());
     }
 
-    public static List<CustosDePercurso> listaPorAno(@NonNull List<CustosDePercurso> dataSet, int ano){
+    public static List<CustosDePercurso> listaPorAno(@NonNull List<CustosDePercurso> dataSet, int ano) {
         return dataSet.stream()
                 .filter(c -> c.getData().getYear() == ano)
                 .collect(Collectors.toList());
     }
 
-    public static List<CustosDePercurso> listaPorMes(@NonNull List<CustosDePercurso> dataSet, int mes){
+    public static List<CustosDePercurso> listaPorMes(@NonNull List<CustosDePercurso> dataSet, int mes) {
         return dataSet.stream()
                 .filter(c -> c.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

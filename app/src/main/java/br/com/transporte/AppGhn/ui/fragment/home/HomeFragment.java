@@ -98,7 +98,7 @@ public class HomeFragment extends Fragment {
         ImageView logoutImg = binding.fragMotoristasLogout;
         categoriasTxt.setVisibility(View.INVISIBLE);
         logoutImg.setVisibility(View.INVISIBLE);
-        Animation animationLogout = AnimationUtils.loadAnimation(requireContext(), R.anim.anim_logout);
+        Animation animationLogout = AnimationUtils.loadAnimation(requireContext(), R.anim.anim_piscar);
 
         ImageView bannerCategorias = binding.categoriasBanner;
         LinearLayout containerCategorias = binding.categoriasContainer;

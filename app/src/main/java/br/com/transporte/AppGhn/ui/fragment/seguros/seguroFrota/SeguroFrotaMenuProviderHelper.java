@@ -77,10 +77,10 @@ public class SeguroFrotaMenuProviderHelper implements MenuProvider {
 
             private void realizaBuscaNoBancoDeDados(String newText, List<DespesaComSeguroFrota> lista) {
                 for (DespesaComSeguroFrota d : copiaDataSet) {
-                    String placa = cavaloDao.localizaPeloId(d.getRefCavaloId()).getPlaca();
-                    if (placa.toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
-                        lista.add(d);
-                    }
+             //       String placa = cavaloDao.localizaPeloId(d.getRefCavaloId()).getPlaca();
+              //      if (placa.toUpperCase(Locale.ROOT).contains(newText.toUpperCase(Locale.ROOT))) {
+              //          lista.add(d);
+              //      }
                 }
             }
 

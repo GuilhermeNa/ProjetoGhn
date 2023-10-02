@@ -22,6 +22,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -35,7 +36,15 @@ import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioAdiantamentoBinding;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.AdiantamentoRepository;
+import br.com.transporte.AppGhn.repository.CavaloRepository;
+import br.com.transporte.AppGhn.repository.MotoristaRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioAdiantamentoViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioBaseViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioAdiantamentoViewModelFactory;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioBaseViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
@@ -44,19 +53,34 @@ import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
 public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
     private FragmentFormularioAdiantamentoBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de adiantamento que já existe.";
-    private RoomAdiantamentoDao adiantamentoDao;
     private Adiantamento adiantamento;
     private EditText dataEdit, valorEdit, descricaoEdit;
     private TextInputLayout dataLayout;
-    private Cavalo cavalo;
-    private TextView placa, motorista;
-    private GhnDataBase dataBase;
+    private TextView placa, campoMotorista;
+    private FormularioAdiantamentoViewModel viewModel;
+    private Motorista motorista;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          On Create                                         ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dataBase = GhnDataBase.getInstance(requireContext());
-        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
+        inicializaViewModel();
+        recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
+        long adiantamentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        defineTipoEditandoOuCriando(adiantamentoId);
+        adiantamento = (Adiantamento) criaOuRecuperaObjeto(adiantamentoId);
+
+    }
+
+    private void inicializaViewModel() {
+        final AdiantamentoRepository adiantamentoRepository = new AdiantamentoRepository(requireContext());
+        final MotoristaRepository motoristaRepository = new MotoristaRepository(requireContext());
+        final FormularioAdiantamentoViewModelFactory factory = new FormularioAdiantamentoViewModelFactory(motoristaRepository, adiantamentoRepository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioAdiantamentoViewModel.class);
     }
 
     @Nullable
@@ -66,36 +90,25 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-
-        cavalo = recebeReferenciaExternaDeCavalo();
-        long adiantamentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
-        defineTipoEditandoOuCriando(adiantamentoId);
-        adiantamento = (Adiantamento) criaOuRecuperaObjeto(adiantamentoId);
-
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
-        configuracoesAdicionaisUi();
     }
 
-    private void configuracoesAdicionaisUi() {
-        placa.setText(cavalo.getPlaca());
-
-        try{
-            String nome = dataBase.getRoomMotoristaDao().localizaPeloId(cavalo.getRefMotoristaId()).getNome();
-            motorista.setText(nome);
-        } catch (NullPointerException ignore){
-            motorista.setText("S/M");
+    private void configuracoesAdicionaisUi(final Motorista motorista) {
+        placa.setText(cavaloRecebido.getPlaca());
+        if (motorista != null) {
+            campoMotorista.setText(motorista.getNome());
+        } else {
+            campoMotorista.setText("...");
         }
-    }
-
-    private Cavalo recebeReferenciaExternaDeCavalo() {
-        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        Long cavaloId = getArguments().getLong(CHAVE_ID_CAVALO);
-        return cavaloDao.localizaPeloId(cavaloId);
     }
 
     @Override
@@ -105,18 +118,54 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
         valorEdit = binding.valor;
         descricaoEdit = binding.descricao;
         placa = binding.placa;
-        motorista = binding.motorista;
+        campoMotorista = binding.motorista;
     }
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
         Long adiantamentoId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            adiantamento = adiantamentoDao.localizaPeloId(adiantamentoId);
+            viewModel.localizaAdiantamento(adiantamentoId).observe(this,
+                    adiantamentoRecebido -> {
+                        if (adiantamentoRecebido != null) {
+                            viewModel.adiantamentoArmazenado = adiantamentoRecebido;
+                            adiantamento = adiantamentoRecebido;
+                            bind();
+                        }
+                    });
         } else {
             adiantamento = new Adiantamento();
         }
+
         return adiantamento;
+    }
+
+    @Override
+    protected void recebeReferenciaExternaDeCavalo(String chave) {
+        CavaloRepository repository = new CavaloRepository(requireContext());
+        FormularioBaseViewModelFactory factory = new FormularioBaseViewModelFactory(repository);
+        ViewModelProvider provedor = new ViewModelProvider(this, factory);
+        FormularioBaseViewModel viewModel = provedor.get(FormularioBaseViewModel.class);
+
+        final Bundle bundle = getArguments();
+        final long cavaloId = bundle.getLong(chave);
+
+        viewModel.localizaCavalo(cavaloId).observe(this,
+                cavalo -> {
+                    if (cavalo != null) {
+                        cavaloRecebido = cavalo;
+                        buscaMotorista(cavaloRecebido.getRefMotoristaId());
+                    }
+                });
+
+    }
+
+    private void buscaMotorista(@NonNull Long motoristaId) {
+        viewModel.localizaMotorista(motoristaId).observe(this,
+                motoristaRecebido -> {
+                    motorista = motoristaRecebido;
+                    configuracoesAdicionaisUi(motoristaRecebido);
+                });
     }
 
     @Override
@@ -127,6 +176,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public void alteraUiParaModoCriacao() {
+        configuracoesAdicionaisUi(motorista);
     }
 
     @Override
@@ -159,27 +209,43 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        adiantamentoDao.adiciona(adiantamento);
+        viewModel.salva(adiantamento).observe(this,
+                ignore -> {
+                    Intent intent = new Intent();
+                    intent.putExtra(CHAVE_ADIANTAMENTO, adiantamento);
+                    requireActivity().setResult(RESULT_EDIT, intent);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        adiantamentoDao.adiciona(adiantamento);
+        viewModel.salva(adiantamento).observe(this,
+                id -> {
+                    requireActivity().setResult(RESULT_OK);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
         adiantamento.setAdiantamentoJaFoiPago(false);
-        adiantamento.setRefCavaloId(cavalo.getId());
-        adiantamento.setRefMotoristaId(cavalo.getRefMotoristaId());
+        adiantamento.setRefCavaloId(cavaloRecebido.getId());
+        adiantamento.setRefMotoristaId(cavaloRecebido.getRefMotoristaId());
         adiantamento.setSaldoRestituido(new BigDecimal(BigInteger.ZERO));
         return null;
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        adiantamentoDao.deleta(adiantamento);
+        viewModel.deleta().observe(this,
+                ignore -> {
+                    Intent intent = new Intent();
+                    intent.putExtra(CHAVE_ID, adiantamento.getId());
+                    requireActivity().setResult(RESULT_DELETE, intent);
+                    requireActivity().finish();
+                });
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -207,8 +273,6 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
                             if (isCompletoParaSalvar()) {
                                 vinculaDadosAoObjeto();
                                 adicionaObjetoNoBancoDeDados();
-                                requireActivity().setResult(RESULT_OK);
-                                requireActivity().finish();
                             } else {
                                 setCompletoParaSalvar(true);
                             }
@@ -229,10 +293,6 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
                             if (isCompletoParaSalvar()) {
                                 vinculaDadosAoObjeto();
                                 editaObjetoNoBancoDeDados();
-                                Intent intent = new Intent();
-                                intent.putExtra(CHAVE_ADIANTAMENTO, adiantamento);
-                                requireActivity().setResult(RESULT_EDIT, intent);
-                                requireActivity().finish();
                             } else {
                                 setCompletoParaSalvar(true);
                             }
@@ -248,13 +308,7 @@ public class FormularioAdiantamentoFragment extends FormularioBaseFragment {
                         setTitle(APAGA_REGISTRO_TITULO).
                         setMessage(APAGA_REGISTRO_TXT).
                         setPositiveButton(SIM, (dialog, which) -> {
-                            Intent intent = new Intent();
-                            intent.putExtra(CHAVE_ID, adiantamento.getId());
-                            requireActivity().setResult(RESULT_DELETE, intent);
-
                             deletaObjetoNoBancoDeDados();
-
-                            requireActivity().finish();
                         }).
                         setNegativeButton(NAO, null).show();
                 break;

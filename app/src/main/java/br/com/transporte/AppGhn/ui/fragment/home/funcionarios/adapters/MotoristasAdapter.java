@@ -17,19 +17,19 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.ViewHolder> {
     private final FuncionariosFragment context;
     private List<Motorista> dataSet;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
     public MotoristasAdapter(FuncionariosFragment context, List<Motorista> lista) {
         this.context = context;
         this.dataSet = lista;
     }
 
-    public void setonItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setonItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

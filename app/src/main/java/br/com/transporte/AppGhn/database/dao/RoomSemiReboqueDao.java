@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -21,13 +22,13 @@ public interface RoomSemiReboqueDao {
     void deleta(SemiReboque sr);
 
     @Query("SELECT *FROM semireboque")
-    List<SemiReboque> todos();
+    LiveData<List<SemiReboque>> todos();
 
     @Query("SELECT * FROM semireboque WHERE refCavaloId = :cavaloId")
-    List<SemiReboque> listaPorCavaloId(Long cavaloId);
+    LiveData<SemiReboque> listaPorCavaloId(Long cavaloId);
 
     @Query("SELECT * FROM semireboque WHERE id = :srId")
-    SemiReboque localizaPeloId(Long srId);
+    LiveData<SemiReboque> localizaPeloId(Long srId);
 
     @Update
     void substitui(SemiReboque reboque);

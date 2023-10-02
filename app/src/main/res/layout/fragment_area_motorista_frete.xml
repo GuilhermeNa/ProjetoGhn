@@ -6,7 +6,7 @@
     android:id="@+id/act_area_motorista_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.AreaMotoristaActivity">
+    tools:context=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
 
     <TextView
         android:id="@+id/frag_frete_total_receber_txt"

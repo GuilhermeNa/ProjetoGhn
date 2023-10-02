@@ -10,7 +10,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CERT
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -33,7 +31,7 @@ import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.ActivityCertificadosBinding;
-import br.com.transporte.AppGhn.ui.activity.extensions.StatusBarUtil;
+import br.com.transporte.AppGhn.ui.activity.util.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment;
 

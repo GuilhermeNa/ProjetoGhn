@@ -41,7 +41,7 @@ public class AlteraComissao {
                     try{
                         String novoPercentual = novoPercentualEdit.getText().toString();
                         frete.setComissaoPercentualAplicada(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(novoPercentual)));
-                        frete.setComissaoAoMotorista(FreteHelper.calculaComissao(frete.getComissaoPercentualAplicada(), frete.getFreteBruto()));
+                        frete.calculaComissao();
                         callback.quandoFunciona(frete, "Alteração realizada com sucesso");
                     } catch (ArrayIndexOutOfBoundsException e) {
                         e.printStackTrace();

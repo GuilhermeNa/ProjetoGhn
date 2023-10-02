@@ -22,7 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.ActivityDespesasAdmBinding;
-import br.com.transporte.AppGhn.ui.activity.extensions.StatusBarUtil;
+import br.com.transporte.AppGhn.ui.activity.util.StatusBarUtil;
 
 public class DespesasAdmActivity extends AppCompatActivity {
     private ActivityDespesasAdmBinding binding;

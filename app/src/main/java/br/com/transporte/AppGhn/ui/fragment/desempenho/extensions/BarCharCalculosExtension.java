@@ -571,7 +571,7 @@ public class BarCharCalculosExtension {
             case COMISSAO:
             case LUCRO_LIQUIDO:
 
-                if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
+           /*     if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
                     return freteDao.todos().stream()
                             .filter(frete -> frete.getData().getYear() == ano)
                             .collect(Collectors.toList());
@@ -605,10 +605,10 @@ public class BarCharCalculosExtension {
                             .filter(custosDePercurso -> custosDePercurso.getData().getYear() == ano)
                             .filter(custosDePercurso -> custosDePercurso.getRefCavaloId() == id)
                             .collect(Collectors.toList());
-                }
+                }*/
 
             case CUSTOS_MANUTENCAO:
-                if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
+              /*  if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
                     return custosManutencaoDao.todos().stream()
                             .filter(custosDeManutencao -> custosDeManutencao.getData().getYear() == ano)
                             .collect(Collectors.toList());
@@ -617,7 +617,7 @@ public class BarCharCalculosExtension {
                             .filter(custosDeManutencao -> custosDeManutencao.getData().getYear() == ano)
                             .filter(custosDeManutencao -> custosDeManutencao.getRefCavaloId() == id)
                             .collect(Collectors.toList());
-                }
+                }*/
 
             case DESPESAS_ADM:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
@@ -633,14 +633,14 @@ public class BarCharCalculosExtension {
 
             case DESPESAS_IMPOSTOS:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return impostoDao.todos().stream()
+               /*     return impostoDao.todos().stream()
                             .filter(despesaDeImposto -> despesaDeImposto.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
                     return impostoDao.todos().stream()
                             .filter(despesaDeImposto -> despesaDeImposto.getData().getYear() == ano)
                             .filter(despesaDeImposto -> despesaDeImposto.getRefCavaloId() == id)
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
                 }
 
             case DESPESA_CERTIFICADOS:

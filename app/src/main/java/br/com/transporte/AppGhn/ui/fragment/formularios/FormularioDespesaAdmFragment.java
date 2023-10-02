@@ -62,7 +62,7 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
         GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
         despesaDao = dataBase.getRoomDespesaAdmDao();
         cavaloDao = dataBase.getRoomCavaloDao();
-        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+   //     listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
 
         long despesaId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(despesaId);
@@ -157,9 +157,9 @@ public class FormularioDespesaAdmFragment extends FormularioBaseFragment {
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if(despesa.getTipoDespesa() == TipoDespesa.DIRETA){
-            String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
+    //        String placa = cavaloDao.localizaPeloId(despesa.getRefCavaloId()).getPlaca();
             refLayout.setVisibility(VISIBLE);
-            refCavaloEdit.setText(placa);
+     //       refCavaloEdit.setText(placa);
             diretaBox.setChecked(true);
         } else if (despesa.getTipoDespesa() == TipoDespesa.INDIRETA){
             indiretaBox.setChecked(true);

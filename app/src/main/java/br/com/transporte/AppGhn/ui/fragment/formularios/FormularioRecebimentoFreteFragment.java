@@ -12,7 +12,6 @@ import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -41,10 +41,16 @@ import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.model.enums.TipoRecebimentoFrete;
+import br.com.transporte.AppGhn.repository.FreteRepository;
+import br.com.transporte.AppGhn.repository.RecebimentoDeFreteRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioRecebimentoFreteViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioRecebimentoFreteViewModelFactory;
+import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de Recebimento que já existe.";
@@ -61,13 +67,65 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     private CheckBox adiantamentoBox, saldoBox;
     private RecebimentoDeFrete recebimento;
     private Frete frete;
+    private FormularioRecebimentoFreteViewModel viewModel;
+    private List<RecebimentoDeFrete> listaDeRecebimentosPorFreteId;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        freteDao = dataBase.getRoomFreteDao();
-        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
+        inicializaViewModel();
+        recebeReferenciaDeFreteExterno();
+        long recebimentoId = verificaSeRecebeDadosExternos(CHAVE_ID_RECEBIMENTO);
+        defineTipoEditandoOuCriando(recebimentoId);
+        recebimento = (RecebimentoDeFrete) criaOuRecuperaObjeto(recebimentoId);
+    }
+
+    private void inicializaViewModel() {
+        final RecebimentoDeFreteRepository recebimentoDeFreteRepository = new RecebimentoDeFreteRepository(requireContext());
+        final FreteRepository freteRepository = new FreteRepository(requireContext());
+        final FormularioRecebimentoFreteViewModelFactory factory = new FormularioRecebimentoFreteViewModelFactory(freteRepository, recebimentoDeFreteRepository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioRecebimentoFreteViewModel.class);
+    }
+
+    private void recebeReferenciaDeFreteExterno() {
+        final long freteId = getArguments().getLong(CHAVE_ID);
+        viewModel.localizaFrete(freteId).observe(this,
+                freteRecebido -> {
+                    if (freteRecebido != null) {
+                        frete = freteRecebido;
+                        observerRecebimentosPorFreteId();
+                    }
+                });
+    }
+
+    private void observerRecebimentosPorFreteId() {
+        viewModel.buscaRecebimentosPorFreteId(frete.getId()).observe(this,
+                lista -> {
+                    if (lista != null) {
+                        configuracoesAdicionaisUi(lista);
+                        listaDeRecebimentosPorFreteId = lista;
+                    }
+                }
+        );
+    }
+
+    @Override
+    public Object criaOuRecuperaObjeto(Object id) {
+        long recebimentoId = (long) id;
+        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
+            viewModel.localizaRecebimento(recebimentoId).observe(this,
+                    recebimentoDeFrete -> {
+                        if (recebimentoDeFrete != null) {
+                            viewModel.recebimentoArmazenado = recebimentoDeFrete;
+                            recebimento = recebimentoDeFrete;
+                            bind();
+                        }
+                    });
+        } else {
+            recebimento = new RecebimentoDeFrete();
+        }
+        return recebimento;
     }
 
     @Nullable
@@ -77,25 +135,22 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         return binding.getRoot();
     }
 
+    //----------------------------------------------------------------------------------------------
+    //                                        On View Created                                     ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-
-        bundle = getArguments();
-        frete = recebeReferenciaDeFreteExterno();
-        long recebimentoId = verificaSeRecebeDadosExternos(CHAVE_ID_RECEBIMENTO);
-        defineTipoEditandoOuCriando(recebimentoId);
-        recebimento = (RecebimentoDeFrete) criaOuRecuperaObjeto(recebimentoId);
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
-        configuracoesAdicionaisUi();
         configuraCheckBox();
     }
 
-    private void configuracoesAdicionaisUi() {
+    private void configuracoesAdicionaisUi(final List<RecebimentoDeFrete> lista) {
+        BigDecimal recebido = CalculoUtil.somaValorTotalRecebido(lista);
         BigDecimal freteLiquidoAReceber = frete.getFreteLiquidoAReceber();
-        BigDecimal recebido = FiltraRecebimentoFrete.valorTotalRecebido(recebimentoDao.listaPorFreteId(frete.getId()));
         BigDecimal emAberto = freteLiquidoAReceber.subtract(recebido);
         restaReceberTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(emAberto));
     }
@@ -103,12 +158,6 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     private void configuraCheckBox() {
         adiantamentoBox.setOnClickListener(v -> desmarcaBox(saldoBox));
         saldoBox.setOnClickListener(v -> desmarcaBox(adiantamentoBox));
-    }
-
-    private Frete recebeReferenciaDeFreteExterno() {
-        Long freteId = bundle.getLong(CHAVE_ID);
-        frete = freteDao.localizaPeloId(freteId);
-        return frete;
     }
 
     @Override
@@ -121,17 +170,6 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         adiantamentoBox = binding.fragFormularioRecebimentoFreteAdiantamentoBox;
         saldoBox = binding.fragFormularioRecebimentoFreteSaldoBox;
         tipoTxtView = binding.fragFormularioRecebimentoFreteTipo;
-    }
-
-    @Override
-    public Object criaOuRecuperaObjeto(Object id) {
-        long recebimentoId = (long) id;
-        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            recebimento = recebimentoDao.localizaPeloId(recebimentoId);
-        } else {
-            recebimento = new RecebimentoDeFrete();
-        }
-        return recebimento;
     }
 
     @Override
@@ -173,13 +211,11 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
         recebimento.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
         recebimento.setDescricao(descricaoEdit.getText().toString());
         recebimento.setValor(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
-
         if (adiantamentoBox.isChecked()) {
             recebimento.setTipoRecebimentoFrete(ADIANTAMENTO);
         } else if (saldoBox.isChecked()) {
             recebimento.setTipoRecebimentoFrete(TipoRecebimentoFrete.SALDO);
         }
-
     }
 
     @Override
@@ -195,10 +231,9 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
     }
 
     private void verificaSeJaExisteRegistrosDeAdiantamento(@NonNull View view) {
-        List<RecebimentoDeFrete> listaDeRecebimentos = recebimentoDao.listaPorFreteId(frete.getId());
         RecebimentoDeFrete adiantamento = null;
         try {
-            adiantamento = FiltraRecebimentoFrete.localizaPorTipo(listaDeRecebimentos, ADIANTAMENTO);
+            adiantamento = FiltraRecebimentoFrete.localizaPorTipo(listaDeRecebimentosPorFreteId, ADIANTAMENTO);
         } catch (ObjetoNaoEncontrado ignore) {
         }
 
@@ -281,33 +316,43 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
                 } else {
                     setCompletoParaSalvar(true);
                 }
-        break;
+                break;
 
 
-        case R.id.menu_formulario_apagar:
-        new AlertDialog.Builder(this.getContext()).
-                setTitle(APAGA_REGISTRO_TITULO).
-                setMessage(APAGA_REGISTRO_TXT).
-                setPositiveButton(SIM, (dialog, which) -> {
-                    deletaObjetoNoBancoDeDados();
-                    requireActivity().setResult(RESULT_DELETE);
-                    requireActivity().finish();
-                }).
-                setNegativeButton(NAO, null).show();
-        break;
-    }
+            case R.id.menu_formulario_apagar:
+                new AlertDialog.Builder(this.getContext()).
+                        setTitle(APAGA_REGISTRO_TITULO).
+                        setMessage(APAGA_REGISTRO_TXT).
+                        setPositiveButton(SIM, (dialog, which) -> {
+                            deletaObjetoNoBancoDeDados();
+                            requireActivity().setResult(RESULT_DELETE);
+                            requireActivity().finish();
+                        }).
+                        setNegativeButton(NAO, null).show();
+                break;
+        }
         return false;
-}
+    }
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        recebimentoDao.adiciona(recebimento);
+        viewModel.salva(recebimento).observe(this,
+                id -> {
+                    if (id != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        recebimentoDao.adiciona(recebimento);
+        viewModel.salva(recebimento).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
@@ -318,7 +363,15 @@ public class FormularioRecebimentoFreteFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        recebimentoDao.deleta(recebimento);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro != null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
 }

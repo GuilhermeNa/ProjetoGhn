@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Frete;
+import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
@@ -41,8 +43,8 @@ public class CalculoUtil {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago){
-        if(isPago) return dataSet.stream()
+    public static BigDecimal somaComissaoPorStatus(List<Frete> dataSet, boolean isPago) {
+        if (isPago) return dataSet.stream()
                 .filter(Frete::isComissaoJaFoiPaga)
                 .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -52,7 +54,8 @@ public class CalculoUtil {
                 .map(Frete::getComissaoAoMotorista)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-    public static BigDecimal somaDescontoNoFrete(@NonNull List<Frete> dataSet){
+
+    public static BigDecimal somaDescontoNoFrete(@NonNull List<Frete> dataSet) {
         return dataSet.stream()
                 .map(Frete::getDescontos)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -127,7 +130,7 @@ public class CalculoUtil {
 
     @Nullable
     public static BigDecimal somaAdiantamentoPorStatus(@NonNull List<Adiantamento> dataSet, boolean isDescontado) {
-        if(isDescontado) return dataSet.stream()
+        if (isDescontado) return dataSet.stream()
                 .filter(Adiantamento::isAdiantamentoJaFoiDescontado)
                 .map(Adiantamento::restaReembolsar)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -139,11 +142,23 @@ public class CalculoUtil {
     }
 
     public static BigDecimal somaAdiantamentoPorUltimoValorAbatido(@NonNull List<Adiantamento> dataSet) {
-      return dataSet.stream()
+        return dataSet.stream()
                 .map(Adiantamento::getUltimoValorAbatido)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     }
+
+    //--------------------------------------------------------------------------------------------//
+    //                                     Recebimento Frete                                      //
+    //--------------------------------------------------------------------------------------------//
+
+    public static BigDecimal somaValorTotalRecebido(@NonNull List<RecebimentoDeFrete> dataSet) {
+        return dataSet.stream()
+                .map(RecebimentoDeFrete::getValor)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+
 
 
 }

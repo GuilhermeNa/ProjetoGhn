@@ -9,7 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import br.com.transporte.AppGhn.R;
 
 public class ToolbarUtil {
-    private final String titulo;
+    private String titulo;
     private ActionBar supportActionBar;
 
     public ToolbarUtil(String titulo) {
@@ -26,6 +26,11 @@ public class ToolbarUtil {
             supportActionBar.setTitle(titulo);
             supportActionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         }
+    }
+
+    public void setTitle(String title){
+        titulo = title;
+        supportActionBar.setTitle(titulo);
     }
 
     public void setTitleAtivo(boolean isAtivo) {

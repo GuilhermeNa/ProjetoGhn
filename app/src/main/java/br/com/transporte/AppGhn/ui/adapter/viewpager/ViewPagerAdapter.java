@@ -10,7 +10,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecimentoFragment;
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaCustosDePercursoFragment;
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaFreteFragment;
-import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaResumoFragment;
+import br.com.transporte.AppGhn.ui.fragment.areaMotorista.resumo.AreaMotoristaResumoFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
     private Long cavaloId;

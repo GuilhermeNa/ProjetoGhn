@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.ui.fragment.freteReceber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
@@ -15,60 +14,43 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDI
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_FRETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_RECEBIMENTO_FRETE;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.jetbrains.annotations.Contract;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
-import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberResumoBinding;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.RecebimentoFretesAdapter;
+import br.com.transporte.AppGhn.ui.viewmodel.FreteAReceberActViewModel;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.ToolbarUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
-public class FreteAReceberResumoFragment extends Fragment implements MenuProvider {
-    public static final String DETALHES_DO_FRETE = "Detalhes do Frete";
+public class FreteAReceberResumoFragment extends Fragment {
     private FragmentFreteAReceberResumoBinding binding;
     private Frete frete;
     private TextView placaTxtView, origemTxtView, destinoTxtView, cargaTxtView, freteBrutoTxtView,
             freteLiquidoTxtView, seguroCargaTxtView, outrosDescontosTxtView, comissaoMotoristaTxtView;
     private RecebimentoFretesAdapter adapter;
-    private List<RecebimentoDeFrete> dataSet_recebimentoFrete;
-    private RoomRecebimentoFreteDao recebimentoDao;
-    private GhnDataBase dataBase;
+    private FreteAReceberActViewModel viewModel;
     private final ActivityResultLauncher<Intent> activityResultLauncherEditaFrete = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -76,18 +58,14 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
 
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        configuraUi();
-                        Toast.makeText(this.requireContext(), REGISTRO_EDITADO, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
-
                     case RESULT_DELETE:
-                        atualizaDataSet();
                         Navigation.findNavController(this.requireView()).popBackStack();
-                        Toast.makeText(this.requireContext(), REGISTRO_APAGADO, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
-
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
                 }
             });
@@ -96,31 +74,21 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-
                 switch (codigoResultado) {
                     case RESULT_OK:
-                        atualizaAdapterAposResultLauncher(REGISTRO_CRIADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_CRIADO);
                         break;
-
                     case RESULT_EDIT:
-                        atualizaAdapterAposResultLauncher(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
-
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
-
                     case RESULT_DELETE:
-                        atualizaAdapterAposResultLauncher(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
                 }
             });
-
-    private void atualizaAdapterAposResultLauncher(String registroCriado) {
-        atualizaDataSet();
-        adapter.atualiza(getDataSet());
-        Toast.makeText(this.requireContext(), registroCriado, Toast.LENGTH_SHORT).show();
-    }
 
     //----------------------------------------------------------------------------------------------
     //                                          On Create                                         ||
@@ -129,24 +97,34 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataSet();
-        frete = recebeIdArgument();
-        atualizaDataSet();
-    }
-
-    private void inicializaDataSet() {
-        dataBase = GhnDataBase.getInstance(requireContext());
-        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
-    }
-
-    private void atualizaDataSet() {
-        dataSet_recebimentoFrete = recebimentoDao.listaPorFreteId(frete.getId());
+        viewModel = new ViewModelProvider(requireActivity()).get(FreteAReceberActViewModel.class);
+        Long freteId = recebeFreteIdArgument();
+        recuperaObjFrete(freteId);
+        observerRecebimentos(freteId);
     }
 
     @NonNull
-    @Contract(" -> new")
-    private List<RecebimentoDeFrete> getDataSet() {
-        return new ArrayList<>(dataSet_recebimentoFrete);
+    private Long recebeFreteIdArgument() {
+        return FreteAReceberResumoFragmentArgs.fromBundle(getArguments()).getFreteId();
+    }
+
+    private void recuperaObjFrete(final Long id) {
+        viewModel.localizaFrete(id).observe(this,
+                freteRecebido -> {
+                    if (freteRecebido != null) {
+                        frete = freteRecebido;
+                        configuraUi();
+                    }
+                });
+    }
+
+    private void observerRecebimentos(Long freteId) {
+        viewModel.buscaRecebimentosPorFreteId(freteId).observe(this,
+                lista -> {
+                    if(lista != null){
+                        adapter.atualiza(lista);
+                    }
+                });
     }
 
     //----------------------------------------------------------------------------------------------
@@ -168,10 +146,8 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCamposDaView();
-        configuraUi();
         configuraRecycler();
         configuraBtn();
-        configuraToolbar();
     }
 
     private void inicializaCamposDaView() {
@@ -187,9 +163,7 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
     }
 
     private void configuraUi() {
-        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
-
+        String placa = FiltraCavalo.localizaPeloId(viewModel.getDataSet_cavalo(), frete.getRefCavaloId()).getPlaca();
         placaTxtView.setText(placa);
         origemTxtView.setText(frete.getOrigem());
         destinoTxtView.setText(frete.getDestino());
@@ -203,7 +177,7 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
 
     private void configuraRecycler() {
         RecyclerView recyclerView = binding.fragFreteReceberResumoRecycler;
-        adapter = new RecebimentoFretesAdapter(this, getDataSet());
+        adapter = new RecebimentoFretesAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
@@ -228,47 +202,20 @@ public class FreteAReceberResumoFragment extends Fragment implements MenuProvide
         });
     }
 
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ToolbarUtil toolbarUtil = new ToolbarUtil(DETALHES_DO_FRETE);
-        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+    public void navegaParaFormulario() {
+        Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
+        intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
+        intent.putExtra(CHAVE_ID, frete.getId());
+        activityResultLauncherEditaFrete.launch(intent);
     }
 
-    private Frete recebeIdArgument() {
-        RoomFreteDao freteDao = dataBase.getRoomFreteDao();
-        Long freteId = FreteAReceberResumoFragmentArgs.fromBundle(getArguments()).getFreteId();
-        frete = freteDao.localizaPeloId(freteId);
-        return frete;
+    public void popBackStack(){
+        NavController controlador = Navigation.findNavController(this.requireView());
+        controlador.popBackStack();
     }
 
-    @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.menu_padrao, menu);
-        menu.removeItem(R.id.menu_padrao_search);
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.menu_padrao_logout:
-                Toast.makeText(this.requireContext(), LOGOUT, Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.menu_padrao_editar:
-                Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
-                intent.putExtra(CHAVE_FORMULARIO, VALOR_FRETE);
-                intent.putExtra(CHAVE_ID, frete.getId());
-                activityResultLauncherEditaFrete.launch(intent);
-                break;
-
-            case android.R.id.home:
-                NavController controlador = Navigation.findNavController(this.requireView());
-                controlador.popBackStack();
-                break;
-        }
-        return false;
+    public void actSolicitaAtualizacao() {
+        configuraUi();
     }
 
 }

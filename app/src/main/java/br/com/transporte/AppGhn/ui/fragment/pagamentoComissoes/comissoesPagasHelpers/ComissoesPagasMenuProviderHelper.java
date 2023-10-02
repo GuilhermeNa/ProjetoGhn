@@ -66,14 +66,14 @@ public class ComissoesPagasMenuProviderHelper implements MenuProvider {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                List<CustosDeSalario> dataSet_search = new ArrayList<>();
+               /* List<CustosDeSalario> dataSet_search = new ArrayList<>();
                 for (CustosDeSalario s : dataSet) {
                     String placa = cavaloDao.localizaPeloId(s.getRefCavaloId()).getPlaca();
                     if (placa.toLowerCase().contains(newText.toLowerCase())) {
                         dataSet_search.add(s);
                     }
                 }
-                callbackSearch.realizaBusca(dataSet_search);
+                callbackSearch.realizaBusca(dataSet_search);*/
                 return false;
             }
 

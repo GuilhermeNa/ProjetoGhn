@@ -5,24 +5,19 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
+import br.com.transporte.AppGhn.tasks.BaseTask;
+import br.com.transporte.AppGhn.tasks.TaskCallback;
 import br.com.transporte.AppGhn.tasks.cavalo.AdicionaCavaloTask;
 
-public class AdicionaReboqueTask {
-    private final Executor executor;
-    private final Handler resultHandler;
-
-    public AdicionaReboqueTask(Executor executor, Handler handler) {
-        this.executor = executor;
-        this.resultHandler = handler;
-    }
-
-    public interface TaskCallback {
-        void adicaoFinalizada(Long id);
+public class AdicionaReboqueTask extends BaseTask {
+    public AdicionaReboqueTask(ExecutorService executor, Handler handler) {
+        super(executor, handler);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -30,15 +25,13 @@ public class AdicionaReboqueTask {
     public void solicitaAdicao(
             final RoomSemiReboqueDao dao,
             final SemiReboque reboque,
-            final TaskCallback callBack
+            final TaskCallback<Long> callBack
     ) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                long result = realizaAdicaoSincrona(dao, reboque);
-                notificaResultado(callBack, result);
-            }
-        });
+        executor.execute(
+                () -> {
+                    long result = realizaAdicaoSincrona(dao, reboque);
+                    notificaResultado(callBack, result);
+                });
     }
 
     private long realizaAdicaoSincrona(
@@ -49,15 +42,12 @@ public class AdicionaReboqueTask {
     }
 
     private void notificaResultado(
-            final TaskCallback callBack,
+            final TaskCallback<Long> callBack,
             final long result
     ) {
-        resultHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                callBack.adicaoFinalizada(result);
-            }
-        });
+        handler.post(
+                () -> callBack.finalizado(result)
+        );
     }
 
 }

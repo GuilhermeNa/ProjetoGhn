@@ -67,7 +67,7 @@ public class CertificadosDiretosFragment extends Fragment {
 
     private void atualizaDataSet() {
         if (dataSet == null) dataSet = new ArrayList<>();
-        dataSet = cavaloDao.todos();
+  //      dataSet = cavaloDao.todos();
     }
 
     private void inicializaDataBase() {

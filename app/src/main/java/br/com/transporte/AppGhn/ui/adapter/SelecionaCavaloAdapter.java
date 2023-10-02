@@ -15,15 +15,15 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.Cavalo;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
-import br.com.transporte.AppGhn.ui.fragment.SelecionaCavalo;
+import br.com.transporte.AppGhn.ui.fragment.selecionaCavalo.SelecionaCavalo;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCavaloAdapter.ViewHolder>{
     private final List<Cavalo> dataSet;
     private final SelecionaCavalo context;
-    private OnItemClickListener onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
-    public void setOnItemClickListener (OnItemClickListener onItemClickListener) {
+    public void setOnItemClickListener (OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -67,7 +67,7 @@ public class SelecionaCavaloAdapter extends RecyclerView.Adapter <SelecionaCaval
         Cavalo cavalo = dataSet.get(position);
         configuraUi(holder);
         vincula(holder, cavalo);
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(cavalo));
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(cavalo.getId()));
     }
 
     private void configuraUi(@NonNull ViewHolder holder) {

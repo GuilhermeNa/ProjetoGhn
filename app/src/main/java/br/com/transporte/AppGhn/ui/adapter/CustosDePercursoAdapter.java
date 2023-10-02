@@ -14,12 +14,11 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaCustosDePercursoFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercursoAdapter.ViewHolder> {
     public static final String DRAWABLE_NAO_PRECISA_REEMBOLSO = "nao_precisa_reembolso";
@@ -27,14 +26,14 @@ public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercur
     public static final String DRAWABLE_DONE = "done";
     private final List<CustosDePercurso> dataSet;
     private final AreaMotoristaCustosDePercursoFragment context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
     public CustosDePercursoAdapter(AreaMotoristaCustosDePercursoFragment context, List<CustosDePercurso> lista) {
         this.context = context;
         this.dataSet = lista;
     }
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

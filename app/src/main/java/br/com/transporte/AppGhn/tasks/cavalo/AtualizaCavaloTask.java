@@ -29,32 +29,22 @@ public class AtualizaCavaloTask {
             final Cavalo cavalo,
             final TaskCallback callback
     ) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                realizaSubstituicaoSincrona(dao, cavalo);
-                notificaResultado(callback);
-            }
-        });
+        executor.execute(
+                () -> {
+                    realizaAtualizacaoSincrona(dao, cavalo);
+                    notificaResultado(callback);
+                });
     }
 
-    private void realizaSubstituicaoSincrona(
-            @NonNull RoomCavaloDao dao,
-            Cavalo cavalo
+    private void realizaAtualizacaoSincrona(
+            @NonNull final RoomCavaloDao dao,
+            final Cavalo cavalo
     ) {
         dao.substitui(cavalo);
     }
 
-    private void notificaResultado(
-            TaskCallback callback
-    ) {
-        resultHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                callback.atualizacaoFinalizada();
-
-            }
-        });
+    private void notificaResultado(@NonNull final TaskCallback callback) {
+        resultHandler.post(callback::atualizacaoFinalizada);
     }
 
 }

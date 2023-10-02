@@ -1,37 +1,24 @@
 package br.com.transporte.AppGhn.filtros;
 
-import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
-
 import androidx.annotation.NonNull;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.FreteDAO;
-import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.util.DataUtil;
 
 public class FiltraFrete {
-    static FreteDAO dao = new FreteDAO();
-
     @NonNull
-    public static Frete localizaPeloId(int freteId) throws ObjetoNaoEncontrado {
+    public static Frete localizaPeloId(@NonNull final List<Frete> dataSet, final Long freteId) {
         Frete freteLocalizado = null;
-
-        for (Frete f : dao.listaTodos()) {
+        for (Frete f : dataSet) {
             if (f.getId() == freteId) {
                 freteLocalizado = f;
             }
         }
-
-        if (freteLocalizado != null) {
-            return freteLocalizado;
-        }
-
-        throw new ObjetoNaoEncontrado(OBJETO_NULL);
-
+        return freteLocalizado;
     }
 
     public static List<Frete> listaPorData(@NonNull List<Frete> dataSet, LocalDate dataInicial, LocalDate dataFinal) {

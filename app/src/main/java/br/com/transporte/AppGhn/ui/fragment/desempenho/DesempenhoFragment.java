@@ -101,7 +101,7 @@ public class DesempenhoFragment extends Fragment {
     }
 
     private void configuraDataSetRecyclerHelper() {
-        dataSetRecyclerHelper = new DesempenhoDataSetRecyclerHelper(getDataSet(), cavaloDao.todos(), dataBase);
+    //    dataSetRecyclerHelper = new DesempenhoDataSetRecyclerHelper(getDataSet(), cavaloDao.todos(), dataBase);
         dataSetRecyclerHelper.atualizaDataSet(tipoDeRequisicao, MES_DEFAULT.getRef(), false, anoRequisitado);
         dataSet_recycler = dataSetRecyclerHelper.getDataSet();
     }
@@ -232,9 +232,9 @@ public class DesempenhoFragment extends Fragment {
 
     private void ui_tituloBarChart(TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
         if (cavaloId != REF_CAVALO_NULA) {
-            String placa = cavaloDao.localizaPeloId(cavaloId).getPlaca();
-            String placaFormatada = tipoDeRequisicao.getDescricao() + ", " + placa;
-            binding.tipo.setText(placaFormatada);
+      //      String placa = cavaloDao.localizaPeloId(cavaloId).getPlaca();
+        //    String placaFormatada = tipoDeRequisicao.getDescricao() + ", " + placa;
+       //     binding.tipo.setText(placaFormatada);
         } else {
             binding.tipo.setText(tipoDeRequisicao.getDescricao());
         }

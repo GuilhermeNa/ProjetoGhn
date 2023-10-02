@@ -159,7 +159,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     private Cavalo recebeIdArguments() {
         RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
         Long cavaloId = CertificadoDiretosDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
-        cavalo = cavaloDao.localizaPeloId(cavaloId);
+ //       cavalo = cavaloDao.localizaPeloId(cavaloId);
         return cavalo;
     }
 
@@ -211,8 +211,8 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     private void configuraUi() {
         if (cavalo.getRefMotoristaId() != null) {
             RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
-            String nome = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
-            motoristaTxtView.setText(nome);
+      //      String nome = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
+       //     motoristaTxtView.setText(nome);
         } else {
             motoristaTxtView.setText(" ");
         }

@@ -1,6 +1,9 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.INCORRETO;
 
 import android.os.Bundle;
@@ -17,12 +20,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.conversor.ConversorTipoImposto;
@@ -30,10 +35,15 @@ import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioImpostosBinding;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.CavaloRepository;
+import br.com.transporte.AppGhn.repository.ImpostoRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioImpostoViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioImpostoViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
@@ -50,6 +60,8 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     private RoomDespesaImpostoDao impostoDao;
     private DespesasDeImposto imposto;
     private RoomCavaloDao cavaloDao;
+    private FormularioImpostoViewModel viewModel;
+    private List<Cavalo> listaCavalos;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -58,21 +70,49 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        configuraDataBase();
+        inicializaViewModel();
         long impostoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(impostoId);
         imposto = (DespesasDeImposto) criaOuRecuperaObjeto(impostoId);
     }
 
-    private void configuraDataBase() {
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        impostoDao = dataBase.getRoomDespesaImpostoDao();
-        cavaloDao = dataBase.getRoomCavaloDao();
+    private void inicializaViewModel() {
+        final ImpostoRepository impostoRepository = new ImpostoRepository(requireContext());
+        final CavaloRepository cavaloRepository = new CavaloRepository(requireContext());
+        final FormularioImpostoViewModelFactory factory = new FormularioImpostoViewModelFactory(impostoRepository, cavaloRepository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioImpostoViewModel.class);
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          OnViewCreated                                     ||
-    //----------------------------------------------------------------------------------------------
+    @Override
+    public Object criaOuRecuperaObjeto(Object id) {
+        Long impostoId = (Long) id;
+        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
+            viewModel.localizaImposto(impostoId).observe(this,
+                    despesasDeImposto -> {
+                        if (despesasDeImposto != null) {
+                            viewModel.impostoArmazenado = despesasDeImposto;
+                            imposto = despesasDeImposto;
+                            buscaCavalos();
+
+                        }
+                    });
+        } else {
+            imposto = new DespesasDeImposto();
+        }
+        return imposto;
+    }
+
+    private void buscaCavalos() {
+        viewModel.buscaCavalos().observe(this,
+                resource -> {
+                    if (resource.getDado() != null) {
+                        listaCavalos = resource.getDado();
+                        configuraDropDownMenuDeReferenciasParaCavalos(resource.getDado());
+                        bind();
+                    }
+                });
+    }
 
     @Nullable
     @Override
@@ -92,7 +132,6 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         Toolbar toolbar = binding.toolbar;
         configuraUi(toolbar);
         configuraDropDownMenuDeImpostos();
-        configuraDropDownMenuDeReferenciasParaCavalos();
         configuraVisibilidadeDoCampoReferenciasParaCavalos();
     }
 
@@ -107,38 +146,24 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(Object id) {
-        Long impostoId = (Long)id;
-
-        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            imposto = impostoDao.localizaPeloId(impostoId);
-        } else {
-            imposto = new DespesasDeImposto();
-        }
-        return imposto;
-    }
-
-    @Override
     public void alteraUiParaModoEdicao() {
         TextView subTxtView = binding.fragFormularioImpostoSub;
         subTxtView.setText(SUB_TITULO_APP_BAR_EDITANDO);
-        if(imposto.getRefCavaloId() > 0){
+        if (imposto.getRefCavaloId() > 0) {
             layoutRef.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void alteraUiParaModoCriacao() {
-
     }
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        if(imposto.getNome().toUpperCase(Locale.ROOT).equals(IPVA)){
-            String placa = cavaloDao.localizaPeloId(imposto.getRefCavaloId()).getPlaca();
+        if (imposto.getNome().toUpperCase(Locale.ROOT).equals(IPVA)) {
+            String placa = Objects.requireNonNull(FiltraCavalo.localizaPeloId(listaCavalos, imposto.getRefCavaloId())).getPlaca();
             referenciaEdit.setText(placa);
         }
-
         dataEdit.setText(ConverteDataUtil.dataParaString(imposto.getData()));
         nomeImpostoAutoComplete.setText(imposto.getNome());
         valorEdit.setText(imposto.getValorDespesa().toPlainString());
@@ -177,7 +202,7 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         imposto.setValorDespesa(new BigDecimal(MascaraMonetariaUtil.formatPriceSave(valorEdit.getText().toString())));
 
         if (layoutRef.getVisibility() == View.VISIBLE) {
-            Long cavaloId = cavaloDao.localizaPelaPlaca(referenciaEdit.getText().toString()).getId();
+            Long cavaloId = FiltraCavalo.localizaPelaPlaca(listaCavalos, referenciaEdit.getText().toString()).getId();
             imposto.setRefCavaloId(cavaloId);
             imposto.setTipoDespesa(TipoDespesa.DIRETA);
         } else {
@@ -188,22 +213,39 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        impostoDao.adiciona(imposto);
+        viewModel.salva(imposto).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        impostoDao.deleta(imposto);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
-        impostoDao.adiciona(imposto);
+        viewModel.salva(imposto).observe(this,
+                id -> {
+                    if (id != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
-
         return null;
     }
 
@@ -219,10 +261,12 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
                     }
                 }
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 // TODO Auto-generated method stub
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
@@ -230,8 +274,8 @@ public class FormularioImpostosFragment extends FormularioBaseFragment {
         });
     }
 
-    private void configuraDropDownMenuDeReferenciasParaCavalos() {
-        List<String> listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+    private void configuraDropDownMenuDeReferenciasParaCavalos(List<Cavalo> listaCavalos) {
+        List<String> listaDePlacas = FiltraCavalo.listaDePlacas(listaCavalos);
         String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         referenciaEdit.setAdapter(adapterCavalos);

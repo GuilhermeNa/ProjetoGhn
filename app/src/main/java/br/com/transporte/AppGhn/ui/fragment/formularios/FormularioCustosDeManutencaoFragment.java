@@ -1,7 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.os.Bundle;
@@ -15,39 +18,69 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCustosDeManutencaoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosDeManutencaoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.enums.TipoCustoManutencao;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.ManutencaoRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioManutencaoViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioManutencaoViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment {
     public static final String ESCOLHA_UM_TIPO_DE_CUSTO = "Escolha um tipo de custo";
     private FragmentFormularioCustosDeManutencaoBinding binding;
     public static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de manutenção que já existe.";
-    private RoomCustosDeManutencaoDao manutencaoDao;
     private CustosDeManutencao manutencao;
     private EditText dataEdit, empresaEdit, descricaoEdit, nNotaEdit, valorEdit;
     private TextInputLayout dataLayout;
     private CheckBox boxPeriodico, boxExtraordinario;
     private TextView tituloTxtView;
+    private FormularioManutencaoViewModel viewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        manutencaoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosDeManutencaoDao();
+        inicializaViewModel();
+        recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         long manutencaoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(manutencaoId);
         manutencao = (CustosDeManutencao) criaOuRecuperaObjeto(manutencaoId);
+    }
+
+
+    private void inicializaViewModel() {
+        final ManutencaoRepository repository = new ManutencaoRepository(requireContext());
+        final FormularioManutencaoViewModelFactory factory = new FormularioManutencaoViewModelFactory(repository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioManutencaoViewModel.class);
+    }
+
+    @Override
+    public Object criaOuRecuperaObjeto(Object id) {
+        final Long manutencaoId = (Long) id;
+        if (getTipoFormulario() == TipoFormulario.EDITANDO) {
+            viewModel.localizaManutencao(manutencaoId).observe(this,
+                    custosDeManutencao -> {
+                        if (custosDeManutencao != null) {
+                            viewModel.manutencaoArmazenada = custosDeManutencao;
+                            this.manutencao = custosDeManutencao;
+                            bind();
+                        }
+                    });
+        } else {
+            manutencao = new CustosDeManutencao();
+        }
+        return manutencao;
     }
 
     @Nullable
@@ -56,6 +89,10 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
         binding = FragmentFormularioCustosDeManutencaoBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -85,17 +122,6 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     }
 
     @Override
-    public Object criaOuRecuperaObjeto(Object id) {
-        Long manutencaoId = (Long) id;
-        if(getTipoFormulario() == TipoFormulario.EDITANDO){
-            manutencao = manutencaoDao.localizaPeloId(manutencaoId);
-        } else {
-            manutencao = new CustosDeManutencao();
-        }
-        return manutencao;
-    }
-
-    @Override
     public void alteraUiParaModoEdicao() {
         TextView subTxtView = binding.fragFormularioManutencaoSub;
         subTxtView.setText(SUB_TITULO_APP_BAR_EDITANDO);
@@ -113,7 +139,7 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
         nNotaEdit.setText(manutencao.getNNota());
         descricaoEdit.setText(manutencao.getDescricao());
         valorEdit.setText((manutencao.getValorCusto().toPlainString()));
-        if(manutencao.getTipoCustoManutencao() == TipoCustoManutencao.PERIODICA){
+        if (manutencao.getTipoCustoManutencao() == TipoCustoManutencao.PERIODICA) {
             boxPeriodico.setChecked(true);
         } else {
             boxExtraordinario.setChecked(true);
@@ -155,28 +181,43 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
             manutencao.setTipoCustoManutencao(TipoCustoManutencao.PERIODICA);
             tituloTxtView.setError(null);
         }
-
     }
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        manutencaoDao.adiciona(manutencao);
+        viewModel.salva(manutencao).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        manutencaoDao.deleta(manutencao);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
-       configuraObjetoNaCriacao();
-        manutencaoDao.adiciona(manutencao);
+        configuraObjetoNaCriacao();
+        viewModel.salva(manutencao).observe(this,
+                id -> {
+                    requireActivity().setResult(RESULT_OK);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
-        manutencao.setRefCavaloId(recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO).getId());
+        manutencao.setRefCavaloId(cavaloRecebido.getId());
         return null;
     }
 }

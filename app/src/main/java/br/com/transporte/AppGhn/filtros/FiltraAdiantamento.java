@@ -1,32 +1,25 @@
 package br.com.transporte.AppGhn.filtros;
 
-import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
-import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
 import br.com.transporte.AppGhn.model.Adiantamento;
 
 public class FiltraAdiantamento {
     private static final AdiantamentoDAO dao = new AdiantamentoDAO();
 
     @NonNull
-    public static Adiantamento localizaPeloId(int adiantamentoId) throws ObjetoNaoEncontrado {
+    public static Adiantamento localizaPeloId(@NonNull final List<Adiantamento> dataset, final Long adiantamentoId) {
         Adiantamento adiantamentoLocalizado = null;
-
-        for (Adiantamento a : dao.listaTodos()) {
+        for (Adiantamento a : dataset) {
             if (a.getId() == adiantamentoId) {
                 adiantamentoLocalizado = a;
             }
         }
-
-        if (adiantamentoLocalizado != null) return adiantamentoLocalizado;
-        else throw new ObjetoNaoEncontrado(OBJETO_NULL);
-
+      return adiantamentoLocalizado;
     }
 
     public static List<Adiantamento> listaPorCavaloId(@NonNull List<Adiantamento> dataSet, Long cavaloId) {

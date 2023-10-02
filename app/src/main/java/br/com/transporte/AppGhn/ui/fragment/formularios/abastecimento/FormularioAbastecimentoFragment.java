@@ -1,7 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios.abastecimento;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
@@ -17,11 +20,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
@@ -32,10 +37,17 @@ import br.com.transporte.AppGhn.exception.RegistroDuplicado;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.CavaloRepository;
+import br.com.transporte.AppGhn.repository.CustoDeAbastecimentoRepository;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioBaseFragment;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioBaseViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioCustoAbastecimentoViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioBaseViewModelFactory;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioCustoAbastecimentoViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     private static final String SUB_TITULO_APP_BAR_EDITANDO = "Você está editando um registro de abastecimento que já existe.";
@@ -44,18 +56,51 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
     private CheckBox totalBox, parcialBox;
     private TextView tipoAbastecimentoTxt;
     private TextInputLayout dataLayout;
-    private RoomCustosAbastecimentoDao abastecimentoDao;
     private CustosDeAbastecimento abastecimento;
+    private FormularioCustoAbastecimentoViewModel viewModel;
+    private List<CustosDeAbastecimento> abastecimentos;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        abastecimentoDao = GhnDataBase.getInstance(requireContext()).getRoomCustosAbastecimentoDao();
+        final CustoDeAbastecimentoRepository repository = new CustoDeAbastecimentoRepository(requireContext());
+        final FormularioCustoAbastecimentoViewModelFactory factory = new FormularioCustoAbastecimentoViewModelFactory(repository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioCustoAbastecimentoViewModel.class);
 
+
+        recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         long abastecimentoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(abastecimentoId);
         abastecimento = (CustosDeAbastecimento) criaOuRecuperaObjeto(abastecimentoId);
     }
+
+    @Override
+    protected void recebeReferenciaExternaDeCavalo(String chave) {
+        CavaloRepository repository = new CavaloRepository(requireContext());
+        FormularioBaseViewModelFactory factory = new FormularioBaseViewModelFactory(repository);
+        ViewModelProvider provedor = new ViewModelProvider(this, factory);
+        FormularioBaseViewModel viewModel = provedor.get(FormularioBaseViewModel.class);
+
+        Bundle bundle = getArguments();
+        Long cavaloId = bundle.getLong(chave);
+
+        viewModel.localizaCavalo(cavaloId).observe(this,
+                cavalo -> {
+                    if (cavalo != null) {
+                        cavaloRecebido = cavalo;
+                        this.viewModel.buscaAbastecimentosPorCavaloId(cavalo.getId()).observe(this,
+                                resource -> {
+                                    if(resource.getDado() != null) {
+                                        abastecimentos = resource.getDado();
+                                    } else {
+                                        MensagemUtil.toast(requireContext(), "Falha ao carregar lista");
+                                    }
+                                });
+                    }
+                });
+    }
+
 
     @Nullable
     @Override
@@ -99,9 +144,16 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        long idAbastecimento = (long)id;
+        long idAbastecimento = (long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            abastecimento = abastecimentoDao.localizaPeloId(idAbastecimento);
+            viewModel.localizaPeloId(idAbastecimento).observe(this,
+                    abastecimentoRecebido -> {
+                        if (abastecimentoRecebido != null) {
+                            viewModel.abastecimentoArmazenado = abastecimentoRecebido;
+                            abastecimento = abastecimentoRecebido;
+                            bind();
+                        }
+                    });
         } else {
             abastecimento = new CustosDeAbastecimento();
         }
@@ -140,7 +192,6 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
         valorLitroEdit.addTextChangedListener(new MascaraMonetariaUtil(valorLitroEdit));
         totalAbastEdit.addTextChangedListener(new MascaraMonetariaUtil(totalAbastEdit));
         configuraDataCalendario(dataLayout, dataEdit);
-
     }
 
     @Override
@@ -158,8 +209,8 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
             LocalDate dataASalvar = ConverteDataUtil.stringParaData(dataEdit.getText().toString());
 
             try {
-                MarcacaoKm.verificaMarcacaoKm(dataASalvar, marcacaoASalvar, getReferenciaDeCavalo(CHAVE_ID_CAVALO));
-            } catch (MarcacaoKmInvalida | DataInvalida  | RegistroDuplicado e) {
+                MarcacaoKm.verificaMarcacaoKm(dataASalvar, marcacaoASalvar, abastecimentos);
+            } catch (MarcacaoKmInvalida | DataInvalida | RegistroDuplicado e) {
                 e.printStackTrace();
                 e.getMessage();
                 setCompletoParaSalvar(false);
@@ -282,23 +333,40 @@ public class FormularioAbastecimentoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        abastecimentoDao.adiciona(abastecimento);
+        viewModel.salva(abastecimento).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        abastecimentoDao.deleta(abastecimento);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        abastecimentoDao.adiciona(abastecimento);
+        viewModel.salva(abastecimento).observe(this,
+                id -> {
+                    requireActivity().setResult(RESULT_OK);
+                    requireActivity().finish();
+                }
+        );
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
-        abastecimento.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
+        abastecimento.setRefCavaloId(cavaloRecebido.getId());
         abastecimento.setApenasAdmEdita(false);
         return null;
     }

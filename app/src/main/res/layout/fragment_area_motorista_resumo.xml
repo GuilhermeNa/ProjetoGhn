@@ -5,7 +5,7 @@
     android:id="@+id/frag_area_motorista_resumo_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.AreaMotoristaActivity">
+    tools:context=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
 
     <LinearLayout
         android:id="@+id/frag_resumo_linear"

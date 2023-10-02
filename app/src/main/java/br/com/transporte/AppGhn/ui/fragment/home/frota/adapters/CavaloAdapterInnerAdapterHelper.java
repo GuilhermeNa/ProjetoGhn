@@ -1,13 +1,11 @@
 package br.com.transporte.AppGhn.ui.fragment.home.frota.adapters;
 
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
@@ -18,16 +16,17 @@ import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class CavaloAdapterInnerAdapterHelper {
 
+    private final List<SemiReboque> copiaDataSet_reboque;
+    private final List<Cavalo> copiaDataSet_cavalo;
     private final FrotaFragment context;
     private InterfaceCavaloInnerAdapter callbackCavaloInnerAdapter;
     private Cavalo cavalo;
     private SemiReboqueAdapter adapter;
-    private final List<SemiReboque> copiaDataSet_reboque;
 
-    public CavaloAdapterInnerAdapterHelper(FrotaFragment context, List<SemiReboque> copiaDataSet_reboque) {
-
+    public CavaloAdapterInnerAdapterHelper(FrotaFragment context, List<SemiReboque> copiaDataSet_reboque, List<Cavalo> copiaDataSetCavalo) {
         this.context = context;
         this.copiaDataSet_reboque = copiaDataSet_reboque;
+        this.copiaDataSet_cavalo = copiaDataSetCavalo;
     }
 
     public void setCallbackCavaloInnerAdapter(InterfaceCavaloInnerAdapter callbackCavaloInnerAdapter) {
@@ -65,7 +64,7 @@ public class CavaloAdapterInnerAdapterHelper {
 
     private void configuraAdapter(@NonNull CavaloAdapter.ViewHolder holder) {
         List<SemiReboque> semiReboques = FiltraReboque.listaPorCavaloId(copiaDataSet_reboque, cavalo.getId());
-        adapter = new SemiReboqueAdapter(context.getContext(), semiReboques);
+        adapter = new SemiReboqueAdapter(context.getContext(), semiReboques, copiaDataSet_cavalo);
         holder.recyclerFilha.setAdapter(adapter);
         adapter.setOnItemClickListener(new SemiReboqueAdapter.OnItemClickListener() {
             @Override

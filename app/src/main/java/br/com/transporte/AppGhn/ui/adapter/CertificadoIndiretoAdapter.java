@@ -17,22 +17,21 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.adapter.adaptersUtil.VencimentoUtil;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class CertificadoIndiretoAdapter extends RecyclerView.Adapter<CertificadoIndiretoAdapter.ViewHolder> {
     private final CertificadosIndiretosFragment context;
-    public OnItemClickListenerNew onItemClickListener;
+    public OnItemClickListener_getId onItemClickListener;
     private final List<DespesaCertificado> dataSet;
     public static final int DIAS_SEMANA = 7;
     public static final int DIAS_MES = 30;
     private int posicao;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

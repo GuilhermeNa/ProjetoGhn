@@ -22,22 +22,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.DespesasCertificadoDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.ViewHolder> {
     public static final int DIAS_MES = 30;
     public static final int DIAS_ANO = 365;
     public static final int DIAS_SEMANA = 7;
     private final CertificadosDiretosFragment context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
     private final List<Cavalo> dataSet;
     private static final int SITUACAO_OK = 0;
     private static final int SITUACAO_AVISO = 2;
@@ -49,7 +47,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
         this.context = context;
     }
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

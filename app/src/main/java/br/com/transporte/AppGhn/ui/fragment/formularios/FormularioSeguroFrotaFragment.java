@@ -158,7 +158,7 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     private void configuraDropDownMenuDeCavalos() {
-        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+     //   listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
         String[] cavalos = listaDePlacas.toArray(new String[0]);
         ArrayAdapter<String> adapterCavalos = new ArrayAdapter<>(this.requireContext(), android.R.layout.simple_list_item_1, cavalos);
         refCavaloAutoComplete.setAdapter(adapterCavalos);
@@ -215,11 +215,11 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
     }
 
     private void alteraUiParaModoRenovacao() {
-        String placaDoCavaloQueEstaTendoOSeguroRenovado = cavaloDao.localizaPeloId(seguroQueEstaSendoSubstituido.getRefCavaloId()).getPlaca();
-        String subtitulo = SUB_TITULO_APP_BAR_RENOVANDO + placaDoCavaloQueEstaTendoOSeguroRenovado;
-        subEdit.setText(subtitulo);
+//        String placaDoCavaloQueEstaTendoOSeguroRenovado = cavaloDao.localizaPeloId(seguroQueEstaSendoSubstituido.getRefCavaloId()).getPlaca();
+ //       String subtitulo = SUB_TITULO_APP_BAR_RENOVANDO + placaDoCavaloQueEstaTendoOSeguroRenovado;
+   //     subEdit.setText(subtitulo);
 
-        refCavaloAutoComplete.setText(placaDoCavaloQueEstaTendoOSeguroRenovado);
+ //       refCavaloAutoComplete.setText(placaDoCavaloQueEstaTendoOSeguroRenovado);
 
         refCavaloAutoComplete.setVisibility(GONE);
         refCavaloLayout.setVisibility(GONE);
@@ -237,9 +237,9 @@ public class FormularioSeguroFrotaFragment extends FormularioBaseFragment {
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        String placaDoCavaloQueEstaSendoEditado = cavaloDao.localizaPeloId(seguro.getRefCavaloId()).getPlaca();
+  //      String placaDoCavaloQueEstaSendoEditado = cavaloDao.localizaPeloId(seguro.getRefCavaloId()).getPlaca();
 
-        refCavaloAutoComplete.setText(placaDoCavaloQueEstaSendoEditado);
+    //    refCavaloAutoComplete.setText(placaDoCavaloQueEstaSendoEditado);
         dataPrimeiraParcelaEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataPrimeiraParcela()));
         dataInicialEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
         dataFinalEdit.setText(ConverteDataUtil.dataParaString(seguro.getDataFinal()));

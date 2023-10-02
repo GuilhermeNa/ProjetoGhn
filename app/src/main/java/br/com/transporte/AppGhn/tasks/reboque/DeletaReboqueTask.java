@@ -4,22 +4,16 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.model.SemiReboque;
+import br.com.transporte.AppGhn.tasks.BaseTask;
+import br.com.transporte.AppGhn.tasks.TaskCallbackVoid;
 
-public class DeletaReboqueTask {
-    private final Executor executor;
-    private final Handler resultHandler;
-
-    public DeletaReboqueTask(Executor executor, Handler resultHandler) {
-        this.executor = executor;
-        this.resultHandler = resultHandler;
-    }
-
-    public interface TaskCallback {
-        void remocaoFinalizada();
+public class DeletaReboqueTask extends BaseTask {
+    public DeletaReboqueTask(ExecutorService executor, Handler handler) {
+        super(executor, handler);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -27,15 +21,13 @@ public class DeletaReboqueTask {
     public void solicitaAtualizacao(
             final RoomSemiReboqueDao dao,
             final SemiReboque reboque,
-            final TaskCallback callback
+            final TaskCallbackVoid callback
     ) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                realizaRemocaoSincrona(dao, reboque);
-                notificaResultado(callback);
-            }
-        });
+        executor.execute(
+                () -> {
+                    realizaRemocaoSincrona(dao, reboque);
+                    notificaResultado(callback);
+                });
     }
 
     private void realizaRemocaoSincrona(
@@ -45,14 +37,10 @@ public class DeletaReboqueTask {
         dao.deleta(reboque);
     }
 
-    private void notificaResultado(final TaskCallback callback) {
-        resultHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                callback.remocaoFinalizada();
-
-            }
-        });
+    private void notificaResultado(@NonNull final TaskCallbackVoid callback) {
+        handler.post(
+                callback::finalizado
+        );
     }
 
 }

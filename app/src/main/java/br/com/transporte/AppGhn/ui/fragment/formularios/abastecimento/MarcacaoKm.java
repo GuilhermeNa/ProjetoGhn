@@ -1,9 +1,8 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios.abastecimento;
 
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,19 +23,16 @@ public abstract class MarcacaoKm {
     private static LocalDate ultimaData;
     private static BigDecimal ultimaMarcacao;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public static boolean verificaMarcacaoKm(LocalDate dataASalvar, BigDecimal marcacaoASalvar, Long cavaloId) throws MarcacaoKmInvalida, DataInvalida, RegistroDuplicado {
-        List<CustosDeAbastecimento> listaPorCavalo = abastecimentoDao.listaPorCavalo(cavaloId);
+    public static boolean verificaMarcacaoKm(LocalDate dataASalvar, BigDecimal marcacaoASalvar, List<CustosDeAbastecimento> dataSet) throws MarcacaoKmInvalida, DataInvalida, RegistroDuplicado {
+        List<CustosDeAbastecimento> listaPorCavalo = dataSet;
         Comparator<CustosDeAbastecimento> ordenaPorDatas = Comparator.comparing(CustosDeAbastecimento::getData);
-        Collections.sort(listaPorCavalo, ordenaPorDatas);
+        listaPorCavalo.sort(ordenaPorDatas);
         List<CustosDeAbastecimento> listaRevertida = new ArrayList<>(listaPorCavalo);
         Collections.reverse(listaRevertida);
         int listaSize = listaPorCavalo.size();
 
-
         Comparator<CustosDeAbastecimento> ordenaPorDatas1 = Comparator.comparing(CustosDeAbastecimento::getMarcacaoKm);
-        Collections.sort(listaPorCavalo, ordenaPorDatas1);
-
+        listaPorCavalo.sort(ordenaPorDatas1);
 
         boolean teste0 = verificaSeADataEhValida(dataASalvar); //----------------------------------- verificação funcionando
         if (teste0) return true;
@@ -60,14 +56,13 @@ public abstract class MarcacaoKm {
     }
 
 
-    private static void localizaUltimoCadastroDeAbastecimento(List<CustosDeAbastecimento> listaPorCavalo, int listaSize) {
+    private static void localizaUltimoCadastroDeAbastecimento(@NonNull List<CustosDeAbastecimento> listaPorCavalo, int listaSize) {
         CustosDeAbastecimento ultimoCusto = listaPorCavalo.get(listaSize - 1);
         ultimaMarcacao = ultimoCusto.getMarcacaoKm();
         ultimaData = ultimoCusto.getData();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static boolean verificaSeADataEhValida(LocalDate dataASalvar)
+    private static boolean verificaSeADataEhValida(@NonNull LocalDate dataASalvar)
             throws DataInvalida {
         LocalDate dataDeHoje = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
         if (dataASalvar.isAfter(dataDeHoje)) {
@@ -81,8 +76,7 @@ public abstract class MarcacaoKm {
         return listaSize == 0;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static boolean verificaSeDataEstaOk(LocalDate dataASalvar, BigDecimal marcacaoASalvar)
+    private static boolean verificaSeDataEstaOk(@NonNull LocalDate dataASalvar, BigDecimal marcacaoASalvar)
             throws MarcacaoKmInvalida {
         if (dataASalvar.isAfter(ultimaData)) {
             int compare = marcacaoASalvar.compareTo(ultimaMarcacao);
@@ -101,7 +95,6 @@ public abstract class MarcacaoKm {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private static boolean verificaSeDatasSaoIguais(LocalDate dataASalvar, BigDecimal marcacaoASalvar, List<CustosDeAbastecimento> lista)
             throws RegistroDuplicado, MarcacaoKmInvalida {
         if (dataASalvar.isEqual(ultimaData)) {
@@ -135,7 +128,6 @@ public abstract class MarcacaoKm {
         return false;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private static boolean verificaSeDataEstaInferior(LocalDate dataASalvar, BigDecimal marcacaoASalvar,
                                                       List<CustosDeAbastecimento> listaPorCavalo)
             throws MarcacaoKmInvalida, RegistroDuplicado {
@@ -243,8 +235,7 @@ public abstract class MarcacaoKm {
         return custoAcima;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static CustosDeAbastecimento definePosicaoAbaixoNaLista(LocalDate dataASalvar, List<CustosDeAbastecimento> listaPorCavalo) {
+    private static CustosDeAbastecimento definePosicaoAbaixoNaLista(LocalDate dataASalvar, @NonNull List<CustosDeAbastecimento> listaPorCavalo) {
         CustosDeAbastecimento custoAbaixo = null;
         for (CustosDeAbastecimento c : listaPorCavalo) {
             if (dataASalvar.isAfter(c.getData())) {
@@ -254,7 +245,7 @@ public abstract class MarcacaoKm {
         return custoAbaixo;
     }
 
-    private static CustosDeAbastecimento defineDuasPosicoesAcimaNaLista(List<CustosDeAbastecimento> listaPorCavalo, CustosDeAbastecimento custoAbaixo) {
+    private static CustosDeAbastecimento defineDuasPosicoesAcimaNaLista(@NonNull List<CustosDeAbastecimento> listaPorCavalo, CustosDeAbastecimento custoAbaixo) {
         CustosDeAbastecimento custoDuasPosAcima;
         int i = listaPorCavalo.indexOf(custoAbaixo);
         custoDuasPosAcima = listaPorCavalo.get(i + 2);

@@ -238,16 +238,16 @@ public class DesempenhoDataSetRecyclerHelper {
         String nomeMotorista;
         for (Cavalo c : dataSet_cavalo) {
             try {
-                nomeMotorista = motoristaDao.localizaPeloId(c.getRefMotoristaId()).getNome();
+      //          nomeMotorista = motoristaDao.localizaPeloId(c.getRefMotoristaId()).getNome();
             } catch (NullPointerException e) {
                 nomeMotorista = MOTORISTA_INDEFINIDO;
             }
-            ObjetoTemporario_representaCavalo obj = new ObjetoTemporario_representaCavalo(
-                    nomeMotorista,
-                    c.getPlaca(),
-                    c.getId()
-            );
-            objTemporarioDao.adiciona(obj);
+        //    ObjetoTemporario_representaCavalo obj = new ObjetoTemporario_representaCavalo(
+       //             nomeMotorista,
+        //            c.getPlaca(),
+        //            c.getId()
+        //    );
+         //   objTemporarioDao.adiciona(obj);
         }
     }
 
@@ -356,25 +356,25 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static void lucro(int ano) {
-            List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
+      //      List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
 
-            List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
+          /*  List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
             List<CustosDePercurso> listaCustoPercurso = FiltraCustosPercurso.listaPorAno(custosPercursoDao.todos(), ano);
             List<CustosDeManutencao> listaCustoManutencao = FiltraCustosManutencao.listaPorAno(manutencaoDao.todos(), ano);
             List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.todos(), ano);
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
-
+*/
             List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
             listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
             List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
             listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
 
-            List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
+           // List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
 
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
-                List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
+              /*  List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
                 BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
                 BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
                 adicionaValorAoObjetoTemporario(liquido, obj);
@@ -410,7 +410,7 @@ public class DesempenhoDataSetRecyclerHelper {
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
                 BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                subtraiValorAoObjetoTemporario(imposto, obj);
+                subtraiValorAoObjetoTemporario(imposto, obj);*/
 
             }
 
@@ -532,7 +532,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         public static void lucro(int ano, int mes) {
-            List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
+         /*   List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
             listaFreteLiquido = FiltraFrete.listaPorMes(listaFreteLiquido, mes);
 
             List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
@@ -561,10 +561,10 @@ public class DesempenhoDataSetRecyclerHelper {
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
             listaDespesaImposto = FiltraDespesasImposto.listaPorMes(listaDespesaImposto, mes);
 
-
+*/
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
-                List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
+               /* List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
                 BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
                 BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
                 adicionaValorAoObjetoTemporario(liquido, obj);
@@ -600,7 +600,7 @@ public class DesempenhoDataSetRecyclerHelper {
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
                 BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                subtraiValorAoObjetoTemporario(imposto, obj);
+                subtraiValorAoObjetoTemporario(imposto, obj);*/
 
             }
         }
@@ -673,8 +673,8 @@ public class DesempenhoDataSetRecyclerHelper {
             List<Parcela_seguroVida> listaParcelaVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
             listaParcelaVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaVida, true);
 
-            List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
-            listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
+           // List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
+            //listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
@@ -698,9 +698,9 @@ public class DesempenhoDataSetRecyclerHelper {
                 valorRateio = getRateio(parcelavida);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
-                BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                valorRateio = getRateio(imposto);
+             //   List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
+              //  BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
+             //   valorRateio = getRateio(imposto);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
             }
         }
@@ -783,8 +783,8 @@ public class DesempenhoDataSetRecyclerHelper {
             List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), mes);
             listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
 
-            List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), mes);
-            listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
+//            List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), mes);
+  //          listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
@@ -808,9 +808,9 @@ public class DesempenhoDataSetRecyclerHelper {
                 valorRateio = getRateio(parcelaVida);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
-                BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                valorRateio = getRateio(imposto);
+     //           List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
+       //         BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
+         //       valorRateio = getRateio(imposto);
                 removeRateioAoObjetoTemporario(valorRateio, obj);
             }
 

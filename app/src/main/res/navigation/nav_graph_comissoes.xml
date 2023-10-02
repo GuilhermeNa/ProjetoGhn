@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_comissoes"
-    app:startDestination="@id/navComissoes">
+    app:startDestination="@id/navComissaoCarregaDados">
 
 
     <fragment
         android:id="@+id/navComissoes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesEmAbertoFragment"
         android:label="Comissoes Fragment"
         tools:layout="@layout/fragment_comissoes" >
         <action
@@ -49,5 +49,16 @@
         <argument
             android:name="salarioId"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/navComissaoCarregaDados"
+        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.CarregandoDadosComissaoFragment"
+        android:label="Carrega dados Fragment"
+        tools:layout="@layout/fragment_carregando_dados_comissao" >
+        <action
+            android:id="@+id/action_navCarregaDados_to_navComissoes"
+            app:destination="@id/navComissoes"
+            app:popUpTo="@id/navComissaoCarregaDados"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

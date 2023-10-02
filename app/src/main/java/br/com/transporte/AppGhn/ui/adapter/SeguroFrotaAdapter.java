@@ -22,17 +22,15 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.ViewHolder> {
     public static final int SITUACAO_ATENCAO = 1;
@@ -44,7 +42,7 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     private int situacaoDoCavalo;
     private final List<DespesaComSeguroFrota> dataSet;
     private final SeguroFrotaFragment context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
     private final RoomCavaloDao cavaloDao;
     private int posicao;
 
@@ -54,7 +52,7 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
         cavaloDao = GhnDataBase.getInstance(context.requireContext()).getRoomCavaloDao();
     }
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -128,8 +126,8 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     //------------------------------------------------
 
     private void vincula(@NonNull ViewHolder holder, @NonNull DespesaComSeguro seguros) {
-        String placa = cavaloDao.localizaPeloId(seguros.getRefCavaloId()).getPlaca();
-        holder.placaTxtView.setText(placa);
+    //    String placa = cavaloDao.localizaPeloId(seguros.getRefCavaloId()).getPlaca();
+    //    holder.placaTxtView.setText(placa);
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguros.getValorDespesa()));
         holder.dataInicialTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataInicial()));
         holder.dataFinalTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataFinal()));

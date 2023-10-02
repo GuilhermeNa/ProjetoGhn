@@ -31,9 +31,9 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentGerenciamentoBinding;
 import br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo;
 import br.com.transporte.AppGhn.ui.activity.CertificadosActivity;
-import br.com.transporte.AppGhn.ui.activity.ComissoesActivity;
+import br.com.transporte.AppGhn.ui.activity.comissao.ComissoesActivity;
 import br.com.transporte.AppGhn.ui.activity.DespesasAdmActivity;
-import br.com.transporte.AppGhn.ui.activity.FreteAReceberActivity;
+import br.com.transporte.AppGhn.ui.activity.freteAReceberActivity.FreteAReceberActivity;
 import br.com.transporte.AppGhn.ui.activity.SegurosActivity;
 
 public class GerenciamentoFragment extends Fragment implements MenuProvider {

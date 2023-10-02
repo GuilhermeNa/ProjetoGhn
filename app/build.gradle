@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'br.com.transporte.AppGhn'
-    compileSdk 33
+    compileSdk 34
 
     viewBinding {
         enable = true
@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "br.com.transporte.AppGhn"
         minSdk 26
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -53,30 +53,38 @@ dependencies {
         }
     }
 
-    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
-    def room_version = "2.4.1"
+    // ViewModel
+    def lifecycle_version = "2.6.2"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
+    //Room
+    def room_version = "2.5.2"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    implementation("androidx.navigation:navigation-fragment:2.5.3")
-    implementation("androidx.navigation:navigation-ui:2.5.3")
+    implementation("androidx.navigation:navigation-fragment:2.7.2")
+    implementation("androidx.navigation:navigation-ui:2.7.2")
 
     //https://github.com/rtoshiro/MaskFormatter
     implementation 'com.github.rtoshiro.mflibrary:mflibrary:1.0.0'
 
     //mp chart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    //Data Store
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.0.0")
+
+
 
 
 }

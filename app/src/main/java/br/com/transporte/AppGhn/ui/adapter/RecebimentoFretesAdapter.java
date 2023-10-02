@@ -13,18 +13,17 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberResumoFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class RecebimentoFretesAdapter extends RecyclerView.Adapter <RecebimentoFretesAdapter.ViewHolder> {
     private final List<RecebimentoDeFrete> dataSet;
     private final FreteAReceberResumoFragment context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener){
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener){
         this.onItemClickListener = onItemClickListener;
     }
 

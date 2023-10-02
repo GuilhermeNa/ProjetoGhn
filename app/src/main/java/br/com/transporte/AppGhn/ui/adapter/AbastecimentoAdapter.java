@@ -15,24 +15,23 @@ import java.util.List;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.enums.TipoAbastecimento;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.areaMotorista.AreaMotoristaAbastecimentoFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class AbastecimentoAdapter extends RecyclerView.Adapter<AbastecimentoAdapter.ViewHolder> {
     private final List<CustosDeAbastecimento> dataSet;
     private final AreaMotoristaAbastecimentoFragment context;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
     public AbastecimentoAdapter(AreaMotoristaAbastecimentoFragment context, List<CustosDeAbastecimento> dataSet) {
         this.context = context;
         this.dataSet = dataSet;
     }
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 

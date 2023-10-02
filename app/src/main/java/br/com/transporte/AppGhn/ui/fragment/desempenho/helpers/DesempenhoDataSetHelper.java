@@ -140,8 +140,8 @@ public class DesempenhoDataSetHelper {
 
     private void insereDespesasDeImpostoNoDataSet() {
         if (despesaImpostoDao == null) despesaImpostoDao = dataBase.getRoomDespesaImpostoDao();
-        List<DespesasDeImposto> listaAnual = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+       // List<DespesasDeImposto> listaAnual = FiltraDespesasImposto.listaPorAno(despesaImpostoDao.todos(), ano);
+       // dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereDespesasAdmNoDataSet() {
@@ -153,27 +153,27 @@ public class DesempenhoDataSetHelper {
     private void insereCustosDeManutencaoNoDataSet() {
         if (custosDeManutencaoDao == null)
             custosDeManutencaoDao = dataBase.getRoomCustosDeManutencaoDao();
-        List<CustosDeManutencao> listaAnual = FiltraCustosManutencao.listaPorAno(custosDeManutencaoDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+      //  List<CustosDeManutencao> listaAnual = FiltraCustosManutencao.listaPorAno(custosDeManutencaoDao.todos(), ano);
+       // dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereCustosDePercursoNoDataSet() {
         if (custosPercursoDao == null) custosPercursoDao = dataBase.getRoomCustosPercursoDao();
-        List<CustosDePercurso> listaAnual = FiltraCustosPercurso.listaPorAno(custosPercursoDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+    //    List<CustosDePercurso> listaAnual = FiltraCustosPercurso.listaPorAno(custosPercursoDao.todos(), ano);
+    //    dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereAbastecimentosNoDataSet() {
         if (custosAbastecimentoDao == null)
             custosAbastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
-        List<CustosDeAbastecimento> listaAnual = FiltraCustosAbastecimento.listaPorAno(custosAbastecimentoDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+   //     List<CustosDeAbastecimento> listaAnual = FiltraCustosAbastecimento.listaPorAno(custosAbastecimentoDao.todos(), ano);
+   //     dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereFretesNoDataSet() {
         if (freteDao == null) freteDao = dataBase.getRoomFreteDao();
-        List<Frete> listaAnual = FiltraFrete.listaPorAno(freteDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+   //     List<Frete> listaAnual = FiltraFrete.listaPorAno(freteDao.todos(), ano);
+   //     dataSet = new ArrayList<>(listaAnual);
     }
 
 

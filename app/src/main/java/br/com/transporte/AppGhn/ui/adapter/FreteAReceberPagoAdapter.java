@@ -15,42 +15,46 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.RecebimentoFreteDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.filtros.FiltraRecebimentoFrete;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
-import br.com.transporte.AppGhn.ui.adapter.listener.OnItemClickListener;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberPagosFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.ImagemUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceberPagoAdapter.ViewHolder> {
     public static final String DRAWABLE_DONE = "done";
     private final FreteAReceberPagosFragment context;
-    private final List<Frete> dataSet;
-    private OnItemClickListenerNew onItemClickListener;
+    private final List<Frete> dataSetFrete;
+    private final List<RecebimentoDeFrete> dataSetRecebimento;
+    private final List<Cavalo> dataSetCavalo;
+    private OnItemClickListener_getId onItemClickListener;
     private RoomRecebimentoFreteDao recebimentoDao;
-    private RoomCavaloDao cavaloDao;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
-    public FreteAReceberPagoAdapter(@NonNull FreteAReceberPagosFragment context, List<Frete> lista) {
+    public FreteAReceberPagoAdapter(
+            @NonNull FreteAReceberPagosFragment context,
+            List<Frete> listaFrete,
+            List<Cavalo> listaCavalo,
+            List<RecebimentoDeFrete> dataSetRecebimento) {
         this.context = context;
-        this.dataSet = lista;
-        GhnDataBase dataBase = GhnDataBase.getInstance(context.requireContext());
-        recebimentoDao = dataBase.getRoomRecebimentoFreteDao();
-        cavaloDao = dataBase.getRoomCavaloDao();
+        this.dataSetFrete = listaFrete;
+        this.dataSetRecebimento = dataSetRecebimento;
+        this.dataSetCavalo = listaCavalo;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -91,14 +95,14 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
 
     @Override
     public void onBindViewHolder(@NonNull FreteAReceberPagoAdapter.ViewHolder holder, int position) {
-        Frete frete = dataSet.get(position);
+        Frete frete = dataSetFrete.get(position);
         vincula(holder, frete);
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(frete.getId()));
     }
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return dataSetFrete.size();
     }
 
     //------------------------------------------------
@@ -110,7 +114,7 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
         holder.origemTxtView.setText(frete.getOrigem());
         holder.destinoTxtView.setText(frete.getDestino());
 
-        String placa = cavaloDao.localizaPeloId(frete.getRefCavaloId()).getPlaca();
+        String placa = Objects.requireNonNull(FiltraCavalo.localizaPeloId(dataSetCavalo, frete.getRefCavaloId())).getPlaca();
         holder.placaTxtView.setText(placa);
 
         BigDecimal valorAReceber = frete.getFreteLiquidoAReceber();
@@ -131,11 +135,11 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     }
 
     private BigDecimal vinculaSaldo(ViewHolder holder, @NonNull Frete frete) {
-        List<RecebimentoDeFrete> listaRecebimentos = recebimentoDao.listaPorFreteId(frete.getId());
+        List<RecebimentoDeFrete> dataSet = FiltraRecebimentoFrete.listaPeloIdDoFrete(dataSetRecebimento, frete.getId());
 
         BigDecimal valorSaldo;
         try {
-            RecebimentoDeFrete saldo = FiltraRecebimentoFrete.localizaPorTipo(listaRecebimentos, SALDO);
+            RecebimentoDeFrete saldo = FiltraRecebimentoFrete.localizaPorTipo(dataSet, SALDO);
             valorSaldo = saldo.getValor();
         } catch (NullPointerException | ObjetoNaoEncontrado e) {
             e.printStackTrace();
@@ -146,7 +150,7 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     }
 
     private BigDecimal vinculaAdiantamento(ViewHolder holder, @NonNull Frete frete) {
-        List<RecebimentoDeFrete> listaRecebimentos = FiltraRecebimentoFrete.listaPeloIdDoFrete(recebimentoDao.todos(), frete.getId());
+        List<RecebimentoDeFrete> listaRecebimentos = FiltraRecebimentoFrete.listaPeloIdDoFrete(dataSetRecebimento, frete.getId());
 
         BigDecimal valorAdiantamento;
         try {
@@ -163,9 +167,18 @@ public class FreteAReceberPagoAdapter extends RecyclerView.Adapter<FreteAReceber
     //------------------------------------- Metodos Publicos ---------------------------------------
 
     @SuppressLint("NotifyDataSetChanged")
-    public void atualiza(List<Frete> lista) {
-        this.dataSet.clear();
-        this.dataSet.addAll(lista);
+    public void atualiza(List<Frete> lista, List<RecebimentoDeFrete> dataSetRecebimento) {
+        this.dataSetFrete.clear();
+        this.dataSetFrete.addAll(lista);
+        this.dataSetRecebimento.clear();
+        this.dataSetRecebimento.addAll(dataSetRecebimento);
+        notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void exibeSearch(List<Frete> dataSetSearch) {
+        this.dataSetFrete.clear();
+        this.dataSetFrete.addAll(dataSetSearch);
         notifyDataSetChanged();
     }
 

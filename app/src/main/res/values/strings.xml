@@ -68,4 +68,7 @@
     <string name="seguro_compreensivo">Seguro Compreensivo</string>
     <string name="seguro_de_vida">Seguro de Vida</string>
     <string name="demais_ramos">Demais Ramos</string>
+    <string name="calendario">calendario</string>
+    <string name="nao_encontrei_nada_aqui">Não encontrei nada aqui.</string>
+    <string name="carregando_dados">Carregando Dados...</string>
 </resources>

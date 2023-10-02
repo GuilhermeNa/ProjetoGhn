@@ -88,7 +88,7 @@ public class MediaFragment extends Fragment {
 
     private void atualizaDataSet() {
         if (dataSet_cavalos == null) dataSet_cavalos = new ArrayList<>();
-        dataSet_cavalos = cavaloDao.todos();
+    //    dataSet_cavalos = cavaloDao.todos();
     }
 
     @NonNull

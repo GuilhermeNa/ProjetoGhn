@@ -1,12 +1,19 @@
 package br.com.transporte.AppGhn.model;
 
+import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_CEM;
+import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_UM;
+
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+
+import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 
 @Entity(foreignKeys =
 @ForeignKey(
@@ -170,5 +177,28 @@ public class Frete implements Serializable {
     public void setFreteJaFoiPago(boolean freteJaFoiPago) {
         this.freteJaFoiPago = freteJaFoiPago;
     }
+
+    public void calculaComissao() {
+        BigDecimal comissaoAoMotorista = comissaoPercentualAplicada.divide(BIG_DECIMAL_CEM, 2, RoundingMode.HALF_EVEN)
+                .multiply(freteBruto).setScale(2, RoundingMode.HALF_EVEN);
+        setComissaoAoMotorista(comissaoAoMotorista);
+    }
+
+    public void calculaFreteLiquidoAReceber() {
+        BigDecimal freteLiquido = freteBruto.subtract(descontos).subtract(seguroDeCarga);
+        setFreteLiquidoAReceber(freteLiquido);
+    }
+
+    public void vinculaComissaoAplicada(BigDecimal comissaoPercentualAplicada) throws ValorInvalidoException {
+        int compare = BIG_DECIMAL_CEM.compareTo(comissaoPercentualAplicada);
+        if (compare <= 0) {
+            throw new ValorInvalidoException("Comissão não pode ser superior a 100%");
+        } else {
+            setComissaoPercentualAplicada(comissaoPercentualAplicada);
+        }
+
+
+    }
+
 }
 

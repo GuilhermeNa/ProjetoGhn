@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,13 @@ public class AdiantamentoPagoAdapter extends RecyclerView.Adapter<AdiantamentoPa
     public AdiantamentoPagoAdapter(ComissoesPagasDetalhesFragment context, List<Adiantamento> lista) {
         this.context = context;
         this.dataSet = lista;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualizaData(final List<Adiantamento> dataSet) {
+        this.dataSet.clear();
+        this.dataSet.addAll(dataSet);
+        notifyDataSetChanged();
     }
 
     //----------------------------------------------------------------------------------------------

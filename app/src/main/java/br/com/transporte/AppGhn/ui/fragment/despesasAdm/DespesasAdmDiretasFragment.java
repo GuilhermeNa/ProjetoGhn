@@ -243,7 +243,7 @@ public class DespesasAdmDiretasFragment extends Fragment {
                     final RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
                     @Override
                     public boolean onQueryTextChange(String newText) {
-                        final List<DespesaAdm> dataSet_searchView = new ArrayList<>();
+             /*           final List<DespesaAdm> dataSet_searchView = new ArrayList<>();
                         for (DespesaAdm d : dataSet) {
                             String placa = cavaloDao.localizaPeloId(d.getRefCavaloId()).getPlaca();
 
@@ -252,7 +252,7 @@ public class DespesasAdmDiretasFragment extends Fragment {
                             }
                         }
                         ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSet_searchView.size(), buscaVazia, recyclerView, VIEW_INVISIBLE);
-                        adapter.atualiza(dataSet_searchView);
+                        adapter.atualiza(dataSet_searchView);*/
                         return false;
                     }
 

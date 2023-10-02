@@ -109,7 +109,7 @@
         tools:layout="@layout/fragment_impostos" />
     <fragment
         android:id="@+id/navSelecionaCavalo"
-        android:name="br.com.transporte.AppGhn.ui.fragment.SelecionaCavalo"
+        android:name="br.com.transporte.AppGhn.ui.fragment.selecionaCavalo.SelecionaCavalo"
         android:label="Seleciona Cavalo"
         tools:layout="@layout/fragment_seleciona_cavalo">
         <action
@@ -125,7 +125,7 @@
     </fragment>
     <fragment
         android:id="@+id/navManutencaoDetalhes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.ManutencaoDetalhesFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.manutencao.ManutencaoDetalhesFragment"
         android:label="Manutencao Detalhes"
         tools:layout="@layout/fragment_manutencao_detalhes" >
         <argument

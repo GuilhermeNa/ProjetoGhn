@@ -12,6 +12,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_IMPOSTOS;
+import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -30,42 +31,35 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.util.Pair;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.jetbrains.annotations.Contract;
-
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentImpostosBinding;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasImposto;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
+import br.com.transporte.AppGhn.repository.CavaloRepository;
+import br.com.transporte.AppGhn.repository.ImpostoRepository;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ImpostosAdapter;
+import br.com.transporte.AppGhn.ui.viewmodel.ImpostosViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.ImpostosViewModelFactory;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
-import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.util.DateRangePickerUtil;
+import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 import br.com.transporte.AppGhn.util.ToolbarUtil;
@@ -73,14 +67,11 @@ import br.com.transporte.AppGhn.util.ToolbarUtil;
 public class ImpostosFragment extends Fragment {
     public static final String IMPOSTOS = "Impostos";
     private FragmentImpostosBinding binding;
-    private TextView valorPagoTxtView, dataInicialTxtView, dataFinalTxtView;
-    private LinearLayout dataLayout;
+    private TextView valorPagoTxtView, campoDataInicial, campoDataFinal;
     private FloatingActionButton fab;
     private RecyclerView recyclerView;
     private ImpostosAdapter adapter;
-    private LocalDate dataInicial, dataFinal;
-    private RoomDespesaImpostoDao impostoDao;
-    private List<DespesasDeImposto> dataSet;
+    private ImpostosViewModel viewModel;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -88,26 +79,20 @@ public class ImpostosFragment extends Fragment {
 
                 switch (codigoResultado) {
                     case RESULT_OK:
-                        atualizaUiAposRetornoResult(REGISTRO_CRIADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_CRIADO);
                         break;
                     case RESULT_DELETE:
-                        atualizaUiAposRetornoResult(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
                     case RESULT_EDIT:
-                        atualizaUiAposRetornoResult(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
                 }
             });
-
-    private void atualizaUiAposRetornoResult(String msg) {
-        atualizaDataSet();
-        adapter.atualiza(getDataSet());
-        configuraUi();
-        MensagemUtil.toast(requireContext(), msg);
-    }
+    private LinearLayout alertaLayout;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -116,36 +101,40 @@ public class ImpostosFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
-        inicializaData_inicialEFinal();
-        atualizaDataSet();
+        inicializaViewModel();
+        buscaDadosObserver();
     }
 
-    private void inicializaData_inicialEFinal() {
-        dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-        dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
+    private void inicializaViewModel() {
+        final ImpostoRepository impostoRepository = new ImpostoRepository(requireContext());
+        final CavaloRepository cavaloRepository = new CavaloRepository(requireContext());
+        final ImpostosViewModelFactory factory = new ImpostosViewModelFactory(impostoRepository, cavaloRepository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(ImpostosViewModel.class);
     }
 
-    private void inicializaDataBase() {
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        impostoDao = dataBase.getRoomDespesaImpostoDao();
+    private void buscaDadosObserver() {
+        viewModel.buscaImpostos().observe(this,
+                resource -> {
+                    if (resource.getDado() != null) {
+                        viewModel.setDataSet_base(resource.getDado());
+                        buscaCavalos();
+                    }
+                });
     }
 
-    private void atualizaDataSet() {
-        if (dataSet == null) dataSet = new ArrayList<>();
-        dataSet = impostoDao.todos();
-        dataSet = FiltraDespesasImposto.listaFiltradaPorData(dataSet, dataInicial, dataFinal);
+    private void buscaCavalos() {
+        viewModel.buscaCavalos().observe(this,
+                resource -> {
+                    if (resource != null) {
+                        List<DespesasDeImposto> listaFiltrada = viewModel.filtraPorData();
+                        adapter.setDataSetCavalo(resource.getDado());
+                        configuraCampoValor(listaFiltrada);
+                        adapter.atualiza(listaFiltrada);
+                        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaFiltrada.size(), alertaLayout, recyclerView, VIEW_INVISIBLE);
+                    }
+                });
     }
-
-    @NonNull
-    @Contract(" -> new")
-    private List<DespesasDeImposto> getDataSet() {
-        return new ArrayList<>(dataSet);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          OnCreateView                                      ||
-    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -165,23 +154,21 @@ public class ImpostosFragment extends Fragment {
         configuraRecycler();
         configuraDateRangePicker();
         configuraFab();
-        configuraUi();
         configuraToolbar();
     }
 
     private void inicializaCamposDaView() {
+        alertaLayout = binding.fragImpostosAlerta.alerta;
         valorPagoTxtView = binding.fragImpostosPrevisaoTotalPagoValor;
-        dataLayout = binding.fragImpostosData;
-        dataInicialTxtView = binding.fragImpostosMesDtInicial;
-        dataFinalTxtView = binding.fragImpostosMesDtFinal;
+        campoDataInicial = binding.fragImpostosMesDtInicial;
+        campoDataFinal = binding.fragImpostosMesDtFinal;
         fab = binding.fragImpostosFab;
         recyclerView = binding.fragItemImpostosRecycler;
     }
 
     private void configuraRecycler() {
-        adapter = new ImpostosAdapter(dataSet, this);
+        adapter = new ImpostosAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(adapter);
-
         adapter.setOnItemClickListener(impostoId -> {
             Intent intent = new Intent(getContext(), FormulariosActivity.class);
             intent.putExtra(CHAVE_FORMULARIO, VALOR_IMPOSTOS);
@@ -190,12 +177,9 @@ public class ImpostosFragment extends Fragment {
         });
     }
 
-    private void configuraUi() {
+    private void configuraCampoValor(List<DespesasDeImposto> dataSet) {
         BigDecimal somaValorTotalDeImpostosPagos = CalculoUtil.somaDespesaImposto(dataSet);
-
         valorPagoTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(somaValorTotalDeImpostosPagos));
-        dataInicialTxtView.setText(ConverteDataUtil.dataParaString(dataInicial));
-        dataFinalTxtView.setText(ConverteDataUtil.dataParaString(dataFinal));
     }
 
     private void configuraFab() {
@@ -207,45 +191,22 @@ public class ImpostosFragment extends Fragment {
     }
 
     private void configuraDateRangePicker() {
-        MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText("Selecione o periodo")
-                .setSelection(
-                        new Pair<>(
-                                MaterialDatePicker.thisMonthInUtcMilliseconds(),
-                                MaterialDatePicker.todayInUtcMilliseconds()
-                        )
-                )
-                .build();
-
-        dataLayout.setOnClickListener(v -> {
-            dateRangePicker.show(getParentFragmentManager(), "DataRange");
-
-            dateRangePicker.addOnPositiveButtonClickListener(selection -> {
-                LocalDate dataInicialAtualizada = Instant.ofEpochMilli(Long.parseLong(String.valueOf(selection.first))).atZone(ZoneId.of("America/Sao_Paulo"))
-                        .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
-                        .toLocalDate();
-
-                LocalDate dataFinalAtualizada = Instant.ofEpochMilli(Long.parseLong(String.valueOf(selection.second))).atZone(ZoneId.of("America/Sao_Paulo"))
-                        .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
-                        .toLocalDate();
-
-                dataInicialAtualizada = DataUtil.formataDataParaPadraoPtBr(dataInicialAtualizada);
-                dataFinalAtualizada = DataUtil.formataDataParaPadraoPtBr(dataFinalAtualizada);
-
-                this.dataInicial = dataInicialAtualizada;
-                this.dataFinal = dataFinalAtualizada;
-
-                configuraMudancasAposSelecaoDeData();
-
-            });
-        });
-
+        final DateRangePickerUtil dateRange = new DateRangePickerUtil(getParentFragmentManager());
+        dateRange.configuraCampos(campoDataInicial, campoDataFinal);
+        dateRange.build(requireView());
+        dateRange.setCallbackDatePicker(
+                this::atualizaAposNovaBuscaPorData);
     }
 
-    private void configuraMudancasAposSelecaoDeData() {
-        atualizaDataSet();
-        adapter.atualiza(getDataSet());
-        configuraUi();
+    private void atualizaAposNovaBuscaPorData(LocalDate dataInicial, LocalDate dataFinal) {
+        viewModel.setDataInicial(dataInicial);
+        viewModel.setDataFinal(dataFinal);
+        campoDataInicial.setText(ConverteDataUtil.dataParaString(dataInicial));
+        campoDataFinal.setText(ConverteDataUtil.dataParaString(dataFinal));
+        List<DespesasDeImposto> listaFiltrada = viewModel.filtraPorData();
+        adapter.atualiza(listaFiltrada);
+        configuraCampoValor(listaFiltrada);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaFiltrada.size(), alertaLayout, recyclerView, VIEW_INVISIBLE);
     }
 
     private void configuraToolbar() {

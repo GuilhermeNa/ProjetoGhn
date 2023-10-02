@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,7 +16,7 @@ import br.com.transporte.AppGhn.model.Frete;
 public interface RoomFreteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void adiciona(Frete frete);
+    Long adiciona(Frete frete);
 
     @Delete
     void deleta(Frete frete);
@@ -24,12 +25,15 @@ public interface RoomFreteDao {
     void substitui(Frete frete);
 
     @Query("SELECT * FROM frete")
-    List<Frete> todos();
+    LiveData<List<Frete>> todos();
 
     @Query("SELECT * FROM frete WHERE id = :freteId")
-    Frete localizaPeloId(Long freteId);
+    LiveData<Frete> localizaPeloId(Long freteId);
 
     @Query("SELECT * FROM frete WHERE refCavaloId = :cavaloId")
-    List<Frete> listaPorCavaloId(Long cavaloId);
+    LiveData<List<Frete>> listaPorCavaloId(Long cavaloId);
+
+    @Query("SELECT * FROM frete WHERE freteJaFoiPago LIKE :isPago")
+    LiveData<List<Frete>> listaPorStatusDeRecebimento(boolean isPago);
 
 }

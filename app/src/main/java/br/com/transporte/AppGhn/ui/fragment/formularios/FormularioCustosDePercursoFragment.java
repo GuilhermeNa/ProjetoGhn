@@ -1,12 +1,16 @@
 package br.com.transporte.AppGhn.ui.fragment.formularios;
 
+import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioRecebimentoFreteFragment.ESCOLHA_UMA_FORMA_DE_PAGAMENTO;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,20 +21,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioCustosPercursoBinding;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
+import br.com.transporte.AppGhn.repository.CustoDePercursoRepository;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioCustoPercursoViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioCustoPercursoViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     private FragmentFormularioCustosPercursoBinding binding;
@@ -39,16 +46,28 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     private TextView reembolso;
     private CheckBox naoBox, simBox;
     private CustosDePercurso custo;
-    private RoomCustosPercursoDao custosDao;
     private TextInputLayout dataLayout;
+    private FormularioCustoPercursoViewModel viewModel;
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        custosDao = GhnDataBase.getInstance(requireContext()).getRoomCustosPercursoDao();
+        inicializaViewModel();
+        recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         long custoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(custoId);
         custo = (CustosDePercurso) criaOuRecuperaObjeto(custoId);
+    }
+
+    private void inicializaViewModel() {
+        final CustoDePercursoRepository repository = new CustoDePercursoRepository(requireContext());
+        final FormularioCustoPercursoViewModelFactory factory = new FormularioCustoPercursoViewModelFactory(repository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(FormularioCustoPercursoViewModel.class);
     }
 
     @Nullable
@@ -57,6 +76,10 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         binding = FragmentFormularioCustosPercursoBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                       OnViewCreated                                        ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -85,9 +108,18 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Long custoId = (Long)id;
+        Long custoId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            custo = custosDao.localizaPeloId(custoId);
+            viewModel.localizaPeloId(custoId).observe(this,
+                    custoRecebido -> {
+                        Log.d("teste", "observer acionado");
+                        Log.d("teste", "custo -> "+custoRecebido);
+                        if (custoRecebido != null) {
+                            viewModel.custoArmazenado = custoRecebido;
+                            custo = custoRecebido;
+                            bind();
+                        }
+                    });
         } else {
             custo = new CustosDePercurso();
         }
@@ -153,25 +185,43 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        custosDao.adiciona(custo);
+        viewModel.salva(custo).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        custosDao.adiciona(custo);
+        viewModel.salva(custo).observe(this,
+                id -> {
+                    if (id != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
     public Long configuraObjetoNaCriacao() {
-        custo.setRefCavaloId(getReferenciaDeCavalo(CHAVE_ID_CAVALO));
+        custo.setRefCavaloId(cavaloRecebido.getId());
         custo.setApenasAdmEdita(false);
         return null;
     }
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        custosDao.deleta(custo);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 
 }

@@ -3,7 +3,6 @@ package br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.view.View.GONE;
 import static br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO;
-import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.LOGOUT;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_ALTERACAO_REALIZADA;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
@@ -16,7 +15,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDI
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ADIANTAMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DEFAUT;
-import static br.com.transporte.AppGhn.ui.fragment.ManutencaoDetalhesFragment.S_M;
+import static br.com.transporte.AppGhn.ui.fragment.manutencao.ManutencaoDetalhesFragment.S_M;
 import static br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment.TipoDeAdapterPressionado.ADIANTAMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment.TipoDeAdapterPressionado.FRETE;
 import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_GONE;
@@ -37,9 +36,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,17 +53,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomAdiantamentoDao;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomCustosDeSalarioDao;
-import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentComissoesDetalhesBinding;
 import br.com.transporte.AppGhn.exception.ValorInvalidoException;
 import br.com.transporte.AppGhn.filtros.FiltraAdiantamento;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
 import br.com.transporte.AppGhn.filtros.FiltraFrete;
+import br.com.transporte.AppGhn.filtros.FiltraMotorista;
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
@@ -75,16 +69,15 @@ import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.dialog.AlteraComissao;
 import br.com.transporte.AppGhn.ui.dialog.DescontaAdiantamento;
-import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.comissoesDetalhesHelpers.ComissoesMenuProviderHelper;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.comissoesDetalhesHelpers.ComissoesRecyclerAdiantamentoHelper;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.comissoesDetalhesHelpers.ComissoesRecyclerCustosHelper;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.comissoesDetalhesHelpers.ComissoesRecyclerFreteHelper;
+import br.com.transporte.AppGhn.ui.viewmodel.ComissaoActViewModel;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
-import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class ComissoesDetalhesFragment extends Fragment {
     public static final String DETALHES_PARA_PAGAMENTO = "Detalhes para pagamento";
@@ -100,15 +93,12 @@ public class ComissoesDetalhesFragment extends Fragment {
     private List<CustosDePercurso> dataSet_custosPercurso;
     private List<Frete> dataSet_frete;
     private Map<Long, BigDecimal> mapDeAdiantamentos;
-    private RoomAdiantamentoDao adiantamentoDao;
-    private RoomCustosPercursoDao custosDao;
-    private RoomFreteDao freteDao;
-    private GhnDataBase dataBase;
     private ComissoesRecyclerAdiantamentoHelper recyclerAdiantamentoHelper;
     private ComissoesRecyclerFreteHelper recyclerFreteHelper;
     private ComissoesRecyclerCustosHelper recyclerCustosHelper;
     private Cavalo cavalo;
     private Button btn;
+    private ComissaoActViewModel viewModel;
     private final ActivityResultLauncher<Intent> activityResultLauncherAdiantamento = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -119,17 +109,17 @@ public class ComissoesDetalhesFragment extends Fragment {
                     case RESULT_EDIT:
                         Adiantamento adiantamentoRecebido = (Adiantamento) Objects.requireNonNull(dataResultado).getSerializableExtra(CHAVE_ADIANTAMENTO);
                         substituiValorNoMap(Objects.requireNonNull(adiantamentoRecebido).getId(), adiantamentoRecebido.restaReembolsar());
-                        atualizaAdiantamentoAposRetornoDeResult(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
 
                     case RESULT_DELETE:
                         int key = Objects.requireNonNull(dataResultado).getIntExtra(CHAVE_ID, VALOR_DEFAUT);
                         mapDeAdiantamentos.remove(key);
-                        atualizaAdiantamentoAposRetornoDeResult(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
                 }
             });
@@ -138,18 +128,15 @@ public class ComissoesDetalhesFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaCustosReembolsaveisAposRetornoDeResult(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
-
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
-
                     case RESULT_DELETE:
-                        atualizaCustosReembolsaveisAposRetornoDeResult(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
                 }
             });
@@ -163,15 +150,6 @@ public class ComissoesDetalhesFragment extends Fragment {
         Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void atualizaCustosReembolsaveisAposRetornoDeResult(String msg) {
-        atualizaDataSet_custos();
-        recyclerCustosHelper.solicitaAtualizacao(getDataSet_custos());
-        configuraVisibilidadeDeLayouts();
-        ui_atualizaReembolso();
-        ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
-        Toast.makeText(this.requireContext(), msg, Toast.LENGTH_SHORT).show();
-    }
-
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
     //----------------------------------------------------------------------------------------------
@@ -179,8 +157,9 @@ public class ComissoesDetalhesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
+        viewModel = new ViewModelProvider(requireActivity()).get(ComissaoActViewModel.class);
         cavalo = recebeIdArguments();
+
         atualizaDataSet_frete();
         atualizaDataSet_adiantamento();
         atualizaDataSet_custos();
@@ -188,42 +167,34 @@ public class ComissoesDetalhesFragment extends Fragment {
     }
 
     private void configuraMapComValoresDeAdiantamentoADescontar() {
-        if(mapDeAdiantamentos == null) mapDeAdiantamentos = new HashMap<>();
-        for(Adiantamento a: dataSet_adiantamento){
+        if (mapDeAdiantamentos == null) mapDeAdiantamentos = new HashMap<>();
+        for (Adiantamento a : dataSet_adiantamento) {
             BigDecimal valorRestanteADescontar = a.getValorTotal().subtract(a.getSaldoRestituido());
             mapDeAdiantamentos.put(a.getId(), valorRestanteADescontar);
         }
     }
 
-    private void inicializaDataBase() {
-        dataBase = GhnDataBase.getInstance(this.requireContext());
-        adiantamentoDao = dataBase.getRoomAdiantamentoDao();
-        custosDao = dataBase.getRoomCustosPercursoDao();
-        freteDao = dataBase.getRoomFreteDao();
-    }
-
     private Cavalo recebeIdArguments() {
-        RoomCavaloDao dao = dataBase.getRoomCavaloDao();
         Long cavaloId = ComissoesDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
-        cavalo = dao.localizaPeloId(cavaloId);
+        cavalo = (Cavalo) FiltraCavalo.localizaPeloId(viewModel.getDataSet_cavalo(), cavaloId);
         return cavalo;
     }
 
     private void atualizaDataSet_frete() {
         if (dataSet_frete == null) dataSet_adiantamento = new ArrayList<>();
-        dataSet_frete = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+        dataSet_frete = FiltraFrete.listaPorCavaloId(viewModel.getListaFreteComFiltro(), cavalo.getId());
         dataSet_frete = FiltraFrete.listaPorStatusDePagamentoDaComissao(dataSet_frete, false);
     }
 
     private void atualizaDataSet_adiantamento() {
         if (dataSet_adiantamento == null) dataSet_adiantamento = new ArrayList<>();
-        dataSet_adiantamento = FiltraAdiantamento.listaPorCavaloId(adiantamentoDao.todos(), cavalo.getId());
+        dataSet_adiantamento = FiltraAdiantamento.listaPorCavaloId(viewModel.getDataSetAdiantamento(), cavalo.getId());
         dataSet_adiantamento = FiltraAdiantamento.listaPorStatus(dataSet_adiantamento, false);
     }
 
     private void atualizaDataSet_custos() {
         if (dataSet_custosPercurso == null) dataSet_custosPercurso = new ArrayList<>();
-        dataSet_custosPercurso = FiltraCustosPercurso.listaPorCavaloId(custosDao.todos(), cavalo.getId());
+        dataSet_custosPercurso = FiltraCustosPercurso.listaPorCavaloId(viewModel.getDataSetReembolso(), cavalo.getId());
         dataSet_custosPercurso = FiltraCustosPercurso.listaPorTipo(dataSet_custosPercurso, REEMBOLSAVEL_EM_ABERTO);
     }
 
@@ -264,14 +235,22 @@ public class ComissoesDetalhesFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         inicializaCampos();
-        configuraToolbar();
-        configuraMenuProviderHelper();
         configuraRecyclerAdiantamento();
         configuraRecyclerFrete();
         configuraRecyclerReembolso();
         configuraUi();
         configuraBtn(view);
         configuraVisibilidadeDeLayouts();
+    }
+
+    private void inicializaCampos() {
+        btn = binding.btn;
+        placaTxt = binding.placa;
+        nomeTxt = binding.motorista;
+        liquidoTxt = binding.liquidoValor;
+        adiantamentoDescontarTxt = binding.descontoValor;
+        comissaoTxt = binding.comissaoValor;
+        reembolsoTxt = binding.reembolsoValor;
     }
 
     private void configuraVisibilidadeDeLayouts() {
@@ -285,38 +264,7 @@ public class ComissoesDetalhesFragment extends Fragment {
         ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet_frete().size(), null, layoutFrete, VIEW_GONE);
     }
 
-    private void inicializaCampos() {
-        btn = binding.btn;
-        placaTxt = binding.placa;
-        nomeTxt = binding.motorista;
-        liquidoTxt = binding.liquidoValor;
-        adiantamentoDescontarTxt = binding.descontoValor;
-        comissaoTxt = binding.comissaoValor;
-        reembolsoTxt = binding.reembolsoValor;
-    }
-
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ToolbarUtil toolbarUtil = new ToolbarUtil(DETALHES_PARA_PAGAMENTO);
-        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
-    }
-
-    private void configuraMenuProviderHelper() {
-        ComissoesMenuProviderHelper menuProviderHelper = new ComissoesMenuProviderHelper(requireContext());
-        requireActivity().addMenuProvider(menuProviderHelper, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        menuProviderHelper.setCallbackMenuProvider(new ComissoesMenuProviderHelper.CallbackMenuProvider() {
-            @Override
-            public void logoutCLick() {
-                MensagemUtil.toast(requireContext(), LOGOUT);
-            }
-
-            @Override
-            public void homeClick() {
-                NavController controlador = Navigation.findNavController(requireView());
-                controlador.popBackStack();
-            }
-        });
-    }
+    //--------------------------------
 
     private void configuraRecyclerAdiantamento() {
         RecyclerView recycler = binding.adiantamentoRecycler;
@@ -358,6 +306,8 @@ public class ComissoesDetalhesFragment extends Fragment {
         });
     }
 
+    //----------------------------------------
+
     private void configuraBtn(@NonNull View view) {
         int compare = comissaoAcumulada.compareTo(BigDecimal.ZERO);
         if (compare == 0) {
@@ -369,12 +319,12 @@ public class ComissoesDetalhesFragment extends Fragment {
                         .setTitle(FECHAMENTO)
                         .setMessage(FormataNumerosUtil.formataMoedaPadraoBr(liquidoAFechar))
                         .setPositiveButton(CONFIRMAR, (dialog, which) -> {
-                            CustosDeSalario salario = new CustosDeSalario();
+                            final CustosDeSalario salario = new CustosDeSalario();
 
                             for (Frete f : dataSet_frete) {
                                 f.setComissaoJaFoiPaga(true);
                                 f.setApenasAdmEdita(true);
-                                freteDao.substitui(f);
+                                viewModel.salvaFrete(f);
                                 salario.listaFretesAdiciona(f.getId());
                             }
 
@@ -389,40 +339,41 @@ public class ComissoesDetalhesFragment extends Fragment {
                                         e.printStackTrace();
                                     }
                                 }
-
-                                adiantamentoDao.adiciona(a);
+                                viewModel.salvaAdiantamento(a);
                             }
 
                             for (CustosDePercurso c : dataSet_custosPercurso) {
                                 c.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_JA_PAGO);
-                                custosDao.adiciona(c);
+                                viewModel.editaCusto(c);
                                 salario.listaReembolsosAdiciona(c.getId());
                             }
 
-                            LocalDate dataDoPagamento = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
+                            final LocalDate dataDoPagamento = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
                             salario.setData(dataDoPagamento);
                             salario.setRefCavaloId(cavalo.getId());
                             salario.setValorCusto(liquidoAFechar);
                             salario.setRefMotoristaId(cavalo.getRefMotoristaId());
-                            RoomCustosDeSalarioDao salarioDao = dataBase.getRoomCustosDeSalarioDao();
-                            salarioDao.adiciona(salario);
+                            viewModel.adicionaSalario(salario).observe(getViewLifecycleOwner(),
+                                    id_ignored -> {
+                                        recyclerFreteHelper.solicitaAtualizacao(getDataSet_frete());
+                                        recyclerAdiantamentoHelper.solicitaAtualizacao(getDataSet_adiantamento());
+                                        recyclerCustosHelper.solicitaAtualizacao(getDataSet_custos());
 
-                            recyclerFreteHelper.solicitaAtualizacao(getDataSet_frete());
-                            recyclerAdiantamentoHelper.solicitaAtualizacao(getDataSet_adiantamento());
-                            recyclerCustosHelper.solicitaAtualizacao(getDataSet_custos());
-
-                            NavController controlador = Navigation.findNavController(view);
-                            controlador.popBackStack();
+                                        NavController controlador = Navigation.findNavController(view);
+                                        controlador.popBackStack();
+                                    });
                         })
                         .setNegativeButton(CANCELAR, null)
                         .show());
     }
-//------------------------------------
+
+    //------------------------------------
+
     private void configuraUi() {
         placaTxt.setText(cavalo.getPlaca());
 
         try {
-            String nome = dataBase.getRoomMotoristaDao().localizaPeloId(cavalo.getRefMotoristaId()).getNome();
+            String nome = FiltraMotorista.localizaPeloId(viewModel.getDataSet_motorista(), cavalo.getRefMotoristaId()).getNome();
             nomeTxt.setText(nome);
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -473,7 +424,7 @@ public class ComissoesDetalhesFragment extends Fragment {
                         @Override
                         public void quandoFunciona(Long id, BigDecimal novoValor, String msg) {
                             substituiValorNoMap(id, novoValor);
-                            recyclerAdiantamentoHelper.solicitaAtualizacaoMap(mapDeAdiantamentos);
+                            recyclerAdiantamentoHelper.solicitaAtualizacaoMap(new HashMap<>(mapDeAdiantamentos));
                             configuraVisibilidadeDeLayouts();
                             ui_atualizaAdiantamento();
                             ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
@@ -503,12 +454,14 @@ public class ComissoesDetalhesFragment extends Fragment {
                     alteraComissao.setCallback(new AlteraComissao.Callback() {
                         @Override
                         public void quandoFunciona(Frete frete, String msg) {
-                            freteDao.substitui(frete);
-                            recyclerFreteHelper.solicitaAtualizacaoDoItem(posicaoTemporaria);
-                            atualizaDataSet_frete();
-                            ui_comissao();
-                            ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
-                            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+                            viewModel.salvaFrete(frete).observe(getViewLifecycleOwner(),
+                                    id -> {
+                                        recyclerFreteHelper.solicitaAtualizacaoDoItem(posicaoTemporaria);
+                                        atualizaDataSet_frete();
+                                        ui_comissao();
+                                        ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
+                                        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
+                                    });
                         }
 
                         @Override
@@ -531,6 +484,27 @@ public class ComissoesDetalhesFragment extends Fragment {
         if (mapDeAdiantamentos.containsKey(id)) {
             mapDeAdiantamentos.replace(id, novoValor);
         }
+    }
+
+    public void actNotificaAtualizacao_frete() {
+
+    }
+
+    public void actSolicitaAtt_adiantamento() {
+        atualizaDataSet_adiantamento();
+        recyclerAdiantamentoHelper.solicitaAtualizacao(getDataSet_adiantamento());
+        recyclerAdiantamentoHelper.solicitaAtualizacaoMap(mapDeAdiantamentos);
+        configuraVisibilidadeDeLayouts();
+        ui_atualizaAdiantamento();
+        ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
+    }
+
+    public void actSolicitaAtt_custoPercurso() {
+        atualizaDataSet_custos();
+        recyclerCustosHelper.solicitaAtualizacao(getDataSet_custos());
+        configuraVisibilidadeDeLayouts();
+        ui_atualizaReembolso();
+        ui_atualizaLiquidoAFechar(comissaoAcumulada, reembolsoAcumulado, descontoAcumulado);
     }
 
     public enum TipoDeAdapterPressionado {

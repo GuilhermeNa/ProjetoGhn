@@ -2,6 +2,8 @@ package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave;
 
 import android.app.AlertDialog;
@@ -23,22 +25,24 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.math.BigDecimal;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioMotoristaBinding;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
-import br.com.transporte.AppGhn.dao.MotoristaDAO;
+import br.com.transporte.AppGhn.repository.MotoristaRepository;
 import br.com.transporte.AppGhn.ui.fragment.extensions.BitmapImagem;
+import br.com.transporte.AppGhn.ui.viewmodel.FormularioMotoristaViewModel;
+import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioMotoristaViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.MascaraDataUtil;
 import br.com.transporte.AppGhn.util.MascaraMonetariaUtil;
+import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public class FormularioMotoristaFragment extends FormularioBaseFragment {
     public static final String GALERIA = "Galeria";
@@ -52,10 +56,10 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
     private TextInputLayout dataLayout, cnhValidadeLayout, contratacaoLayout;
     private ImageView motoristaImg;
     private Motorista motorista;
-    private RoomMotoristaDao motoristaDao;
     private Bitmap imgRecebidaEmBitmap;
     private String imgEmString;
     private boolean recebeuImagem;
+    private FormularioMotoristaViewModel viewModel;
     private final ActivityResultLauncher<Intent> activityResultLauncherCamera = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -67,7 +71,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
                         imgRecebidaEmBitmap = (Bitmap) dataResultado.getExtras().get(DATA);
                         motoristaImg.setImageBitmap(imgRecebidaEmBitmap);
                         motoristaImg.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
                         imgEmString = BitmapImagem.codificaBitmapEmString(imgRecebidaEmBitmap);
                         recebeuImagem = true;
                     } catch (Exception e) {
@@ -108,13 +111,24 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
                 }
             });
 
+    //----------------------------------------------------------------------------------------------
+    //                                          OnCreate                                          ||
+    //----------------------------------------------------------------------------------------------
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        motoristaDao = GhnDataBase.getInstance(this.requireContext()).getRoomMotoristaDao();
         long motoristaId = verificaSeRecebeDadosExternos(CHAVE_ID);
+        inicializaViewModel();
         defineTipoEditandoOuCriando(motoristaId);
         motorista = (Motorista) criaOuRecuperaObjeto(motoristaId);
+    }
+
+    private void inicializaViewModel() {
+        MotoristaRepository repository = new MotoristaRepository(requireContext());
+        FormularioMotoristaViewModelFactory factory = new FormularioMotoristaViewModelFactory(repository);
+        ViewModelProvider provedor = new ViewModelProvider(this, factory);
+        viewModel = provedor.get(FormularioMotoristaViewModel.class);
     }
 
     @Nullable
@@ -123,6 +137,10 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
         binding = FragmentFormularioMotoristaBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
+
+    //----------------------------------------------------------------------------------------------
+    //                                          OnViewCreated                                     ||
+    //----------------------------------------------------------------------------------------------
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -157,22 +175,25 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
         cnhValidadeEdit = binding.editValidade;
         dataContratacaoEdit = binding.fragFormularioMotoristaDataContratacao;
         salarioBaseEdit = binding.fragFormularioSalarioBase;
-
         dataLayout = binding.fragFormularioMotoristaLayoutData;
         cnhValidadeLayout = binding.layoutValidade;
         contratacaoLayout = binding.fragFormularioMotoristaLayoutDataContratacao;
-
         motoristaImg = binding.fragFormularioMotoristaFoto;
-
     }
 
     @Override
     public Object criaOuRecuperaObjeto(Object id) {
-        Long motoristaId = (Long)id;
+        Long motoristaId = (Long) id;
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
-            motorista = motoristaDao.localizaPeloId(motoristaId);
-            if(motorista.getImg() != null) recebeuImagem = true;
-
+            viewModel.localizaMotorista(motoristaId).observe(this,
+                    motoristaRecebido -> {
+                        if (motoristaRecebido != null) {
+                            motorista = motoristaRecebido;
+                            viewModel.motoristaArmazenado = motoristaRecebido;
+                            if (motorista.getImg() != null) recebeuImagem = true;
+                            bind();
+                        }
+                    });
         } else {
             motorista = new Motorista();
             recebeuImagem = false;
@@ -188,7 +209,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public void alteraUiParaModoCriacao() {
-
     }
 
     @Override
@@ -221,7 +241,6 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
         configuraDataCalendario(dataLayout, dataEdit);
         configuraDataCalendario(cnhValidadeLayout, cnhValidadeEdit);
         configuraDataCalendario(contratacaoLayout, dataContratacaoEdit);
-
     }
 
     @Override
@@ -249,16 +268,26 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        if(recebeuImagem){
+        if (recebeuImagem) {
             imgEmString = BitmapImagem.codificaBitmapEmString(imgRecebidaEmBitmap);
             motorista.setImg(imgEmString);
         }
-        motoristaDao.substitui(motorista);
+        viewModel.salvaMotorista(motorista).observe(this,
+                ignore -> {
+                    requireActivity().setResult(RESULT_EDIT);
+                    requireActivity().finish();
+                });
     }
 
     @Override
     public void adicionaObjetoNoBancoDeDados() {
-        motoristaDao.adiciona(motorista);
+        viewModel.salvaMotorista(motorista).observe(this,
+                idMotorista -> {
+                    if (idMotorista != null) {
+                        requireActivity().setResult(RESULT_OK);
+                        requireActivity().finish();
+                    }
+                });
     }
 
     @Override
@@ -268,6 +297,14 @@ public class FormularioMotoristaFragment extends FormularioBaseFragment {
 
     @Override
     public void deletaObjetoNoBancoDeDados() {
-        motoristaDao.deleta(motorista);
+        viewModel.deleta().observe(this,
+                erro -> {
+                    if (erro == null) {
+                        requireActivity().setResult(RESULT_DELETE);
+                        requireActivity().finish();
+                    } else {
+                        MensagemUtil.toast(requireContext(), erro);
+                    }
+                });
     }
 }

@@ -87,7 +87,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
         certificadoDao = dataBase.getRoomDespesaCertificadoDao();
         cavaloDao = dataBase.getRoomCavaloDao();
-        listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
+   //     listaDePlacas = FiltraCavalo.listaDePlacas(cavaloDao.todos());
         long certificadoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         configuraTipoDeRecebimento();
         certificado = (DespesaCertificado) criaOuRecuperaObjeto(certificadoId);
@@ -210,9 +210,9 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
         String subTitulo;
 
         if (tipoDespesa == DIRETA) {
-            String placa = cavaloDao.localizaPeloId(certificadoQueEstaSendoSubstituido.getRefCavaloId()).getPlaca();
-            subTitulo = SUB_TITULO_APP_BAR_RENOVANDO + " " + certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao() + PARA_A_PLACA + placa;
-            placaAutoComplete.setText(placa);
+   //         String placa = cavaloDao.localizaPeloId(certificadoQueEstaSendoSubstituido.getRefCavaloId()).getPlaca();
+    //        subTitulo = SUB_TITULO_APP_BAR_RENOVANDO + " " + certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao() + PARA_A_PLACA + placa;
+    //        placaAutoComplete.setText(placa);
 
             placaAutoComplete.setVisibility(GONE);
             placaLayout.setVisibility(GONE);
@@ -222,7 +222,7 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
 
         }
 
-        subEdit.setText(subTitulo);
+//        subEdit.setText(subTitulo);
         certificadoAutoComplete.setText(certificadoQueEstaSendoSubstituido.getTipoCertificado().getDescricao());
 
         certificadoAutoComplete.setVisibility(GONE);
@@ -241,8 +241,8 @@ public class FormularioCertificadosFragment extends FormularioBaseFragment {
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
         if (tipoDespesa == DIRETA) {
-            String placa = cavaloDao.localizaPeloId(certificado.getRefCavaloId()).getPlaca();
-            placaAutoComplete.setText(placa);
+  //          String placa = cavaloDao.localizaPeloId(certificado.getRefCavaloId()).getPlaca();
+   //         placaAutoComplete.setText(placa);
         }
 
         dataExpedicaoEdit.setText(ConverteDataUtil.dataParaString(certificado.getDataDeEmissao()));

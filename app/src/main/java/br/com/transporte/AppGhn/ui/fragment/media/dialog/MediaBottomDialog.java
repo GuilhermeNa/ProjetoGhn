@@ -200,44 +200,49 @@ class ManipulaDados {
     }
 
     protected BigDecimal getTotalDeLitrosUsadosNoIntervalo() {
-        List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
-        CustosDeAbastecimento primeiroAbastConsiderado = dataSet.get(dataSet.indexOf(flag1) + 1);
-        dataSet = FiltraCustosAbastecimento.listaPorData(dataSet, primeiroAbastConsiderado.getData(), flag2.getData());
-        return dataSet.stream()
-                .map(CustosDeAbastecimento::getQuantidadeLitros)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+   //     List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
+    //   CustosDeAbastecimento primeiroAbastConsiderado = dataSet.get(dataSet.indexOf(flag1) + 1);
+    //    dataSet = FiltraCustosAbastecimento.listaPorData(dataSet, primeiroAbastConsiderado.getData(), flag2.getData());
+     //   return dataSet.stream()
+       //         .map(CustosDeAbastecimento::getQuantidadeLitros)
+         //       .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return BigDecimal.ZERO;
     }
 
     protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
-        List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+      /*  List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
         fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
         return fretes.stream()
                 .map(Frete::getFreteBruto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
+        return BigDecimal.ZERO;
     }
 
     protected BigDecimal getAbastecimentoAcumuladoNoPeriodo() {
-        List<CustosDeAbastecimento> abastecimentos = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
+    /*    List<CustosDeAbastecimento> abastecimentos = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
         abastecimentos = FiltraCustosAbastecimento.listaPorData(abastecimentos, flag1.getData(), flag2.getData());
         return abastecimentos.stream()
                 .map(CustosDeAbastecimento::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
+        return BigDecimal.ZERO;
     }
 
     protected BigDecimal getComissaoPagaNoPeriodo() {
-        List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
+    /*    List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
         fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
         return fretes.stream()
                 .map(Frete::getComissaoAoMotorista)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
+        return BigDecimal.ZERO;
     }
 
     protected BigDecimal getCustosDePercursoAcumuladoNoPeriodo() {
-        List<CustosDePercurso> custoPercurso = FiltraCustosPercurso.listaPorCavaloId(custosPercursoDao.todos(), cavalo.getId());
+  /*      List<CustosDePercurso> custoPercurso = FiltraCustosPercurso.listaPorCavaloId(custosPercursoDao.todos(), cavalo.getId());
         custoPercurso = FiltraCustosPercurso.listaPorData(custoPercurso, flag1.getData(), flag2.getData());
         return custoPercurso.stream()
                 .map(CustosDePercurso::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
+        return BigDecimal.ZERO;
     }
 
     protected BigDecimal getMediaDoPeriodo() {

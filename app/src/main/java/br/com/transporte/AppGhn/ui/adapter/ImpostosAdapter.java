@@ -13,19 +13,22 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.dao.CavaloDAO;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.ui.fragment.ImpostosFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
-import br.com.transporte.AppGhn.util.OnItemClickListenerNew;
+import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewHolder> {
     private final List<DespesasDeImposto> dataSet;
+    private List<Cavalo> dataSetCavalo;
     private final ImpostosFragment context;
     private final CavaloDAO cavaloDao;
-    private OnItemClickListenerNew onItemClickListener;
+    private OnItemClickListener_getId onItemClickListener;
 
-    public void setOnItemClickListener(OnItemClickListenerNew onItemClickListener) {
+    public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
     }
 
@@ -33,6 +36,10 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
         this.dataSet = lista;
         this.context = context;
         cavaloDao = new CavaloDAO();
+    }
+
+    public void setDataSetCavalo(final List<Cavalo> dataSetCavalo) {
+        this.dataSetCavalo = dataSetCavalo;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -80,7 +87,7 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
 
     private void vincula(ViewHolder holder, DespesasDeImposto imposto) {
         try{
-            String placa = cavaloDao.localizaPeloId(imposto.getRefCavaloId()).getPlaca();
+            String placa = FiltraCavalo.localizaPeloId(dataSetCavalo, imposto.getRefCavaloId()).getPlaca();
             holder.placaTxtView.setText(placa);
         } catch (NullPointerException e){
             e.printStackTrace();

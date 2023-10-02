@@ -31,6 +31,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -170,7 +171,9 @@ public class BottomDialogDesempenho {
 
     @NonNull
     private List<String> listaPlacas() {
-        return FiltraCavalo.listaDePlacas(cavaloDao.todos());
+   //     return FiltraCavalo.listaDePlacas(cavaloDao.todos());
+        return new ArrayList<>();
+
     }
 
     private void configuraLayoutAno() {

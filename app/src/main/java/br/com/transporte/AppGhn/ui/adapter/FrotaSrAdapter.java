@@ -19,12 +19,7 @@ import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.filtros.FiltraCavalo;
-import br.com.transporte.AppGhn.filtros.FiltraReboque;
-import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.SemiReboque;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.tasks.cavalo.LocalizaCavaloTask;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHolder>{
@@ -93,13 +88,15 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
-        LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executor, handler);
+    /*    LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executor, handler);
         localizaCavaloTask.solicitaBusca(cavaloDao, sr.getRefCavaloId(), cavalo -> {
             String placa = cavalo.getPlaca();
             holder.placaCavaloRefTxtView.setText(placa);
             holder.placaSrTxtView.setText(sr.getPlaca());
-        });
-       ;
+        });*/
+        holder.placaCavaloRefTxtView.setText("placa");
+        holder.placaSrTxtView.setText(sr.getPlaca());
+
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

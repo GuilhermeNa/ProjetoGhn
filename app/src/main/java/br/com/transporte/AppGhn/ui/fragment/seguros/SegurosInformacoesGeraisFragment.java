@@ -234,11 +234,12 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         String placa;
         if (tipoDeSeguroRecebido == FROTA) {
             RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-            placa = cavaloDao.localizaPeloId(seguro.getRefCavaloId()).getPlaca();
+   //         placa = cavaloDao.localizaPeloId(seguro.getRefCavaloId()).getPlaca();
         } else {
             placa = "-";
         }
-        return placa;
+   //     return placa;
+        return "temporario";
     }
 
     private void configuraMenuProvider() {
