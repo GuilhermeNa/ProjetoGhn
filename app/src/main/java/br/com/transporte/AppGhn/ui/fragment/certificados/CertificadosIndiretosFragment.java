@@ -10,6 +10,7 @@ import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.NENHUMA_
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_APAGADO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_EDITADO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_RENOVADO;
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.TAG;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -26,6 +27,7 @@ import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,74 +41,54 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.jetbrains.annotations.Contract;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosIndiretosBinding;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoIndiretoAdapter;
 import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.CallbackCertificadoDialog;
 import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.DialogCertificadoIndireto;
 import br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet;
+import br.com.transporte.AppGhn.ui.viewmodel.CertificadoActViewModel;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
-import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class CertificadosIndiretosFragment extends Fragment {
-    public static final String CERTIFICADOS = "Certificados";
+    public static int ANO_DEFAULT = LocalDate.now().getYear();
     private FragmentCertificadosIndiretosBinding binding;
-    private List<DespesaCertificado> dataSet;
+    private CertificadoActViewModel viewModel;
     private CertificadoIndiretoAdapter adapter;
-    private RoomDespesaCertificadoDao certificadoDao;
-    private LinearLayout buscaVazia;
-    private TipoDeRequisicao_dataSet tipoDeRequisicao_dataSet;
-    private int anoDeRequisicao_dataSet;
+    private List<DespesaCertificado> dataSet;
     private RecyclerView recycler;
-
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 int codigoResultado = result.getResultCode();
-
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaAdapter(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
-
                     case RESULT_CANCELED:
                         MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
-
                     case RESULT_DELETE:
-                        atualizaAdapter(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
-
                     case RESULT_UPDATE:
-                        atualizaAdapter(REGISTRO_RENOVADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_RENOVADO);
                         break;
                 }
             });
-
-    //------------------------------------- Metodos Publicos ---------------------------------------
-
-    public void atualizaAdapter(String msg) {
-        atualizaDataSet();
-        atualizaUiRecycler();
-        MensagemUtil.toast(requireContext(), msg);
-    }
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -115,38 +97,17 @@ public class CertificadosIndiretosFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GhnDataBase database = GhnDataBase.getInstance(requireContext());
-        certificadoDao = database.getRoomDespesaCertificadoDao();
-        tipoDeRequisicao_dataSet = ATIVOS;
-        anoDeRequisicao_dataSet = 0;
-        atualizaDataSet();
+        viewModel = new ViewModelProvider(requireActivity()).get(CertificadoActViewModel.class);
+        defineParametrosDaRequisicaoDeData(ATIVOS, ANO_DEFAULT);
+        Log.d(TAG, "onCreate: ");
     }
 
-    private void atualizaDataSet() {
-        if (dataSet == null) dataSet = new ArrayList<>();
-        dataSet = certificadoDao.listaPorTipo(INDIRETA);
-        switch (tipoDeRequisicao_dataSet) {
-            case TODOS_E_ANO:
-                dataSet = FiltraDespesasCertificado.listaPorAno(dataSet, anoDeRequisicao_dataSet);
-                break;
-            case TODOS:
-                //Lista já vem com todos por padrão.
-                break;
-            case ATIVOS:
-                dataSet = FiltraDespesasCertificado.listaPorStatus(dataSet, true);
-                break;
-        }
+    private void defineParametrosDaRequisicaoDeData(
+            final TipoDeRequisicao_dataSet tipo,
+            final int ano
+    ) {
+        viewModel.defineParametrosDaRequisicaoCertificadoIndireto(tipo, ano);
     }
-
-    @NonNull
-    @Contract(" -> new")
-    private List<DespesaCertificado> getDataSet() {
-        return new ArrayList<>(dataSet);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          OnCreateView                                      ||
-    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -162,23 +123,14 @@ public class CertificadosIndiretosFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaCamposDaView();
         configuraRecycler();
-        configuraToolbar();
-        configuraUi();
-    }
-
-    private void configuraUi() {
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
-    }
-
-    private void inicializaCamposDaView() {
-        buscaVazia = binding.buscaVazia;
-        recycler = binding.recycler;
+        solicitaAtualizacaoAdapter();
+        configuraMenuProvider();
     }
 
     private void configuraRecycler() {
-        adapter = new CertificadoIndiretoAdapter(this, getDataSet());
+        recycler = binding.recycler;
+        adapter = new CertificadoIndiretoAdapter(this, new ArrayList<>());
         recycler.setAdapter(adapter);
 
         adapter.setOnItemClickListener(certificadoId -> {
@@ -189,6 +141,16 @@ public class CertificadosIndiretosFragment extends Fragment {
             intent.putExtra(CHAVE_DESPESA, INDIRETA);
             activityResultLauncher.launch(intent);
         });
+    }
+
+    public void solicitaAtualizacaoAdapter() {
+        final LinearLayout alertaLayout = binding.buscaVazia;
+        dataSet = viewModel.getDataCertificadoIndireto();
+        adapter.atualiza(dataSet);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(
+                dataSet.size(), alertaLayout,
+                recycler, VIEW_INVISIBLE
+        );
     }
 
     @Override
@@ -212,10 +174,7 @@ public class CertificadosIndiretosFragment extends Fragment {
         return super.onContextItemSelected(item);
     }
 
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ToolbarUtil toolbarUtil = new ToolbarUtil(CERTIFICADOS);
-        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    private void configuraMenuProvider() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -245,39 +204,32 @@ public class CertificadosIndiretosFragment extends Fragment {
     }
 
     private void showBottomDialog() {
-        DialogCertificadoIndireto dialog = new DialogCertificadoIndireto(requireContext());
+        final DialogCertificadoIndireto dialog = new DialogCertificadoIndireto(requireContext());
         dialog.show();
         dialog.setCallbackDialog(new CallbackCertificadoDialog() {
             @Override
             public void buscaPor_todosEAno(int ano) {
-                tipoDeRequisicao_dataSet = TODOS_E_ANO;
-                anoDeRequisicao_dataSet = ano;
-                atualizaDataSet();
-                atualizaUiRecycler();
+                defineParametrosDaRequisicaoDeData(TODOS_E_ANO, ano);
+                solicitaAtualizacaoAdapter();
             }
 
             @Override
             public void buscaPor_todos() {
-                tipoDeRequisicao_dataSet = TODOS;
-                anoDeRequisicao_dataSet = 0;
-                atualizaDataSet();
-                atualizaUiRecycler();
+                defineParametrosDaRequisicaoDeData(TODOS, ANO_DEFAULT);
+                solicitaAtualizacaoAdapter();
             }
 
             @Override
             public void buscaPor_ativos() {
-                tipoDeRequisicao_dataSet = ATIVOS;
-                anoDeRequisicao_dataSet = 0;
-                atualizaDataSet();
-                atualizaUiRecycler();
+                defineParametrosDaRequisicaoDeData(ATIVOS, ANO_DEFAULT);
+                solicitaAtualizacaoAdapter();
             }
         });
-
     }
 
-    private void atualizaUiRecycler() {
-        adapter.atualiza(getDataSet());
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
-
 }

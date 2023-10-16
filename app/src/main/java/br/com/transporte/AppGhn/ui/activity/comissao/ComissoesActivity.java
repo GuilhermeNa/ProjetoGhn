@@ -46,7 +46,7 @@ import br.com.transporte.AppGhn.repository.CustoDeSalarioRepository;
 import br.com.transporte.AppGhn.repository.FreteRepository;
 import br.com.transporte.AppGhn.repository.MotoristaRepository;
 import br.com.transporte.AppGhn.ui.activity.comissao.helpers.ComissaoViewModelObserverHelper;
-import br.com.transporte.AppGhn.ui.activity.util.StatusBarUtil;
+import br.com.transporte.AppGhn.ui.activity.utilActivity.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.CarregandoDadosComissaoFragment;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesEmAbertoFragment;

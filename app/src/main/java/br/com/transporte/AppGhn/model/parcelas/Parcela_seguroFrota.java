@@ -34,4 +34,7 @@ public class Parcela_seguroFrota extends Parcela {
     public void setRefSeguroId(Long refSeguroId) {
         this.refSeguroId = refSeguroId;
     }
+
+
+
 }

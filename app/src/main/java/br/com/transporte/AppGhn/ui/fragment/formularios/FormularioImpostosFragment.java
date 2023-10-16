@@ -2,9 +2,9 @@ package br.com.transporte.AppGhn.ui.fragment.formularios;
 
 import static android.app.Activity.RESULT_OK;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
+import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.INCORRETO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
-import static br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSeguroFrotaFragment.INCORRETO;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.conversor.ConversorTipoImposto;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioImpostosBinding;

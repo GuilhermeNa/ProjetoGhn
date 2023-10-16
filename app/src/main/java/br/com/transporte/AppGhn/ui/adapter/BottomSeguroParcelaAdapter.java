@@ -20,7 +20,6 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
@@ -30,10 +29,18 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
     private HashMap<Integer, Boolean> map;
     private OnItemCLickListener onItemCLickListener;
 
-    public BottomSeguroParcelaAdapter(List<Parcela_seguroFrota> lista, Context context) {
+    public BottomSeguroParcelaAdapter(Context context, List<Parcela_seguroFrota> lista) {
         this.dataSet = lista;
         this.context = context;
+    }
+
+    public void defineDataSet(final List<Parcela_seguroFrota> dataSet){
+        //todo com a refatoração o criaMap esta sendo chamado mais de uma vez,
+        // uma vez que so era chamado no on create anteriormente
+        this.dataSet.clear();
+        this.dataSet.addAll(dataSet);
         map = criaMap();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -46,6 +53,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
 
         return map;
     }
+
 
     //----------------------------------------------------------------------------------------------
     //                                          ViewHolder                                        ||

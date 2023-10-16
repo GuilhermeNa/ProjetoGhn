@@ -4,18 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.seguros.SegurosInformacoesGeraisFragment">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_padrao" />
+    tools:context=".ui.fragment.seguros.seguroInfo.SegurosInformacoesGeraisFragment">
 
     <TextView
         android:id="@+id/frag_salario_detalhes_titulo"
@@ -23,9 +12,10 @@
         android:layout_height="wrap_content"
         android:text="Seguro Compreensivo"
         android:textColor="@color/white"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -50,7 +40,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Parcelamento principal, frota OUX5555"
+                android:text="Informações"
                 android:textStyle="bold" />
 
             <LinearLayout

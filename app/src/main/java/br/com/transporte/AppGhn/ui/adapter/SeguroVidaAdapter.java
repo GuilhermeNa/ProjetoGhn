@@ -1,5 +1,7 @@
 package br.com.transporte.AppGhn.ui.adapter;
 
+import static android.view.View.GONE;
+
 import android.annotation.SuppressLint;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,6 +62,7 @@ public class SeguroVidaAdapter extends RecyclerView.Adapter<SeguroVidaAdapter.Vi
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         private final TextView placaTxtView, valorTxtView, dataInicialTxtView, dataFinalTxtView, descricaoTxtView;
         private final ImageView statusImgView;
+        private final LinearLayout descricaoLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,6 +71,7 @@ public class SeguroVidaAdapter extends RecyclerView.Adapter<SeguroVidaAdapter.Vi
             dataInicialTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_data_inicial);
             dataFinalTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_data_final);
             descricaoTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_descricao);
+            descricaoLayout = itemView.findViewById(R.id.rec_item_despesa_seguros_layout_descricao);
             statusImgView = itemView.findViewById(R.id.rec_item_seguro_status);
             itemView.setOnCreateContextMenuListener(this);
         }
@@ -123,7 +128,7 @@ public class SeguroVidaAdapter extends RecyclerView.Adapter<SeguroVidaAdapter.Vi
         holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguro.getValorDespesa()));
         holder.dataInicialTxtView.setText(ConverteDataUtil.dataParaString(seguro.getDataInicial()));
         holder.dataFinalTxtView.setText(ConverteDataUtil.dataParaString(seguro.getDataFinal()));
-        holder.descricaoTxtView.setText(R.string.seguro_auto);
+        holder.descricaoLayout.setVisibility(GONE);
         exibeImgDeStatusDoCertificadoParaCadaCavalo(holder, seguro);
     }
 

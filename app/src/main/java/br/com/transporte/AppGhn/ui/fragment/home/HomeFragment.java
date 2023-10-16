@@ -127,4 +127,10 @@ public class HomeFragment extends Fragment {
         handler.postDelayed(r, 1500);
         animacao = false;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

@@ -7,7 +7,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,7 +41,6 @@ import br.com.transporte.AppGhn.repository.CavaloRepository;
 import br.com.transporte.AppGhn.ui.viewmodel.FormularioBaseViewModel;
 import br.com.transporte.AppGhn.ui.viewmodel.factory.FormularioBaseViewModelFactory;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
-import br.com.transporte.AppGhn.util.MensagemUtil;
 
 public abstract class FormularioBaseFragment extends Fragment implements FormulariosInterface, MenuProvider {
     protected static final String TITULO_APP_BAR_EDITANDO = "Editando";
@@ -135,7 +133,7 @@ public abstract class FormularioBaseFragment extends Fragment implements Formula
         }
     }
 
-    void configuraToolbar(Toolbar toolbar) {
+    protected void configuraToolbar(Toolbar toolbar) {
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);

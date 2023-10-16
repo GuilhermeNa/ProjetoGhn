@@ -32,4 +32,7 @@ public interface RoomCavaloDao {
     @Query("SELECT * FROM cavalo WHERE placa = :placa")
     Cavalo localizaPelaPlaca(String placa);
 
+    @Query("SELECT placa FROM cavalo")
+    LiveData<List<String>> pegaPlacas();
+
 }

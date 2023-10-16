@@ -3,6 +3,7 @@ package br.com.transporte.AppGhn.repository;
 import android.content.Context;
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.tasks.cavalo.AdicionaCavaloTask;
 import br.com.transporte.AppGhn.tasks.cavalo.AtualizaCavaloTask;
 import br.com.transporte.AppGhn.tasks.cavalo.DeletaCavaloTask;
+import br.com.transporte.AppGhn.tasks.cavalo.LocalizaPelaPlacaTask;
 
 public class CavaloRepository {
     private final RoomCavaloDao dao;
@@ -49,7 +51,7 @@ public class CavaloRepository {
         return mediator;
     }
 
-    public LiveData<Cavalo> localizaCavalo(final long cavaloId) {
+    public LiveData<Cavalo> localizaCavaloPeloId(final long cavaloId) {
         return localizaCavalo_room(cavaloId);
     }
 
@@ -98,6 +100,27 @@ public class CavaloRepository {
         });
         return null;
     }
+
+    public LiveData<List<String>> buscaPlacas(){
+        return buscaPlacas_room();
+    }
+
+    public LiveData<Cavalo> localizaPelaPlaca(final String placa){
+       final MutableLiveData<Cavalo> liveData = new MutableLiveData<>();
+        localizaPelaPlaca_room(placa, new RepositoryCallback<Cavalo>() {
+            @Override
+            public void sucesso(Cavalo cavaloRecebido) {
+                liveData.setValue(cavaloRecebido);
+            }
+
+            @Override
+            public void falha(String msg) {
+
+            }
+        });
+        return liveData;
+    }
+
 
     //----------------------------------------------------------------------------------------------
     //                                       Busca Interna                                        ||
@@ -149,6 +172,19 @@ public class CavaloRepository {
         } else {
             callBack.falha("Falha ao remover");
         }
+    }
+
+    private LiveData<List<String>> buscaPlacas_room(){
+        return dao.pegaPlacas();
+    }
+
+    private void localizaPelaPlaca_room(
+            final String placa,
+            @NonNull final RepositoryCallback<Cavalo> callback
+            ){
+        final LocalizaPelaPlacaTask task = new LocalizaPelaPlacaTask(executor, handler);
+        task.solicitaLocalizacao(dao, placa,
+                callback::sucesso);
     }
 
 }

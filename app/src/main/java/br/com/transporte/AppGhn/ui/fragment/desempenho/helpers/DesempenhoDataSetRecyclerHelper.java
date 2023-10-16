@@ -364,11 +364,11 @@ public class DesempenhoDataSetRecyclerHelper {
             List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.todos(), ano);
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
 */
-            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
-            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
+          //  List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
+           // listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
-            List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
-            listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
+           // List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
+           // listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
 
            // List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
 
@@ -661,47 +661,47 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         public static void lucro(int ano) {
-            List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.todos(), ano);
-            listaDespesaAdm = FiltraDespesasAdm.listaPorTipo(listaDespesaAdm, INDIRETA);
+            //List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.buscaTodos(), ano);
+          //  listaDespesaAdm = FiltraDespesasAdm.listaPorTipo(listaDespesaAdm, INDIRETA);
 
-            List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
-            listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
+         //   List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
+         //   listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
 
-            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
-            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
+         //   List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
+         //   listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
-            List<Parcela_seguroVida> listaParcelaVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
-            listaParcelaVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaVida, true);
+           // List<Parcela_seguroVida> listaParcelaVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), ano);
+           // listaParcelaVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaVida, true);
 
            // List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
             //listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
-                List<DespesaAdm> dataSetAdm = FiltraDespesasAdm.listaPorCavaloId(listaDespesaAdm, SEM_REF_CAVALO);
-                BigDecimal adm = CalculoUtil.somaDespesasAdm(dataSetAdm);
-                valorRateio = getRateio(adm);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+             //   List<DespesaAdm> dataSetAdm = FiltraDespesasAdm.listaPorCavaloId(listaDespesaAdm, SEM_REF_CAVALO);
+             //   BigDecimal adm = CalculoUtil.somaDespesasAdm(dataSetAdm);
+           //     valorRateio = getRateio(adm);
+       //         removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<DespesaCertificado> dataSetCertificado = FiltraDespesasCertificado.listaPorCavaloId(listaDespesaCertificado, SEM_REF_CAVALO);
-                BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
-                valorRateio = getRateio(certificado);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+            //    List<DespesaCertificado> dataSetCertificado = FiltraDespesasCertificado.listaPorCavaloId(listaDespesaCertificado, SEM_REF_CAVALO);
+           //     BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
+             //   valorRateio = getRateio(certificado);
+         //       removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
-                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
-                valorRateio = getRateio(parcela);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+              //  List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
+             //   BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
+             //   valorRateio = getRateio(parcela);
+             //   removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<Parcela_seguroVida> dataSetParcelaSeguroVida = FiltraParcelaSeguroVida.listaPeloCavaloId(listaParcelaVida, 0L);
-                BigDecimal parcelavida = CalculoUtil.somaParcelas_seguroVida(dataSetParcelaSeguroVida);
-                valorRateio = getRateio(parcelavida);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+             //   List<Parcela_seguroVida> dataSetParcelaSeguroVida = FiltraParcelaSeguroVida.listaPeloCavaloId(listaParcelaVida, 0L);
+             //   BigDecimal parcelavida = CalculoUtil.somaParcelas_seguroVida(dataSetParcelaSeguroVida);
+             //   valorRateio = getRateio(parcelavida);
+             //   removeRateioAoObjetoTemporario(valorRateio, obj);
 
              //   List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
               //  BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
              //   valorRateio = getRateio(imposto);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+            //    removeRateioAoObjetoTemporario(valorRateio, obj);
             }
         }
 
@@ -771,47 +771,46 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         public static void lucro(int mes) {
-            List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.todos(), mes);
-            listaDespesaAdm = FiltraDespesasAdm.listaPorTipo(listaDespesaAdm, INDIRETA);
+        //    List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.buscaTodos(), mes);
+        //    listaDespesaAdm = FiltraDespesasAdm.listaPorTipo(listaDespesaAdm, INDIRETA);
 
-            List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), mes);
-            listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
+       //     List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), mes);
+       //     listaDespesaCertificado = FiltraDespesasCertificado.listaPorTipoDespesa(listaDespesaCertificado, INDIRETA);
+       //     List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), mes);
+       //     listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
-            List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), mes);
-            listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
-
-            List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), mes);
-            listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
+           // List<Parcela_seguroVida> listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorAno(parcelaVidaDao.todos(), mes);
+        //    listaParcelaSeguroVida = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaParcelaSeguroVida, true);
 
 //            List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), mes);
   //          listaDespesaImposto = FiltraDespesasImposto.listaPorTipo(listaDespesaImposto, INDIRETA);
 
             BigDecimal valorRateio;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
-                List<DespesaAdm> dataSetAdm = FiltraDespesasAdm.listaPorCavaloId(listaDespesaAdm, SEM_REF_CAVALO);
-                BigDecimal adm = CalculoUtil.somaDespesasAdm(dataSetAdm);
-                valorRateio = getRateio(adm);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+           //     List<DespesaAdm> dataSetAdm = FiltraDespesasAdm.listaPorCavaloId(listaDespesaAdm, SEM_REF_CAVALO);
+         //       BigDecimal adm = CalculoUtil.somaDespesasAdm(dataSetAdm);
+         //       valorRateio = getRateio(adm);
+           //     removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<DespesaCertificado> dataSetCertificado = FiltraDespesasCertificado.listaPorCavaloId(listaDespesaCertificado, SEM_REF_CAVALO);
-                BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
-                valorRateio = getRateio(certificado);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+        //        List<DespesaCertificado> dataSetCertificado = FiltraDespesasCertificado.listaPorCavaloId(listaDespesaCertificado, SEM_REF_CAVALO);
+          //      BigDecimal certificado = CalculoUtil.somaDespesasCertificado(dataSetCertificado);
+          //      valorRateio = getRateio(certificado);
+          //      removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
-                BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
-                valorRateio = getRateio(parcela);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+          //      List<Parcela_seguroFrota> dataSetParcelaSeguro = FiltraParcelaSeguroFrota.listaPeloCavaloId(listaParcelaSeguro, SEM_REF_CAVALO);
+          //      BigDecimal parcela = CalculoUtil.somaParcelas_seguroFrota(dataSetParcelaSeguro);
+          //      valorRateio = getRateio(parcela);
+          //      removeRateioAoObjetoTemporario(valorRateio, obj);
 
-                List<Parcela_seguroVida> dataSetParcelaSeguroVida = FiltraParcelaSeguroVida.listaPeloCavaloId(listaParcelaSeguroVida, SEM_REF_CAVALO);
-                BigDecimal parcelaVida = CalculoUtil.somaParcelas_seguroVida(dataSetParcelaSeguroVida);
-                valorRateio = getRateio(parcelaVida);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+          //      List<Parcela_seguroVida> dataSetParcelaSeguroVida = FiltraParcelaSeguroVida.listaPeloCavaloId(listaParcelaSeguroVida, SEM_REF_CAVALO);
+          //      BigDecimal parcelaVida = CalculoUtil.somaParcelas_seguroVida(dataSetParcelaSeguroVida);
+          //      valorRateio = getRateio(parcelaVida);
+          //      removeRateioAoObjetoTemporario(valorRateio, obj);
 
      //           List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, SEM_REF_CAVALO);
        //         BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
          //       valorRateio = getRateio(imposto);
-                removeRateioAoObjetoTemporario(valorRateio, obj);
+          //      removeRateioAoObjetoTemporario(valorRateio, obj);
             }
 
 

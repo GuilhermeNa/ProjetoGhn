@@ -185,7 +185,7 @@ public class AreaMotoristaActViewModel extends ViewModel {
     }
 
     public LiveData<Cavalo> localizaCavalo(final long id) {
-        return cavaloRepository.localizaCavalo(id);
+        return cavaloRepository.localizaCavaloPeloId(id);
     }
 
     public LiveData<Resource<List<Frete>>> buscaFretesPorCavaloId(final long cavaloId) {

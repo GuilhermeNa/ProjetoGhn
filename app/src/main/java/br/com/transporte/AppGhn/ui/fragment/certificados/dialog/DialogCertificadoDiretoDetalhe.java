@@ -39,7 +39,6 @@ public class DialogCertificadoDiretoDetalhe {
     private Animation animacima, animabaixo;
     private ConstraintLayout layoutAno;
 
-
     public void setCallbackDialog(CallbackCertificadoDialog callbackDialog) {
         this.callbackDialog = callbackDialog;
     }
@@ -168,15 +167,6 @@ public class DialogCertificadoDiretoDetalhe {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.bottom_layout_certificado);
         return dialog;
-    }
-
-    public interface CallbackDialog {
-        void buscaPor_todosEAno(int ano);
-
-        void buscaPor_todos();
-
-        void buscaPor_ativos();
-
     }
 
 }

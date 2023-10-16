@@ -1,12 +1,10 @@
 package br.com.transporte.AppGhn.ui.fragment.desempenho.helpers;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
@@ -18,25 +16,7 @@ import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroFrotaDao;
 import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
-import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
-import br.com.transporte.AppGhn.filtros.FiltraCustosManutencao;
-import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasAdm;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasImposto;
-import br.com.transporte.AppGhn.filtros.FiltraFrete;
-import br.com.transporte.AppGhn.filtros.FiltraParcelaSeguroVida;
-import br.com.transporte.AppGhn.filtros.FiltraParcelaSeguroFrota;
-import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
-import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
-import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
-import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
-import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
-import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 
 public class DesempenhoDataSetHelper {
     private TipoDeRequisicao tipo;
@@ -119,23 +99,23 @@ public class DesempenhoDataSetHelper {
     private void insereDespesasComSeguroVidaNoDataSet() {
         if (parcelaSeguroVidaDao == null)
             parcelaSeguroVidaDao = dataBase.getRoomParcela_seguroVidaDao();
-        List<Parcela_seguroVida> listaAnual = FiltraParcelaSeguroVida.listaPorAno(parcelaSeguroVidaDao.todos(), ano);
-        listaAnual = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaAnual, true);
-        dataSet = new ArrayList<>(listaAnual);
+       // List<Parcela_seguroVida> listaAnual = FiltraParcelaSeguroVida.listaPorAno(parcelaSeguroVidaDao.todos(), ano);
+       // listaAnual = FiltraParcelaSeguroVida.listaPorStatusDePagamento(listaAnual, true);
+       // dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereDespesasComSeguroFrotaNoDataSet() {
         if (parcelaSeguroFrotaDao == null)
             parcelaSeguroFrotaDao = dataBase.getRoomParcela_seguroFrotaDao();
-        List<Parcela_seguroFrota> listaAnual = FiltraParcelaSeguroFrota.listaPorAno(parcelaSeguroFrotaDao.todos(), ano);
-        listaAnual = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaAnual, true);
-        dataSet = new ArrayList<>(listaAnual);
+      //  List<Parcela_seguroFrota> listaAnual = FiltraParcelaSeguroFrota.listaPorAno(parcelaSeguroFrotaDao.todos(), ano);
+      //  listaAnual = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaAnual, true);
+       // dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereDespesasDeCertificadoNoDataSet() {
-        if (certificadoDao == null) certificadoDao = dataBase.getRoomDespesaCertificadoDao();
+      /*  if (certificadoDao == null) certificadoDao = dataBase.getRoomDespesaCertificadoDao();
         List<DespesaCertificado> listaAnual = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+        dataSet = new ArrayList<>(listaAnual);*/
     }
 
     private void insereDespesasDeImpostoNoDataSet() {
@@ -146,8 +126,8 @@ public class DesempenhoDataSetHelper {
 
     private void insereDespesasAdmNoDataSet() {
         if (despesaAdmDao == null) despesaAdmDao = dataBase.getRoomDespesaAdmDao();
-        List<DespesaAdm> listaAnual = FiltraDespesasAdm.listaPorAno(despesaAdmDao.todos(), ano);
-        dataSet = new ArrayList<>(listaAnual);
+        //List<DespesaAdm> listaAnual = FiltraDespesasAdm.listaPorAno(despesaAdmDao.buscaTodos(), ano);
+      //  dataSet = new ArrayList<>(listaAnual);
     }
 
     private void insereCustosDeManutencaoNoDataSet() {

@@ -2,6 +2,8 @@ package br.com.transporte.AppGhn.util;
 
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+
 import com.github.rtoshiro.util.format.MaskFormatter;
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.pattern.MaskPattern;
@@ -19,7 +21,7 @@ public class MascaraDataUtil {
         });
     }
 
-    public static void MascaraData(EditText campo) {
+    public static void MascaraData(@NonNull EditText campo) {
         campo.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 MaskPattern mp03 = new MaskPattern("[0-3]");

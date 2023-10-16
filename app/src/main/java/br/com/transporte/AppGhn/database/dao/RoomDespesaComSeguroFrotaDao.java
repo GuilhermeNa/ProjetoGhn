@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -11,12 +12,13 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
+import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 
 @Dao
 public interface RoomDespesaComSeguroFrotaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void adiciona(DespesaComSeguroFrota seguroFrota);
+    Long adiciona(DespesaComSeguroFrota seguroFrota);
 
     @Delete
     void deleta(DespesaComSeguroFrota seguroFrota);
@@ -25,16 +27,23 @@ public interface RoomDespesaComSeguroFrotaDao {
     void substitui(DespesaComSeguroFrota seguroFrota);
 
     @Query("SELECT * FROM despesaComSeguroFrota WHERE id = :seguroId")
-    DespesaComSeguroFrota localizaPeloId(Long seguroId);
+    LiveData<DespesaComSeguroFrota> localizaPeloId(Long seguroId);
 
     @Query("SELECT * FROM DespesaComSeguroFrota")
-    List<DespesaComSeguroFrota> todos();
+    LiveData<List<DespesaComSeguroFrota>> todos();
 
     @Query("SELECT * FROM DespesaComSeguroFrota WHERE valido = :isValido")
-    List<DespesaComSeguroFrota> listaPorValidade(boolean isValido);
+    LiveData<List<DespesaComSeguroFrota>> listaPorValidade(boolean isValido);
+
+    @Query("SELECT * FROM DespesaComSeguroFrota WHERE tipoDespesa = :tipo")
+    LiveData<List<DespesaComSeguroFrota>> buscaPorTipo(TipoDespesa tipo);
+
 
     @Query("SELECT * FROM DespesaComSeguroFrota " +
             "WHERE ID = (SELECT MAX(ID) FROM DespesaComSeguroFrota) ")
-    DespesaComSeguroDeVida ultimoAdicionado();
+    LiveData<DespesaComSeguroDeVida> ultimoAdicionado();
+
+    @Query("SELECT * FROM DespesaComSeguroFrota WHERE valido = :isValido")
+    LiveData<List<DespesaComSeguroFrota>> buscaPorStatus(boolean isValido);
 
 }

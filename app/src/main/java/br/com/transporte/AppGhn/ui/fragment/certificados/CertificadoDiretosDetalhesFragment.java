@@ -39,50 +39,42 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.jetbrains.annotations.Contract;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentCertificadosDiretosDetalhesBinding;
-import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraMotorista;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CertificadoDiretoAdapter;
 import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.CallbackCertificadoDialog;
 import br.com.transporte.AppGhn.ui.fragment.certificados.dialog.DialogCertificadoDiretoDetalhe;
 import br.com.transporte.AppGhn.ui.fragment.certificados.helpers.TipoDeRequisicao_dataSet;
+import br.com.transporte.AppGhn.ui.viewmodel.CertificadoActViewModel;
 import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
 import br.com.transporte.AppGhn.util.MensagemUtil;
-import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class CertificadoDiretosDetalhesFragment extends Fragment {
     public static final String CERTIFICADO_JA_RENOVADO = "Certificado já renovado";
+    public static final int ANO_DEFAULT = LocalDate.now().getYear();
     private FragmentCertificadosDiretosDetalhesBinding binding;
-    private List<DespesaCertificado> dataSet;
+    private CertificadoActViewModel viewModel;
     private CertificadoDiretoAdapter adapter;
-    private RoomDespesaCertificadoDao certificadoDao;
-    private TextView motoristaTxtView;
-    private int anoDeRequisicao_dataSet;
-    private Cavalo cavalo;
-    private LinearLayout buscaVazia;
-    private GhnDataBase dataBase;
+    private TextView campoMotorista;
     private RecyclerView recycler;
-    private TipoDeRequisicao_dataSet tipoDeRequisicao_dataSet;
+    private Cavalo cavalo;
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -90,27 +82,23 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
 
                 switch (codigoResultado) {
                     case RESULT_EDIT:
-                        atualizaAdapterAposResultLauncher(REGISTRO_EDITADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_EDITADO);
                         break;
 
                     case RESULT_CANCELED:
-                        Toast.makeText(this.requireContext(), NENHUMA_ALTERACAO_REALIZADA, Toast.LENGTH_SHORT).show();
+                        MensagemUtil.toast(requireContext(), NENHUMA_ALTERACAO_REALIZADA);
                         break;
 
                     case RESULT_DELETE:
-                        atualizaAdapterAposResultLauncher(REGISTRO_APAGADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                         break;
 
                     case RESULT_UPDATE:
-                        atualizaAdapterAposResultLauncher(REGISTRO_RENOVADO);
+                        MensagemUtil.toast(requireContext(), REGISTRO_RENOVADO);
+                        break;
                 }
             });
-
-    private void atualizaAdapterAposResultLauncher(String msg) {
-        atualizaDataSet();
-        solicitaAtualizacaoAdapter();
-        MensagemUtil.toast(requireContext(), msg);
-    }
+    private List<DespesaCertificado> dataSet;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -119,53 +107,28 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
-        tipoDeRequisicao_dataSet = ATIVOS;
+        viewModel = new ViewModelProvider(requireActivity()).get(CertificadoActViewModel.class);
         cavalo = recebeIdArguments();
-        atualizaDataSet();
+        defineParametrosDaRequisicaoDeData(ATIVOS, ANO_DEFAULT, cavalo.getId());
     }
 
-    private void inicializaDataBase() {
-        dataBase = GhnDataBase.getInstance(requireContext());
-        certificadoDao = dataBase.getRoomDespesaCertificadoDao();
-    }
-
-    private void atualizaDataSet() {
-        // Atualiza o dataSet com base no tipo de solicitacao de busca que está em vigor,
-        if (dataSet == null) dataSet = new ArrayList<>();
-        dataSet = FiltraDespesasCertificado.listaPorTipoDespesa(certificadoDao.listaPorCavaloId(cavalo.getId()), DIRETA);
-
-        switch (tipoDeRequisicao_dataSet){
-            case ATIVOS:
-                dataSet = FiltraDespesasCertificado.listaPorStatus(dataSet, true);
-            break;
-
-            case TODOS:
-                dataSet = FiltraDespesasCertificado.listaPorTipoDespesa(certificadoDao.listaPorCavaloId(cavalo.getId()), DIRETA);
-                break;
-
-            case TODOS_E_ANO:
-                dataSet = FiltraDespesasCertificado.listaPorAno(dataSet, anoDeRequisicao_dataSet);
-                break;
-        }
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    private List<DespesaCertificado> getDataSet() {
-        return new ArrayList<>(dataSet);
+    private void defineParametrosDaRequisicaoDeData(
+            final TipoDeRequisicao_dataSet tipo,
+            final int ano,
+            final Long cavaloId
+    ) {
+        viewModel.defineParametrosDaRequisicaoCertificadoDireto(tipo, ano, cavaloId);
     }
 
     private Cavalo recebeIdArguments() {
-        RoomCavaloDao cavaloDao = dataBase.getRoomCavaloDao();
-        Long cavaloId = CertificadoDiretosDetalhesFragmentArgs.fromBundle(getArguments()).getCavaloId();
- //       cavalo = cavaloDao.localizaPeloId(cavaloId);
-        return cavalo;
+        final Long cavaloId = CertificadoDiretosDetalhesFragmentArgs
+                .fromBundle(getArguments())
+                .getCavaloId();
+        return (Cavalo) FiltraCavalo.localizaPeloId(
+                viewModel.cavalosArmazenados,
+                cavaloId
+        );
     }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          OnCreateView                                      ||
-    //----------------------------------------------------------------------------------------------
 
     @Nullable
     @Override
@@ -181,21 +144,16 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaCamposDaView();
         configuraRecycler();
+        solicitaAtualizacaoAdapter();
         configuraUi();
-        configuraToolbar();
         configuraMenuProvider();
-    }
 
-    private void inicializaCamposDaView() {
-        motoristaTxtView = binding.fragCertificadoDetalhesNome;
-        buscaVazia = binding.buscaVazia;
-        recycler = binding.fragCertificadoDetalhesRecycler;
     }
 
     private void configuraRecycler() {
-        adapter = new CertificadoDiretoAdapter(this, getDataSet());
+        recycler = binding.fragCertificadoDetalhesRecycler;
+        adapter = new CertificadoDiretoAdapter(this, new ArrayList<>());
         recycler.setAdapter(adapter);
 
         adapter.setOnItemClickListener(certificado -> {
@@ -208,22 +166,26 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
         });
     }
 
-    private void configuraUi() {
-        if (cavalo.getRefMotoristaId() != null) {
-            RoomMotoristaDao motoristaDao = dataBase.getRoomMotoristaDao();
-      //      String nome = motoristaDao.localizaPeloId(cavalo.getRefMotoristaId()).getNome();
-       //     motoristaTxtView.setText(nome);
-        } else {
-            motoristaTxtView.setText(" ");
-        }
-
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
+    public void solicitaAtualizacaoAdapter() {
+        final LinearLayout alertaLayout = binding.buscaVazia;
+        dataSet = viewModel.getDataCertificadoDireto();
+        adapter.atualiza(dataSet);
+        ExibirResultadoDaBusca_sucessoOuAlerta.configura(
+                dataSet.size(), alertaLayout,
+                recycler, VIEW_INVISIBLE
+        );
     }
-
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ToolbarUtil toolbarUtil = new ToolbarUtil(cavalo.getPlaca());
-        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    private void configuraUi() {
+        final TextView campoMotorista = binding.fragCertificadoDetalhesNome;
+        if (cavalo.getRefMotoristaId() != null) {
+            String nome = FiltraMotorista.localizaPeloId(
+                    viewModel.motoristasArmazenados,
+                    cavalo.getRefMotoristaId()
+            ).getNome();
+            campoMotorista.setText(nome);
+        } else {
+            campoMotorista.setText("...");
+        }
     }
 
     private void configuraMenuProvider() {
@@ -260,7 +222,7 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaCertificado certificado = getDataSet().get(posicao);
+        DespesaCertificado certificado = dataSet.get(posicao);
 
         if (item.getItemId() == R.id.renovarCertificado && !certificado.isValido()) {
             Toast.makeText(this.requireContext(), CERTIFICADO_JA_RENOVADO, Toast.LENGTH_SHORT).show();
@@ -280,39 +242,40 @@ public class CertificadoDiretosDetalhesFragment extends Fragment {
     //---------------------------------------------------------------------------------------
 
     private void showBottomDialog() {
-        DialogCertificadoDiretoDetalhe dialog = new DialogCertificadoDiretoDetalhe(requireContext());
+        final DialogCertificadoDiretoDetalhe dialog = new DialogCertificadoDiretoDetalhe(requireContext());
         dialog.show();
         dialog.setCallbackDialog(new CallbackCertificadoDialog() {
             @Override
             public void buscaPor_todosEAno(int ano) {
-                tipoDeRequisicao_dataSet = TODOS_E_ANO;
-                anoDeRequisicao_dataSet = ano;
-                atualizaDataSet();
+                viewModel.defineParametrosDaRequisicaoCertificadoDireto(
+                        TODOS_E_ANO, ano, null
+                );
                 solicitaAtualizacaoAdapter();
             }
 
             @Override
             public void buscaPor_todos() {
-                tipoDeRequisicao_dataSet = TODOS;
-                anoDeRequisicao_dataSet = 0;
-                atualizaDataSet();
+                viewModel.defineParametrosDaRequisicaoCertificadoDireto(
+                        TODOS, ANO_DEFAULT, null
+                );
                 solicitaAtualizacaoAdapter();
             }
 
             @Override
             public void buscaPor_ativos() {
-                tipoDeRequisicao_dataSet = ATIVOS;
-                anoDeRequisicao_dataSet = 0;
-                atualizaDataSet();
+                viewModel.defineParametrosDaRequisicaoCertificadoDireto(
+                        ATIVOS, ANO_DEFAULT, null
+                );
                 solicitaAtualizacaoAdapter();
             }
         });
     }
 
-    private void solicitaAtualizacaoAdapter() {
-        adapter.atualiza(getDataSet());
-        ExibirResultadoDaBusca_sucessoOuAlerta.configura(getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
-
 }
+
 

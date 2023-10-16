@@ -1,7 +1,9 @@
 package br.com.transporte.AppGhn.ui.activity;
 
 public interface ConstantesActivities {
-
+    String FRAGMENTS_LISTENER = "fragments_listener";
+    String ON_SEARCH_CLICK = "on_search_click";
+    String ON_SEARCH_CLEAR = "on_search_clear";
     String REGISTRO_ADICIONADO = "Registro adicionado";
     String SELECIONE_O_PERIODO = "Selecione o periodo";
     String CAVALOS = "Cavalos";
@@ -15,5 +17,5 @@ public interface ConstantesActivities {
     String REGISTRO_APAGADO = "Registro apagado";
     String CHAVE_DESPESA = "chave_despesa";
     String LOGOUT = "Logout";
-
+    String TAG = "teste";
 }

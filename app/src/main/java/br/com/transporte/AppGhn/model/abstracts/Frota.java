@@ -1,6 +1,7 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -10,6 +11,7 @@ import java.io.Serializable;
 public abstract class Frota implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Long id;
+
     private String placa;
     private String documentoEmString;
     private String marcaModelo;

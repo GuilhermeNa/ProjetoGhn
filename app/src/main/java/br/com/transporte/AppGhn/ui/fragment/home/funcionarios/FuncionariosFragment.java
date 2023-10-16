@@ -41,7 +41,7 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentFuncionariosBinding;
 import br.com.transporte.AppGhn.model.Motorista;
 import br.com.transporte.AppGhn.repository.MotoristaRepository;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.fragment.ConstantesFragment;
 import br.com.transporte.AppGhn.ui.fragment.home.funcionarios.adapters.MotoristasAdapter;
 import br.com.transporte.AppGhn.ui.viewmodel.FuncionariosViewModel;

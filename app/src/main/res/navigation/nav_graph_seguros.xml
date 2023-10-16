@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_seguros"
-    app:startDestination="@id/navSeguroFrota">
+    app:startDestination="@id/navSeguroHome">
 
     <fragment
         android:id="@+id/navSeguroFrota"
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/navSeguroInformacoes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.SegurosInformacoesGeraisFragment"
+        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroInfo.SegurosInformacoesGeraisFragment"
         android:label="Seguro Resumo"
         tools:layout="@layout/fragment_seguros_informacoes_gerais">
         <argument
@@ -42,5 +42,16 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/navSeguroHome"
+        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroHome.SegurosHomeFragment"
+        android:label="Seguro Home"
+        tools:layout="@layout/fragment_seguros_home" >
+        <action
+            android:id="@+id/action_navSeguroHome_to_navSeguroFrota"
+            app:destination="@id/navSeguroFrota"
+            app:popUpTo="@id/navSeguroHome"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

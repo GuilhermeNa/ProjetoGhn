@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Contract;
 import java.math.BigDecimal;
 
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaCustosDePercursoBinding;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.CustosDePercursoAdapter;
 import br.com.transporte.AppGhn.ui.viewmodel.areaMotoristaViewModel.AreaMotoristaActViewModel;
 import br.com.transporte.AppGhn.util.CalculoUtil;

@@ -6,7 +6,9 @@ import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
 import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
+import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.tasks.BaseTask;
 import br.com.transporte.AppGhn.tasks.TaskCallbackVoid;
@@ -19,22 +21,22 @@ public class AtualizaCertificadoTask extends BaseTask {
     //----------------------------------------------------------------------------------------------
 
     public void solicitaAtualizacao(
-            final RoomDespesaImpostoDao dao,
-            final DespesasDeImposto imposto,
+            final RoomDespesaCertificadoDao dao,
+            final DespesaCertificado certificado,
             final TaskCallbackVoid callback
     ) {
         executor.execute(
                 () -> {
-                    solicitaAtualizacaoSincrona(dao, imposto);
+                    solicitaAtualizacaoSincrona(dao, certificado);
                     notificaResultado(callback);
                 });
     }
 
     private void solicitaAtualizacaoSincrona(
-            @NonNull final RoomDespesaImpostoDao dao,
-            final DespesasDeImposto imposto
+            @NonNull RoomDespesaCertificadoDao dao,
+            final DespesaCertificado certificado
     ) {
-        dao.edita(imposto);
+        dao.atualiza(certificado);
     }
 
     private void notificaResultado(@NonNull final TaskCallbackVoid callback) {

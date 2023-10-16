@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
+import br.com.transporte.AppGhn.filtros.FiltraDespesasCertificado;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment;
@@ -36,19 +35,32 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     public static final int DIAS_SEMANA = 7;
     private final CertificadosDiretosFragment context;
     private OnItemClickListener_getId onItemClickListener;
-    private final List<Cavalo> dataSet;
+    private final List<Cavalo> dataSetCavalo;
+    private final List<DespesaCertificado> dataSetCertificado;
     private static final int SITUACAO_OK = 0;
     private static final int SITUACAO_AVISO = 2;
     private static final int SITUACAO_ATENCAO = 1;
     private int situacaoDoCavalo;
 
-    public CertificadoAdapter(List<Cavalo> lista, CertificadosDiretosFragment context) {
-        this.dataSet = lista;
+    public CertificadoAdapter(
+            final CertificadosDiretosFragment context,
+            final List<Cavalo> dataSetCavalo,
+            final List<DespesaCertificado> dataSetCertificado
+    ) {
         this.context = context;
+        this.dataSetCavalo = dataSetCavalo;
+        this.dataSetCertificado = dataSetCertificado;
     }
 
     public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
         this.onItemClickListener = onItemClickListener;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void atualiza(final List<Cavalo> dataSetCavalo) {
+        this.dataSetCavalo.clear();
+        this.dataSetCavalo.addAll(dataSetCavalo);
+        notifyDataSetChanged();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -84,7 +96,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull CertificadoAdapter.ViewHolder holder, int position) {
-        Cavalo cavalo = dataSet.get(position);
+        final Cavalo cavalo = dataSetCavalo.get(position);
         configuraUi(holder);
         vincula(holder, cavalo);
         configuraListeners(holder, cavalo);
@@ -100,7 +112,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return dataSetCavalo.size();
     }
 
     //----------------------------------------------------------------------------
@@ -116,7 +128,7 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
         situacaoDoCavalo = SITUACAO_OK;
         situacaoDoCavalo = verificaVencimentoDosCertificados(cavalo);
 
-        switch (situacaoDoCavalo){
+        switch (situacaoDoCavalo) {
             case SITUACAO_OK:
                 setStatusImgView(holder, "situacao_ok");
                 break;
@@ -137,16 +149,16 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
     }
 
     private int verificaVencimentoDosCertificados(@NonNull Cavalo cavalo) {
-        RoomDespesaCertificadoDao certificadoDao = GhnDataBase.getInstance(context.requireContext()).getRoomDespesaCertificadoDao();
-        List<DespesaCertificado> listaTodosCertificadosDoCavalo = certificadoDao.listaPorCavaloId(cavalo.getId());
+        final List<DespesaCertificado> lista = FiltraDespesasCertificado.listaPorCavaloId(dataSetCertificado, cavalo.getId());
         int diasAteVencimento = 0;
-
-        List<DespesaCertificado> listaDeCertificadosAtivos = listaTodosCertificadosDoCavalo.stream()
+        final List<DespesaCertificado> listaDeCertificadosAtivos = lista.stream()
                 .filter(DespesaCertificado::isValido)
                 .collect(Collectors.toList());
-
-        LocalDate dataDeHoje = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
-                .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
+        final LocalDate dataDeHoje = Instant
+                .ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds())))
+                .atZone(ZoneId.of("America/Sao_Paulo"))
+                .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
+                .toLocalDate();
 
         for (DespesaCertificado c : listaDeCertificadosAtivos) {
             Period periodo = Period.between(dataDeHoje, c.getDataDeVencimento());
@@ -159,19 +171,9 @@ public class CertificadoAdapter extends RecyclerView.Adapter<CertificadoAdapter.
             } else if (diasAteVencimento <= DIAS_MES && situacaoDoCavalo == SITUACAO_OK) {
                 situacaoDoCavalo = SITUACAO_ATENCAO;
             }
-
         }
 
         return situacaoDoCavalo;
-    }
-
-    //------------------------------------- Metodos Publicos ---------------------------------------
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void atualiza(List<Cavalo> lista) {
-        this.dataSet.clear();
-        this.dataSet.addAll(lista);
-        notifyDataSetChanged();
     }
 
 }

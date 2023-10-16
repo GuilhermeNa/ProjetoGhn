@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_certificados"
-    app:startDestination="@id/navCertificadosDiretos">
+    app:startDestination="@id/navCarregaDadosCertificado">
 
     <fragment
         android:id="@+id/navCertificadosDiretos"
@@ -27,4 +27,15 @@
         android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment"
         android:label="Certificados Indiretos"
         tools:layout="@layout/fragment_certificados_indiretos" />
+    <fragment
+        android:id="@+id/navCarregaDadosCertificado"
+        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CarregandoDadosCertificadoFragment"
+        android:label="Carrega Dados Certificado"
+        tools:layout="@layout/fragment_carregando_dados_certificado" >
+        <action
+            android:id="@+id/action_navCarregaDadosCertificado_to_navCertificadosDiretos"
+            app:destination="@id/navCertificadosDiretos"
+            app:popUpTo="@id/navCarregaDadosCertificado"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

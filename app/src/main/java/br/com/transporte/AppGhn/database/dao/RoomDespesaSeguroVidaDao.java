@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.database.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -15,14 +16,14 @@ import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
 public interface RoomDespesaSeguroVidaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void adiciona(DespesaComSeguroDeVida seguroDeVida);
+    Long adiciona(DespesaComSeguroDeVida seguroDeVida);
 
     @Delete
     void deleta(DespesaComSeguroDeVida seguroDeVida);
 
     @Query("SELECT * FROM despesaComSeguroDeVida " +
             "WHERE id = :seguroId")
-    DespesaComSeguroDeVida localizaPeloId(Long seguroId);
+    LiveData<DespesaComSeguroDeVida> localizaPeloId(Long seguroId);
 
     @Query("SELECT * FROM DespesaComSeguroDeVida " +
             "WHERE ID = (SELECT MAX(ID) FROM DespesaComSeguroDeVida) ")
@@ -32,9 +33,11 @@ public interface RoomDespesaSeguroVidaDao {
     void substitui(DespesaComSeguroDeVida seguro);
 
     @Query("SELECT * FROM DespesaComSeguroDeVida WHERE valido = :isValido")
-    List<DespesaComSeguroDeVida> listaPorValidade(boolean isValido);
+    LiveData<List<DespesaComSeguroDeVida>> listaPorValidade(boolean isValido);
 
     @Query("SELECT * FROM DespesaComSeguroDeVida")
-    List<DespesaComSeguroDeVida> todos();
+    LiveData<List<DespesaComSeguroDeVida>> todos();
 
+    @Query("SELECT * FROM DespesaComSeguroDeVida WHERE valido = :isValido")
+    LiveData<List<DespesaComSeguroDeVida>> buscaPorStatus(boolean isValido);
 }

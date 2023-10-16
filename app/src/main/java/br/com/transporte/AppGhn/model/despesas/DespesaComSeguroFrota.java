@@ -4,11 +4,16 @@ import androidx.room.Entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
+import br.com.transporte.AppGhn.model.parcelas.factory.ParcelasFactory;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
+import br.com.transporte.AppGhn.model.parcelas.factory.ParcelamentoInterface;
 
 @Entity
-public class DespesaComSeguroFrota extends DespesaComSeguro {
+public class DespesaComSeguroFrota extends DespesaComSeguro implements ParcelamentoInterface<Parcela_seguroFrota> {
     private String coberturaCasco, assistencia24H, coberturaVidros;
     private BigDecimal coberturaRcfMateriais, coberturaRcfCorporais, coberturaAppMorte,
             coberturaAppInvalidez, coberturaDanosMorais;
@@ -108,4 +113,30 @@ public class DespesaComSeguroFrota extends DespesaComSeguro {
     public boolean temIdValido() {
         return super.getId() > 0;
     }
+
+    @Override
+    public List<Parcela_seguroFrota> criaParcelas(
+            final Long chaveEstrangeira
+    ) {
+        final List<Parcela_seguroFrota> listaDeParcelas = new ArrayList<>();
+        int quantidadeDeParcelas = ParcelasFactory
+                .configQuantidadeDeParcelas(this.getParcelas());
+
+        Parcela_seguroFrota parcelaDeSeguro;
+        for (int i = 0; i < quantidadeDeParcelas; i++) {
+            parcelaDeSeguro = new Parcela_seguroFrota();
+            parcelaDeSeguro.setData(this.getDataPrimeiraParcela().plusMonths(i));
+            parcelaDeSeguro.setTipoDespesa(this.getTipoDespesa());
+            parcelaDeSeguro.setRefCavaloId(this.getRefCavaloId());
+            parcelaDeSeguro.setValor(this.getValorParcela());
+            parcelaDeSeguro.setRefSeguro(chaveEstrangeira);
+            parcelaDeSeguro.setNumeroDaParcela(i + 1);
+            parcelaDeSeguro.setValido(true);
+            parcelaDeSeguro.setPaga(false);
+
+            listaDeParcelas.add(parcelaDeSeguro);
+        }
+        return listaDeParcelas;
+    }
+
 }

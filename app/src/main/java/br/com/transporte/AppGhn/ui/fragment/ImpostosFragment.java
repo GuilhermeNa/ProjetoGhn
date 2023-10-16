@@ -52,7 +52,7 @@ import br.com.transporte.AppGhn.databinding.FragmentImpostosBinding;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.repository.CavaloRepository;
 import br.com.transporte.AppGhn.repository.ImpostoRepository;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.ImpostosAdapter;
 import br.com.transporte.AppGhn.ui.viewmodel.ImpostosViewModel;
 import br.com.transporte.AppGhn.ui.viewmodel.factory.ImpostosViewModelFactory;

@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import br.com.transporte.AppGhn.databinding.FragmentFreteAReceberResumoBinding;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.RecebimentoFretesAdapter;
 import br.com.transporte.AppGhn.ui.viewmodel.FreteAReceberActViewModel;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;

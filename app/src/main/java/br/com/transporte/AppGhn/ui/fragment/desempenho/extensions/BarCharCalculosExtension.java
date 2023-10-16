@@ -9,8 +9,6 @@ import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_IMP
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_CERTIFICADOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_FROTA;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_SEGURO_VIDA;
-import static br.com.transporte.AppGhn.model.enums.TipoDespesa.DIRETA;
-import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
 
 import android.content.Context;
 
@@ -20,11 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.CavaloDAO;
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.dao.SalarioDAO;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
@@ -40,15 +34,14 @@ import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroFrotaDao;
 import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.model.abstracts.Parcela;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 
 public class BarCharCalculosExtension {
@@ -620,16 +613,16 @@ public class BarCharCalculosExtension {
                 }*/
 
             case DESPESAS_ADM:
-                if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return despesasAdmDao.todos().stream()
+           /*     if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
+                    return despesasAdmDao.buscaTodos().stream()
                             .filter(despesaAdm -> despesaAdm.getData().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
-                    return despesasAdmDao.todos().stream()
+                    return despesasAdmDao.buscaTodos().stream()
                             .filter(despesaAdm -> despesaAdm.getData().getYear() == ano)
                             .filter(despesaAdm -> despesaAdm.getRefCavaloId() == id)
                             .collect(Collectors.toList());
-                }
+                }*/
 
             case DESPESAS_IMPOSTOS:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
@@ -645,18 +638,18 @@ public class BarCharCalculosExtension {
 
             case DESPESA_CERTIFICADOS:
                 if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
-                    return certificadosDao.todos().stream()
+             /*       return certificadosDao.todos().stream()
                             .filter(despesaCertificado -> despesaCertificado.getDataDeEmissao().getYear() == ano)
                             .collect(Collectors.toList());
                 } else {
                     return certificadosDao.todos().stream()
                             .filter(despesaCertificado -> despesaCertificado.getDataDeEmissao().getYear() == ano)
                             .filter(despesaCertificado -> despesaCertificado.getRefCavaloId() == id)
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
                 }
 
             case DESPESA_SEGURO_FROTA:
-                if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
+            /*    if (id == NAO_ESPECIFICA_BUSCA_POR_ID) {
                     return parcela_seguroFrotaDao.todos().stream()
                             .filter(p -> p.getTipoDespesa() == DIRETA)
                             .filter(p -> p.getData().getYear() == ano)
@@ -668,13 +661,13 @@ public class BarCharCalculosExtension {
                             .filter(p -> p.getData().getYear() == ano)
                             .filter(Parcela::isPaga)
                             .collect(Collectors.toList());
-                }
+                }*/
 
             case DESPESA_SEGURO_VIDA:
-                return parcela_seguroVidaDao.todos().stream()
+             /*   return parcela_seguroVidaDao.todos().stream()
                         .filter(parcelaDeSeguro -> parcelaDeSeguro.getData().getYear() == ano)
                         .filter(Parcela::isPaga)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList());*/
         }
 
         return null;

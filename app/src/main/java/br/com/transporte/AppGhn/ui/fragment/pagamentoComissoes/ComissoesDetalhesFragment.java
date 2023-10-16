@@ -66,7 +66,7 @@ import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.custos.CustosDeSalario;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.dialog.AlteraComissao;
 import br.com.transporte.AppGhn.ui.dialog.DescontaAdiantamento;
 import br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.comissoesDetalhesHelpers.ComissoesRecyclerAdiantamentoHelper;
@@ -509,6 +509,12 @@ public class ComissoesDetalhesFragment extends Fragment {
 
     public enum TipoDeAdapterPressionado {
         ADIANTAMENTO, FRETE
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
 }

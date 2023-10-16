@@ -2,12 +2,10 @@ package br.com.transporte.AppGhn.filtros;
 
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import br.com.transporte.AppGhn.model.Motorista;
 

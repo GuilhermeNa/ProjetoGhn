@@ -30,11 +30,11 @@ import java.util.Objects;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.FragmentGerenciamentoBinding;
 import br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo;
-import br.com.transporte.AppGhn.ui.activity.CertificadosActivity;
+import br.com.transporte.AppGhn.ui.activity.certificado.CertificadosActivity;
 import br.com.transporte.AppGhn.ui.activity.comissao.ComissoesActivity;
-import br.com.transporte.AppGhn.ui.activity.DespesasAdmActivity;
+import br.com.transporte.AppGhn.ui.activity.despesaAdm.DespesasAdmActivity;
 import br.com.transporte.AppGhn.ui.activity.freteAReceberActivity.FreteAReceberActivity;
-import br.com.transporte.AppGhn.ui.activity.SegurosActivity;
+import br.com.transporte.AppGhn.ui.activity.seguro.SegurosActivity;
 
 public class GerenciamentoFragment extends Fragment implements MenuProvider {
     public static final String GERENCIAMENTO = "Gerenciamento";

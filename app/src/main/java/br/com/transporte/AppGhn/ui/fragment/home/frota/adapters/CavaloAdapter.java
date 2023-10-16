@@ -183,7 +183,7 @@ public class CavaloAdapter extends RecyclerView.Adapter<CavaloAdapter.ViewHolder
         String motoristaString;
         try {
             motoristaString = FiltraMotorista.localizaPeloId(copiaDataSet_motorista, cavalo.getRefMotoristaId()).getNome();
-        } catch (NoSuchElementException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
             motoristaString = MOTORISTA_NULO_MSG;
         }

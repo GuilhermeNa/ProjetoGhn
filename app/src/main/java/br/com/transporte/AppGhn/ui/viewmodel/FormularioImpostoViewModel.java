@@ -52,7 +52,7 @@ public class FormularioImpostoViewModel extends ViewModel {
 
     public LiveData<Cavalo> localizaCavalo(final long id){
         if(id > 0){
-            return cavaloRepository.localizaCavalo(id);
+            return cavaloRepository.localizaCavaloPeloId(id);
         } else {
             return new MutableLiveData<>(null);
         }

@@ -2,6 +2,10 @@ package br.com.transporte.AppGhn.ui.fragment;
 
 public interface ConstantesFragment {
 
+    String INCORRETO = "Incorreto";
+    String SELECIONE_UM_CAVALO_VALIDO = "Selecione um cavalo válido";
+    String JA_EXISTE_UM_SEGURO_FROTA_PARA_ESTE_ITEM = "Já existe um seguro ativo para este cavalo";
+
     String CHAVE_FORMULARIO = "chave_formulario";
     String CHAVE_REQUISICAO = "chave_requisicao";
     String CHAVE_TIPO_DESPESA = "chave_tipo_despesa";
@@ -35,5 +39,6 @@ public interface ConstantesFragment {
     int RESULT_DELETE = 30;
     int RESULT_EDIT = 31;
     int RESULT_UPDATE = 32;
+
 
 }

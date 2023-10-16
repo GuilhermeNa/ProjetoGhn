@@ -13,7 +13,7 @@ import java.util.List;
 
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
-import br.com.transporte.AppGhn.ui.fragment.despesasAdm.DespesasAdmIndiretasFragment;
+import br.com.transporte.AppGhn.ui.fragment.despesasAdm.indireta.DespesasAdmIndiretasFragment;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.OnItemClickListener_getId;

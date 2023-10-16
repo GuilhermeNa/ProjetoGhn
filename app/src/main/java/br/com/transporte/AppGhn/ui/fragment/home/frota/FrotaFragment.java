@@ -21,7 +21,6 @@ import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +30,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -53,11 +51,8 @@ import org.jetbrains.annotations.Contract;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomSemiReboqueDao;
 import br.com.transporte.AppGhn.databinding.FragmentFrotaBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Motorista;
@@ -65,7 +60,7 @@ import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.repository.CavaloRepository;
 import br.com.transporte.AppGhn.repository.MotoristaRepository;
 import br.com.transporte.AppGhn.repository.ReboqueRepository;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.FrotaSrAdapter;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.adapters.CavaloAdapter;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.dialog.DefineMotorista;

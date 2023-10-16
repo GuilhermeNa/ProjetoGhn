@@ -20,7 +20,7 @@ public class FormularioCavaloViewModel extends ViewModel {
     public Cavalo cavaloArmazenado;
 
     public LiveData<Cavalo> localizaCavalo(final long cavaloId) {
-        return repository.localizaCavalo(cavaloId);
+        return repository.localizaCavaloPeloId(cavaloId);
     }
 
     public LiveData<Long> salvaCavalo(@NonNull final Cavalo cavalo) {

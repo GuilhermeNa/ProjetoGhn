@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 
-import br.com.transporte.AppGhn.database.dao.RoomDespesaImpostoDao;
-import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
+import br.com.transporte.AppGhn.database.dao.RoomDespesaCertificadoDao;
+import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.tasks.BaseTask;
 import br.com.transporte.AppGhn.tasks.TaskCallback;
 
@@ -19,22 +19,22 @@ public class AdicionaCertificadoTask extends BaseTask {
     //----------------------------------------------------------------------------------------------
 
     public void solicitaAdicao(
-            final RoomDespesaImpostoDao dao,
-            final DespesasDeImposto imposto,
+            final RoomDespesaCertificadoDao dao,
+            final DespesaCertificado certificado,
             final TaskCallback<Long> callback
     ) {
         executor.execute(
                 () -> {
-                    final Long id = realizaAdicaoSincrona(dao, imposto);
+                    final Long id = realizaAdicaoSincrona(dao, certificado);
                     notificaResultado(id, callback);
                 });
     }
 
     private Long realizaAdicaoSincrona(
-            @NonNull final RoomDespesaImpostoDao dao,
-            final DespesasDeImposto imposto
+            @NonNull final RoomDespesaCertificadoDao dao,
+            final DespesaCertificado certificado
     ) {
-        return dao.adiciona(imposto);
+        return dao.adiciona(certificado);
     }
 
     private void notificaResultado(

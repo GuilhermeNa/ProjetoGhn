@@ -63,4 +63,9 @@ public class LoginFragment extends Fragment {
         controler.navigate(direction);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import br.com.transporte.AppGhn.databinding.ActivityMainBinding;
 import br.com.transporte.AppGhn.repository.CavaloRepository;
 import br.com.transporte.AppGhn.repository.MotoristaRepository;
-import br.com.transporte.AppGhn.ui.activity.util.StatusBarUtil;
+import br.com.transporte.AppGhn.ui.activity.utilActivity.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.viewmodel.MainActViewModel;
 import br.com.transporte.AppGhn.ui.viewmodel.factory.MainActViewModelFactory;
 

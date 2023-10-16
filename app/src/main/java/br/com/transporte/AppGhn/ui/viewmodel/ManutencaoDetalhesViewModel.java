@@ -61,7 +61,7 @@ public class ManutencaoDetalhesViewModel extends ViewModel {
 
     public LiveData<Cavalo> localizaCavalo(final long cavaloId) {
         if (cavaloId > 0)
-            return cavaloRepository.localizaCavalo(cavaloId);
+            return cavaloRepository.localizaCavaloPeloId(cavaloId);
         else
             return new MutableLiveData<>(null);
     }

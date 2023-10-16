@@ -28,10 +28,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -39,30 +39,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomDespesaSeguroVidaDao;
 import br.com.transporte.AppGhn.databinding.FragmentSeguroVidaBinding;
 import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
 import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroDeVida;
-import br.com.transporte.AppGhn.ui.activity.FormulariosActivity;
+import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.adapter.SeguroVidaAdapter;
-import br.com.transporte.AppGhn.ui.fragment.extensions.BuscaDeDadosSemResultado;
+import br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.dialog.exibeParcelasDialog.ExibeParcelasVidaDialog;
+import br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.model.BuscaDataSeguroVidaUseCase;
+import br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.viewmodel.SeguroVidaFragmentViewModel;
 import br.com.transporte.AppGhn.util.MensagemUtil;
-import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class SeguroVidaFragment extends Fragment {
-    public static final String SEGUROS = "Seguros";
     private FragmentSeguroVidaBinding binding;
-    private RoomDespesaSeguroVidaDao seguroDao;
-    private List<DespesaComSeguroDeVida> dataSet;
     private SeguroVidaAdapter adapter;
     private RecyclerView recyclerView;
-    private LinearLayout avisoDeListaVaziaLayout;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
+    private SeguroVidaFragmentViewModel viewModel;
 
     @NonNull
     @Contract(" -> new")
@@ -74,11 +69,11 @@ public class SeguroVidaFragment extends Fragment {
 
                     switch (resultCode) {
                         case RESULT_UPDATE:
-                            atualizaAdapter(REGISTRO_RENOVADO);
+                            MensagemUtil.toast(requireContext(), REGISTRO_RENOVADO);
                             break;
 
                         case RESULT_CANCELED:
-                            atualizaAdapter(REGISTRO_APAGADO);
+                            MensagemUtil.toast(requireContext(), REGISTRO_APAGADO);
                             break;
                     }
                 });
@@ -86,11 +81,23 @@ public class SeguroVidaFragment extends Fragment {
 
     //------------------------------------ Metodos Publicos ----------------------------------------
 
-    public void atualizaAdapter(String msg) {
-        atualizaDataSet();
-        adapter.atualiza(getDataSet());
-        configuraUiBuscaSemResultados();
-        MensagemUtil.toast(requireContext(), msg);
+    public void atualizaAdapter(final List<DespesaComSeguroDeVida> dataSet) {
+        final LinearLayout alertaLayout = binding.fragSegurosVazio;
+        adapter.atualiza(dataSet);
+        exibeAlertaDeListagemDeDadosVazia(dataSet, alertaLayout);
+    }
+
+    private void exibeAlertaDeListagemDeDadosVazia(
+            @NonNull final List<DespesaComSeguroDeVida> dataSet,
+            final LinearLayout alertaLayout
+    ) {
+        if (dataSet.isEmpty()) {
+            recyclerView.setVisibility(View.INVISIBLE);
+            alertaLayout.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            alertaLayout.setVisibility(View.INVISIBLE);
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -100,29 +107,34 @@ public class SeguroVidaFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
-        atualizaDataSet();
+        inicializaViewModel();
+        getDataUseCase();
     }
 
-    private void atualizaDataSet() {
+    private void inicializaViewModel() {
+        final ViewModelProvider provider = new ViewModelProvider(this);
+        viewModel = provider.get(SeguroVidaFragmentViewModel.class);
+    }
+
+    private void getDataUseCase() {
+        final BuscaDataSeguroVidaUseCase getDataUseCase =
+                new BuscaDataSeguroVidaUseCase(requireContext(), this);
+        getDataUseCase.buscaDataRelacionadaSeguroVida(
+                dataSet -> {
+                    viewModel.setDataSet(dataSet);
+                    atualizaAdapter(dataSet);
+                });
+    }
+
+  /*  private void atualizaDataSet() {
         if (dataSet == null) dataSet = new ArrayList<>();
         dataSet = seguroDao.listaPorValidade(true);
-    }
+    }*/
 
-    private void inicializaDataBase() {
+  /*  private void inicializaDataBase() {
         GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
         seguroDao = dataBase.getRoomDespesaSeguroVidaDao();
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    private List<DespesaComSeguroDeVida> getDataSet() {
-        return new ArrayList<>(dataSet);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          OnCreateView                                      ||
-    //----------------------------------------------------------------------------------------------
+    }*/
 
     @Nullable
     @Override
@@ -140,21 +152,16 @@ public class SeguroVidaFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         inicializaCampos();
         configuraRecycler();
-        configuraToolbar();
-        configuraUiBuscaSemResultados();
-    }
-
-    private void configuraUiBuscaSemResultados() {
-        BuscaDeDadosSemResultado.substituiRecyclerPorAviso(dataSet.size(), recyclerView, avisoDeListaVaziaLayout);
+        configuraMenuProvider();
     }
 
     private void inicializaCampos() {
-        avisoDeListaVaziaLayout = binding.fragSegurosVazio;
-        recyclerView = binding.fragSegurosRecycler;
+
     }
 
     private void configuraRecycler() {
-        adapter = new SeguroVidaAdapter(this, getDataSet());
+        recyclerView = binding.fragSegurosRecycler;
+        adapter = new SeguroVidaAdapter(this, viewModel.getDataSet());
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(seguro -> {
@@ -164,16 +171,10 @@ public class SeguroVidaFragment extends Fragment {
         });
     }
 
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ToolbarUtil toolbarUtil = new ToolbarUtil(SEGUROS);
-        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
+    private void configuraMenuProvider() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_padrao, menu);
-                menu.removeItem(R.id.menu_padrao_search);
-                menu.removeItem(R.id.menu_padrao_editar);
             }
 
             @SuppressLint("NonConstantResourceId")
@@ -197,11 +198,11 @@ public class SeguroVidaFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaComSeguroDeVida seguro = dataSet.get(posicao);
+        DespesaComSeguroDeVida seguro = viewModel.getDataSet().get(posicao);
 
         switch (item.getItemId()) {
             case R.id.visualizaParcelas:
-                ExibeParcelasVidaDialog dialog = new ExibeParcelasVidaDialog(this.requireContext());
+                ExibeParcelasVidaDialog dialog = new ExibeParcelasVidaDialog(requireContext(), this);
                 dialog.showBottomDialog(seguro);
                 break;
 
@@ -222,8 +223,9 @@ public class SeguroVidaFragment extends Fragment {
     //----------------------------------------------------------------------------------------------
 
     @Override
-    public void onResume() {
-        super.onResume();
-        atualizaDataSet();
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
+
 }

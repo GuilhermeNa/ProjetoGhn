@@ -32,7 +32,7 @@ import br.com.transporte.AppGhn.repository.RecebimentoDeFreteRepository;
 import br.com.transporte.AppGhn.ui.activity.freteAReceberActivity.helpers.FreteAReceberActMenuProviderHelper;
 import br.com.transporte.AppGhn.ui.activity.freteAReceberActivity.helpers.FreteAReceberGetFragmentsHelper;
 import br.com.transporte.AppGhn.ui.activity.freteAReceberActivity.helpers.FreteAReceberViewModelObserverHelper;
-import br.com.transporte.AppGhn.ui.activity.util.StatusBarUtil;
+import br.com.transporte.AppGhn.ui.activity.utilActivity.StatusBarUtil;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.CarregandoDadosFreteReceberFragment;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberPagosFragment;
 import br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberResumoFragment;

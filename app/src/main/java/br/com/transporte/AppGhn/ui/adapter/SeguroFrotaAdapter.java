@@ -22,13 +22,10 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.model.abstracts.DespesaComSeguro;
-import br.com.transporte.AppGhn.model.despesas.DespesaComSeguroFrota;
+import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
+import br.com.transporte.AppGhn.ui.activity.despesaAdm.extensions.BindData;
 import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment;
-import br.com.transporte.AppGhn.util.ConverteDataUtil;
-import br.com.transporte.AppGhn.util.FormataNumerosUtil;
+import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.domain.model.DespesaSeguroFrotaObject;
 import br.com.transporte.AppGhn.util.ImagemUtil;
 import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
@@ -40,16 +37,14 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     public static final String DRAWABLE_SITUACAO_ATENCAO = "situacao_atencao";
     public static final String DRAWABLE_SITUACAO_AVISO = "situacao_aviso";
     private int situacaoDoCavalo;
-    private final List<DespesaComSeguroFrota> dataSet;
+    private final List<DespesaSeguroFrotaObject> dataSet;
     private final SeguroFrotaFragment context;
     private OnItemClickListener_getId onItemClickListener;
-    private final RoomCavaloDao cavaloDao;
     private int posicao;
 
-    public SeguroFrotaAdapter(@NonNull SeguroFrotaFragment context, List<DespesaComSeguroFrota> lista) {
+    public SeguroFrotaAdapter(@NonNull SeguroFrotaFragment context, List<DespesaSeguroFrotaObject> lista) {
         this.dataSet = lista;
         this.context = context;
-        cavaloDao = GhnDataBase.getInstance(context.requireContext()).getRoomCavaloDao();
     }
 
     public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
@@ -61,15 +56,15 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     //----------------------------------------------------------------------------------------------
 
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        private final TextView placaTxtView, valorTxtView, dataInicialTxtView, dataFinalTxtView, descricaoTxtView;
+        private final TextView campoPlaca, campoValor, campoDataInicial, campoDataFinal, descricaoTxtView;
         private final ImageView statusImageView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            placaTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_placa);
-            valorTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_valor);
-            dataInicialTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_data_inicial);
-            dataFinalTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_data_final);
+            campoPlaca = itemView.findViewById(R.id.rec_item_despesa_seguros_placa);
+            campoValor = itemView.findViewById(R.id.rec_item_despesa_seguros_valor);
+            campoDataInicial = itemView.findViewById(R.id.rec_item_despesa_seguros_data_inicial);
+            campoDataFinal = itemView.findViewById(R.id.rec_item_despesa_seguros_data_final);
             descricaoTxtView = itemView.findViewById(R.id.rec_item_despesa_seguros_descricao);
             statusImageView = itemView.findViewById(R.id.rec_item_seguro_status);
             itemView.setOnCreateContextMenuListener(this);
@@ -99,13 +94,13 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SeguroFrotaAdapter.ViewHolder holder, int position) {
-        DespesaComSeguro seguros = dataSet.get(position);
+        final DespesaSeguroFrotaObject seguros = dataSet.get(position);
         vincula(holder, seguros);
         configuraListeners(holder, seguros);
     }
 
-    private void configuraListeners(@NonNull ViewHolder holder, DespesaComSeguro seguros) {
-        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(seguros.getId()));
+    private void configuraListeners(@NonNull ViewHolder holder, DespesaSeguroFrotaObject seguros) {
+        holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick_getId(seguros.getIdSeguro()));
         holder.itemView.setOnLongClickListener(v -> {
             setPosicao(holder.getAdapterPosition());
             return false;
@@ -125,17 +120,24 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     // -> Vincula                                   ||
     //------------------------------------------------
 
-    private void vincula(@NonNull ViewHolder holder, @NonNull DespesaComSeguro seguros) {
-    //    String placa = cavaloDao.localizaPeloId(seguros.getRefCavaloId()).getPlaca();
-    //    holder.placaTxtView.setText(placa);
-        holder.valorTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(seguros.getValorDespesa()));
-        holder.dataInicialTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataInicial()));
-        holder.dataFinalTxtView.setText(ConverteDataUtil.dataParaString(seguros.getDataFinal()));
-        holder.descricaoTxtView.setText(R.string.seguro_auto);
+    private void vincula(@NonNull ViewHolder holder, @NonNull DespesaSeguroFrotaObject seguros) {
+        try {
+
+            BindData.fromString(holder.campoPlaca, seguros.getPlaca());
+            BindData.R$fromBigDecimal(holder.campoValor, seguros.getValor());
+            BindData.fromLocalDate(holder.campoDataInicial, seguros.getDataInicial());
+            BindData.fromLocalDate(holder.campoDataFinal, seguros.getDataFinal());
+            holder.descricaoTxtView.setText(R.string.seguro_auto);
+
+        } catch (ObjetoNaoEncontrado e) {
+            throw new RuntimeException(e);
+        }
+
         exibeImgDeStatusDoCertificadoParaCadaCavalo(holder, seguros);
+
     }
 
-    private void exibeImgDeStatusDoCertificadoParaCadaCavalo(ViewHolder holder, DespesaComSeguro seguros) {
+    private void exibeImgDeStatusDoCertificadoParaCadaCavalo(ViewHolder holder, DespesaSeguroFrotaObject seguros) {
         situacaoDoCavalo = SITUACAO_OK;
         situacaoDoCavalo = verificaVencimentoDosCertificados(seguros);
 
@@ -148,7 +150,7 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
         }
     }
 
-    private int verificaVencimentoDosCertificados(@NonNull DespesaComSeguro seguros) {
+    private int verificaVencimentoDosCertificados(@NonNull DespesaSeguroFrotaObject seguros) {
         LocalDate dataDeHoje = Instant.ofEpochMilli(Long.parseLong(String.valueOf(MaterialDatePicker.todayInUtcMilliseconds()))).atZone(ZoneId.of("America/Sao_Paulo"))
                 .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC)).toLocalDate();
 
@@ -172,18 +174,18 @@ public class SeguroFrotaAdapter extends RecyclerView.Adapter<SeguroFrotaAdapter.
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void atualiza(List<DespesaComSeguroFrota> lista) {
+    public void atualiza(List<DespesaSeguroFrotaObject> lista) {
         this.dataSet.clear();
         this.dataSet.addAll(lista);
         notifyDataSetChanged();
     }
 
-    public void adiciona(DespesaComSeguroFrota seguroFrota){
+    public void adiciona(DespesaSeguroFrotaObject seguroFrota){
         this.dataSet.add(seguroFrota);
         notifyItemInserted(getItemCount()-1);
     }
 
-    public void remove(DespesaComSeguroFrota seguroFrota) {
+    public void remove(DespesaSeguroFrotaObject seguroFrota) {
         int posicao = -1;
         posicao = this.dataSet.indexOf(seguroFrota);
         this.dataSet.remove(seguroFrota);

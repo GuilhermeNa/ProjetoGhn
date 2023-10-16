@@ -71,4 +71,5 @@
     <string name="calendario">calendario</string>
     <string name="nao_encontrei_nada_aqui">Não encontrei nada aqui.</string>
     <string name="carregando_dados">Carregando Dados...</string>
+    <string name="floating_action_button">Floating action Button</string>
 </resources>

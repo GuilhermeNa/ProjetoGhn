@@ -36,13 +36,13 @@ public class DateRangePickerUtil {
     //                                          Build                                             ||
     //----------------------------------------------------------------------------------------------
 
-    public void build(@NonNull View view) {
+    public void build(@NonNull View dataLayout) {
         MaterialDatePicker<Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText(SELECIONE_O_PERIODO)
                 .setSelection(getSelection())
                 .build();
 
-        view.setOnClickListener(v -> {
+        dataLayout.setOnClickListener(v -> {
             dateRangePicker.show(fragmentManager, DATA_RANGE);
             dateRangePicker.addOnPositiveButtonClickListener(selection -> {
                 selecionaNovoDataRange(selection);
