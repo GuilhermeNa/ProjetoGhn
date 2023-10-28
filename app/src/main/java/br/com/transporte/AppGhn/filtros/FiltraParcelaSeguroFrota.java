@@ -1,38 +1,15 @@
 package br.com.transporte.AppGhn.filtros;
 
-import static br.com.transporte.AppGhn.filtros.ConstantesFiltros.OBJETO_NULL;
-
 import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.ParcelaDeSeguroDAO;
-import br.com.transporte.AppGhn.exception.ObjetoNaoEncontrado;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.abstracts.Parcela;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 
 public class FiltraParcelaSeguroFrota {
-    private static final ParcelaDeSeguroDAO dao = new ParcelaDeSeguroDAO();
-
-    @NonNull
-    public static Parcela_seguroFrota localizaPeloId(int parcelaId) throws ObjetoNaoEncontrado {
-        Parcela_seguroFrota parcelaLocalizada = null;
-
-        for (Parcela_seguroFrota p : dao.listaTodos()) {
-            if (p.getId() == parcelaId) {
-                parcelaLocalizada = p;
-            }
-        }
-
-        if (parcelaLocalizada != null) {
-            return parcelaLocalizada;
-        }
-
-        throw new ObjetoNaoEncontrado(OBJETO_NULL);
-
-    }
 
     public static List<Parcela_seguroFrota> listaPeloIdDoSeguro(@NonNull List<Parcela_seguroFrota> dataSet, int seguroId) {
         return dataSet.stream()

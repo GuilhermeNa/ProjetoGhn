@@ -5,11 +5,9 @@ import androidx.annotation.NonNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.AdiantamentoDAO;
 import br.com.transporte.AppGhn.model.Adiantamento;
 
 public class FiltraAdiantamento {
-    private static final AdiantamentoDAO dao = new AdiantamentoDAO();
 
     @NonNull
     public static Adiantamento localizaPeloId(@NonNull final List<Adiantamento> dataset, final Long adiantamentoId) {

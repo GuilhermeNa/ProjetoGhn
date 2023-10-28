@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
@@ -25,7 +24,6 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
     private final List<DespesasDeImposto> dataSet;
     private List<Cavalo> dataSetCavalo;
     private final ImpostosFragment context;
-    private final CavaloDAO cavaloDao;
     private OnItemClickListener_getId onItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener_getId onItemClickListener) {
@@ -35,7 +33,6 @@ public class ImpostosAdapter extends RecyclerView.Adapter <ImpostosAdapter.ViewH
     public ImpostosAdapter(List<DespesasDeImposto> lista, ImpostosFragment context) {
         this.dataSet = lista;
         this.context = context;
-        cavaloDao = new CavaloDAO();
     }
 
     public void setDataSetCavalo(final List<Cavalo> dataSetCavalo) {

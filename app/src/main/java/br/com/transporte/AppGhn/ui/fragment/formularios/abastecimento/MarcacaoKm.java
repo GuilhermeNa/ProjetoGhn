@@ -15,11 +15,9 @@ import br.com.transporte.AppGhn.exception.DataInvalida;
 import br.com.transporte.AppGhn.exception.MarcacaoKmInvalida;
 import br.com.transporte.AppGhn.exception.RegistroDuplicado;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
 import br.com.transporte.AppGhn.util.DataUtil;
 
 public abstract class MarcacaoKm {
-    private static final CustosDeAbastecimentoDAO abastecimentoDao = new CustosDeAbastecimentoDAO();
     private static LocalDate ultimaData;
     private static BigDecimal ultimaMarcacao;
 
