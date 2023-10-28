@@ -49,6 +49,7 @@ public class FreteAReceberEmAbertoFragment extends Fragment {
     private FreteAReceberAdapter adapter;
     public FreteAReceberActViewModel viewModel;
     private LinearLayout alertaLayout;
+    private Handler handler;
 
     //----------------------------------------------------------------------------------------------
     //                                          On Create                                         ||
@@ -57,6 +58,7 @@ public class FreteAReceberEmAbertoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
         viewModel = new ViewModelProvider(requireActivity()).get(FreteAReceberActViewModel.class);
         if (savedInstanceState != null) {
             primeiraExecucaoDoFragment = savedInstanceState.getBoolean("execucaoFragFreteEmAberto");
@@ -95,9 +97,8 @@ public class FreteAReceberEmAbertoFragment extends Fragment {
     }
 
     private void configuraRecycler() {
-        if(primeiraExecucaoDoFragment){
-            final Handler handler = new Handler();
-            final Runnable r = ()->{
+        if (primeiraExecucaoDoFragment) {
+            final Runnable r = () -> {
                 configuraAdapter();
                 exibeRecyclerComAnimacao();
                 primeiraExecucaoDoFragment = false;
@@ -112,8 +113,7 @@ public class FreteAReceberEmAbertoFragment extends Fragment {
     private void exibeRecyclerComAnimacao() {
         final LayoutAnimationController animSlideIn =
                 AnimationUtils.loadLayoutAnimation(this.requireContext(), R.anim.layout_controller_animation_slide_in_left);
-        final Handler handler = new Handler();
-        final Runnable r = ()->{
+        final Runnable r = () -> {
             ExibirResultadoDaBusca_sucessoOuAlerta.configura(viewModel.getDataSet_freteEmAberto().size(), alertaLayout, recyclerView, VIEW_INVISIBLE);
             recyclerView.setLayoutAnimation(animSlideIn);
         };
@@ -176,6 +176,13 @@ public class FreteAReceberEmAbertoFragment extends Fragment {
     public void exibeResultadoDeBusca(List<Frete> dataSetSearch) {
         adapter.exibeSearch(dataSetSearch);
         ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetSearch.size(), binding.alertaLayout.alerta, recyclerView, VIEW_INVISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

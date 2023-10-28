@@ -125,59 +125,6 @@ public class AreaMotoristaActViewModel extends ViewModel {
         return freteDataHelper.getFragmentsSharedData();
     }
 
-
-  /*  private List<CustosDeAbastecimento> LISTA_ABASTECIMENTO;
-    private List<Adiantamento> LISTA_ADIANTAMENTO;
-    private List<CustosDePercurso> LISTA_CUSTO;
-    private List<Frete> LISTA_FRETE;
-
-
-    public void setListaFrete(List<Frete> LISTA_FRETE) {
-        this.LISTA_FRETE = LISTA_FRETE;
-    }
-
-    public void setListaAbastecimento(List<CustosDeAbastecimento> LISTA_ABASTECIMENTO) {
-        this.LISTA_ABASTECIMENTO = LISTA_ABASTECIMENTO;
-    }
-
-    public void setListaCusto(List<CustosDePercurso> LISTA_CUSTO) {
-        this.LISTA_CUSTO = LISTA_CUSTO;
-    }
-
-    public void setListaAdiantamento(List<Adiantamento> LISTA_ADIANTAMENTO) {
-        this.LISTA_ADIANTAMENTO = LISTA_ADIANTAMENTO;
-    }
-
-   */
-
-    //--------------- Lista modificada conforme solicitacao por data alterada ------------------------
-/*
-    private List<Frete> sharedList_frete;
-    private List<CustosDeAbastecimento> sharedList_abastecimento;
-    private List<CustosDePercurso> sharedList_custo;
-
-
-
-    public List<Frete> getSharedList_frete() {
-        return sharedList_frete;
-    }
-
-    public List<CustosDeAbastecimento> getSharedList_abastecimento() {
-        return sharedList_abastecimento;
-    }
-
-    public List<CustosDePercurso> getSharedList_custo() {
-        return sharedList_custo;
-    }
-
-    public List<Adiantamento> getSharedList_adiantamento() {
-        return LISTA_ADIANTAMENTO;
-    }
-
-    public List<CustosDeAbastecimento> getList_abastecimentoTodos() {
-        return new ArrayList<>(LISTA_ABASTECIMENTO);
-    }*/
-
     //----------------------------------------------------------------------------------------------
 
     public LiveData<Motorista> localizaMotorista(@Nullable final Long id) {

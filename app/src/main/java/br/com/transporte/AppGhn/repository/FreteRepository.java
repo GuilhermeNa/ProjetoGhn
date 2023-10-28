@@ -1,71 +1,31 @@
 package br.com.transporte.AppGhn.repository;
 
 import android.content.Context;
-import android.os.Handler;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
-import br.com.transporte.AppGhn.GhnApplication;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
+import br.com.transporte.AppGhn.dataSource.local.LocalFreteDataSource;
 import br.com.transporte.AppGhn.model.Frete;
-import br.com.transporte.AppGhn.tasks.frete.AdicionaFreteTask;
-import br.com.transporte.AppGhn.tasks.frete.AtualizaFreteTask;
-import br.com.transporte.AppGhn.tasks.frete.DeletaFreteTask;
 
 public class FreteRepository {
-    private final RoomFreteDao dao;
-    private final ExecutorService executor;
-    private final Handler handler;
+    private final LocalFreteDataSource localDataSource;
+    private final MediatorLiveData<Resource<List<Frete>>> mediator = new MediatorLiveData<>();
 
     public FreteRepository(Context context) {
-        dao = GhnDataBase.getInstance(context).getRoomFreteDao();
-        final GhnApplication application = new GhnApplication();
-        executor = application.getExecutorService();
-        handler = application.getMainThreadHandler();
+        this.localDataSource = new LocalFreteDataSource(context);
+
     }
 
     //----------------------------------------------------------------------------------------------
 
-    private final MediatorLiveData<Resource<List<Frete>>> mediator = new MediatorLiveData<>();
-
-    public LiveData<Resource<List<Frete>>> buscaFretes() {
-        mediator.addSource(buscaFretes_room(),
-                fretes -> {
-                    mediator.setValue(new Resource<>(fretes, null));
-                });
-        return mediator;
-    }
-
-    public LiveData<Resource<List<Frete>>> buscaFretesPorCavaloId(final long cavaloId) {
-        mediator.addSource(buscaFretesPorCavaloId_room(cavaloId),
-                fretes -> {
-                    mediator.setValue(new Resource<>(fretes, null));
-                });
-        return mediator;
-    }
-
-    public LiveData<Resource<List<Frete>>> buscaFretesPorStatusDeRecebimento(final boolean isRecebido){
-        mediator.addSource(buscaFretesPorStatusRecebimento_room(isRecebido),
-                fretes -> {
-                    mediator.setValue(new Resource<>(fretes, null));
-                });
-        return mediator;
-    }
-
-    public LiveData<Frete> localizaFrete(final long id) {
-        return localizaFrete_room(id);
-    }
-
     public LiveData<Long> adicionaFrete(final Frete frete) {
         final MutableLiveData<Long> liveData = new MutableLiveData<>();
-        adicionaFrete_room(frete, new RepositoryCallback<Long>() {
+        localDataSource.adicionaFrete(frete, new RepositoryCallback<Long>() {
             @Override
             public void sucesso(Long id) {
                 liveData.setValue(id);
@@ -80,7 +40,7 @@ public class FreteRepository {
 
     public LiveData<Long> editaFrete(final Frete frete) {
         final MutableLiveData<Long> liveData = new MutableLiveData<>();
-        editaFrete_room(frete,
+        localDataSource.editaFrete(frete,
                 () -> liveData.setValue(null)
         );
         return liveData;
@@ -88,7 +48,7 @@ public class FreteRepository {
 
     public LiveData<String> deletaFrete(final Frete frete) {
         final MutableLiveData<String> liveData = new MutableLiveData<>();
-        deletaFrete_room(frete, new RepositoryCallback<String>() {
+        localDataSource.deletaFrete(frete, new RepositoryCallback<String>() {
             @Override
             public void sucesso(String ignore) {
                 liveData.setValue(null);
@@ -102,57 +62,52 @@ public class FreteRepository {
         return liveData;
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                       Busca Interna                                        ||
-    //----------------------------------------------------------------------------------------------
-
-    private LiveData<List<Frete>> buscaFretes_room() {
-        return dao.todos();
+    public LiveData<Resource<List<Frete>>> buscaFretes() {
+        mediator.addSource(localDataSource.buscaFretes(),
+                fretes -> {
+                    mediator.setValue(new Resource<>(fretes, null));
+                });
+        return mediator;
     }
 
-    private LiveData<List<Frete>> buscaFretesPorCavaloId_room(final long cavaloId) {
-        return dao.listaPorCavaloId(cavaloId);
+    public LiveData<Resource<List<Frete>>> buscaFretesPorCavaloId(final long cavaloId) {
+        mediator.addSource(localDataSource.buscaFretesPorCavaloId(cavaloId),
+                fretes -> {
+                    mediator.setValue(new Resource<>(fretes, null));
+                });
+        return mediator;
     }
 
-    private LiveData<Frete> localizaFrete_room(final long id) {
-        return dao.localizaPeloId(id);
+    public LiveData<Resource<List<Frete>>> buscaFretesPorStatusDeRecebimento(final boolean isRecebido) {
+        mediator.addSource(localDataSource.buscaFretesPorStatusRecebimento(isRecebido),
+                fretes -> {
+                    mediator.setValue(new Resource<>(fretes, null));
+                });
+        return mediator;
     }
 
-    private void adicionaFrete_room(
-            final Frete frete,
-            @NonNull final RepositoryCallback<Long> callback
+    public LiveData<Frete> localizaFrete(final long id) {
+        return localDataSource.localizaFrete(id);
+    }
+
+    public LiveData<List<Frete>> bucaFretePorCavaloEData(
+            final Long id,
+            final LocalDate dataInicial,
+            final LocalDate dataFinal
     ) {
-        final AdicionaFreteTask task = new AdicionaFreteTask(executor, handler);
-        task.solicitaAdicao(frete, dao,
-                callback::sucesso
-        );
-    }
+        final MutableLiveData<List<Frete>> liveData = new MutableLiveData<>();
+        localDataSource.bucaFretePorCavaloEData(id, dataInicial, dataFinal, new RepositoryCallback<List<Frete>>() {
+            @Override
+            public void sucesso(List<Frete> resultado) {
+                liveData.setValue(resultado);
+            }
 
-    private void editaFrete_room(
-            final Frete frete,
-            @NonNull final RepositoryCallbackVoid callback
-    ) {
-        final AtualizaFreteTask task = new AtualizaFreteTask(executor, handler);
-        task.solicitaAtualizacao(dao, frete,
-                callback::quandoFinaliza);
-    }
+            @Override
+            public void falha(String msg) {
 
-    private void deletaFrete_room(
-            final Frete frete,
-            @NonNull final RepositoryCallback<String> callback
-    ) {
-        final DeletaFreteTask task = new DeletaFreteTask(executor, handler);
-        if (frete != null) {
-            task.solicitaRemocao(dao, frete,
-                    () -> callback.sucesso(null)
-            );
-        } else {
-            callback.falha("Falha ao remover");
-        }
-    }
-
-    private LiveData<List<Frete>> buscaFretesPorStatusRecebimento_room(final boolean isRecebido){
-        return dao.listaPorStatusDeRecebimento(isRecebido);
+            }
+        });
+        return liveData;
     }
 
 }

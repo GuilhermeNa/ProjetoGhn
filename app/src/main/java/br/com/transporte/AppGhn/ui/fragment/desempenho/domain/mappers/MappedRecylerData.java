@@ -1,23 +1,28 @@
-package br.com.transporte.AppGhn.model.temporarios;
+package br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers;
+
+import static br.com.transporte.AppGhn.util.BigDecimalConstantes.BIG_DECIMAL_CEM;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-public class ObjetoTemporario_representaCavalo {
+public class MappedRecylerData {
 
-    private Long id;
     private static BigDecimal valorAcumulado = BigDecimal.ZERO;
-    private String placa, nome;
-    private BigDecimal valor, percentual;
+    private Long
+            cavaloId;
+    private String
+            placa, nome;
+    private BigDecimal
+            valor, percentual;
 
-    public ObjetoTemporario_representaCavalo(String nome, String placa, Long id) {
+    public MappedRecylerData(String nome, String placa, Long id) {
         this.nome = nome;
         this.placa = placa;
-        this.id = id;
+        this.cavaloId = id;
     }
 
-    public ObjetoTemporario_representaCavalo() {
+    public MappedRecylerData() {
 
     }
 
@@ -53,12 +58,12 @@ public class ObjetoTemporario_representaCavalo {
         this.percentual = percentual;
     }
 
-    public Long getId() {
-        return id;
+    public Long getCavaloId() {
+        return cavaloId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCavaloId(Long cavaloId) {
+        this.cavaloId = cavaloId;
     }
 
     public static BigDecimal getValorAcumulado() {
@@ -66,18 +71,19 @@ public class ObjetoTemporario_representaCavalo {
     }
 
     public static void setValorAcumulado(BigDecimal valorAcumulado) {
-        ObjetoTemporario_representaCavalo.valorAcumulado = valorAcumulado;
+        MappedRecylerData.valorAcumulado = valorAcumulado;
     }
 
- //------------------------------------- Outros Metodos --------------------------------------------
+    //------------------------------------- Outros Metodos --------------------------------------------
 
-    public void definePercentual() {
-        BigDecimal ONE_HUNDRED = new BigDecimal("100.00");
+    public void definePercentual(final BigDecimal valorTotal) {
         BigDecimal divide;
 
         try {
-            divide = getValor().divide(getValorAcumulado(), 2, RoundingMode.HALF_EVEN)
-                    .multiply(ONE_HUNDRED).setScale(2, RoundingMode.HALF_EVEN);
+            divide = this.valor
+                    .divide(valorTotal, 2, RoundingMode.HALF_EVEN)
+                    .multiply(BIG_DECIMAL_CEM).setScale(2, RoundingMode.HALF_EVEN);
+
         } catch (ArithmeticException e) {
             e.printStackTrace();
             divide = BigDecimal.ZERO;
@@ -95,7 +101,7 @@ public class ObjetoTemporario_representaCavalo {
         setValor(this.valor.add(valor));
     }
 
-    public void removeValor(BigDecimal valor) {
+    public void subtraiValor(BigDecimal valor) {
         if (this.valor == null) this.valor = new BigDecimal(BigInteger.ZERO);
         setValor(this.valor.subtract(valor));
     }

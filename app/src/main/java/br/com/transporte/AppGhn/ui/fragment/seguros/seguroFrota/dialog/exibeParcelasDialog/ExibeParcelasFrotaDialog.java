@@ -76,7 +76,6 @@ public class ExibeParcelasFrotaDialog {
         return new ArrayList<>(dataSet);
     }
 
-
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
@@ -187,8 +186,6 @@ public class ExibeParcelasFrotaDialog {
                 dialogParcela.setCallback(new EditaParcelaFrotaDialog.Callback() {
                     @Override
                     public void quandoFunciona() {
-                        //dataUseCase.atualizaDataSet(seguroObject.getIdSeguro());
-                       // adapterParcela.atualiza(getDataSet());
                         MensagemUtil.toast(context, REGISTRO_ALTERADO);
                     }
 

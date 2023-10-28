@@ -3,7 +3,6 @@ package br.com.transporte.AppGhn.ui.fragment.areaMotorista.resumo;
 import static br.com.transporte.AppGhn.ui.activity.areaMotoristaActivity.ConstantesAreaMotorista.REQUEST_ATUALIZACAO_DE_DATA;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,9 @@ import androidx.lifecycle.ViewModelProvider;
 import java.math.BigDecimal;
 
 import br.com.transporte.AppGhn.databinding.FragmentAreaMotoristaResumoBinding;
-import br.com.transporte.AppGhn.util.DateRangePickerUtil;
 import br.com.transporte.AppGhn.ui.viewmodel.areaMotoristaViewModel.AreaMotoristaActViewModel;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
+import br.com.transporte.AppGhn.util.DateRangePickerUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class AreaMotoristaResumoFragment extends Fragment {
@@ -98,8 +97,6 @@ public class AreaMotoristaResumoFragment extends Fragment {
         dateRange.build(dataLayout);
         dateRange.setCallbackDatePicker(
                 (dataInicial, dataFinal) -> {
-                    Log.d("teste", "inicial "+dataInicial);
-                    Log.d("teste", "inicial "+dataFinal);
                     viewModel.setSharedDataInicial(dataInicial);
                     viewModel.setSharedDataFinal(dataFinal);
                     getParentFragmentManager().setFragmentResult(REQUEST_ATUALIZACAO_DE_DATA, null);
@@ -194,6 +191,12 @@ public class AreaMotoristaResumoFragment extends Fragment {
             atualizaValoresParaExibirNaUi();
             setAtualizacaoSolicitadaPelaAct(false);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
 }

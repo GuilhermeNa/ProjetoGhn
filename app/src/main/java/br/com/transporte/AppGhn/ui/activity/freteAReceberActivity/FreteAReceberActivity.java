@@ -48,7 +48,7 @@ import br.com.transporte.AppGhn.util.ToolbarUtil;
 public class FreteAReceberActivity extends AppCompatActivity {
     public static final String FRETE_JA_RECEBIDO = "Frete já recebido";
     public static final String FRETE_EM_ABERTO = "Frete em aberto";
-    public static final String DETALHES_DO_FRETE = "Detalhes do Frete";
+    public static final String DETALHES = "Detalhes";
     private ActivityFreteAreceberBinding binding;
     private FreteAReceberActViewModel viewModel;
     private FreteAReceberEmAbertoFragment fragFreteEmAberto;
@@ -265,7 +265,7 @@ public class FreteAReceberActivity extends AppCompatActivity {
                     break;
 
                 case R.id.navFreteAReceberResumo:
-                    toolbarUtil.setTitle(DETALHES_DO_FRETE);
+                    toolbarUtil.setTitle(DETALHES);
                     bottomNavigation.setVisibility(GONE);
                     dataLayout.setVisibility(GONE);
                     preparaToolbarParaFragmentResumo();

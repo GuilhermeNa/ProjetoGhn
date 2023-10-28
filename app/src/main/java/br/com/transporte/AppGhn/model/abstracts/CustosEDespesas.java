@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import br.com.transporte.AppGhn.model.Cavalo;
@@ -16,7 +17,7 @@ import br.com.transporte.AppGhn.model.Cavalo;
         onUpdate = ForeignKey.CASCADE,
         onDelete = ForeignKey.CASCADE
 ))
-public abstract class CustosEDespesas {
+public abstract class CustosEDespesas implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;

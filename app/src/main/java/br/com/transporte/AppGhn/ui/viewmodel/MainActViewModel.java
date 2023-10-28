@@ -25,4 +25,6 @@ public class MainActViewModel extends ViewModel {
         return cavaloRepository.buscaCavalos();
     }
 
+
+
 }

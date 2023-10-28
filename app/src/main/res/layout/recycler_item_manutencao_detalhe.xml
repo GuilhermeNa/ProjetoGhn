@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/rec_item_manutencao_detalhe_card"
@@ -39,7 +40,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Data"
+                        android:text="@string/data"
                         android:textSize="12sp"
                         android:textColor="@color/white"/>
 
@@ -47,7 +48,7 @@
                         android:id="@+id/rec_item_manutencao_detalhe_data"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="06/06/23"
+                        tools:text="@tools:sample/date/ddmmyy"
                         android:textSize="14sp"
                         android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +67,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total"
+                        android:text="@string/total_pago"
                         android:textColor="@color/white"
                         android:textSize="12sp" />
 
@@ -74,7 +75,7 @@
                         android:id="@+id/rec_item_manutencao_detalhe_valor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 2.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -111,18 +112,20 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Empresa "
+                        android:text="@string/empresa"
                         android:textSize="12sp"
                         android:layout_marginEnd="8dp"/>
 
                     <TextView
                         android:id="@+id/rec_item_manutencao_detalhe_empresa"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Pneulandia"
+                        tools:text="@tools:sample/lorem"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:maxLines="2"
+                        android:ellipsize="end"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -138,7 +141,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="nº Nota "
+                        android:text="@string/n_nota"
                         android:textSize="12sp"
                         android:layout_marginEnd="8dp"/>
 
@@ -146,10 +149,12 @@
                         android:id="@+id/rec_item_manutencao_detalhe_nota"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="12345566"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -168,14 +173,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Descrição "
+                        android:text="@string/descricao"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_item_manutencao_detalhe_descricao"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Serviço de troca"
+                        tools:text="@tools:sample/lorem/random"
+                        android:maxLines="2"
+                        android:ellipsize="end"
                         android:textSize="14sp" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,7 +20,6 @@ import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.filtros.FiltraMotorista;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Motorista;
@@ -30,21 +29,18 @@ public class DefineMotorista {
     public static final String MSG_DE_FALHA = "Não foi possivel fazer a alteração";
     public static final String MSG_DE_SOBREPOSICAO = "Motorista já está alocado neste cavalo";
     private final RoomCavaloDao cavaloDao;
-    private List<Motorista> dataSet_motorista;
+    private final List<Motorista> dataSet_motorista;
     private List<String> listaDeNomes;
-    private Motorista motorista;
     private final Context context;
     private final Cavalo cavalo;
     private DefineMotoristaCallback defineMotoristaCallback;
     private String nomeMotorista, motoristaPreExistente;
-    private final RoomMotoristaDao motoristaDao;
 
     public DefineMotorista(List<Motorista> dataSetMotorista, Context context, Cavalo cavalo) {
         this.dataSet_motorista = dataSetMotorista;
         this.context = context;
         this.cavalo = cavalo;
-        GhnDataBase dataBase = GhnDataBase.getInstance(context);
-        motoristaDao = dataBase.getRoomMotoristaDao();
+        final GhnDataBase dataBase = GhnDataBase.getInstance(context);
         cavaloDao = dataBase.getRoomCavaloDao();
     }
 
@@ -63,8 +59,8 @@ public class DefineMotorista {
     //----------------------------------------------------------------------------------------------
 
     public void configuraDialog() {
-        View viewCriada = LayoutInflater.from(context).inflate(R.layout.define_motorista_xml, null);
-        AutoCompleteTextView autoComplete = viewCriada.findViewById(R.id.dialog_define_motorista_auto_complete);
+        final View viewCriada = LayoutInflater.from(context).inflate(R.layout.define_motorista_xml, null);
+        final AutoCompleteTextView autoComplete = viewCriada.findViewById(R.id.dialog_define_motorista_auto_complete);
         configuraAdapter(autoComplete);
         ui_configuraNomeDoMotoristaPreExistente();
         show(viewCriada, autoComplete);
@@ -72,9 +68,9 @@ public class DefineMotorista {
 
     private void ui_configuraNomeDoMotoristaPreExistente() {
         try {
-            nomeMotorista = FiltraMotorista.localizaPeloId(dataSet_motorista, cavalo.getId()).getNome();
+            nomeMotorista = FiltraMotorista.localizaPeloId(dataSet_motorista, cavalo.getRefMotoristaId()).getNome();
             motoristaPreExistente = nomeMotorista.toUpperCase(Locale.ROOT);
-        } catch (NoSuchElementException e) {
+        } catch (NullPointerException | NoSuchElementException e) {
             e.printStackTrace();
             nomeMotorista = "Nenhum motorista vinculado";
             motoristaPreExistente = " ";
@@ -83,8 +79,8 @@ public class DefineMotorista {
 
     private void configuraAdapter(@NonNull AutoCompleteTextView autoComplete) {
         listaDeNomes = FiltraMotorista.listaDeNomes(dataSet_motorista);
-        String[] arrayDeNomes = listaDeNomes.toArray(new String[0]);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, arrayDeNomes);
+        final String[] arrayDeNomes = listaDeNomes.toArray(new String[0]);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, arrayDeNomes);
         autoComplete.setAdapter(adapter);
     }
 
@@ -111,20 +107,20 @@ public class DefineMotorista {
     }
 
     private void defineMotoristaParaOCavalo_sucesso(@NonNull AutoCompleteTextView autoComplete) {
-        motorista = FiltraMotorista.localizaPeloNome(dataSet_motorista, autoComplete.getText().toString());
+        Motorista motorista = FiltraMotorista.localizaPeloNome(dataSet_motorista, autoComplete.getText().toString());
         cavalo.setRefMotoristaId(motorista.getId());
 
-        GhnApplication application = new GhnApplication();
-        Handler handler = application.getMainThreadHandler();
-        ExecutorService executorService = application.getExecutorService();
-        AtualizaCavaloTask atualizaCavaloTask = new AtualizaCavaloTask(executorService, handler);
+        final GhnApplication application = new GhnApplication();
+        final Handler handler = application.getMainThreadHandler();
+        final ExecutorService executorService = application.getExecutorService();
+        final AtualizaCavaloTask atualizaCavaloTask = new AtualizaCavaloTask(executorService, handler);
         atualizaCavaloTask.solicitaAtualizacao(cavaloDao, cavalo,
                 () -> defineMotoristaCallback.quandoSucesso());
     }
 
     @NonNull
     private List<String> getListaDeNomesEmUpperCase() {
-        List<String> listaDeNomesEmUper = new ArrayList<>();
+        final List<String> listaDeNomesEmUper = new ArrayList<>();
         for (String s : listaDeNomes) {
             String nome = s.toUpperCase();
             listaDeNomesEmUper.add(nome);

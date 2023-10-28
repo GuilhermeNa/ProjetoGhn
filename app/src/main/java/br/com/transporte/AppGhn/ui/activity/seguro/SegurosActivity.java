@@ -35,14 +35,9 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.databinding.ActivitySegurosBinding;
 import br.com.transporte.AppGhn.ui.activity.formulario.FormulariosActivity;
 import br.com.transporte.AppGhn.ui.activity.seguro.extensions.SegurosActFragmentsResultListenerExt;
-import br.com.transporte.AppGhn.ui.activity.seguro.extensions.SegurosActOnFragmentsAttachExt;
 import br.com.transporte.AppGhn.ui.activity.seguro.viewmodel.SeguroActViewModel;
 import br.com.transporte.AppGhn.ui.activity.utilActivity.FabAnimatorUtil;
 import br.com.transporte.AppGhn.ui.activity.utilActivity.StatusBarUtil;
-import br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment;
-import br.com.transporte.AppGhn.ui.fragment.seguros.seguroHome.SegurosHomeFragment;
-import br.com.transporte.AppGhn.ui.fragment.seguros.seguroInfo.SegurosInformacoesGeraisFragment;
-import br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.SeguroVidaFragment;
 import br.com.transporte.AppGhn.util.MensagemUtil;
 import br.com.transporte.AppGhn.util.ToolbarUtil;
 
@@ -52,13 +47,8 @@ public class SegurosActivity extends AppCompatActivity {
     private FloatingActionButton fabPrincipal;
     private SeguroActViewModel viewModel;
     private ToolbarUtil toolbarUtil;
-    private NavHostFragment navHost;
     private BottomNavigationView bottomAppBar;
     private Menu menu;
-    private SegurosHomeFragment fragmentHome;
-    private SeguroFrotaFragment fragmentFrota;
-    private SeguroVidaFragment fragmentVida;
-    private SegurosInformacoesGeraisFragment fragmentInfo;
     private final ActivityResultLauncher<Intent> activityResultLauncher = getActivityResultLauncher();
 
     @NonNull
@@ -86,18 +76,11 @@ public class SegurosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySegurosBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        getNavHost();
         inicializaViewModel();
-        getFragmentsNoOnAttachListener();
         configuraEventosDeListenersParaFragments();
         configuraToolbar();
         configuraFabs();
         configuraBottomNavigation();
-    }
-
-    private void getNavHost() {
-        navHost = (NavHostFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_container_seguros);
     }
 
     private void inicializaViewModel() {
@@ -106,8 +89,11 @@ public class SegurosActivity extends AppCompatActivity {
     }
 
     private void configuraEventosDeListenersParaFragments() {
+        final NavHostFragment navHost =
+                (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container_seguros);
         final SegurosActFragmentsResultListenerExt fragmentsListenerExt =
                 new SegurosActFragmentsResultListenerExt(navHost, this);
+
         fragmentsListenerExt.getResult(
                 new SegurosActFragmentsResultListenerExt.SegurosActFragmentsResultListener() {
                     @Override
@@ -126,34 +112,6 @@ public class SegurosActivity extends AppCompatActivity {
                         fabPrincipal.setVisibility(VISIBLE);
                         menu.findItem(R.id.menu_padrao_logout)
                                 .setVisible(true);
-                    }
-                });
-    }
-
-    private void getFragmentsNoOnAttachListener() {
-        final SegurosActOnFragmentsAttachExt fragmentsHelper =
-                new SegurosActOnFragmentsAttachExt(navHost);
-        fragmentsHelper.getFragmentsWhenAttach(
-                new SegurosActOnFragmentsAttachExt.SegurosFragmentsCallback() {
-                    @Override
-                    public void seguroHomeFragmentAttached(SegurosHomeFragment fragment) {
-                        fragmentHome = fragment;
-                        //todo callback comentado pq ainda n estou usando esta referencia de fragment
-                    }
-
-                    @Override
-                    public void seguroFrotaFragmentAttached(SeguroFrotaFragment fragment) {
-                        fragmentFrota = fragment;
-                    }
-
-                    @Override
-                    public void seguroVidaFragmentAttached(SeguroVidaFragment fragment) {
-                        fragmentVida = fragment;
-                    }
-
-                    @Override
-                    public void seguroResumoFragmentAttached(SegurosInformacoesGeraisFragment fragment) {
-                        fragmentInfo = fragment;
                     }
                 });
     }
@@ -201,7 +159,8 @@ public class SegurosActivity extends AppCompatActivity {
         fabPrincipal = binding.fab;
         final FloatingActionButton fabDemaisRamos = binding.fabDemaisRamos;
         final FloatingActionButton fabFrota = binding.fabFrota;
-        final FabAnimatorUtil fabAnimatorExt = new FabAnimatorUtil(this, fabFrota, fabDemaisRamos);
+        final FabAnimatorUtil fabAnimatorExt =
+                new FabAnimatorUtil(this, fabFrota, fabDemaisRamos);
 
         fabPrincipal.setOnClickListener(v ->
                 fabAnimatorExt.animaFabs(viewModel.statusDeVisibilidadeDoFab(),

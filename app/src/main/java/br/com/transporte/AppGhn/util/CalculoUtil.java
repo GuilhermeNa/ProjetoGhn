@@ -1,22 +1,25 @@
 package br.com.transporte.AppGhn.util;
 
+import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.DEBUG;
+
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.Adiantamento;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.RecebimentoDeFrete;
-import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDeManutencao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.despesas.DespesaAdm;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
+import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 
 public class CalculoUtil {
@@ -71,10 +74,15 @@ public class CalculoUtil {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public static BigDecimal somaCustosDeManutencao(@NonNull List<CustosDeManutencao> dataSet) {
-        return dataSet.stream()
-                .map(CustosDeManutencao::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    public static BigDecimal somaCustosDeManutencao(List<CustosDeManutencao> dataSet) {
+        if (dataSet != null) {
+            return dataSet.stream()
+                    .map(CustosDeManutencao::getValorCusto)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        } else {
+            Log.d(DEBUG, "CalculoUtil : somaCustosDeManutencao -> dataSet recebido é nulo");
+            return BigDecimal.ZERO;
+        }
     }
 
     public static BigDecimal somaCustosDeAbastecimento(@NonNull List<CustosDeAbastecimento> dataSet) {
@@ -157,8 +165,6 @@ public class CalculoUtil {
                 .map(RecebimentoDeFrete::getValor)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-
-
 
 
 }

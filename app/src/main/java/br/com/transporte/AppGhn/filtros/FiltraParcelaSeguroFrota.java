@@ -40,7 +40,7 @@ public class FiltraParcelaSeguroFrota {
                 .collect(Collectors.toList());
     }
 
-    public static List<Parcela_seguroFrota> listaPeloCavaloId(@NonNull List<Parcela_seguroFrota> dataSet, Long cavaloId) {
+    public static List<Parcela_seguroFrota> listaPorCavaloId(@NonNull List<Parcela_seguroFrota> dataSet, Long cavaloId) {
         return dataSet.stream()
                 .filter(p -> p.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
@@ -58,7 +58,7 @@ public class FiltraParcelaSeguroFrota {
                 .collect(Collectors.toList());
     }
 
-    public static List<Parcela_seguroFrota> listaPorMes(@NonNull List<Parcela_seguroFrota> dataSet, int mes){
+    public static List<Parcela_seguroFrota> listaDoMesSolicitado(@NonNull List<Parcela_seguroFrota> dataSet, int mes){
         return dataSet.stream()
                 .filter(p -> p.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

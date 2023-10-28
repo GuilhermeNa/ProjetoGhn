@@ -185,5 +185,12 @@ public class AreaMotoristaAbastecimentoFragment extends Fragment {
             setAtualizacaoSolicitadaPelaAct(false);
         }
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
 }
 

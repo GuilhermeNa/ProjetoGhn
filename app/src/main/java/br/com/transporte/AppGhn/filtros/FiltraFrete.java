@@ -60,7 +60,7 @@ public class FiltraFrete {
                 .collect(Collectors.toList());
     }
 
-    public static List<Frete> listaPorMes(@NonNull List<Frete> dataSet, int mes) {
+    public static List<Frete> listaDoMesSolicitado(@NonNull List<Frete> dataSet, int mes) {
         return dataSet.stream()
                 .filter(f -> f.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

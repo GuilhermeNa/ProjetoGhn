@@ -1,12 +1,12 @@
 package br.com.transporte.AppGhn.model.abstracts;
 
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
-public abstract class Custos extends CustosEDespesas {
+public abstract class Custos extends CustosEDespesas implements Serializable {
  /*   @PrimaryKey(autoGenerate = true)
     private Long id;*/
     private BigDecimal valorCusto;

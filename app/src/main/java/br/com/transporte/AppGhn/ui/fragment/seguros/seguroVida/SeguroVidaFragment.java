@@ -126,16 +126,6 @@ public class SeguroVidaFragment extends Fragment {
                 });
     }
 
-  /*  private void atualizaDataSet() {
-        if (dataSet == null) dataSet = new ArrayList<>();
-        dataSet = seguroDao.listaPorValidade(true);
-    }*/
-
-  /*  private void inicializaDataBase() {
-        GhnDataBase dataBase = GhnDataBase.getInstance(requireContext());
-        seguroDao = dataBase.getRoomDespesaSeguroVidaDao();
-    }*/
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -198,16 +188,17 @@ public class SeguroVidaFragment extends Fragment {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         int posicao = -1;
         posicao = adapter.getPosicao();
-        DespesaComSeguroDeVida seguro = viewModel.getDataSet().get(posicao);
+        final DespesaComSeguroDeVida seguro = viewModel.getDataSet().get(posicao);
 
         switch (item.getItemId()) {
             case R.id.visualizaParcelas:
-                ExibeParcelasVidaDialog dialog = new ExibeParcelasVidaDialog(requireContext(), this);
+
+                final ExibeParcelasVidaDialog dialog = new ExibeParcelasVidaDialog(requireContext(), this);
                 dialog.showBottomDialog(seguro);
                 break;
 
             case R.id.renovarSeguro:
-                Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
+                final Intent intent = new Intent(this.requireContext(), FormulariosActivity.class);
                 intent.putExtra(CHAVE_FORMULARIO, VALOR_SEGURO_VIDA);
                 intent.putExtra(CHAVE_REQUISICAO, RENOVANDO);
                 intent.putExtra(CHAVE_ID, seguro.getId());

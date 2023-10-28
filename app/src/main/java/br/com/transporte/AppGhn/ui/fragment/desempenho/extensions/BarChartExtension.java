@@ -37,36 +37,34 @@ public abstract class BarChartExtension {
         return listaDeDadosAtualizada;
     }
 
-        public static List<String> removeMesesVaziosDaLista (List<BigDecimal> listaRecebida) {
-            List<String> listaDeMeses = new ArrayList<>(BarChartExtension.getMeses());
+    public static List<String> removeMesesVaziosDaLista(List<BigDecimal> listaRecebida) {
+        List<String> listaDeMeses = new ArrayList<>(BarChartExtension.getMeses());
 
-            for (int i = 11; i > -1; i--) {
-                int compare = listaRecebida.get(i).compareTo(BigDecimal.ZERO);
-                if (compare == 0) {
-                    listaDeMeses.remove(i);
-                } else {
-                    break;
-                }
+        for (int i = 11; i > -1; i--) {
+            int compare = listaRecebida.get(i).compareTo(BigDecimal.ZERO);
+            if (compare == 0) {
+                listaDeMeses.remove(i);
+            } else {
+                break;
             }
-
-            return listaDeMeses;
         }
 
-        @NonNull
-        public static List<BigDecimal> filtraListaParaExibicao (int ano, TipoDeRequisicao tipo, Long id, Context context){
-            List<BigDecimal> listaInterna = new ArrayList<>();
-            BarCharCalculosExtension barCharCalculosExtension = new BarCharCalculosExtension(context);
-
-            HashMap<Integer, BigDecimal> mapComValoresMensaisCalculados = barCharCalculosExtension.getHashMap_ChaveMes_ValorResultado(ano, tipo, id);
-
-
-
-            for (int i = 0; i < mapComValoresMensaisCalculados.size(); i++) {
-                listaInterna.add(mapComValoresMensaisCalculados.get(i));
-            }
-
-            return listaInterna;
-        }
-
-
+        return listaDeMeses;
     }
+
+    @NonNull
+    public static List<BigDecimal> filtraListaParaExibicao(int ano, TipoDeRequisicao tipo, Long id, Context context) {
+        List<BigDecimal> listaInterna = new ArrayList<>();
+        BarCharCalculosExtension barCharCalculosExtension = new BarCharCalculosExtension(context);
+
+        HashMap<Integer, BigDecimal> mapComValoresMensaisCalculados = barCharCalculosExtension.getHashMap_ChaveMes_ValorResultado(ano, tipo, id);
+
+        for (int i = 0; i < mapComValoresMensaisCalculados.size(); i++) {
+            listaInterna.add(mapComValoresMensaisCalculados.get(i));
+        }
+
+        return listaInterna;
+    }
+
+
+}

@@ -27,7 +27,7 @@
                 android:id="@+id/frag_resumo_total_receber_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total a Receber"
+                android:text="@string/total_a_receber"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="R$ 1.050,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -93,7 +93,7 @@
                                 android:id="@+id/textView7"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Acumulado"
+                                android:text="@string/acumulado"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
@@ -106,7 +106,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="6dp"
-                                android:text="R$ 7.000,00"
+                                tools:text="@tools:sample/us_zipcodes"
                                 android:textColor="@color/white"
                                 android:textSize="14sp"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -144,7 +144,7 @@
                                 android:id="@+id/textView9"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Já recebido"
+                                android:text="@string/j_recebido"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -155,7 +155,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="6dp"
-                                android:text="R$ 5.500,00"
+                                tools:text="@tools:sample/us_zipcodes"
                                 android:textColor="@color/white"
                                 android:textSize="14sp" />
 
@@ -204,7 +204,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Não encontrei nada aqui."
+                    android:text="@string/n_o_encontrei_nada_aqui"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -214,7 +214,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
 
                     android:orientation="vertical">
 
@@ -249,7 +249,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:gravity="center"
-                                android:text="01/01/23"
+                                tools:text="@tools:sample/date/ddmmyy"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -266,11 +266,11 @@
 
                             <TextView
                                 android:id="@+id/frag_resumo_mes_dt_final"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="02/05/23"
+                                tools:text="@tools:sample/date/ddmmyy"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -331,10 +331,10 @@
 
                                         <TextView
                                             android:id="@+id/textView17"
-                                            android:layout_width="match_parent"
+                                            android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Comissão a receber"
+                                            android:text="@string/comiss_o_a_receber"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -345,7 +345,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 1.500,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/cor_documentos"
                                             android:textSize="14sp"
                                             android:textStyle="bold" />
@@ -368,10 +368,10 @@
 
                                         <TextView
                                             android:id="@+id/textView11"
-                                            android:layout_width="wrap_content"
+                                            android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Reembolso"
+                                            android:text="@string/reembolso"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -382,7 +382,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 350,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/cor_documentos"
                                             android:textSize="14sp"
                                             android:textStyle="bold" />
@@ -405,10 +405,10 @@
 
                                         <TextView
                                             android:id="@+id/textView13"
-                                            android:layout_width="match_parent"
+                                            android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Adiantamento"
+                                            android:text="@string/adiantamento"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -419,7 +419,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 800,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/alizarin"
                                             android:textSize="14sp"
                                             android:textStyle="bold" />
@@ -503,7 +503,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Frete Bruto"
+                                            android:text="@string/frete_bruto"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -514,7 +514,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 1.500,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
 
@@ -539,7 +539,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Descontos"
+                                            android:text="@string/descontos"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -550,7 +550,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 350,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>
@@ -574,7 +574,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Frete Liquido"
+                                            android:text="@string/frete_liquido"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -585,7 +585,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 800,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>
@@ -668,7 +668,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Abast. Total"
+                                            android:text="@string/abast_total"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -679,7 +679,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 1.500,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
 
@@ -704,7 +704,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Litragem total"
+                                            android:text="@string/litragem_total"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -715,7 +715,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text=" 550,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>
@@ -739,7 +739,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Km percorrido"
+                                            android:text="@string/km_percorrido"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -750,7 +750,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="3.000,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>
@@ -833,7 +833,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Despesa Total"
+                                            android:text="@string/despesa_total"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -844,7 +844,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 500,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
 
@@ -869,7 +869,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Reembolso"
+                                            android:text="@string/reembolso"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -880,7 +880,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 300,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>
@@ -904,7 +904,7 @@
                                             android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             android:layout_weight="1"
-                                            android:text="Sem reembolso"
+                                            android:text="@string/sem_reembolso"
                                             android:textColor="@color/white"
                                             android:textSize="16sp"
                                             android:textStyle="bold" />
@@ -915,7 +915,7 @@
                                             android:layout_height="wrap_content"
                                             android:layout_gravity="center"
                                             android:gravity="end"
-                                            android:text="R$ 200,00"
+                                            tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
                                             android:textSize="14sp" />
                                     </LinearLayout>

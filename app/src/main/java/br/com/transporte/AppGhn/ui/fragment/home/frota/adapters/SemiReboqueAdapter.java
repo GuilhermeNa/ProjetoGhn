@@ -1,5 +1,6 @@
 package br.com.transporte.AppGhn.ui.fragment.home.frota.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
     private final List<SemiReboque> copiaDataSet_reboque;
     private final List<Cavalo> listaCavalos;
     private OnItemClickListener onItemClickListener;
-    private ViewHolder holder;
+
     public SemiReboqueAdapter(Context context, List<SemiReboque> copiaDataSet_reboque, List<Cavalo> listaCavalos) {
         this.context = context;
         this.copiaDataSet_reboque = copiaDataSet_reboque;
@@ -69,7 +70,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
     @NonNull
     @Override
     public SemiReboqueAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_semireboque, parent, false);
+        final View viewCriada = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_semireboque, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -79,8 +80,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SemiReboqueAdapter.ViewHolder holder, int position) {
-        this.holder = holder;
-        SemiReboque sr = copiaDataSet_reboque.get(position);
+        final SemiReboque sr = copiaDataSet_reboque.get(position);
         configuraUi(holder);
         vincula(holder, sr);
         configuraClickListeners(holder, sr);
@@ -102,7 +102,7 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
     private void configuraClickListeners(@NonNull ViewHolder holder, SemiReboque sr) {
         holder.placaEdit.setOnClickListener(v -> onItemClickListener.onEditaSrClick(sr.getId()));
         holder.alteraRefCavaloImgIc.setOnClickListener(v -> {
-            AlteraSemiReboqueDoCavalo dialog = new AlteraSemiReboqueDoCavalo(context, sr, listaCavalos);
+            final AlteraSemiReboqueDoCavalo dialog = new AlteraSemiReboqueDoCavalo(context, sr, listaCavalos);
             dialog.dialogAlteraSrCavalo();
             dialog.setDialogAlteraSrCallBack(new AlteraSemiReboqueDoCavalo.DialogAlteraSrCallBack() {
                 public void quandoFalhaEmAlterarSr(String txt) {
@@ -127,12 +127,11 @@ public class SemiReboqueAdapter extends RecyclerView.Adapter<SemiReboqueAdapter.
 
     //---------------------------------------- Metodos publicos ------------------------------------
 
+    @SuppressLint("NotifyDataSetChanged")
     public void atualiza(List<SemiReboque> copiaDataSet_reboque) {
         this.copiaDataSet_reboque.clear();
         this.copiaDataSet_reboque.addAll(copiaDataSet_reboque);
         notifyDataSetChanged();
     }
-
-
 
 }

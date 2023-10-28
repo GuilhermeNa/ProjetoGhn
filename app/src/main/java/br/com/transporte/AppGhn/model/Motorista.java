@@ -1,7 +1,7 @@
 package br.com.transporte.AppGhn.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
@@ -16,20 +16,28 @@ public class Motorista implements Serializable {
     private LocalDate cnhValidade, dataContratacao, dataNascimento;
     private BigDecimal salarioBase, percentualComissao, salarioRecebido;
 
-    public Motorista(LocalDate dataNascimento, String img, String nome, String cpf, String cnh, LocalDate cnhValidade, LocalDate dataContratacao, BigDecimal salarioBase) {
-        this.dataNascimento = dataNascimento;
-        this.img = img;
-        this.nome = nome;
-        this.cpf = cpf;
-        this.cnh = cnh;
-        this.cnhValidade = cnhValidade;
-        this.dataContratacao = dataContratacao;
-        this.salarioBase = salarioBase;
+    public Motorista() {}
+
+    @NonNull
+    @Override
+    public String toString() {
+        final String[] arrayDoNome = nome.split(" ");
+
+        final String nome = arrayDoNome[0];
+        final String sobreNome = arrayDoNome[1];
+
+        final String nomeESobreNome;
+        if(sobreNome != null){
+            nomeESobreNome = nome + " " + sobreNome;
+        } else {
+            nomeESobreNome = nome;
+        }
+
+        return nomeESobreNome;
     }
 
-    public Motorista() {
+    //----------------------------------------------------------------------------------------------
 
-    }
 
     public String getNome() {
         return nome;

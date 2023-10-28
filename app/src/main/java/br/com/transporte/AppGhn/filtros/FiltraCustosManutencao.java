@@ -52,7 +52,7 @@ public class FiltraCustosManutencao {
                 .collect(Collectors.toList());
     }
 
-    public static List<CustosDeManutencao> listaPorMes(@NonNull List<CustosDeManutencao> dataSet, int mes){
+    public static List<CustosDeManutencao> listaDoMesSolicitado(@NonNull List<CustosDeManutencao> dataSet, int mes){
         return dataSet.stream()
                 .filter(c -> c.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

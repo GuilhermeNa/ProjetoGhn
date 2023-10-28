@@ -29,6 +29,9 @@ public interface RoomCavaloDao {
     @Query("SELECT * FROM cavalo WHERE id = :cavaloId")
     LiveData<Cavalo> localizaPeloId(Long cavaloId);
 
+    @Query("SELECT * FROM cavalo WHERE id = :cavaloId")
+    Cavalo localizaPeloIdParaTask(Long cavaloId);
+
     @Query("SELECT * FROM cavalo WHERE placa = :placa")
     Cavalo localizaPelaPlaca(String placa);
 

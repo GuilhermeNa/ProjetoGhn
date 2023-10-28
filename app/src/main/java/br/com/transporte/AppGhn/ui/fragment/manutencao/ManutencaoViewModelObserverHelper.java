@@ -1,3 +1,4 @@
+/*
 package br.com.transporte.AppGhn.ui.fragment.manutencao;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -39,6 +40,7 @@ public class ManutencaoViewModelObserverHelper {
             long cavaloId,
             final ObserverCallback callback
     ) {
+
         viewModel.localizaCavalo(cavaloId).observe(lifecycleOwner,
                 cavalo -> {
                     if (cavalo != null) {
@@ -81,3 +83,4 @@ public class ManutencaoViewModelObserverHelper {
     }
 
 }
+*/

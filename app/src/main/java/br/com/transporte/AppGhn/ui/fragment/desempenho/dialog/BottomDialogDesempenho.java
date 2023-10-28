@@ -7,8 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
-
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -31,19 +28,16 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.databinding.BottomLayoutDesempenhoBinding;
 import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.ui.adapter.viewpager.ViewPagerDesempenhoAdapter;
-import br.com.transporte.AppGhn.dao.CavaloDAO;
 import br.com.transporte.AppGhn.util.AnimationUtil;
 import br.com.transporte.AppGhn.util.DataUtil;
 import br.com.transporte.AppGhn.util.MensagemUtil;
@@ -53,6 +47,7 @@ public class BottomDialogDesempenho {
     private BottomLayoutDesempenhoBinding binding;
     public static final String SELECIONA_TIPO = "seleciona_tipo";
     public static final String CHAVE_TIPO = "chave_tipo";
+    private List<Cavalo> dataSet;
     private final Context context;
     private final Fragment fragment;
     private Callback callback;
@@ -60,7 +55,6 @@ public class BottomDialogDesempenho {
     private SwitchMaterial switchMaterial;
     private boolean validoParaFiltrar;
     private AutoCompleteTextView autoComplete;
-    private RoomCavaloDao cavaloDao;
 
     public void setCallback(Callback callback) {
         this.callback = callback;
@@ -69,14 +63,14 @@ public class BottomDialogDesempenho {
     public BottomDialogDesempenho(Context context, Fragment fragment) {
         this.context = context;
         this.fragment = fragment;
-        cavaloDao = GhnDataBase.getInstance(context).getRoomCavaloDao();
     }
 
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
 
-    public void showBottomDialog() {
+    public void showBottomDialog(final List<Cavalo> dataSet) {
+        this.dataSet = dataSet;
         final Dialog dialog = getDialog();
         configuraParametrosDeExibicaoDoDialog(dialog);
         inicializaCamposDaView();
@@ -125,7 +119,7 @@ public class BottomDialogDesempenho {
         String placa = autoComplete.getText().toString();
 
         if (listaPlacas().contains(placa.toUpperCase(Locale.ROOT))) {
-            return cavaloDao.localizaPelaPlaca(placa).getId();
+            return FiltraCavalo.localizaPelaPlaca(dataSet, placa).getId();
         } else {
             MensagemUtil.toast(context, "Placa não encontrada.");
             validoParaFiltrar = false;
@@ -153,10 +147,10 @@ public class BottomDialogDesempenho {
         placaLayout.setVisibility(visibilidade);
         autoComplete.setVisibility(visibilidade);
 
-        if (visibilidade == VISIBLE){
+        if (visibilidade == VISIBLE) {
             AnimationUtil.defineAnimacao(context, R.anim.slide_in_right, placaLayout);
             AnimationUtil.defineAnimacao(context, R.anim.slide_in_right, autoComplete);
-        } else if (visibilidade == INVISIBLE){
+        } else if (visibilidade == INVISIBLE) {
             AnimationUtil.defineAnimacao(context, R.anim.slide_out_right, placaLayout);
             AnimationUtil.defineAnimacao(context, R.anim.slide_out_right, autoComplete);
         }
@@ -171,9 +165,7 @@ public class BottomDialogDesempenho {
 
     @NonNull
     private List<String> listaPlacas() {
-   //     return FiltraCavalo.listaDePlacas(cavaloDao.todos());
-        return new ArrayList<>();
-
+        return FiltraCavalo.listaDePlacas(dataSet);
     }
 
     private void configuraLayoutAno() {

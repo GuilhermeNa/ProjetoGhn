@@ -47,4 +47,11 @@ public interface RoomDespesaCertificadoDao {
     @Query("SELECT * FROM DespesaCertificado WHERE valido = :isValido AND refCavaloId = :refCavaloId AND tipoCertificado = :tipoCertificado")
     List<DespesaCertificado> buscaDuplicidadeQuandoDespesaDireta(boolean isValido, Long refCavaloId, TipoCertificado tipoCertificado);
 
+    @Query("SELECT * FROM DespesaCertificado")
+    List<DespesaCertificado> buscaTodosParaTask();
+
+    @Query("SELECT * FROM DespesaCertificado WHERE refCavaloId = :cavaloId")
+    List<DespesaCertificado> buscaPorCavaloIdParaTask(Long cavaloId);
+
+
 }

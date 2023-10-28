@@ -3,20 +3,20 @@ package br.com.transporte.AppGhn.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.MappedRecylerData;
 
-public class ObjetoTemporario_representaCavaloDAO {
+public class CavaloDesempenhoDao {
 
-    private final static List<ObjetoTemporario_representaCavalo> dao = new ArrayList<>();
+    private final static List<MappedRecylerData> dao = new ArrayList<>();
 
     //---------------------------------- Manipula dao ----------------------------------------------
 
-    public void adiciona(ObjetoTemporario_representaCavalo detalhes){
+    public void adiciona(MappedRecylerData detalhes){
         dao.add(detalhes);
     }
 
-    public void edita(ObjetoTemporario_representaCavalo detalhes) {
-        ObjetoTemporario_representaCavalo detalheLocalizado = localizaPeloid(detalhes.getId());
+    public void edita(MappedRecylerData detalhes) {
+        MappedRecylerData detalheLocalizado = localizaPeloid(detalhes.getCavaloId());
         if(detalheLocalizado != null){
             int posicaoDetalhe = dao.indexOf(detalheLocalizado);
             dao.set(posicaoDetalhe, detalhes);
@@ -24,7 +24,7 @@ public class ObjetoTemporario_representaCavaloDAO {
     }
 
     public void deleta(Long detalheId) {
-        ObjetoTemporario_representaCavalo detalheLocalizado = localizaPeloid(detalheId);
+        MappedRecylerData detalheLocalizado = localizaPeloid(detalheId);
         if(detalheLocalizado != null){
             dao.remove(detalheLocalizado);
         }
@@ -32,21 +32,21 @@ public class ObjetoTemporario_representaCavaloDAO {
 
     public void clear(){
             dao.clear();
-            ObjetoTemporario_representaCavalo.resetaAcumulado();
+        MappedRecylerData.resetaAcumulado();
     }
 
     //---------------------------------- Retorna Lista ---------------------------------------------
 
-    public List<ObjetoTemporario_representaCavalo> listaTodos(){
+    public List<MappedRecylerData> listaTodos(){
         return new ArrayList<>(dao);
     }
 
     //---------------------------------- Outros Metodos ---------------------------------------------
 
-    public ObjetoTemporario_representaCavalo localizaPeloid(Long detalheId){
-        ObjetoTemporario_representaCavalo detalheLocalizado = null;
-        for(ObjetoTemporario_representaCavalo d: dao){
-            if(d.getId() == detalheId){
+    public MappedRecylerData localizaPeloid(Long detalheId){
+        MappedRecylerData detalheLocalizado = null;
+        for(MappedRecylerData d: dao){
+            if(d.getCavaloId() == detalheId){
                 detalheLocalizado = d;
             }
         }

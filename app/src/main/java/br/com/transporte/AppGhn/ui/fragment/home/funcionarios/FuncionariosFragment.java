@@ -80,6 +80,7 @@ public class FuncionariosFragment extends Fragment {
                 }
             }
     );
+    private LinearLayout buscaVazia;
 
     //----------------------------------------------------------------------------------------------
     //                                          OnCreate                                          ||
@@ -93,9 +94,9 @@ public class FuncionariosFragment extends Fragment {
     }
 
     private void inicializaViewModel() {
-        MotoristaRepository repository = new MotoristaRepository(requireContext());
-        FuncionariosViewModelFactory factory = new FuncionariosViewModelFactory(repository);
-        ViewModelProvider provedor = new ViewModelProvider(this, factory);
+        final MotoristaRepository repository = new MotoristaRepository(requireContext());
+        final FuncionariosViewModelFactory factory = new FuncionariosViewModelFactory(repository);
+        final ViewModelProvider provedor = new ViewModelProvider(this, factory);
         viewModel = provedor.get(FuncionariosViewModel.class);
     }
 
@@ -106,7 +107,8 @@ public class FuncionariosFragment extends Fragment {
                     String erro = resource.getErro();
                     int listaSize = 0;
                     if (listaMotorista != null) {
-                        atualiza(listaMotorista);
+                        viewModel.setDataSet(listaMotorista);
+                        atualiza();
                         listaSize = listaMotorista.size();
                     }
                     if (erro != null) {
@@ -116,15 +118,15 @@ public class FuncionariosFragment extends Fragment {
                 });
     }
 
-    private void atualiza(List<Motorista> listaMotorista) {
-        if (adapter != null)
-            adapter.atualiza(listaMotorista);
+    private void atualiza() {
+        if (viewModel.getDataSet() != null)
+            adapter.atualiza(viewModel.getDataSet());
         if (menuProviderHelper != null)
-            menuProviderHelper.atualizaDataSet(listaMotorista);
+            menuProviderHelper.atualizaDataSet(viewModel.getDataSet());
     }
 
     private void configuraExibicaoDeAlertaParaListaVazia(int listaSize) {
-        LinearLayout buscaVazia = binding.buscaVazia;
+        buscaVazia = binding.buscaVazia;
         ExibirResultadoDaBusca_sucessoOuAlerta.configura(listaSize, buscaVazia, recycler, VIEW_INVISIBLE);
     }
 
@@ -155,7 +157,7 @@ public class FuncionariosFragment extends Fragment {
     }
 
     private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
+        final Toolbar toolbar = binding.toolbar;
         toolbarUtil = new ToolbarUtil(FUNCIONARIOS);
         toolbarUtil.configuraToolbar(requireActivity(), toolbar);
     }
@@ -216,6 +218,16 @@ public class FuncionariosFragment extends Fragment {
             intent.putExtra(ConstantesFragment.CHAVE_FORMULARIO, ConstantesFragment.VALOR_MOTORISTA);
             activityResultLauncher.launch(intent);
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!viewModel.getDataSet().isEmpty()){
+            adapter.atualiza(viewModel.getDataSet());
+            menuProviderHelper.atualizaDataSet(viewModel.getDataSet());
+            ExibirResultadoDaBusca_sucessoOuAlerta.configura(viewModel.getDataSet().size(), buscaVazia, recycler, VIEW_INVISIBLE);
+        }
     }
 
 }

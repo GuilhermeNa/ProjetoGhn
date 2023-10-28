@@ -22,66 +22,73 @@ public class ManutencaoDetalhesViewModel extends ViewModel {
     private final CavaloRepository cavaloRepository;
     private final ManutencaoRepository manutencaoRepository;
 
-    public ManutencaoDetalhesViewModel(MotoristaRepository motoristaRepository, CavaloRepository cavaloRepository, ManutencaoRepository manutencaoRepository) {
+    public List<CustosDeManutencao> dataSet;
+    public Motorista motorista;
+    public long cavaloId;
+    public Cavalo cavalo;
+
+    public LocalDate dataInicial =
+            DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
+    public LocalDate dataFinal =
+            DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
+
+    public ManutencaoDetalhesViewModel(
+            final MotoristaRepository motoristaRepository,
+            final CavaloRepository cavaloRepository,
+            final ManutencaoRepository manutencaoRepository
+    ) {
         this.motoristaRepository = motoristaRepository;
         this.cavaloRepository = cavaloRepository;
         this.manutencaoRepository = manutencaoRepository;
     }
 
     //----------------------------------------------------------------------------------------------
-    private List<CustosDeManutencao> dataSet_base;
-    private LocalDate dataInicial = DataUtil.capturaPrimeiroDiaDoMesParaConfiguracaoInicial();
-    private LocalDate dataFinal = DataUtil.capturaDataDeHojeParaConfiguracaoInicial();
 
-    public LocalDate getDataInicial() {
-        return dataInicial;
-    }
-
-    public void setDataInicial(LocalDate dataInicial) {
-        this.dataInicial = dataInicial;
-    }
-
-    public LocalDate getDataFinal() {
-        return dataFinal;
-    }
-
-    public void setDataFinal(LocalDate dataFinal) {
-        this.dataFinal = dataFinal;
-    }
-
-    public List<CustosDeManutencao> getDataSet_base() {
-        return dataSet_base;
-    }
-
-    public void setDataSet_base(List<CustosDeManutencao> dataSet_base) {
-        this.dataSet_base = dataSet_base;
-    }
+    private final MutableLiveData<List<CustosDeManutencao>> _dataSetFiltrada = new MutableLiveData<>(null);
+    public LiveData<List<CustosDeManutencao>> dataSetFiltrada = _dataSetFiltrada;
 
     //--------------------------------------------------------------------------------------------------
 
-    public LiveData<Cavalo> localizaCavalo(final long cavaloId) {
+    public LiveData<Cavalo> localizaCavalo() {
         if (cavaloId > 0)
             return cavaloRepository.localizaCavaloPeloId(cavaloId);
         else
             return new MutableLiveData<>(null);
     }
 
-    public LiveData<Motorista> localizaMotorista(final long motoristaId) {
-        if (motoristaId > 0)
+    public LiveData<Motorista> localizaMotorista() {
+        final Long motoristaId = cavalo.getRefMotoristaId();
+        if (motoristaId != null)
             return motoristaRepository.localizaMotorista(motoristaId);
         else
             return new MutableLiveData<>(null);
     }
 
-    public LiveData<Resource<List<CustosDeManutencao>>> buscaManutencaoPorCavaloId(final long cavaloId) {
-        if (cavaloId > 0) {
-            return manutencaoRepository.buscaManutencaoPorCavaloId(cavaloId);
+    public LiveData<Resource<List<CustosDeManutencao>>> buscaManutencaoPorCavaloId() {
+        if (this.cavaloId > 0) {
+            return manutencaoRepository.buscaManutencaoPorCavaloId(this.cavaloId);
         } else {
             return new MutableLiveData<>(new Resource<>(null, "Cavalo não encontrado"));
         }
     }
 
-    public List<CustosDeManutencao> filtraPorData() {
-        return FiltraCustosManutencao.listaPorData(getDataSet_base(), getDataInicial(), getDataFinal());
+    public void aplicaFiltroDeData() {
+        if (dataSet != null
+                && !dataSet.isEmpty()
+        ) {
+            final List<CustosDeManutencao> dataSetFiltrada =
+                    FiltraCustosManutencao.listaPorData(dataSet, dataInicial, dataFinal);
+            _dataSetFiltrada.setValue(dataSetFiltrada);
+        }
     }
+
+    public void atualizaData(
+            final LocalDate dataInicial,
+            final LocalDate dataFinal
+    ) {
+        this.dataInicial = dataInicial;
+        this.dataFinal = dataFinal;
+    }
+
+
 }

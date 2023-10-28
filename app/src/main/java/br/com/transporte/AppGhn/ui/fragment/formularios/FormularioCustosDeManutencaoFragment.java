@@ -7,6 +7,7 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -187,7 +188,9 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
     public void editaObjetoNoBancoDeDados() {
         viewModel.salva(manutencao).observe(this,
                 ignore -> {
-                    requireActivity().setResult(RESULT_EDIT);
+                    final Intent intent = new Intent();
+                    intent.putExtra("OBJ_ENVIADO", manutencao);
+                    requireActivity().setResult(RESULT_EDIT, intent);
                     requireActivity().finish();
                 });
     }
@@ -210,7 +213,10 @@ public class FormularioCustosDeManutencaoFragment extends FormularioBaseFragment
         configuraObjetoNaCriacao();
         viewModel.salva(manutencao).observe(this,
                 id -> {
-                    requireActivity().setResult(RESULT_OK);
+                    final Intent intent = new Intent();
+                    manutencao.setId(id);
+                    intent.putExtra("OBJ_ENVIADO", manutencao);
+                    requireActivity().setResult(RESULT_OK, intent);
                     requireActivity().finish();
                 });
     }

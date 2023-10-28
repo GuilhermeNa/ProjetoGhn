@@ -2,7 +2,6 @@ package br.com.transporte.AppGhn.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +14,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.MappedRecylerData;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriodoAdapter.ViewHolder>{
     private final Context context;
-    private final List<ObjetoTemporario_representaCavalo> dataSet;
+    private final List<MappedRecylerData> dataSet;
 
-    public DetalhesPeriodoAdapter(Context context, List<ObjetoTemporario_representaCavalo> dataSet) {
+    public DetalhesPeriodoAdapter(Context context, List<MappedRecylerData> dataSet) {
         this.context = context;
         this.dataSet = dataSet;
     }
@@ -32,14 +31,14 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
     //----------------------------------------------------------------------------------------------
 
      static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView placaTxt, percentualTxt, motoristaTxt, valorTxt;
+        private final TextView campoPlaca, campoPercentual, campoMotorista, campoValor;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            placaTxt = itemView.findViewById(R.id.rec_detalhes_periodo_placa);
-            valorTxt = itemView.findViewById(R.id.rec_detalhes_periodo_valor);
-            percentualTxt = itemView.findViewById(R.id.rec_detalhes_periodo_percentual);
-            motoristaTxt = itemView.findViewById(R.id.rec_detalhes_periodo_motorista);
+            campoPlaca = itemView.findViewById(R.id.rec_detalhes_periodo_placa);
+            campoValor = itemView.findViewById(R.id.rec_detalhes_periodo_valor);
+            campoPercentual = itemView.findViewById(R.id.rec_detalhes_periodo_percentual);
+            campoMotorista = itemView.findViewById(R.id.rec_detalhes_periodo_motorista);
         }
 
     }
@@ -51,7 +50,7 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
     @NonNull
     @Override
     public DetalhesPeriodoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_detalhes_periodo, parent, false);
+        final View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_detalhes_periodo, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -61,8 +60,8 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
 
     @Override
     public void onBindViewHolder(@NonNull DetalhesPeriodoAdapter.ViewHolder holder, int position) {
-        ObjetoTemporario_representaCavalo detalhes = dataSet.get(position);
-        vincula(holder, detalhes);
+        final MappedRecylerData cavaloDesempenhoMapped = dataSet.get(position);
+        vincula(holder, cavaloDesempenhoMapped);
     }
 
     @Override
@@ -74,18 +73,17 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
     // -> Vincula                                 ||
     //----------------------------------------------
 
-    private void vincula(@NonNull ViewHolder holder, @NonNull ObjetoTemporario_representaCavalo detalhes) {
-        holder.placaTxt.setText(detalhes.getPlaca());
-        holder.valorTxt.setText(FormataNumerosUtil.formataMoedaPadraoBr(detalhes.getValor()));
-        holder.motoristaTxt.setText(detalhes.getNome());
+    private void vincula(@NonNull ViewHolder holder, @NonNull MappedRecylerData cavaloDesempenhoMapped) {
+        holder.campoPlaca.setText(cavaloDesempenhoMapped.getPlaca());
+        holder.campoValor.setText(FormataNumerosUtil.formataMoedaPadraoBr(cavaloDesempenhoMapped.getValor()));
+        holder.campoMotorista.setText(cavaloDesempenhoMapped.getNome());
 
-        String percentual = formataPercentual(detalhes.getPercentual());
-        holder.percentualTxt.setText(percentual);
+        final String percentual = formataPercentual(cavaloDesempenhoMapped.getPercentual());
+        holder.campoPercentual.setText(percentual);
     }
 
     @NonNull
     private String formataPercentual(@NonNull BigDecimal valor) {
-        Log.d("teste", "getPercentual"+valor);
         String percentual;
         try{
             percentual = valor.toPlainString();
@@ -100,7 +98,7 @@ public class DetalhesPeriodoAdapter extends RecyclerView.Adapter <DetalhesPeriod
     //--------------------------------------- Metodos publicos -------------------------------------
 
     @SuppressLint("NotifyDataSetChanged")
-    public void atualiza (List<ObjetoTemporario_representaCavalo> dataSet){
+    public void atualiza (final List<MappedRecylerData> dataSet){
         this.dataSet.clear();
         this.dataSet.addAll(dataSet);
         notifyDataSetChanged();

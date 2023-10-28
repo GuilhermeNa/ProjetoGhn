@@ -20,9 +20,10 @@ import br.com.transporte.AppGhn.R;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
 import br.com.transporte.AppGhn.model.SemiReboque;
+import br.com.transporte.AppGhn.tasks.cavalo.LocalizaPeloIdTask;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
-public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHolder>{
+public class FrotaSrAdapter extends RecyclerView.Adapter<FrotaSrAdapter.ViewHolder> {
     private final FrotaFragment context;
     private final List<SemiReboque> dataSet;
     private final RoomCavaloDao cavaloDao;
@@ -42,16 +43,16 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     //                                          ViewHolder                                        ||
     //----------------------------------------------------------------------------------------------
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
-        private final TextView placaSrTxtView, placaCavaloRefTxtView;
-        private final ImageView srImgView, cavaloImgView;
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView campoPlacaReboque, campoPlacaCavalo;
+        private final ImageView campoReboqueImg, campoCavaloImg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            placaSrTxtView = itemView.findViewById(R.id.rec_item_sr_txt);
-            placaCavaloRefTxtView = itemView.findViewById(R.id.rec_item_sr_ref_cavalo_txt);
-            srImgView = itemView.findViewById(R.id.rec_item_sr_img);
-            cavaloImgView = itemView.findViewById(R.id.rec_item_sr_ref_cavalo_img);
+            campoPlacaReboque = itemView.findViewById(R.id.rec_item_sr_txt);
+            campoPlacaCavalo = itemView.findViewById(R.id.rec_item_sr_ref_cavalo_txt);
+            campoReboqueImg = itemView.findViewById(R.id.rec_item_sr_img);
+            campoCavaloImg = itemView.findViewById(R.id.rec_item_sr_ref_cavalo_img);
         }
     }
 
@@ -62,7 +63,7 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     @NonNull
     @Override
     public FrotaSrAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context.requireContext()).inflate(R.layout.recycler_item_sr, parent, false);
+        final View viewCriada = LayoutInflater.from(context.requireContext()).inflate(R.layout.recycler_item_sr, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -72,14 +73,14 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
 
     @Override
     public void onBindViewHolder(@NonNull FrotaSrAdapter.ViewHolder holder, int position) {
-    SemiReboque sr = dataSet.get(position);
-    configuraUi(holder);
-    vincula(holder, sr);
+        final SemiReboque sr = dataSet.get(position);
+        configuraUi(holder);
+        vincula(holder, sr);
     }
 
     private void configuraUi(@NonNull ViewHolder holder) {
-        holder.srImgView.setColorFilter(Color.parseColor("#FFFFFFFF"));
-        holder.cavaloImgView.setColorFilter(Color.parseColor("#FFFFFFFF"));
+        holder.campoReboqueImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
+        holder.campoCavaloImg.setColorFilter(Color.parseColor("#FFFFFFFF"));
     }
 
     @Override
@@ -88,15 +89,14 @@ public class FrotaSrAdapter extends RecyclerView.Adapter <FrotaSrAdapter.ViewHol
     }
 
     private void vincula(@NonNull ViewHolder holder, @NonNull SemiReboque sr) {
-    /*    LocalizaCavaloTask localizaCavaloTask = new LocalizaCavaloTask(executor, handler);
-        localizaCavaloTask.solicitaBusca(cavaloDao, sr.getRefCavaloId(), cavalo -> {
-            String placa = cavalo.getPlaca();
-            holder.placaCavaloRefTxtView.setText(placa);
-            holder.placaSrTxtView.setText(sr.getPlaca());
-        });*/
-        holder.placaCavaloRefTxtView.setText("placa");
-        holder.placaSrTxtView.setText(sr.getPlaca());
-
+        LocalizaPeloIdTask localizaCavaloTask = new LocalizaPeloIdTask(executor, handler);
+        localizaCavaloTask.solicitaBusca(cavaloDao, sr.getRefCavaloId(),
+                cavalo -> {
+                    if(cavalo != null){
+                        holder.campoPlacaCavalo.setText(cavalo.getPlaca());
+                        holder.campoPlacaReboque.setText(sr.getPlaca());
+                    }
+                });
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------

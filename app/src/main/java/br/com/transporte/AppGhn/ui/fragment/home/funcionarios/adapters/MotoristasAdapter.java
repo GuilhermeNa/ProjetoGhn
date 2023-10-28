@@ -21,7 +21,7 @@ import br.com.transporte.AppGhn.util.OnItemClickListener_getId;
 
 public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.ViewHolder> {
     private final FuncionariosFragment context;
-    private List<Motorista> dataSet;
+    private final List<Motorista> dataSet;
     private OnItemClickListener_getId onItemClickListener;
 
     public MotoristasAdapter(FuncionariosFragment context, List<Motorista> lista) {
@@ -82,7 +82,7 @@ public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.Vi
             e.printStackTrace();
             holder.fotoImgView.setImageResource(R.drawable.img_motorista);
         }
-        holder.nomeTxtView.setText(motorista.getNome());
+        holder.nomeTxtView.setText(motorista.toString());
     }
 
     //------------------------------------- Metodos Publicos ---------------------------------------
@@ -91,12 +91,6 @@ public class MotoristasAdapter extends RecyclerView.Adapter<MotoristasAdapter.Vi
     public void atualiza(List<Motorista> lista) {
         this.dataSet.clear();
         this.dataSet.addAll(lista);
-        notifyDataSetChanged();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public void setListaFiltrada(List<Motorista> listaFiltrada){
-        this.dataSet = listaFiltrada;
         notifyDataSetChanged();
     }
 

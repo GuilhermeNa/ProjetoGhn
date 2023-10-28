@@ -1,20 +1,17 @@
 package br.com.transporte.AppGhn.ui.fragment.media.helpers;
 
 import android.content.Context;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.ui.adapter.MediaAdapter_Abastecimentos;
@@ -54,7 +51,7 @@ public class MediaAdapterAbastecimentoHelper {
     //----------------------------------------------------------------------------------------------
 
     public void configuraAdapter() {
-        adapter = new MediaAdapter_Abastecimentos(getListaDeAbastecimentosComFlags(primeiroCavaloExibido.getId()), context);
+        adapter = new MediaAdapter_Abastecimentos(new ArrayList<>(), context);
         recyclerDeAbastecimentos.setAdapter(adapter);
 
         adapter.setOnItemClickListener((posicao, abastecimento) -> {
@@ -64,15 +61,6 @@ public class MediaAdapterAbastecimentoHelper {
             }
             adapterCallback.onClick(flag, abastecimento);
         });
-    }
-
-    private List<CustosDeAbastecimento> getListaDeAbastecimentosComFlags(Long cavaloId) {
-        RoomCustosAbastecimentoDao abastecimentoDao = GhnDataBase.getInstance(context).getRoomCustosAbastecimentoDao();
-        /*return abastecimentoDao.todos().stream()
-                .filter(c -> c.getRefCavaloId() == cavaloId)
-                .filter(CustosDeAbastecimento::isFlagAbastecimentoTotal)
-                .collect(Collectors.toList());*/
-        return new ArrayList<>();
     }
 
     private String armazenaItemSelecionado(CustosDeAbastecimento abastecimento) {
@@ -90,12 +78,12 @@ public class MediaAdapterAbastecimentoHelper {
     //                                          Metodos Publicos                                  ||
     //----------------------------------------------------------------------------------------------
 
-    public void atualizaAdapterDeAbastecimentosAoSelecionarNovoCavalo(Long cavaloId) {
+    public void atualizaAdapterDeAbastecimentosAoSelecionarNovoCavalo(List<CustosDeAbastecimento> dataSet) {
         resetaDataSetEFlags(flagAbastecimento1);
         resetaDataSetEFlags(flagAbastecimento2);
         if (flagAbastecimento1 != null) flagAbastecimento1 = null;
         if (flagAbastecimento2 != null) flagAbastecimento2 = null;
-        adapter.atualiza(getListaDeAbastecimentosComFlags(cavaloId));
+        adapter.atualiza(dataSet);
     }
 
     private void resetaDataSetEFlags(CustosDeAbastecimento flagAbastecimento) {
@@ -108,7 +96,7 @@ public class MediaAdapterAbastecimentoHelper {
         }
     }
 
-    public void removeCardDaViewEInsereNovamenteNaLista(String flagSelecionada) {
+    public void removeCardDaViewEInsereNovamenteNaLista(@NonNull String flagSelecionada) {
         int posicaoAInserir;
         dataSet = adapter.getDataSet();
         switch (flagSelecionada) {
@@ -174,7 +162,8 @@ class ReinsereNoDataset {
         return dtSize == 0;
     }
 
-    private static int verificaTamanhoDaLista(List<CustosDeAbastecimento> dataSet) {
+    @Contract(pure = true)
+    private static int verificaTamanhoDaLista(@NonNull List<CustosDeAbastecimento> dataSet) {
         return dataSet.size();
     }
 }

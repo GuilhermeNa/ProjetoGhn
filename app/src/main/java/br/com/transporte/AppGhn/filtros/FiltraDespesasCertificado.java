@@ -51,7 +51,7 @@ public class FiltraDespesasCertificado {
                 .collect(Collectors.toList());
     }
 
-    public static List<DespesaCertificado> listaPorMes(@NonNull List<DespesaCertificado> dataSet, int mes) {
+    public static List<DespesaCertificado> listaDoMesSolicitado(@NonNull List<DespesaCertificado> dataSet, int mes) {
         return dataSet.stream()
                 .filter(d -> d.getDataDeEmissao().getMonthValue() == mes)
                 .collect(Collectors.toList());

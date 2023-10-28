@@ -31,7 +31,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.database.dao.RoomRecebimentoFreteDao;
 import br.com.transporte.AppGhn.databinding.FragmentFormularioRecebimentoFreteBinding;

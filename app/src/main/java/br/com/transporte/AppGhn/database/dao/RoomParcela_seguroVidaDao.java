@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -17,6 +18,9 @@ public interface RoomParcela_seguroVidaDao {
     @Insert
     Long adiciona(Parcela_seguroVida parcela);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void adicionaTodos(List<Parcela_seguroVida> listaParcelas);
+
     @Delete
     void deleta(Parcela_seguroVida parcela);
 
@@ -29,4 +33,9 @@ public interface RoomParcela_seguroVidaDao {
     @Update
     void substitui(Parcela_seguroVida p);
 
+    @Query("SELECT * FROM Parcela_seguroVida")
+    List<Parcela_seguroVida> buscaTodosParaTask();
+
+    @Query("SELECT * FROM Parcela_seguroVida WHERE refSeguroId = :cavaloId")
+    List<Parcela_seguroVida> buscaPorCavaloIdParaTask(Long cavaloId);
 }

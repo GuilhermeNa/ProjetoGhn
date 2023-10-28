@@ -38,4 +38,11 @@ public interface RoomParcela_seguroFrotaDao {
 
     @Query("SELECT * FROM Parcela_seguroFrota WHERE refCavaloId = :cavaloId")
     LiveData<List<Parcela_seguroFrota>> listaPeloCavaloId(Long cavaloId);
+
+    @Query("SELECT * FROM Parcela_seguroFrota")
+    List<Parcela_seguroFrota> buscaTodosParaTask();
+
+    @Query("SELECT * FROM Parcela_seguroFrota WHERE refCavaloId = :cavaloId")
+    List<Parcela_seguroFrota> buscaPorCavaloIdParaTask(Long cavaloId);
+
 }

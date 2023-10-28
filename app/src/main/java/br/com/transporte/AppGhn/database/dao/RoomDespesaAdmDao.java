@@ -34,4 +34,10 @@ public interface RoomDespesaAdmDao {
     @Query("SELECT * FROM DespesaAdm WHERE tipoDespesa = :tipo")
     LiveData<List<DespesaAdm>> buscaPorTipo(final TipoDespesa tipo);
 
+    @Query("SELECT * FROM DespesaAdm")
+    List<DespesaAdm> buscaTodosParaTask();
+
+    @Query("SELECT * FROM DespesaAdm WHERE refCavaloId = :cavaloId")
+    List<DespesaAdm> buscaPorCavaloIdParaTask(Long cavaloId);
+
 }

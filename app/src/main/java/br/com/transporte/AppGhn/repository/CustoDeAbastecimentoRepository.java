@@ -14,12 +14,10 @@ import java.util.concurrent.ExecutorService;
 import br.com.transporte.AppGhn.GhnApplication;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
-import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.tasks.custoAbastecimento.AdicionaCustoDeAbastecimentoTask;
 import br.com.transporte.AppGhn.tasks.custoAbastecimento.AtualizaCustoDeAbastecimentoTask;
 import br.com.transporte.AppGhn.tasks.custoAbastecimento.DeletaCustoDeAbastecimentoTask;
-import br.com.transporte.AppGhn.tasks.frete.AtualizaFreteTask;
 
 public class CustoDeAbastecimentoRepository {
     private final RoomCustosAbastecimentoDao dao;
@@ -57,6 +55,9 @@ public class CustoDeAbastecimentoRepository {
         return localizaAbastecimento_room(id);
     }
 
+    public LiveData<List<CustosDeAbastecimento>> buscaAbastecimentoTotalPorCavalo(final Long id){
+        return buscaAbastecimentoTotalPorCavalo_room(id);
+    }
     public LiveData<Long> adicionaAbastecimento(final CustosDeAbastecimento abastecimento) {
         final MutableLiveData<Long> liveData = new MutableLiveData<>();
         adicionaAbastecimento_room(abastecimento, new RepositoryCallback<Long>() {
@@ -151,5 +152,10 @@ public class CustoDeAbastecimentoRepository {
             callback.falha("Falha ao remover");
         }
     }
+
+    private LiveData<List<CustosDeAbastecimento>> buscaAbastecimentoTotalPorCavalo_room(final Long id){
+        return dao.listaDeAbastecimentoTotal(id, true);
+    }
+
 
 }

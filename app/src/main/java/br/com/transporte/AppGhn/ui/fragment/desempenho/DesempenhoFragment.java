@@ -6,22 +6,23 @@ import static android.view.View.VISIBLE;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_ADM;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESAS_IMPOSTOS;
 import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.DESPESA_CERTIFICADOS;
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.FRETE_BRUTO;
 import static br.com.transporte.AppGhn.model.enums.TipoMeses.MES_DEFAULT;
-import static br.com.transporte.AppGhn.util.ConstVisibilidade.VIEW_INVISIBLE;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -31,102 +32,53 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCavaloDao;
-import br.com.transporte.AppGhn.database.dao.RoomMotoristaDao;
 import br.com.transporte.AppGhn.databinding.FragmentDesempenhoBinding;
-import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
-import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
+import br.com.transporte.AppGhn.filtros.FiltraCavalo;
+import br.com.transporte.AppGhn.model.Cavalo;
+import br.com.transporte.AppGhn.model.Motorista;
+import br.com.transporte.AppGhn.repository.FragmentDesempenhoRepository;
+import br.com.transporte.AppGhn.repository.Resource;
 import br.com.transporte.AppGhn.ui.adapter.DetalhesPeriodoAdapter;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.MappedBarChartData;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.MappedRecylerData;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.extensions.InicializaObjetoQueArmazenaRequisicaoDeDadosExt;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoBarChartHelper;
-import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoDataSetHelper;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoMenuProviderHelper;
-import br.com.transporte.AppGhn.ui.fragment.desempenho.helpers.DesempenhoDataSetRecyclerHelper;
-import br.com.transporte.AppGhn.util.DataUtil;
-import br.com.transporte.AppGhn.util.ExibirResultadoDaBusca_sucessoOuAlerta;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.viewmodel.DesempenhoFragmentViewModel;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.viewmodel.DesempenhoFragmentViewModelFactory;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 import br.com.transporte.AppGhn.util.RecyclerDecoration;
+import br.com.transporte.AppGhn.util.ToolbarUtil;
 
 public class DesempenhoFragment extends Fragment {
-    public static final long REF_CAVALO_NULA = 0L;
     private FragmentDesempenhoBinding binding;
-    private TipoDeRequisicao tipoDeRequisicao;
-    private List<Object> dataSet;
-    private RoomCavaloDao cavaloDao;
-    private int anoRequisitado;
-    private List<ObjetoTemporario_representaCavalo> dataSet_recycler;
+    private DesempenhoFragmentViewModel viewModel;
     private DetalhesPeriodoAdapter adapter;
-    private SwitchMaterial switchBtn;
+    private DesempenhoBarChartHelper barChartHelper;
     private RecyclerView recyclerView;
-    private DesempenhoBarChartHelper barChart;
-    private int mesSelecionado;
-    private RoomMotoristaDao motoristaDao;
-    private DesempenhoDataSetHelper dataSetHelper;
-    private DesempenhoDataSetRecyclerHelper dataSetRecyclerHelper;
-    private GhnDataBase dataBase;
-
-    private int getMesSelecionado() {
-        return mesSelecionado;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    //                                          OnCreate                                          ||
-    //----------------------------------------------------------------------------------------------
+    private DesempenhoMenuProviderHelper menuProvider;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        inicializaDataBase();
-        inicializaRequisitosDeBuscaNoDataSet();
-        configuraDataSetBaseParaChartERecycler();
-        configuraDataSetRecyclerHelper();
-        //listaObjTemporarios = getListaObjetosTemporarios(anoRequisitado, tipoDeRequisicao, false);
+        inicializaViewModel();
+        inicializaObjetoQueArmazenaDadosDaRequisicao();
     }
 
-    private void inicializaDataBase() {
-        dataBase = GhnDataBase.getInstance(requireContext());
-        cavaloDao = dataBase.getRoomCavaloDao();
-        motoristaDao = dataBase.getRoomMotoristaDao();
+    private void inicializaViewModel() {
+        final FragmentDesempenhoRepository repository = new FragmentDesempenhoRepository(requireContext());
+        final DesempenhoFragmentViewModelFactory factory = new DesempenhoFragmentViewModelFactory(repository);
+        final ViewModelProvider provider = new ViewModelProvider(this, factory);
+        viewModel = provider.get(DesempenhoFragmentViewModel.class);
     }
 
-    private void inicializaRequisitosDeBuscaNoDataSet() {
-        tipoDeRequisicao = FRETE_BRUTO;
-        anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
-    }
-
-    private void configuraDataSetBaseParaChartERecycler() {
-        dataSetHelper = new DesempenhoDataSetHelper(requireContext());
-        dataSet = dataSetHelper.getDataSet(anoRequisitado, tipoDeRequisicao);
-    }
-
-    private void configuraDataSetRecyclerHelper() {
-    //    dataSetRecyclerHelper = new DesempenhoDataSetRecyclerHelper(getDataSet(), cavaloDao.todos(), dataBase);
-        dataSetRecyclerHelper.atualizaDataSet(tipoDeRequisicao, MES_DEFAULT.getRef(), false, anoRequisitado);
-        dataSet_recycler = dataSetRecyclerHelper.getDataSet();
-    }
-
-    private void atualizaDataSet(int ano, TipoDeRequisicao tipo) {
-        dataSet = dataSetHelper.getDataSet(ano, tipo);
-    }
-
-    private void atualizaDataSetRecycler(TipoDeRequisicao tipoRequisicao, int mes, boolean switchIsChecked) {
-        dataSetRecyclerHelper.atualizaDataSet(tipoRequisicao, mes, switchIsChecked, anoRequisitado);
-        dataSet_recycler = dataSetRecyclerHelper.getDataSet();
-    }
-
-    @NonNull
-    private List<Object> getDataSet() {
-        return new ArrayList<>(dataSet);
-    }
-
-    @NonNull
-    private List<ObjetoTemporario_representaCavalo> getDataSetRecycler() {
-        return new ArrayList<>(dataSet_recycler);
+    private void inicializaObjetoQueArmazenaDadosDaRequisicao() {
+        viewModel.dataRequest =
+                InicializaObjetoQueArmazenaRequisicaoDeDadosExt.run();
     }
 
     //----------------------------------------------------------------------------------------------
-    //                                          onCreateView                                      ||
+    //                                          OnViewCreated                                     ||
     //----------------------------------------------------------------------------------------------
 
     @Nullable
@@ -136,120 +88,179 @@ public class DesempenhoFragment extends Fragment {
         return binding.getRoot();
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          OnViewCreated                                     ||
-    //----------------------------------------------------------------------------------------------
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaCamposDaView();
-        configuraBarChart();
+        buscaMotoristasECavalos();
         configuraToolbar();
-        configuraMenuProvider();
+        configuraBarChart();
         configuraRecycler();
-        configuraUi(tipoDeRequisicao, REF_CAVALO_NULA);
+        configuraMenuProvider();
         configuraSwitchButton();
     }
 
-    private void inicializaCamposDaView() {
-        recyclerView = binding.recyclerDetalhes;
-        switchBtn = binding.switchbtn;
+    private void buscaMotoristasECavalos() {
+        final LiveData<Resource<List<Cavalo>>> observerCavalos = viewModel.buscaCavalos();
+        observerCavalos.observe(getViewLifecycleOwner(), new Observer<Resource<List<Cavalo>>>() {
+            @Override
+            public void onChanged(Resource<List<Cavalo>> resource) {
+                if (resource.getDado().isEmpty()) {
+                    final NavController controler = Navigation.findNavController(requireView());
+                    controler.popBackStack();
+                } else {
+                    observerCavalos.removeObserver(this);
+                    viewModel.dataSetCavalo = resource.getDado();
+                    menuProvider.setListaCavalos(resource.getDado());
+                    viewModel._data.setValue(viewModel.resourceData);
+                    buscaData();
+                }
+            }
+        });
+
+        final LiveData<Resource<List<Motorista>>> observerMotoristas = viewModel.buscaMotoristas();
+        observerMotoristas.observe(getViewLifecycleOwner(), new Observer<Resource<List<Motorista>>>() {
+            @Override
+            public void onChanged(Resource<List<Motorista>> resource) {
+                observerMotoristas.removeObserver(this);
+                viewModel.dataSetMotorista = resource.getDado();
+            }
+        });
+
     }
 
-    private void configuraSwitchButton() {
-        switchBtn.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            atualizaDataSetRecycler(tipoDeRequisicao, getMesSelecionado(), isChecked);
-            adapter.atualiza(getDataSetRecycler());
-        });
+    private void buscaData() {
+        viewModel.buscaData().observe(getViewLifecycleOwner(),
+                resourceData -> {
+                    viewModel.armazenaResource(resourceData);
+                    mapeiaDataParaBarChart();
+                    mapeiaDataParaRecycler();
+                });
+    }
+
+    private void mapeiaDataParaBarChart() {
+        final MappedBarChartData mappedBarChartData =
+                viewModel.barChartMapper();
+
+        barChartHelper.atualiza(mappedBarChartData);
+        configuraCamposDaUiRelacionadosAoBarChart(mappedBarChartData);
+    }
+
+    private void mapeiaDataParaRecycler() {
+        final List<MappedRecylerData> recyclerMappedData =
+                viewModel.recyclerMapper();
+
+        adapter.atualiza(recyclerMappedData);
+        configuraCamposDaUiRelacionadosARecycler();
+    }
+
+    private void configuraToolbar() {
+        final Toolbar toolbar = binding.toolbar;
+        final ToolbarUtil toolbarUtil = new ToolbarUtil("Desempenho");
+        toolbarUtil.configuraToolbar(requireActivity(), toolbar);
     }
 
     private void configuraMenuProvider() {
-        DesempenhoMenuProviderHelper menuProvider = new DesempenhoMenuProviderHelper(this);
+        menuProvider = new DesempenhoMenuProviderHelper(this);
         requireActivity().addMenuProvider(menuProvider, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-        menuProvider.setCallback((tipo, ano, cavaloId) -> {
-            if (tipoDeRequisicao != tipo || anoRequisitado != ano) {
-                if (tipoDeRequisicao != tipo) tipoDeRequisicao = tipo;
-                if (anoRequisitado != ano) anoRequisitado = ano;
-                atualizaDataSet(ano, tipo);
-                dataSetRecyclerHelper.atualizaCopiaDataSet(getDataSet());
-            }
-            atualizaDataSetRecycler(tipo, MES_DEFAULT.getRef(), false);
-            barChart.atualizaChart(ano, tipo, cavaloId);
-            configuraUi(tipo, cavaloId);
-            adapter.atualiza(getDataSetRecycler());
-        });
+        menuProvider.setCallback(
+                (tipo, ano, cavaloId) -> {
+                    if (viewModel.dataRequest.getTipo() != tipo
+                            || viewModel.dataRequest.getAno() != ano
+                            || viewModel.dataRequest.getCavaloId() != cavaloId
+                    ) {
+                        if (viewModel.dataRequest.getTipo() != tipo)
+                            viewModel.dataRequest.setTipo(tipo);
+
+                        if (viewModel.dataRequest.getAno() != ano)
+                            viewModel.dataRequest.setAno(ano);
+
+                        if (viewModel.dataRequest.getCavaloId() != cavaloId)
+                            viewModel.dataRequest.setCavaloId(cavaloId);
+
+                        viewModel.buscaData();
+                    }
+                });
     }
 
     private void configuraBarChart() {
-        barChart = new DesempenhoBarChartHelper(requireContext(), binding.chart);
-        barChart.show();
-        barChart.setCallback(new DesempenhoBarChartHelper.Callback() {
+        barChartHelper = new DesempenhoBarChartHelper(requireContext(), binding.chart);
+        barChartHelper.configura();
+        barChartHelper.setCallback(new DesempenhoBarChartHelper.Callback() {
             @Override
             public void clickSelecionandoMes(int mesSelecionado) {
-                atualizaDataSetRecycler(tipoDeRequisicao, mesSelecionado, switchBtn.isChecked());
-                adapter.atualiza(getDataSetRecycler());
+                atualizaRecyclerPorAlteracaoNoMes(mesSelecionado);
             }
 
             @Override
             public void clickRemovendoSelecaoDeMes() {
-                atualizaDataSetRecycler(tipoDeRequisicao, MES_DEFAULT.getRef(), switchBtn.isChecked());
-                adapter.atualiza(getDataSetRecycler());
+                atualizaRecyclerPorAlteracaoNoMes(MES_DEFAULT.getRef());
+            }
+
+            private void atualizaRecyclerPorAlteracaoNoMes(int mesSelecionado) {
+                viewModel.dataRequest.setMes(mesSelecionado);
+                mapeiaDataParaRecycler();
             }
         });
     }
 
     private void configuraRecycler() {
-        adapter = new DetalhesPeriodoAdapter(this.requireContext(), getDataSetRecycler());
+        recyclerView = binding.recyclerDetalhes;
+        adapter = new DetalhesPeriodoAdapter(this.requireContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
         RecyclerDecoration.linhaHorizontal(requireContext(), recyclerView);
     }
 
-    private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+
+    private void configuraCamposDaUiRelacionadosAoBarChart(@NonNull MappedBarChartData mappedBarChartData) {
+        final List<BigDecimal> listaDeValores = mappedBarChartData.getListaDeValores();
+        ui_valorAcumulado(listaDeValores);
+        ui_tituloBarChart();
     }
 
-    //------------------------------------------------------------------------
-    // -> Configura Ui                                                      ||
-    //------------------------------------------------------------------------
-
-    private void configuraUi(TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
-        ui_valorAcumulado();
-        ui_tituloBarChart(tipoDeRequisicao, cavaloId);
-        ui_visibilidadeSwitch(tipoDeRequisicao);
-        ui_TituloRecycler(cavaloId);
+    private void configuraCamposDaUiRelacionadosARecycler() {
+        ui_visibilidadeSwitch();
+        ui_TituloRecycler();
     }
 
-    private void ui_valorAcumulado() {
-        BigDecimal valorAcumulado = barChart.getListaDeDados().stream()
+    private void ui_valorAcumulado(@NonNull List<BigDecimal> listaDeValores) {
+        final BigDecimal valorAcumulado = listaDeValores.stream()
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         binding.valorAcumulado.setText(FormataNumerosUtil.formataMoedaPadraoBr(valorAcumulado));
     }
 
-    private void ui_tituloBarChart(TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
-        if (cavaloId != REF_CAVALO_NULA) {
-      //      String placa = cavaloDao.localizaPeloId(cavaloId).getPlaca();
-        //    String placaFormatada = tipoDeRequisicao.getDescricao() + ", " + placa;
-       //     binding.tipo.setText(placaFormatada);
+    private void ui_tituloBarChart() {
+        if (viewModel.dataRequest.getCavaloId() != null) {
+            String placa =
+                    Objects.requireNonNull(
+                            FiltraCavalo.localizaPeloId(viewModel.resourceData.getDataSetCavalo(), viewModel.dataRequest.getCavaloId())).getPlaca();
+            String placaFormatada = viewModel.dataRequest.getTipo().getDescricao() + ", " + placa;
+            binding.tipo.setText(placaFormatada);
         } else {
-            binding.tipo.setText(tipoDeRequisicao.getDescricao());
+            binding.tipo.setText(viewModel.dataRequest.getTipo().getDescricao());
         }
     }
 
-    private void ui_visibilidadeSwitch(TipoDeRequisicao tipoDeRequisicao) {
-        if (tipoDeRequisicao == DESPESAS_ADM || tipoDeRequisicao == DESPESA_CERTIFICADOS || tipoDeRequisicao == DESPESAS_IMPOSTOS) {
+    private void configuraSwitchButton() {
+        final SwitchMaterial switchBtn = binding.switchbtn;
+        switchBtn.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    viewModel.dataRequest.setExibirRateio(isChecked);
+                    mapeiaDataParaRecycler();
+                });
+    }
+
+    private void ui_visibilidadeSwitch() {
+        if (viewModel.dataRequest.getTipo() == DESPESAS_ADM
+                || viewModel.dataRequest.getTipo() == DESPESA_CERTIFICADOS
+                || viewModel.dataRequest.getTipo() == DESPESAS_IMPOSTOS) {
             binding.switchLayout.setVisibility(VISIBLE);
         } else {
             binding.switchLayout.setVisibility(GONE);
         }
     }
 
-    private void ui_TituloRecycler(Long cavaloId) {
-        if (cavaloId != REF_CAVALO_NULA) {
+    private void ui_TituloRecycler() {
+        if (viewModel.dataRequest.getCavaloId() != null) {
             recyclerView.setVisibility(INVISIBLE);
             binding.detalhesPeriodoTxt.setVisibility(INVISIBLE);
         } else {
@@ -258,5 +269,10 @@ public class DesempenhoFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }
 

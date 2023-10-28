@@ -33,22 +33,23 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.databinding.ActivityFormulariosBinding;
 import br.com.transporte.AppGhn.model.enums.TipoDespesa;
 import br.com.transporte.AppGhn.model.enums.TipoFormulario;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioAdiantamentoFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioCavaloFragment;
-import br.com.transporte.AppGhn.ui.fragment.formularios.certificado.FormularioCertificadosFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioCustosDeManutencaoFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioCustosDePercursoFragment;
-import br.com.transporte.AppGhn.ui.fragment.formularios.despesaAdm.FormularioDespesaAdmFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioFreteFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioImpostosFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioMotoristaFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioRecebimentoFreteFragment;
-import br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroFrota.FormularioSeguroFrotaFragment;
-import br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroVida.FormularioSeguroVidaFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.FormularioSemiReboqueFragment;
 import br.com.transporte.AppGhn.ui.fragment.formularios.abastecimento.FormularioAbastecimentoFragment;
+import br.com.transporte.AppGhn.ui.fragment.formularios.certificado.FormularioCertificadosFragment;
+import br.com.transporte.AppGhn.ui.fragment.formularios.despesaAdm.FormularioDespesaAdmFragment;
+import br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroFrota.FormularioSeguroFrotaFragment;
+import br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroVida.FormularioSeguroVidaFragment;
 
 public class FormulariosActivity extends AppCompatActivity {
     public static final long DEFAULT_VALUE = 0;

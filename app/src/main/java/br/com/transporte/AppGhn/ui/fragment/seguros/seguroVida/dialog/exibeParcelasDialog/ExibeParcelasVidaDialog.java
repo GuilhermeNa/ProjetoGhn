@@ -45,14 +45,12 @@ import br.com.transporte.AppGhn.util.MensagemUtil;
 public class ExibeParcelasVidaDialog {
     public static final String TITULO_DIALOG = "Seguro Vida";
     private HashMap<Integer, Boolean> mapComParcelas;
-    private List<Parcela_seguroVida> listaDeparcelas;
     private final Context context;
     private final LifecycleOwner lifecycleOwner;
     private Button btn;
     private BottomSeguroVidaParcelaAdapter adapterParcela;
     private List<Parcela_seguroVida> dataSet = new ArrayList<>();
     private ParcelasVidaDataUseCase dataUseCase;
-
 
     public ExibeParcelasVidaDialog(
             Context context,
@@ -66,6 +64,17 @@ public class ExibeParcelasVidaDialog {
         return new ArrayList<>(dataSet);
     }
 
+    private void getDataUseCase(@NonNull DespesaComSeguroDeVida seguro) {
+        dataUseCase = new ParcelasVidaDataUseCase(context, lifecycleOwner);
+        dataUseCase
+                .getParcelasRelacionadasAEsteSeguroId(
+                        seguro.getId(),
+                        parcelas -> {
+                            dataSet = parcelas;
+                            adapterParcela.defineDataSet(dataSet);
+                        });
+    }
+
     //----------------------------------------------------------------------------------------------
     //                                          Show                                              ||
     //----------------------------------------------------------------------------------------------
@@ -76,7 +85,6 @@ public class ExibeParcelasVidaDialog {
         inicializaCamposDaView(dialog);
         vinculaUi(dialog);
         configuraBtnCancel(dialog);
-
         configuraRecyclerDialog(seguro, dialog);
         configuraBtnPagar(seguro, dialog);
         configuraParametrosDeExibicaoDoDialog(dialog);
@@ -91,16 +99,7 @@ public class ExibeParcelasVidaDialog {
         }
     }
 
-    private void getDataUseCase(@NonNull DespesaComSeguroDeVida seguro) {
-        dataUseCase = new ParcelasVidaDataUseCase(context, lifecycleOwner);
-        dataUseCase
-                .getParcelasRelacionadasAEsteSeguroId(
-                        seguro.getId(),
-                        parcelas -> {
-                            dataSet = parcelas;
-                            adapterParcela.defineDataSet(dataSet);
-                        });
-    }
+
 
     private void configuraBtnPagar(DespesaComSeguroDeVida seguro, Dialog dialog) {
         btn.setOnClickListener(v -> {
@@ -108,15 +107,11 @@ public class ExibeParcelasVidaDialog {
             if (precisaBaixar) {
                 fazABaixaDaParcelaPaga(seguro, dialog);
             }
-
-            dialog.dismiss();
-            Toast.makeText(context, BAIXA_REGISTRADA_COM_SUCESSO, Toast.LENGTH_SHORT).show();
-
         });
     }
 
-    private void fazABaixaDaParcelaPaga(DespesaComSeguroDeVida seguro, Dialog dialog) {
-        // List<Parcela_seguroVida> listaDeParcelas = getListaDeparcelas(seguro);
+    private void fazABaixaDaParcelaPaga(@NonNull DespesaComSeguroDeVida seguro, Dialog dialog) {
+        dataUseCase.atualizaDataSet(seguro.getId());
 
         for (Map.Entry<Integer, Boolean> pair : mapComParcelas.entrySet()) {
             boolean estaParcelaPrecisaSerAlterada = pair.getValue();
@@ -145,7 +140,7 @@ public class ExibeParcelasVidaDialog {
     }
 
     private void configuraBtnCancel(@NonNull Dialog dialog) {
-        ImageView cancelBtn = dialog.findViewById(R.id.cancelButton);
+        final ImageView cancelBtn = dialog.findViewById(R.id.cancelButton);
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
     }
 
@@ -174,8 +169,8 @@ public class ExibeParcelasVidaDialog {
             @Override
             public void onBoxClick(HashMap<Integer, Boolean> map) {
                 mapComParcelas = map;
-                Animation animaCima = AnimationUtils.loadAnimation(context, R.anim.slide_in);
-                Animation animaBaixo = AnimationUtils.loadAnimation(context, R.anim.slide_out);
+                final Animation animaCima = AnimationUtils.loadAnimation(context, R.anim.slide_in);
+                final Animation animaBaixo = AnimationUtils.loadAnimation(context, R.anim.slide_out);
 
                 boolean atualizacaoNecessaria = map.containsValue(true);
                 configuraVisualizacaoDoBtn(btn, animaCima, animaBaixo, atualizacaoNecessaria);
@@ -189,8 +184,6 @@ public class ExibeParcelasVidaDialog {
                 dialogParcela.setCallback(new EditaParcelaVidaDialog.Callback() {
                     @Override
                     public void quandoFunciona() {
-                        //listaDeparcelas = getListaDeparcelas(seguro);
-                        //adapterParcela.atualiza(listaDeparcelas);
                         Toast.makeText(context, REGISTRO_ALTERADO, Toast.LENGTH_SHORT).show();
                     }
 

@@ -34,9 +34,8 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
         this.context = context;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void defineDataSet(final List<Parcela_seguroFrota> dataSet){
-        //todo com a refatoração o criaMap esta sendo chamado mais de uma vez,
-        // uma vez que so era chamado no on create anteriormente
         this.dataSet.clear();
         this.dataSet.addAll(dataSet);
         map = criaMap();
@@ -53,7 +52,6 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
 
         return map;
     }
-
 
     //----------------------------------------------------------------------------------------------
     //                                          ViewHolder                                        ||
@@ -81,7 +79,7 @@ public class BottomSeguroParcelaAdapter extends RecyclerView.Adapter<BottomSegur
     @NonNull
     @Override
     public BottomSeguroParcelaAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_pagamento_seguro, parent, false);
+        final View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_pagamento_seguro, parent, false);
         return new ViewHolder(viewCriada);
     }
 

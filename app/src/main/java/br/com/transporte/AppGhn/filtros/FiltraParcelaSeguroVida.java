@@ -26,13 +26,13 @@ public class FiltraParcelaSeguroVida {
                 .collect(Collectors.toList());
     }
 
-    public static List<Parcela_seguroVida> listaPeloCavaloId(@NonNull List<Parcela_seguroVida> dataSet, Long cavaloId) {
+    public static List<Parcela_seguroVida> listaPorCavaloId(@NonNull List<Parcela_seguroVida> dataSet, Long cavaloId) {
         return dataSet.stream()
                 .filter(p -> p.getRefCavaloId() == cavaloId)
                 .collect(Collectors.toList());
     }
 
-    public static List<Parcela_seguroVida> listaPorMes(@NonNull List<Parcela_seguroVida> dataSet, int mes){
+    public static List<Parcela_seguroVida> listaDoMesSolicitado(@NonNull List<Parcela_seguroVida> dataSet, int mes){
         return dataSet.stream()
                 .filter(p -> p.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

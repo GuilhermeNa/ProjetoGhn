@@ -32,4 +32,13 @@ public interface RoomCustosAbastecimentoDao {
 
     @Query("SELECT * FROM custosDeAbastecimento WHERE refCavaloId = :cavaloId")
     LiveData<List<CustosDeAbastecimento>> listaPorCavaloId(Long cavaloId);
+
+    @Query("SELECT * FROM CustosDeAbastecimento WHERE refCavaloId = :cavaloId AND flagAbastecimentoTotal = :isAbastecimentoTotal")
+    LiveData<List<CustosDeAbastecimento>> listaDeAbastecimentoTotal(Long cavaloId, boolean isAbastecimentoTotal);
+
+    @Query("SELECT * FROM CustosDeAbastecimento WHERE refCavaloId = :cavaloId")
+    List<CustosDeAbastecimento> buscaPorCavaloIdParaTask(Long cavaloId);
+
+    @Query("SELECT * FROM CustosDeAbastecimento")
+    List<CustosDeAbastecimento> buscaTodosParaTask();
 }

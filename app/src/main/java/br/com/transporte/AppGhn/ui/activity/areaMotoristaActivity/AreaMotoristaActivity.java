@@ -12,8 +12,6 @@ import static br.com.transporte.AppGhn.ui.activity.areaMotoristaActivity.Constan
 import static br.com.transporte.AppGhn.ui.activity.areaMotoristaActivity.ConstantesAreaMotorista.SEM_MOTORISTA;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
-import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_ABASTECIMENTO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_CUSTO_PERCURSO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.VALOR_DEFAUT;
@@ -96,21 +94,7 @@ public class AreaMotoristaActivity extends AppCompatActivity {
         return registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    int resultCode = result.getResultCode();
-                    switch (resultCode) {
-                        case RESULT_OK:
-                       /*     if (resumoFragment == null) {
-                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_RESUMO);
-                            }
-                            if (custoFragment == null) {
-                                Fragment verificaSeFragmentFoiInicializado = getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_DESPESA);
-                                if (verificaSeFragmentFoiInicializado != null) {
-                                    custoFragment = (AreaMotoristaCustosDePercursoFragment) verificaSeFragmentFoiInicializado;
-                                }
-                            }
-                            //  if (resumoFragment != null) resumoFragment.solicitaAtualizacao();
-                            //  if (custoFragment != null) custoFragment.solicitaAtualizacao();*/
-                            break;
+                    switch (result.getResultCode()) {
                         case RESULT_CANCELED:
                             MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
                             break;
@@ -124,24 +108,7 @@ public class AreaMotoristaActivity extends AppCompatActivity {
         return registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    int resultCode = result.getResultCode();
-
-                    switch (resultCode) {
-                        case RESULT_OK:
-                         /*   if (resumoFragment == null) {
-                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_RESUMO);
-                            }
-                            if (abastecimentoFragment == null) {
-                                Fragment verificaSeFragmentFoiInicializado = getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_ABASTECIMENTO);
-                                if (verificaSeFragmentFoiInicializado != null) {
-                                    abastecimentoFragment = (AreaMotoristaAbastecimentoFragment) verificaSeFragmentFoiInicializado;
-                                }
-                            }
-                            //   if (resumoFragment != null) resumoFragment.solicitaAtualizacao();
-                            if (abastecimentoFragment != null)
-                                //     abastecimentoFragment.solicitaAtualizacao();*/
-                                break;
-
+                    switch (result.getResultCode()) {
                         case RESULT_CANCELED:
                             MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
                             break;
@@ -155,25 +122,7 @@ public class AreaMotoristaActivity extends AppCompatActivity {
         return registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    int resultCode = result.getResultCode();
-
-                    switch (resultCode) {
-                        case RESULT_OK:
-                        case RESULT_DELETE:
-                        case RESULT_EDIT:
-                         /*   if (resumoFragment == null) {
-                                resumoFragment = (AreaMotoristaResumoFragment) getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_RESUMO);
-                            }
-                            if (freteFragment == null) {
-                                Fragment verificaSeFragmentFoiInicializado = getSupportFragmentManager().findFragmentByTag("f" + INDICE_FRAG_FRETE);
-                                if (verificaSeFragmentFoiInicializado != null) {
-                                    freteFragment = (AreaMotoristaFreteFragment) verificaSeFragmentFoiInicializado;
-                                }
-                            }
-                            //  if (resumoFragment != null) resumoFragment.solicitaAtualizacao();
-                            //  if (freteFragment != null) freteFragment.atualizaValoresParaExibirNaUi();*/
-                            break;
-
+                    switch (result.getResultCode()) {
                         case RESULT_CANCELED:
                             MensagemUtil.toast(this, NENHUMA_ALTERACAO_REALIZADA);
                             break;
@@ -276,7 +225,7 @@ public class AreaMotoristaActivity extends AppCompatActivity {
                 motoristaRecebido -> {
                     String nomeMotorista;
                     if (motoristaRecebido != null) {
-                        nomeMotorista = motoristaRecebido.getNome();
+                        nomeMotorista = motoristaRecebido.toString();
                     } else {
                         nomeMotorista = SEM_MOTORISTA;
                     }
@@ -364,7 +313,8 @@ public class AreaMotoristaActivity extends AppCompatActivity {
         }
 
         if (abastecimentoFragment != null) {
-            if (abastecimentoFragment.isVisible()) abastecimentoFragment.atualizaValoresParaExibirNaUi();
+            if (abastecimentoFragment.isVisible())
+                abastecimentoFragment.atualizaValoresParaExibirNaUi();
             else abastecimentoFragment.setAtualizacaoSolicitadaPelaAct(true);
         }
 

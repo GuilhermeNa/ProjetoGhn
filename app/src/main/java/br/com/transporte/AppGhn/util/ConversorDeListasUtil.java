@@ -2,8 +2,6 @@ package br.com.transporte.AppGhn.util;
 
 import static br.com.transporte.AppGhn.model.enums.TipoMeses.MES_DEFAULT;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -155,15 +153,15 @@ public class ConversorDeListasUtil {
         }
 
         if (mes != MES_DEFAULT.getRef()) {
-            dataSet_frete = FiltraFrete.listaPorMes(dataSet_frete, mes);
-            dataSet_abastecimento = FiltraCustosAbastecimento.listaPorMes(dataSet_abastecimento, mes);
-            dataSet_custoPercurso = FiltraCustosPercurso.listaPorMes(dataSet_custoPercurso, mes);
-            dataSet_custoManutencao = FiltraCustosManutencao.listaPorMes(dataSet_custoManutencao, mes);
+            dataSet_frete = FiltraFrete.listaDoMesSolicitado(dataSet_frete, mes);
+            dataSet_abastecimento = FiltraCustosAbastecimento.listaDoMesSolicitado(dataSet_abastecimento, mes);
+            dataSet_custoPercurso = FiltraCustosPercurso.listaDoMesSolicitado(dataSet_custoPercurso, mes);
+            dataSet_custoManutencao = FiltraCustosManutencao.listaDoMesSolicitado(dataSet_custoManutencao, mes);
             dataSet_despesaAdm = FiltraDespesasAdm.listaPorMes(dataSet_despesaAdm, mes);
             dataSet_despesaImposto = FiltraDespesasImposto.listaPorMes(dataSet_despesaImposto, mes);
-            dataSet_despesaCertificado = FiltraDespesasCertificado.listaPorMes(dataSet_despesaCertificado, mes);
-            dataSet_parcelaSeguroFrota = FiltraParcelaSeguroFrota.listaPorMes(dataSet_parcelaSeguroFrota, mes);
-            dataSet_parcelaSeguroVida = FiltraParcelaSeguroVida.listaPorMes(dataSet_parcelaSeguroVida, mes);
+            dataSet_despesaCertificado = FiltraDespesasCertificado.listaDoMesSolicitado(dataSet_despesaCertificado, mes);
+            dataSet_parcelaSeguroFrota = FiltraParcelaSeguroFrota.listaDoMesSolicitado(dataSet_parcelaSeguroFrota, mes);
+            dataSet_parcelaSeguroVida = FiltraParcelaSeguroVida.listaDoMesSolicitado(dataSet_parcelaSeguroVida, mes);
         }
 
 

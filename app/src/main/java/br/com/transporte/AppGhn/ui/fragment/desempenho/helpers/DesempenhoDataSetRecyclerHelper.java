@@ -1,3 +1,4 @@
+/*
 package br.com.transporte.AppGhn.ui.fragment.desempenho.helpers;
 
 import static br.com.transporte.AppGhn.model.enums.TipoDespesa.INDIRETA;
@@ -6,11 +7,10 @@ import static br.com.transporte.AppGhn.model.enums.TipoMeses.MES_DEFAULT;
 import androidx.annotation.NonNull;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.transporte.AppGhn.dao.ObjetoTemporario_representaCavaloDAO;
+import br.com.transporte.AppGhn.dao.CavaloDesempenhoDao;
 import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
 import br.com.transporte.AppGhn.database.dao.RoomCustosDeManutencaoDao;
@@ -43,7 +43,7 @@ import br.com.transporte.AppGhn.model.despesas.DespesasDeImposto;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroFrota;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
-import br.com.transporte.AppGhn.model.temporarios.ObjetoTemporario_representaCavalo;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.CavaloDesempenho;
 import br.com.transporte.AppGhn.util.CalculoUtil;
 import br.com.transporte.AppGhn.util.ConversorDeListasUtil;
 
@@ -53,10 +53,9 @@ public class DesempenhoDataSetRecyclerHelper {
     private final List<Object> copiaDataSet_object;
     private final List<Cavalo> dataSet_cavalo;
     private final RoomMotoristaDao motoristaDao;
-    private static ObjetoTemporario_representaCavaloDAO objTemporarioDao;
+    private static CavaloDesempenhoDao objTemporarioDao;
     private static int cavaloSize;
     private final ConversorDeListasUtil conversorDeListas = new ConversorDeListasUtil();
-
     private static RoomFreteDao freteDao;
     private static RoomCustosAbastecimentoDao abastecimentoDao;
     private static RoomCustosPercursoDao custosPercursoDao;
@@ -67,7 +66,6 @@ public class DesempenhoDataSetRecyclerHelper {
     private static RoomParcela_seguroFrotaDao parcelaFrotaDao;
     private static RoomParcela_seguroVidaDao parcelaVidaDao;
     private static RoomDespesaImpostoDao impostoDao;
-
 
     public DesempenhoDataSetRecyclerHelper(List<Object> copiaDataSet, @NonNull List<Cavalo> dataSet_cavalo, GhnDataBase database) {
         this.copiaDataSet_object = copiaDataSet;
@@ -86,7 +84,7 @@ public class DesempenhoDataSetRecyclerHelper {
 
     }
 
-    public List<ObjetoTemporario_representaCavalo> getDataSet() {
+    public List<CavaloDesempenho> getDataSet() {
         return new ArrayList<>(objTemporarioDao.listaTodos());
     }
 
@@ -229,7 +227,7 @@ public class DesempenhoDataSetRecyclerHelper {
     private void configura() {
         if (objTemporarioDao != null) objTemporarioDao.clear();
 
-        objTemporarioDao = new ObjetoTemporario_representaCavaloDAO();
+        objTemporarioDao = new CavaloDesempenhoDao();
         cavaloSize = dataSet_cavalo.size();
         criaNovosObjTemp();
     }
@@ -358,12 +356,13 @@ public class DesempenhoDataSetRecyclerHelper {
         private static void lucro(int ano) {
       //      List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
 
-          /*  List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
+  List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
             List<CustosDePercurso> listaCustoPercurso = FiltraCustosPercurso.listaPorAno(custosPercursoDao.todos(), ano);
             List<CustosDeManutencao> listaCustoManutencao = FiltraCustosManutencao.listaPorAno(manutencaoDao.todos(), ano);
             List<DespesaAdm> listaDespesaAdm = FiltraDespesasAdm.listaPorAno(admDao.todos(), ano);
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
-*/
+
+
           //  List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
            // listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorStatusDePagamento(listaParcelaSeguro, true);
 
@@ -374,7 +373,7 @@ public class DesempenhoDataSetRecyclerHelper {
 
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
-              /*  List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
+  List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
                 BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
                 BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
                 adicionaValorAoObjetoTemporario(liquido, obj);
@@ -410,7 +409,8 @@ public class DesempenhoDataSetRecyclerHelper {
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
                 BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                subtraiValorAoObjetoTemporario(imposto, obj);*/
+                subtraiValorAoObjetoTemporario(imposto, obj);
+
 
             }
 
@@ -452,7 +452,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static void despesasCertificado(List<DespesaCertificado> listaAnual, int mes) {
-            List<DespesaCertificado> listaMensal = FiltraDespesasCertificado.listaPorMes(listaAnual, mes);
+            List<DespesaCertificado> listaMensal = FiltraDespesasCertificado.listaDoMesSolicitado(listaAnual, mes);
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<DespesaCertificado> dataSet = FiltraDespesasCertificado.listaPorCavaloId(listaMensal, obj.getId());
@@ -492,7 +492,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static void comissao(List<Frete> listaAnual, int mes) {
-            List<Frete> listaMensal = FiltraFrete.listaPorMes(listaAnual, mes);
+            List<Frete> listaMensal = FiltraFrete.listaDoMesSolicitado(listaAnual, mes);
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
@@ -512,7 +512,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static void freteLiquido(List<Frete> listaAnual, int mes) {
-            List<Frete> listaMensal = FiltraFrete.listaPorMes(listaAnual, mes);
+            List<Frete> listaMensal = FiltraFrete.listaDoMesSolicitado(listaAnual, mes);
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
@@ -522,7 +522,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static void freteBruto(List<Frete> listaAnual, int mes) {
-            List<Frete> listaMensal = FiltraFrete.listaPorMes(listaAnual, mes);
+            List<Frete> listaMensal = FiltraFrete.listaDoMesSolicitado(listaAnual, mes);
             BigDecimal valor;
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
                 List<Frete> dataSet = FiltraFrete.listaPorCavaloId(listaMensal, obj.getId());
@@ -532,7 +532,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         public static void lucro(int ano, int mes) {
-         /*   List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
+   List<Frete> listaFreteLiquido = FiltraFrete.listaPorAno(freteDao.todos(), ano);
             listaFreteLiquido = FiltraFrete.listaPorMes(listaFreteLiquido, mes);
 
             List<CustosDeAbastecimento> listaCustoAbastecimento = FiltraCustosAbastecimento.listaPorAno(abastecimentoDao.todos(), ano);
@@ -548,7 +548,7 @@ public class DesempenhoDataSetRecyclerHelper {
             listaDespesaAdm = FiltraDespesasAdm.listaPorMes(listaDespesaAdm, mes);
 
             List<DespesaCertificado> listaDespesaCertificado = FiltraDespesasCertificado.listaPorAno(certificadoDao.todos(), ano);
-            listaDespesaCertificado = FiltraDespesasCertificado.listaPorMes(listaDespesaCertificado, mes);
+            listaDespesaCertificado = FiltraDespesasCertificado.listaDoMesSolicitado(listaDespesaCertificado, mes);
 
             List<Parcela_seguroFrota> listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorAno(parcelaFrotaDao.todos(), ano);
             listaParcelaSeguro = FiltraParcelaSeguroFrota.listaPorMes(listaParcelaSeguro, mes);
@@ -561,10 +561,11 @@ public class DesempenhoDataSetRecyclerHelper {
             List<DespesasDeImposto> listaDespesaImposto = FiltraDespesasImposto.listaPorAno(impostoDao.todos(), ano);
             listaDespesaImposto = FiltraDespesasImposto.listaPorMes(listaDespesaImposto, mes);
 
-*/
+
+
             for (ObjetoTemporario_representaCavalo obj : objTemporarioDao.listaTodos()) {
 
-               /* List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
+ List<Frete> dataSetFrete = FiltraFrete.listaPorCavaloId(listaFreteLiquido, obj.getId());
                 BigDecimal liquido = CalculoUtil.somaFreteLiquido(dataSetFrete);
                 BigDecimal comissao = CalculoUtil.somaComissao(dataSetFrete);
                 adicionaValorAoObjetoTemporario(liquido, obj);
@@ -600,7 +601,8 @@ public class DesempenhoDataSetRecyclerHelper {
 
                 List<DespesasDeImposto> dataSetImposto = FiltraDespesasImposto.listaPorCavaloId(listaDespesaImposto, obj.getId());
                 BigDecimal imposto = CalculoUtil.somaDespesaImposto(dataSetImposto);
-                subtraiValorAoObjetoTemporario(imposto, obj);*/
+                subtraiValorAoObjetoTemporario(imposto, obj);
+
 
             }
         }
@@ -750,7 +752,7 @@ public class DesempenhoDataSetRecyclerHelper {
         }
 
         private static List<DespesaCertificado> configuraListaConformeParametrosBuscado_rateioMensalCertificado(List<DespesaCertificado> listaAnual, int mes) {
-            List<DespesaCertificado> lista = FiltraDespesasCertificado.listaPorMes(listaAnual, mes);
+            List<DespesaCertificado> lista = FiltraDespesasCertificado.listaDoMesSolicitado(listaAnual, mes);
             lista = FiltraDespesasCertificado.listaPorTipoDespesa(lista, INDIRETA);
             return lista;
         }
@@ -824,30 +826,5 @@ public class DesempenhoDataSetRecyclerHelper {
     //                                         Outros metodos                                     ||
     //----------------------------------------------------------------------------------------------
 
-
-    private static BigDecimal getRateio(@NonNull BigDecimal valor) {
-        BigDecimal quantidadeCavalos = new BigDecimal(cavaloSize);
-        return valor.divide(quantidadeCavalos, 2, RoundingMode.HALF_EVEN);
-    }
-
-    private static void adicionaValorAoObjetoTemporario(BigDecimal valor, @NonNull ObjetoTemporario_representaCavalo obj) {
-        obj.adicionaValor(valor);
-        obj.adicionaAoSaldoAcumulado(valor);
-    }
-
-    private static void subtraiValorAoObjetoTemporario(BigDecimal valor, @NonNull ObjetoTemporario_representaCavalo obj) {
-        obj.removeValor(valor);
-        obj.removeDoSaldoAcumulado(valor);
-    }
-
-    private static void adicionaRateioAoObjetoTemporario(BigDecimal valorRateio, @NonNull ObjetoTemporario_representaCavalo d) {
-        d.adicionaValor(valorRateio);
-        d.adicionaAoSaldoAcumulado(valorRateio);
-    }
-
-    private static void removeRateioAoObjetoTemporario(BigDecimal valorRateio, @NonNull ObjetoTemporario_representaCavalo d) {
-        d.removeValor(valorRateio);
-        d.removeDoSaldoAcumulado(valorRateio);
-    }
-
 }
+*/

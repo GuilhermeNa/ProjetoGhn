@@ -36,6 +36,7 @@ public class FreteAReceberPagosFragment extends Fragment {
     public FreteAReceberActViewModel viewModel;
     private boolean primeiraExecucaoDoFragment;
     private LinearLayout alertaLayout;
+    private Handler handler;
 
     //----------------------------------------------------------------------------------------------
     //                                          On Create                                         ||
@@ -44,6 +45,7 @@ public class FreteAReceberPagosFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
         viewModel = new ViewModelProvider(requireActivity()).get(FreteAReceberActViewModel.class);
         if (savedInstanceState != null) {
             primeiraExecucaoDoFragment = savedInstanceState.getBoolean("execucaoFragFreteJaRecebido");
@@ -83,7 +85,6 @@ public class FreteAReceberPagosFragment extends Fragment {
 
     private void configuraRecycler() {
         if (primeiraExecucaoDoFragment) {
-            final Handler handler = new Handler();
             final Runnable r = () -> {
                 configuraAdapter();
                 exibeRecyclerComAnimacao();
@@ -99,7 +100,6 @@ public class FreteAReceberPagosFragment extends Fragment {
     private void exibeRecyclerComAnimacao() {
         final LayoutAnimationController animSlideIn =
                 AnimationUtils.loadLayoutAnimation(this.requireContext(), R.anim.layout_controller_animation_slide_in_left);
-        final Handler handler = new Handler();
         final Runnable r = () -> {
             ExibirResultadoDaBusca_sucessoOuAlerta.configura(viewModel.getDataSet_freteRecebido().size(), alertaLayout, recyclerView, VIEW_INVISIBLE);
             recyclerView.setLayoutAnimation(animSlideIn);
@@ -131,6 +131,13 @@ public class FreteAReceberPagosFragment extends Fragment {
     public void exibeResultadoDeBusca(List<Frete> dataSetSearch) {
         adapter.exibeSearch(dataSetSearch);
         ExibirResultadoDaBusca_sucessoOuAlerta.configura(dataSetSearch.size(), binding.alertaLayout.alerta, recyclerView, VIEW_INVISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

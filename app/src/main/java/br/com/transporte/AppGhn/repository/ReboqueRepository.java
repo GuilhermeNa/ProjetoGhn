@@ -9,7 +9,6 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 
 import br.com.transporte.AppGhn.GhnApplication;
@@ -38,9 +37,8 @@ public class ReboqueRepository {
 
     public LiveData<Resource<List<SemiReboque>>> buscaReboques() {
         mediator.addSource(buscaReboques_room(),
-                listaReboques -> {
-                    mediator.setValue(new Resource<>(listaReboques, null));
-                });
+                listaReboques ->
+                        mediator.setValue(new Resource<>(listaReboques, null)));
         return mediator;
     }
 

@@ -66,10 +66,13 @@ public class DateRangePickerUtil {
                     MaterialDatePicker.todayInUtcMilliseconds()
             );
         }
+
         return new Pair<>(
                 dataInicialEmUtc.getLong(ChronoField.INSTANT_SECONDS),
                 dataFinalEmUtc.getLong(ChronoField.INSTANT_SECONDS)
         );
+
+
     }
 
     private void selecionaNovoDataRange(@NonNull Pair<Long, Long> selection) {

@@ -24,7 +24,7 @@ public class FormularioCavaloViewModel extends ViewModel {
     }
 
     public LiveData<Long> salvaCavalo(@NonNull final Cavalo cavalo) {
-        if (cavalo.getId() != null) {
+        if (cavalo.getId() == null) {
             return repository.adicionaCavalo(cavalo);
         } else {
             return repository.editaCavalo(cavalo);

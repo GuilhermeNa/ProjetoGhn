@@ -29,7 +29,7 @@
             android:id="@+id/motorista"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="..."
+            tools:text="@tools:sample/full_names"
             android:layout_margin="8dp"
             android:textSize="12sp"
             android:textColor="@color/white"
@@ -44,7 +44,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/motorista">
 
             <TextView
                 android:id="@+id/frag_manutencao_detalhes_total_pago_txt"
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginEnd="16dp"
-                android:text="Total pago"
+                android:text="@string/total_pago"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="R$ 100.000,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -79,7 +79,8 @@
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frag_manutencao_detalhes_total_pago_layout">
+            app:layout_constraintTop_toBottomOf="@id/frag_manutencao_detalhes_total_pago_layout"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -87,13 +88,15 @@
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:padding="3dp">
+                android:padding="3dp"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_calendar_month_24" />
+                    android:src="@drawable/ic_calendar_month_24"
+                    android:contentDescription="@string/calendario" />
 
                 <TextView
                     android:id="@+id/frag_manutencao_detalhes_mes_dt_inicial"
@@ -101,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="01/01/23"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -118,14 +121,15 @@
 
                 <TextView
                     android:id="@+id/frag_manutencao_detalhes_mes_dt_final"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="02/05/23"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="NestedWeights" />
             </LinearLayout>
         </LinearLayout>
 
@@ -140,7 +144,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/frag_manutencao_detalhes_data"
             app:layout_constraintStart_toEndOf="@id/frag_manutencao_detalhes_data"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/floating_action_button" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -153,25 +158,28 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frag_manutencao_detalhes_constraint">
+        app:layout_constraintTop_toBottomOf="@id/frag_manutencao_detalhes_constraint"
+        tools:ignore="UseCompoundDrawables">
 
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="end"
-            android:src="@drawable/vazio" />
+            android:src="@drawable/vazio"
+            android:contentDescription="@string/nao_encontrei_nada_aqui" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Não encontrei nada aqui."
+            android:text="@string/nao_encontrei_nada_aqui"
             android:textSize="16sp" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -179,14 +187,14 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/frag_manutencao_detalhes_titulo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Manutenção"
+                android:text="@string/manutencao"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -199,6 +207,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="16dp"
+                android:paddingBottom="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -207,8 +216,6 @@
                 tools:listitem="@layout/recycler_item_manutencao_detalhe" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.model.enums.TipoCustoDePercurso;
 import br.com.transporte.AppGhn.util.DataUtil;
@@ -48,7 +47,7 @@ public class FiltraCustosPercurso {
                 .collect(Collectors.toList());
     }
 
-    public static List<CustosDePercurso> listaPorMes(@NonNull List<CustosDePercurso> dataSet, int mes) {
+    public static List<CustosDePercurso> listaDoMesSolicitado(@NonNull List<CustosDePercurso> dataSet, int mes) {
         return dataSet.stream()
                 .filter(c -> c.getData().getMonthValue() == mes)
                 .collect(Collectors.toList());

@@ -10,7 +10,6 @@ import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.ON_SEARC
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.ON_SEARCH_CLICK;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_CRIADO;
 import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.REGISTRO_RENOVADO;
-import static br.com.transporte.AppGhn.ui.activity.ConstantesActivities.TAG;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_FORMULARIO;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.CHAVE_REQUISICAO;
@@ -21,7 +20,6 @@ import static br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro.FROTA;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -100,7 +98,6 @@ public class SeguroFrotaFragment extends Fragment {
         super.onCreate(savedInstanceState);
         inicializaViewModel();
         getDataUseCase();
-        Log.d(TAG, "onCreate: ");
     }
 
     private void inicializaViewModel() {
@@ -134,10 +131,6 @@ public class SeguroFrotaFragment extends Fragment {
             recyclerView.setVisibility(View.VISIBLE);
             alertaLayout.setVisibility(View.INVISIBLE);
         }
-     /*   ExibirResultadoDaBusca_sucessoOuAlerta
-                .configura(dataSet.size(), buscaVazia,
-                        recyclerView, VIEW_INVISIBLE
-                );*/
     }
 
     @Nullable
@@ -154,17 +147,12 @@ public class SeguroFrotaFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        inicializaCamposDaView();
         configuraRecycler();
         configuraMenuProvider();
     }
 
-    private void inicializaCamposDaView() {
-
-        recyclerView = binding.fragSegurosRecycler;
-    }
-
     private void configuraRecycler() {
+        recyclerView = binding.fragSegurosRecycler;
         adapter = new SeguroFrotaAdapter(this, viewModel.getDataSet());
         recyclerView.setAdapter(adapter);
 

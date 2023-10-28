@@ -36,4 +36,10 @@ public interface RoomFreteDao {
     @Query("SELECT * FROM frete WHERE freteJaFoiPago LIKE :isPago")
     LiveData<List<Frete>> listaPorStatusDeRecebimento(boolean isPago);
 
+    @Query("SELECT * FROM frete WHERE refCavaloId = :cavaloId")
+    List<Frete> buscaPorCavaloIdParaTask(Long cavaloId);
+
+    @Query("SELECT * FROM frete")
+    List<Frete> buscaTodosParaTask();
+
 }

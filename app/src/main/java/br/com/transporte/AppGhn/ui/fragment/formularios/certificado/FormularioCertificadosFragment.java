@@ -12,7 +12,6 @@ import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_DEL
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_EDIT;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.RESULT_UPDATE;
 import static br.com.transporte.AppGhn.ui.fragment.ConstantesFragment.SELECIONE_UM_CAVALO_VALIDO;
-import static br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroVida.FormularioSeguroVidaFragment.SUB_TITULO_APP_BAR_EDITANDO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.ATIVO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.CONFIRMA_A_RENOVACAO_DE_UM_NOVO_REGISTRO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.JA_EXISTE_UM;
@@ -20,6 +19,7 @@ import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.exten
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.RENOVANDO_REGISTRO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.SELECIONE_UM_CERTIFICADO_VALIDO;
 import static br.com.transporte.AppGhn.ui.fragment.formularios.certificado.extension.FCertificadoConstantesExt.SUB_TITULO_APP_BAR_RENOVANDO;
+import static br.com.transporte.AppGhn.ui.fragment.formularios.seguros.seguroVida.FormularioSeguroVidaFragment.SUB_TITULO_APP_BAR_EDITANDO;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -49,6 +49,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.databinding.FragmentFormularioCertificadosBinding;
 import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.despesas.DespesaCertificado;
 import br.com.transporte.AppGhn.model.enums.TipoCertificado;

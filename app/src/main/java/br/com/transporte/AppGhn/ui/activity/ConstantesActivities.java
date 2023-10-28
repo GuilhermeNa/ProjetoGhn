@@ -7,7 +7,7 @@ public interface ConstantesActivities {
     String REGISTRO_ADICIONADO = "Registro adicionado";
     String SELECIONE_O_PERIODO = "Selecione o periodo";
     String CAVALOS = "Cavalos";
-     String ONE_HUNDRED = "100.00";
+    String ONE_HUNDRED = "100.00";
     String REGISTRO_ALTERADO = "Registro alterado";
     String BAIXA_REGISTRADA_COM_SUCESSO = "Baixa registrada com sucesso";
     String REGISTRO_RENOVADO = "Registro renovado";
@@ -18,4 +18,5 @@ public interface ConstantesActivities {
     String CHAVE_DESPESA = "chave_despesa";
     String LOGOUT = "Logout";
     String TAG = "teste";
+    String DEBUG = "debug";
 }

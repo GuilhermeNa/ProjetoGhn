@@ -11,7 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import java.util.List;
+
 import br.com.transporte.AppGhn.R;
+import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
 import br.com.transporte.AppGhn.ui.fragment.desempenho.dialog.BottomDialogDesempenho;
 import br.com.transporte.AppGhn.util.MensagemUtil;
@@ -19,6 +22,7 @@ import br.com.transporte.AppGhn.util.MensagemUtil;
 public class DesempenhoMenuProviderHelper implements MenuProvider {
     private final Fragment fragment;
     private Callback callback;
+    private List<Cavalo> dataSet;
 
     public void setCallback(Callback callback) {
         this.callback = callback;
@@ -32,6 +36,8 @@ public class DesempenhoMenuProviderHelper implements MenuProvider {
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.menu_padrao, menu);
         menu.removeItem(R.id.menu_padrao_search);
+        MenuItem item = menu.findItem(R.id.menu_padrao_editar);
+        item.setVisible(true);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -44,7 +50,7 @@ public class DesempenhoMenuProviderHelper implements MenuProvider {
 
             case R.id.menu_padrao_editar:
                 BottomDialogDesempenho dialog = new BottomDialogDesempenho(fragment.requireContext(), fragment);
-                dialog.showBottomDialog();
+                dialog.showBottomDialog(dataSet);
                 dialog.setCallback((tipo, ano, cavaloId) ->
                         callback.repassaRequisicaoDeFiltragem(tipo, ano, cavaloId)
                 );
@@ -56,6 +62,10 @@ public class DesempenhoMenuProviderHelper implements MenuProvider {
                 break;
         }
         return false;
+    }
+
+    public void setListaCavalos(final List<Cavalo> dataSet) {
+        this.dataSet = dataSet;
     }
 
     //----------------------------------------------------------------------------------------------

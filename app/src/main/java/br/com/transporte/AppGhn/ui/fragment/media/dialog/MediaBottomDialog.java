@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -13,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,34 +24,35 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.transporte.AppGhn.R;
-import br.com.transporte.AppGhn.dao.CustosDeAbastecimentoDAO;
-import br.com.transporte.AppGhn.dao.CustosDePercursoDAO;
-import br.com.transporte.AppGhn.database.GhnDataBase;
-import br.com.transporte.AppGhn.database.dao.RoomCustosAbastecimentoDao;
-import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
-import br.com.transporte.AppGhn.database.dao.RoomFreteDao;
 import br.com.transporte.AppGhn.filtros.FiltraCustosAbastecimento;
-import br.com.transporte.AppGhn.filtros.FiltraCustosPercurso;
-import br.com.transporte.AppGhn.filtros.FiltraFrete;
-import br.com.transporte.AppGhn.model.Cavalo;
 import br.com.transporte.AppGhn.model.Frete;
 import br.com.transporte.AppGhn.model.custos.CustosDeAbastecimento;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
+import br.com.transporte.AppGhn.repository.Resource;
+import br.com.transporte.AppGhn.ui.fragment.media.viewmodel.MediaFragmentViewModel;
 import br.com.transporte.AppGhn.util.ConverteDataUtil;
 import br.com.transporte.AppGhn.util.FormataNumerosUtil;
 
 public class MediaBottomDialog {
     private final Context context;
     private final CustosDeAbastecimento flag1, flag2;
-    private final Cavalo cavalo;
+    private final MediaFragmentViewModel viewModel;
+    private final LifecycleOwner lifecycleOwner;
     private TextView data01Txt, km01Txt, data02Txt, km02Txt, kmRodadoTxT, litrosTxt, freteTxt,
             abastecimentoTxt, comissaoTxt, custosPercursoTxt, percentualTxt, mediaTxt;
 
-    public MediaBottomDialog(Context context, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2, Cavalo cavalo) {
+    public MediaBottomDialog(
+            Context context,
+            CustosDeAbastecimento flag1,
+            CustosDeAbastecimento flag2,
+            MediaFragmentViewModel viewModel,
+            LifecycleOwner lifecycleOwner
+    ) {
         this.context = context;
         this.flag1 = organizaPorDatasFlag1(flag1, flag2);
         this.flag2 = organizaPorDatasFlag2(flag1, flag2);
-        this.cavalo = cavalo;
+        this.viewModel = viewModel;
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     @NonNull
@@ -115,35 +120,53 @@ public class MediaBottomDialog {
     //-----------------------------
 
     private void ui_Configura() {
-        ManipulaDados dados = new ManipulaDados(context, cavalo, flag1, flag2);
+        ManipulaDados dados = new ManipulaDados(lifecycleOwner, viewModel, flag1, flag2);
 
         ui_configuraPeriodoAnalisado(flag1, data01Txt, km01Txt);
         ui_configuraPeriodoAnalisado(flag2, data02Txt, km02Txt);
 
-        BigDecimal kmRodado = dados.getKmRodadoNoIntervalo();
-        ui_configuraNumeros(kmRodadoTxT, kmRodado);
+        dados.run(new ManipulaDados.ValoresRefAbastecimentoCallback() {
+            @Override
+            public void kmRodado(BigDecimal kmRodado) {
+                ui_configuraNumeros(kmRodadoTxT, kmRodado);
+            }
 
-        BigDecimal totalLitros = dados.getTotalDeLitrosUsadosNoIntervalo();
-        ui_configuraNumeros(litrosTxt, totalLitros);
+            @Override
+            public void litrosUsados(BigDecimal litros) {
+                ui_configuraNumeros(litrosTxt, litros);
+            }
 
-        BigDecimal frete = dados.getFreteBrutoAuferidoNoPeriodo();
-        ui_configuraValores(freteTxt, frete);
+            @Override
+            public void custoComAbastecimento(BigDecimal valor) {
+                ui_configuraValores(abastecimentoTxt, valor);
+            }
 
-        BigDecimal abastecimento = dados.getAbastecimentoAcumuladoNoPeriodo();
-        ui_configuraValores(abastecimentoTxt, abastecimento);
+            @Override
+            public void freteAcumuladoNoPeriodo(BigDecimal valor) {
+                ui_configuraValores(freteTxt, valor);
+            }
 
-        BigDecimal comissao = dados.getComissaoPagaNoPeriodo();
-        ui_configuraValores(comissaoTxt, comissao);
+            @Override
+            public void comissaoPagaNoPeriodo(BigDecimal valor) {
+                ui_configuraValores(comissaoTxt, valor);
+            }
 
-        BigDecimal custosPercurso = dados.getCustosDePercursoAcumuladoNoPeriodo();
-        ui_configuraValores(custosPercursoTxt, custosPercurso);
+            @Override
+            public void custosDePercurso(BigDecimal valor) {
+                ui_configuraValores(custosPercursoTxt, valor);
+            }
 
-        BigDecimal media = dados.getMediaDoPeriodo();
-        mediaTxt.setText(media.toPlainString());
+            @Override
+            public void mediaDoPeriodo(BigDecimal media) {
+                mediaTxt.setText(media.toPlainString());
+            }
 
-        BigDecimal percentual = dados.getPercentualDeLucroDoPeriodo();
-        String percentualEmString = percentual.toPlainString() + " %";
-        percentualTxt.setText(percentualEmString);
+            @Override
+            public void percentualDeLucro(BigDecimal valor) {
+                final String percentualEmString = valor.toPlainString() + " %";
+                percentualTxt.setText(percentualEmString);
+            }
+        });
 
     }
 
@@ -172,99 +195,175 @@ public class MediaBottomDialog {
 //--------------------------------------------------------------------------------------------------
 
 class ManipulaDados {
-    private final RoomFreteDao freteDao;
-    private final RoomCustosAbastecimentoDao abastecimentoDao;
-    private final RoomCustosPercursoDao custosPercursoDao;
+    private final MediaFragmentViewModel viewModel;
     private final CustosDeAbastecimento flag1, flag2;
-    private final Cavalo cavalo;
+    private final LifecycleOwner lifecycleOwner;
+    private BigDecimal kmRodadoNoIntervalo;
+    private BigDecimal valorFrete;
+    private BigDecimal valorComissao;
+    private BigDecimal valorCustoDePercurso;
+    private BigDecimal valorAbastecimentosNoIntervalo;
 
-    public ManipulaDados(Context context, Cavalo cavalo, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2) {
-        this.cavalo = cavalo;
+    public ManipulaDados(LifecycleOwner lifecycleOwner, MediaFragmentViewModel viewModel, CustosDeAbastecimento flag1, CustosDeAbastecimento flag2) {
         this.flag1 = flag1;
         this.flag2 = flag2;
-        GhnDataBase dataBase = GhnDataBase.getInstance(context);
-        freteDao = dataBase.getRoomFreteDao();
-        abastecimentoDao = dataBase.getRoomCustosAbastecimentoDao();
-        custosPercursoDao = dataBase.getRoomCustosPercursoDao();
+        this.viewModel = viewModel;
+        this.lifecycleOwner = lifecycleOwner;
+    }
+
+    public interface ValoresRefAbastecimentoCallback {
+        void kmRodado(BigDecimal kmRodado);
+
+        void litrosUsados(BigDecimal litros);
+
+        void custoComAbastecimento(BigDecimal valor);
+
+        void freteAcumuladoNoPeriodo(BigDecimal valor);
+
+        void comissaoPagaNoPeriodo(BigDecimal valor);
+
+        void custosDePercurso(BigDecimal valor);
+
+        void mediaDoPeriodo(BigDecimal media);
+
+        void percentualDeLucro(BigDecimal valor);
+
     }
 
     //----------------------------------------
     // -> Metodos                           ||
     //----------------------------------------
 
-    protected BigDecimal getKmRodadoNoIntervalo() {
-        BigDecimal kmFlag1 = flag1.getMarcacaoKm();
-        BigDecimal kmFlag2 = flag2.getMarcacaoKm();
+    protected void run(final ValoresRefAbastecimentoCallback callback) {
+        getKmRodadoNoIntervalo(callback);
+        buscaValoresRefAbastecimento(callback);
+        buscaValoresRefFrete(callback);
+        getCustosDePercursoAcumuladoNoPeriodo(callback);
 
-        return kmFlag2.subtract(kmFlag1);
+        final Handler r = new Handler();
+        r.postDelayed(
+                () -> {
+                    getPercentualDeLucroDoPeriodo(callback);
+                }, 500);
+
     }
 
-    protected BigDecimal getTotalDeLitrosUsadosNoIntervalo() {
-   //     List<CustosDeAbastecimento> dataSet = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
-    //   CustosDeAbastecimento primeiroAbastConsiderado = dataSet.get(dataSet.indexOf(flag1) + 1);
-    //    dataSet = FiltraCustosAbastecimento.listaPorData(dataSet, primeiroAbastConsiderado.getData(), flag2.getData());
-     //   return dataSet.stream()
-       //         .map(CustosDeAbastecimento::getQuantidadeLitros)
-         //       .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return BigDecimal.ZERO;
+    private void getKmRodadoNoIntervalo(@NonNull final ValoresRefAbastecimentoCallback callback) {
+        final BigDecimal kmFlag1 = flag1.getMarcacaoKm();
+        final BigDecimal kmFlag2 = flag2.getMarcacaoKm();
+        kmRodadoNoIntervalo = kmFlag2.subtract(kmFlag1);
+        callback.kmRodado(kmRodadoNoIntervalo);
     }
 
-    protected BigDecimal getFreteBrutoAuferidoNoPeriodo() {
-      /*  List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
-        fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
-        return fretes.stream()
-                .map(Frete::getFreteBruto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
-        return BigDecimal.ZERO;
+    private void buscaValoresRefAbastecimento(final ValoresRefAbastecimentoCallback callback) {
+        final LiveData<Resource<List<CustosDeAbastecimento>>> observer = viewModel.carregaAbastecimentosPorCavaloId();
+        observer.observe(lifecycleOwner,
+                new Observer<Resource<List<CustosDeAbastecimento>>>() {
+                    @Override
+                    public void onChanged(final Resource<List<CustosDeAbastecimento>> resource) {
+                        observer.removeObserver(this);
+                        getLitrosUsadosNoPercurso(resource.getDado());
+                        getCustoComAbastecimentoDoPeriodo(resource.getDado());
+                        getMediaDoPeriodo();
+                    }
+
+                    private void getLitrosUsadosNoPercurso(@NonNull List<CustosDeAbastecimento> custosDeAbastecimentos) {
+                        CustosDeAbastecimento primeiroAbastConsiderado;
+                        try{
+                            primeiroAbastConsiderado = custosDeAbastecimentos.get(custosDeAbastecimentos.indexOf(flag1) + 1);
+                        } catch (IndexOutOfBoundsException e){
+                            e.printStackTrace();
+                            primeiroAbastConsiderado = custosDeAbastecimentos.get(custosDeAbastecimentos.indexOf(flag1));
+                        }
+
+                        custosDeAbastecimentos = FiltraCustosAbastecimento.listaPorData(custosDeAbastecimentos, primeiroAbastConsiderado.getData(), flag2.getData());
+
+                        final BigDecimal valor = custosDeAbastecimentos.stream()
+                                .map(CustosDeAbastecimento::getQuantidadeLitros)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                        callback.litrosUsados(valor);
+
+                    }
+
+                    private void getCustoComAbastecimentoDoPeriodo(List<CustosDeAbastecimento> custosDeAbastecimentos) {
+                        custosDeAbastecimentos = FiltraCustosAbastecimento.listaPorData(custosDeAbastecimentos, flag1.getData(), flag2.getData());
+
+                        valorAbastecimentosNoIntervalo = custosDeAbastecimentos.stream()
+                                .map(CustosDeAbastecimento::getValorCusto)
+                                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                        callback.custoComAbastecimento(valorAbastecimentosNoIntervalo);
+                    }
+
+                    private void getMediaDoPeriodo() {
+                        BigDecimal media;
+                        try{
+                            media = kmRodadoNoIntervalo
+                                    .divide(valorAbastecimentosNoIntervalo, 2, RoundingMode.HALF_EVEN);
+                        } catch (ArithmeticException e){
+                            media = BigDecimal.ZERO;
+                        }
+                        callback.mediaDoPeriodo(media);
+                    }
+                });
     }
 
-    protected BigDecimal getAbastecimentoAcumuladoNoPeriodo() {
-    /*    List<CustosDeAbastecimento> abastecimentos = FiltraCustosAbastecimento.listaPorCavaloId(abastecimentoDao.todos(), cavalo.getId());
-        abastecimentos = FiltraCustosAbastecimento.listaPorData(abastecimentos, flag1.getData(), flag2.getData());
-        return abastecimentos.stream()
-                .map(CustosDeAbastecimento::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
-        return BigDecimal.ZERO;
+    private void buscaValoresRefFrete(final ValoresRefAbastecimentoCallback callback) {
+        final LiveData<List<Frete>> observer = viewModel.carregaFretes(flag1.getData(), flag2.getData());
+        observer.observe(lifecycleOwner, new Observer<List<Frete>>() {
+
+            @Override
+            public void onChanged(List<Frete> fretes) {
+                observer.removeObserver(this);
+                getFreteAuferidoNoPeriodo(fretes);
+                getComissaoPagaNoPeriodo(fretes);
+            }
+
+            private void getComissaoPagaNoPeriodo(@NonNull final List<Frete> fretes) {
+                valorComissao = fretes.stream()
+                        .map(Frete::getComissaoAoMotorista)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                callback.comissaoPagaNoPeriodo(valorComissao);
+            }
+
+            private void getFreteAuferidoNoPeriodo(@NonNull final List<Frete> fretes) {
+                valorFrete = fretes.stream()
+                        .map(Frete::getFreteBruto)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                callback.freteAcumuladoNoPeriodo(valorFrete);
+            }
+        });
     }
 
-    protected BigDecimal getComissaoPagaNoPeriodo() {
-    /*    List<Frete> fretes = FiltraFrete.listaPorCavaloId(freteDao.todos(), cavalo.getId());
-        fretes = FiltraFrete.listaPorData(fretes, flag1.getData(), flag2.getData());
-        return fretes.stream()
-                .map(Frete::getComissaoAoMotorista)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
-        return BigDecimal.ZERO;
+    private void getCustosDePercursoAcumuladoNoPeriodo(final ValoresRefAbastecimentoCallback callback) {
+        final LiveData<List<CustosDePercurso>> observer = viewModel.carregaCustosDePercurso(flag1.getData(), flag2.getData());
+        observer.observe(lifecycleOwner, new Observer<List<CustosDePercurso>>() {
+            @Override
+            public void onChanged(List<CustosDePercurso> custosDePercurso) {
+                observer.removeObserver(this);
+
+                valorCustoDePercurso = custosDePercurso.stream()
+                        .map(CustosDePercurso::getValorCusto)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                callback.custosDePercurso(valorCustoDePercurso);
+            }
+        });
     }
 
-    protected BigDecimal getCustosDePercursoAcumuladoNoPeriodo() {
-  /*      List<CustosDePercurso> custoPercurso = FiltraCustosPercurso.listaPorCavaloId(custosPercursoDao.todos(), cavalo.getId());
-        custoPercurso = FiltraCustosPercurso.listaPorData(custoPercurso, flag1.getData(), flag2.getData());
-        return custoPercurso.stream()
-                .map(CustosDePercurso::getValorCusto)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);*/
-        return BigDecimal.ZERO;
-    }
+    private void getPercentualDeLucroDoPeriodo(final ValoresRefAbastecimentoCallback callback) {
+        final BigDecimal custos = valorAbastecimentosNoIntervalo
+                .add(valorComissao)
+                .add(valorCustoDePercurso);
 
-    protected BigDecimal getMediaDoPeriodo() {
-        BigDecimal kmRodado = getKmRodadoNoIntervalo();
-        BigDecimal litrosUsados = getTotalDeLitrosUsadosNoIntervalo();
-        return kmRodado.divide(litrosUsados, 2, RoundingMode.HALF_EVEN);
-    }
-
-    protected BigDecimal getPercentualDeLucroDoPeriodo() {
-        BigDecimal freteBruto = getFreteBrutoAuferidoNoPeriodo();
-        BigDecimal abastecimento = getAbastecimentoAcumuladoNoPeriodo();
-        BigDecimal comissao = getComissaoPagaNoPeriodo();
-        BigDecimal custosPercurso = getCustosDePercursoAcumuladoNoPeriodo();
-
-        BigDecimal custos = abastecimento
-                .add(comissao)
-                .add(custosPercurso);
-
-        if (Objects.equals(freteBruto, BigDecimal.ZERO)) return BigDecimal.ZERO;
+        if (Objects.equals(valorFrete, BigDecimal.ZERO))
+            callback.percentualDeLucro(BigDecimal.ZERO);
         else
-            return BIG_DECIMAL_UM.subtract(
-                    custos.divide(freteBruto, 2, RoundingMode.HALF_EVEN)
+            callback.percentualDeLucro(BIG_DECIMAL_UM.subtract(custos.divide(valorFrete, 2, RoundingMode.HALF_EVEN))
             );
     }
+
 }

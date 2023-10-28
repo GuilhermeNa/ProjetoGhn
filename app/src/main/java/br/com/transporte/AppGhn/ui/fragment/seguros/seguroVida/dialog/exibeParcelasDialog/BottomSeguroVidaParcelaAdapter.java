@@ -34,6 +34,14 @@ public class BottomSeguroVidaParcelaAdapter extends RecyclerView.Adapter<BottomS
         this.context = context;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    public void defineDataSet(List<Parcela_seguroVida> dataSet) {
+        this.dataSet.clear();
+        this.dataSet.addAll(dataSet);
+        map = criaMap();
+        notifyDataSetChanged();
+    }
+
     @NonNull
     private HashMap<Integer, Boolean> criaMap() {
         HashMap<Integer, Boolean> map = new HashMap<>();
@@ -45,11 +53,7 @@ public class BottomSeguroVidaParcelaAdapter extends RecyclerView.Adapter<BottomS
         return map;
     }
 
-    public void defineDataSet(List<Parcela_seguroVida> dataSet) {
-        this.dataSet.clear();
-        this.dataSet.addAll(dataSet);
-        map = criaMap();
-    }
+
 
     //----------------------------------------------------------------------------------------------
     //                                          ViewHolder                                        ||
@@ -77,7 +81,7 @@ public class BottomSeguroVidaParcelaAdapter extends RecyclerView.Adapter<BottomS
     @NonNull
     @Override
     public BottomSeguroVidaParcelaAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_pagamento_seguro, parent, false);
+        final View viewCriada = LayoutInflater.from(context).inflate(R.layout.recycler_item_pagamento_seguro, parent, false);
         return new ViewHolder(viewCriada);
     }
 
@@ -113,8 +117,6 @@ public class BottomSeguroVidaParcelaAdapter extends RecyclerView.Adapter<BottomS
             map = verificaSeTemCheckBoxMarcado(parcela, holder.checkBox.isChecked());
             onItemCLickListener.onBoxClick(map);
         });
-
-
     }
 
     private HashMap<Integer, Boolean> verificaSeTemCheckBoxMarcado(Parcela_seguroVida parcela, boolean isChecked) {

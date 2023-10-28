@@ -29,6 +29,7 @@ public class CarregandoDadosFreteReceberFragment extends Fragment {
     private boolean animacaoDeEntradaTerminou = false;
     private ImageView imagem;
     private TextView texto;
+    private Handler handler;
 
     private interface DadosCarregadosCallback {
         void finaliza();
@@ -67,7 +68,7 @@ public class CarregandoDadosFreteReceberFragment extends Fragment {
     }
 
     private void animacaoDeEntrada(final DadosCarregadosCallback callback) {
-        final Handler handler = new Handler();
+        handler = new Handler();
         final Runnable r = () -> {
             texto.setVisibility(VISIBLE);
             AnimationUtil.defineAnimacao(requireContext(), android.R.anim.fade_in, texto);
@@ -102,7 +103,6 @@ public class CarregandoDadosFreteReceberFragment extends Fragment {
     }
 
     private void animacaoDeSaida(@NonNull final DadosCarregadosCallback callback) {
-        final Handler handler = new Handler();
 
         final Runnable r = () -> {
             texto.setVisibility(INVISIBLE);
@@ -132,6 +132,13 @@ public class CarregandoDadosFreteReceberFragment extends Fragment {
         handler.postDelayed(r2, 2500);
         handler.postDelayed(r3, 3000);
         handler.postDelayed(r4, 3500);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

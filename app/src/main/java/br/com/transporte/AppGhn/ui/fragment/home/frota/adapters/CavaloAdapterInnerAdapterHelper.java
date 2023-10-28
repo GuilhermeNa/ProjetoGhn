@@ -15,7 +15,6 @@ import br.com.transporte.AppGhn.model.SemiReboque;
 import br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment;
 
 public class CavaloAdapterInnerAdapterHelper {
-
     private final List<SemiReboque> copiaDataSet_reboque;
     private final List<Cavalo> copiaDataSet_cavalo;
     private final FrotaFragment context;
@@ -47,8 +46,9 @@ public class CavaloAdapterInnerAdapterHelper {
 
     //----------------------------------------------------------------------------------------------
 
-    public void atualizaAdapter(List<SemiReboque> copiaDataSet_reboque){
-        List<SemiReboque> listaSrPorCavalo = FiltraReboque.listaPorCavaloId(copiaDataSet_reboque, cavalo.getId());
+    public void atualizaAdapter(List<SemiReboque> copiaDataSet_reboque) {
+        final List<SemiReboque> listaSrPorCavalo =
+                FiltraReboque.listaPorCavaloId(copiaDataSet_reboque, cavalo.getId());
         adapter.atualiza(listaSrPorCavalo);
     }
 
@@ -63,9 +63,12 @@ public class CavaloAdapterInnerAdapterHelper {
     }
 
     private void configuraAdapter(@NonNull CavaloAdapter.ViewHolder holder) {
-        List<SemiReboque> semiReboques = FiltraReboque.listaPorCavaloId(copiaDataSet_reboque, cavalo.getId());
+        final List<SemiReboque> semiReboques =
+                FiltraReboque.listaPorCavaloId(copiaDataSet_reboque, cavalo.getId());
+
         adapter = new SemiReboqueAdapter(context.getContext(), semiReboques, copiaDataSet_cavalo);
         holder.recyclerFilha.setAdapter(adapter);
+
         adapter.setOnItemClickListener(new SemiReboqueAdapter.OnItemClickListener() {
             @Override
             public void onEditaSrClick(Long reboqueId) {
@@ -80,8 +83,8 @@ public class CavaloAdapterInnerAdapterHelper {
     }
 
     private void configuraItemDecoration(@NonNull CavaloAdapter.ViewHolder holder) {
-        Drawable divider = ContextCompat.getDrawable(context.requireContext(), R.drawable.divider);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(context.requireContext(), DividerItemDecoration.VERTICAL);
+        final Drawable divider = ContextCompat.getDrawable(context.requireContext(), R.drawable.divider);
+        final DividerItemDecoration itemDecoration = new DividerItemDecoration(context.requireContext(), DividerItemDecoration.VERTICAL);
         if (divider != null) itemDecoration.setDrawable(divider);
         holder.recyclerFilha.addItemDecoration(itemDecoration);
     }

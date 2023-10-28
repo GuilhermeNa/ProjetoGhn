@@ -14,6 +14,7 @@ import br.com.transporte.AppGhn.database.GhnDataBase;
 import br.com.transporte.AppGhn.database.dao.RoomParcela_seguroVidaDao;
 import br.com.transporte.AppGhn.model.parcelas.Parcela_seguroVida;
 import br.com.transporte.AppGhn.repository.RepositoryCallbackVoid;
+import br.com.transporte.AppGhn.tasks.parcelaVida.AdicionaListaParcelasVidaTask;
 import br.com.transporte.AppGhn.tasks.parcelaVida.EditaParcelaVidaTask;
 
 public class LocalParcelaSeguroVidaDataSource {
@@ -40,6 +41,15 @@ public class LocalParcelaSeguroVidaDataSource {
     ) {
         final EditaParcelaVidaTask task = new EditaParcelaVidaTask(executor, handler);
         task.solicitaAtualizacao(dao, parcela,
+                callback::quandoFinaliza);
+    }
+
+    public void adicionaLista(
+            final List<Parcela_seguroVida> parcelasDoSeguro,
+            @NonNull final RepositoryCallbackVoid callback
+            ) {
+        final AdicionaListaParcelasVidaTask task = new AdicionaListaParcelasVidaTask(executor, handler);
+        task.solicitaAdicao(parcelasDoSeguro, dao,
                 callback::quandoFinaliza);
     }
 

@@ -283,13 +283,5 @@ public class SegurosInformacoesGeraisFragment extends Fragment {
         binding = null;
     }
 
-    //----------------------------------------------------------------------------------------------
-    //                                          Interface                                         ||
-    //----------------------------------------------------------------------------------------------
-
-    public interface Callback {
-        void atualizaFrotaAdapter(String msg);
-    }
-
 }
 

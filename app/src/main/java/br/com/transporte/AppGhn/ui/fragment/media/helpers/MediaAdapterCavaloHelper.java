@@ -1,9 +1,7 @@
 package br.com.transporte.AppGhn.ui.fragment.media.helpers;
 
 import android.content.Context;
-import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +46,7 @@ public class MediaAdapterCavaloHelper {
     }
 
     private void configuraLayoutManager() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         recyclerDeCavalos.setLayoutManager(layoutManager);
     }
 
@@ -69,6 +67,14 @@ public class MediaAdapterCavaloHelper {
 
     public void atualizaAdapterDataSetPorSearch (List<Cavalo> dataSet_SearchView){
         adapter.atualiza(dataSet_SearchView);
+    }
+
+    public void atualizaData(final List<Cavalo> listaCavalos) {
+        adapter.atualiza(listaCavalos);
+    }
+
+    public void setCavaloArmazenado(Cavalo cavaloSelecionado) {
+        adapter.setCavaloArmazenado(cavaloSelecionado);
     }
 
     public interface AdapterCallback {

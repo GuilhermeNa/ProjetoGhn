@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -17,6 +18,7 @@ import br.com.transporte.AppGhn.database.dao.RoomCustosPercursoDao;
 import br.com.transporte.AppGhn.model.custos.CustosDePercurso;
 import br.com.transporte.AppGhn.tasks.custoPercurso.AdicionaCustoDePercursoTask;
 import br.com.transporte.AppGhn.tasks.custoPercurso.AtualizaCustoDePercursoTask;
+import br.com.transporte.AppGhn.tasks.custoPercurso.BuscaCustoPorCavaloEDataTask;
 import br.com.transporte.AppGhn.tasks.custoPercurso.DeletaCustoDePercursoTask;
 
 public class CustoDePercursoRepository {
@@ -94,6 +96,28 @@ public class CustoDePercursoRepository {
         return liveData;
     }
 
+    public LiveData<List<CustosDePercurso>> buscaCustoPorCavaloEData(
+            final Long id,
+            final LocalDate dataInicial,
+            final LocalDate dataFinal
+    ) {
+        final MutableLiveData<List<CustosDePercurso>> liveData = new MutableLiveData<>();
+        buscaCustoPorCavaloEData_room(id, dataInicial, dataFinal,
+                new RepositoryCallback<List<CustosDePercurso>>() {
+                    @Override
+                    public void sucesso(List<CustosDePercurso> lista) {
+                        liveData.setValue(lista);
+                    }
+
+                    @Override
+                    public void falha(String msg) {
+
+                    }
+                });
+
+        return liveData;
+    }
+
     //----------------------------------------------------------------------------------------------
     //                                       Busca Interna                                        ||
     //----------------------------------------------------------------------------------------------
@@ -146,6 +170,17 @@ public class CustoDePercursoRepository {
         } else {
             callback.falha("Falha ao remover");
         }
+    }
+
+    public void buscaCustoPorCavaloEData_room(
+            final Long id,
+            final LocalDate dataInicial,
+            final LocalDate dataFinal,
+            @NonNull final RepositoryCallback<List<CustosDePercurso>> callback
+    ) {
+       final BuscaCustoPorCavaloEDataTask task = new BuscaCustoPorCavaloEDataTask(executor, handler);
+       task.solicitaBusca(dao, id, dataInicial, dataFinal,
+               callback::sucesso);
     }
 
 }

@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:text="23/06/23"
+                tools:text="@tools:sample/date/ddmmyy"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:text="OUX5555"
+                tools:text="@tools:sample/lorem"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total receber"
+                    android:text="@string/total_a_receber"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 
@@ -82,7 +82,7 @@
                     android:id="@+id/rec_item_frete_receber_completo_total_receber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="R$ 16.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -103,14 +103,16 @@
                     android:id="@+id/rec_item_frete_receber_completo_origem"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sao Paulo"
+                    tools:text="@tools:sample/cities"
+                    android:ellipsize="end"
                     android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/rec_item_frete_receber_completo_destino"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Goiânia"
+                    tools:text="@tools:sample/cities"
+                    android:ellipsize="end"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -126,14 +128,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Adiantamento"
+                    android:text="@string/adiantamento"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/rec_item_frete_receber_completo_adiantamento"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="R$ 10.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -151,14 +153,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Saldo"
+                    android:text="@string/saldo"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/rec_item_frete_receber_completo_saldo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="R$ 6.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -53,7 +53,7 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentGerenciamentoBinding.inflate(inflater, container, false);
+        binding = FragmentGerenciamentoBinding.inflate(getLayoutInflater());
         return binding.getRoot();
     }
 
@@ -111,7 +111,7 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
     }
 
     private void configuraToolbar() {
-        Toolbar toolbar = binding.toolbar;
+        final Toolbar toolbar = binding.toolbar;
         ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setDisplayShowTitleEnabled(true);
@@ -153,5 +153,11 @@ public class GerenciamentoFragment extends Fragment implements MenuProvider {
                 break;
         }
         return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }

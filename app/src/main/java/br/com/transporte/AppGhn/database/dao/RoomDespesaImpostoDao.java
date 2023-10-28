@@ -28,4 +28,11 @@ public interface RoomDespesaImpostoDao {
 
     @Query("SELECT * FROM despesasDeImposto")
     LiveData<List<DespesasDeImposto>> todos();
+
+    @Query("SELECT * FROM despesasDeImposto")
+    List<DespesasDeImposto> buscaTodosParaTask();
+
+    @Query("SELECT * FROM despesasDeImposto WHERE refCavaloId = :cavaloId")
+    List<DespesasDeImposto> buscaPorCavaloIdParaTask(Long cavaloId);
+
 }

@@ -10,7 +10,6 @@ import static br.com.transporte.AppGhn.util.MascaraMonetariaUtil.formatPriceSave
 import static br.com.transporte.AppGhn.util.MensagemUtil.snackBar;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +44,6 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     private EditText dataEdit, valorEdit, descricaoEdit;
     private TextView reembolso;
     private CheckBox naoBox, simBox;
-    private CustosDePercurso custo;
     private TextInputLayout dataLayout;
     private FormularioCustoPercursoViewModel viewModel;
 
@@ -60,7 +58,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         recebeReferenciaExternaDeCavalo(CHAVE_ID_CAVALO);
         long custoId = verificaSeRecebeDadosExternos(CHAVE_ID);
         defineTipoEditandoOuCriando(custoId);
-        custo = (CustosDePercurso) criaOuRecuperaObjeto(custoId);
+        criaOuRecuperaObjeto(custoId);
     }
 
     private void inicializaViewModel() {
@@ -112,18 +110,15 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         if (getTipoFormulario() == TipoFormulario.EDITANDO) {
             viewModel.localizaPeloId(custoId).observe(this,
                     custoRecebido -> {
-                        Log.d("teste", "observer acionado");
-                        Log.d("teste", "custo -> "+custoRecebido);
                         if (custoRecebido != null) {
                             viewModel.custoArmazenado = custoRecebido;
-                            custo = custoRecebido;
                             bind();
                         }
                     });
         } else {
-            custo = new CustosDePercurso();
+            viewModel.custoArmazenado = new CustosDePercurso();
         }
-        return custo;
+        return null;
     }
 
     @Override
@@ -139,10 +134,10 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public void exibeObjetoEmCasoDeEdicao() {
-        dataEdit.setText(ConverteDataUtil.dataParaString(custo.getData()));
-        valorEdit.setText(custo.getValorCusto().toPlainString());
-        descricaoEdit.setText(custo.getDescricao());
-        if (custo.getTipo() == TipoCustoDePercurso.NAO_REEMBOLSAVEL) {
+        dataEdit.setText(ConverteDataUtil.dataParaString(viewModel.custoArmazenado.getData()));
+        valorEdit.setText(viewModel.custoArmazenado.getValorCusto().toPlainString());
+        descricaoEdit.setText(viewModel.custoArmazenado.getDescricao());
+        if (viewModel.custoArmazenado.getTipo() == TipoCustoDePercurso.NAO_REEMBOLSAVEL) {
             naoBox.setChecked(true);
         } else {
             simBox.setChecked(true);
@@ -171,21 +166,26 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public void vinculaDadosAoObjeto() {
-        custo.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
-        custo.setValorCusto(new BigDecimal(formatPriceSave(valorEdit.getText().toString())));
-        custo.setDescricao(descricaoEdit.getText().toString());
-        if (simBox.isChecked()) {
-            custo.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO);
+        viewModel.custoArmazenado.setData(ConverteDataUtil.stringParaData(dataEdit.getText().toString()));
+        viewModel.custoArmazenado.setValorCusto(new BigDecimal(formatPriceSave(valorEdit.getText().toString())));
+        viewModel.custoArmazenado.setDescricao(descricaoEdit.getText().toString());
+
+         if (simBox.isChecked() && viewModel.custoArmazenado.getTipo() == null) {
+             viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO);
             reembolso.setError(null);
-        } else if (naoBox.isChecked()) {
-            custo.setTipo(TipoCustoDePercurso.NAO_REEMBOLSAVEL);
+
+        } else if (simBox.isChecked()) {
+             reembolso.setError(null);
+
+         }else if (naoBox.isChecked()) {
+             viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.NAO_REEMBOLSAVEL);
             reembolso.setError(null);
         }
     }
 
     @Override
     public void editaObjetoNoBancoDeDados() {
-        viewModel.salva(custo).observe(this,
+        viewModel.salva(viewModel.custoArmazenado).observe(this,
                 ignore -> {
                     requireActivity().setResult(RESULT_EDIT);
                     requireActivity().finish();
@@ -195,7 +195,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
     @Override
     public void adicionaObjetoNoBancoDeDados() {
         configuraObjetoNaCriacao();
-        viewModel.salva(custo).observe(this,
+        viewModel.salva(viewModel.custoArmazenado).observe(this,
                 id -> {
                     if (id != null) {
                         requireActivity().setResult(RESULT_OK);
@@ -206,8 +206,8 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
 
     @Override
     public Long configuraObjetoNaCriacao() {
-        custo.setRefCavaloId(cavaloRecebido.getId());
-        custo.setApenasAdmEdita(false);
+        viewModel.custoArmazenado.setRefCavaloId(cavaloRecebido.getId());
+        viewModel.custoArmazenado.setApenasAdmEdita(false);
         return null;
     }
 

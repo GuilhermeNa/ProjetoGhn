@@ -1,7 +1,5 @@
 package br.com.transporte.AppGhn.ui.fragment.desempenho.helpers;
 
-import static br.com.transporte.AppGhn.model.enums.TipoDeRequisicao.FRETE_BRUTO;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.view.MotionEvent;
@@ -27,8 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.transporte.AppGhn.model.enums.TipoDeRequisicao;
-import br.com.transporte.AppGhn.ui.fragment.desempenho.extensions.BarChartExtension;
-import br.com.transporte.AppGhn.util.DataUtil;
+import br.com.transporte.AppGhn.ui.fragment.desempenho.domain.mappers.MappedBarChartData;
 
 public class DesempenhoBarChartHelper {
     public static final long SEM_REF_CAVALO = 0;
@@ -37,7 +34,7 @@ public class DesempenhoBarChartHelper {
     private List<String> listaDeMesesParaExibicao;
     private List<BigDecimal> listaDeValoresParaExibicao, listaDeDados;
     private final BarChart barChart;
-    private boolean indexSelectionado;
+    private boolean indexSelecionado;
     private int posicao;
     private BarData barData;
     private BarDataSet dataSet;
@@ -68,11 +65,11 @@ public class DesempenhoBarChartHelper {
     //                                            Show                                            ||
     //----------------------------------------------------------------------------------------------
 
-    public void show() {
-        configuracaoInicialData();
+    public void configura() {
+        // configuracaoInicialData();
         configuraCLick();
 
-        dataSet = new BarDataSet(listaDeBarras, " ");
+        dataSet = new BarDataSet(new ArrayList<>(), " ");
         dataSet.setValueTextSize(10);
         dataSet.setBarBorderWidth(0.5f);
 
@@ -81,7 +78,7 @@ public class DesempenhoBarChartHelper {
 
         barChart.setDragEnabled(true);
         barChart.setData(barData);
-        barChart.animateY(1500);
+        //barChart.animateY(1500);
         barChart.setDoubleTapToZoomEnabled(false);
         barChart.setHighlightPerTapEnabled(true);
         barChart.setHighlightPerDragEnabled(false);
@@ -89,20 +86,20 @@ public class DesempenhoBarChartHelper {
         barChart.getLegend().setEnabled(false);
         barChart.getDescription().setEnabled(false);
 
-        YAxis axisRight = barChart.getAxisRight();
+        final YAxis axisRight = barChart.getAxisRight();
         axisRight.setDrawLabels(false);
         axisRight.setEnabled(false);
 
-        XAxis xAxis = barChart.getXAxis();
+        final XAxis xAxis = barChart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(listaDeMesesParaExibicao));
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularity(1);
         xAxis.setGranularityEnabled(true);
         xAxis.setDrawGridLines(false);
-        configuraVisibilidadeDeBarras(listaDeValoresParaExibicao);
+        //configuraVisibilidadeDeBarras(listaDeValoresParaExibicao);
 
-        YAxis yAxis = barChart.getAxisLeft();
-        configuraValorDoEixoY(listaDeValoresParaExibicao);
+        final YAxis yAxis = barChart.getAxisLeft();
+        // configuraValorDoEixoY(listaDeValoresParaExibicao);
         yAxis.setAxisLineWidth(1f);
         yAxis.setAxisLineColor(Color.BLACK);
         yAxis.setLabelCount(5);
@@ -112,20 +109,20 @@ public class DesempenhoBarChartHelper {
     }
 
     private void configuracaoInicialData() {
-        int anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
-        atualizaData(anoRequisitado, FRETE_BRUTO, SEM_REF_CAVALO);
+        //int anoRequisitado = DataUtil.capturaDataDeHojeParaConfiguracaoInicial().getYear();
+        //atualizaData(anoRequisitado, FRETE_BRUTO, SEM_REF_CAVALO);
     }
 
-    private void atualizaData(int ano, TipoDeRequisicao tipoDeRequisicao, Long cavaloId) {
-        listaDeDados = BarChartExtension.filtraListaParaExibicao(ano, tipoDeRequisicao, cavaloId, context);
+    private void atualizaData(/*int ano, TipoDeRequisicao tipoDeRequisicao, Long cavaloId*/) {
+        /*listaDeDados = BarChartExtension.filtraListaParaExibicao(ano, tipoDeRequisicao, cavaloId, context);
         listaDeValoresParaExibicao = BarChartExtension.removeValoresVaziosDaLista(listaDeDados);
-        listaDeMesesParaExibicao = BarChartExtension.removeMesesVaziosDaLista(listaDeDados);
+        listaDeMesesParaExibicao = BarChartExtension.removeMesesVaziosDaLista(listaDeDados);*/
         listaDeBarras = criaListaDeBarras(listaDeValoresParaExibicao);
     }
 
     @NonNull
     private List<BarEntry> criaListaDeBarras(@NonNull List<BigDecimal> lista) {
-        List<BarEntry> listaDeBarras = new ArrayList<>();
+        final List<BarEntry> listaDeBarras = new ArrayList<>();
         String valorEmString;
         BigDecimal bd;
         float valor;
@@ -204,24 +201,28 @@ public class DesempenhoBarChartHelper {
     }
 
     private void configuraCLick() {
-        indexSelectionado = false;
+        indexSelecionado = false;
 
         barChart.setOnChartGestureListener(new OnChartGestureListener() {
             @Override
             public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
             }
+
             @Override
             public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
             }
+
             @Override
             public void onChartLongPressed(MotionEvent me) {
             }
+
             @Override
             public void onChartDoubleTapped(MotionEvent me) {
             }
+
             @Override
             public void onChartSingleTapped(MotionEvent me) {
-                indexSelectionado = true;
+                indexSelecionado = true;
             }
 
             @Override
@@ -243,10 +244,10 @@ public class DesempenhoBarChartHelper {
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                if (indexSelectionado) {
+                if (indexSelecionado) {
                     int i = Math.round(e.getX());
                     setPosicao(i + 1);
-                    indexSelectionado = false;
+                    indexSelecionado = false;
                 }
                 callback.clickSelecionandoMes(getPosicao());
             }
@@ -270,7 +271,8 @@ public class DesempenhoBarChartHelper {
         barChart.removeAllViews();
         barChart.clear();
 
-        atualizaData(ano, tipoDeRequisicao, id);
+        //atualizaData(ano, tipoDeRequisicao, id);
+        listaDeBarras = criaListaDeBarras(listaDeValoresParaExibicao);
 
         try {
             configuraValorDoEixoY(listaDeValoresParaExibicao);
@@ -289,8 +291,34 @@ public class DesempenhoBarChartHelper {
         barChart.invalidate();
     }
 
+    public void atualiza(final MappedBarChartData resourceMappedData) {
+        dataSet.clear();
+        barData.removeDataSet(dataSet);
+        barChart.removeAllViews();
+        barChart.clear();
+
+        listaDeBarras = criaListaDeBarras(resourceMappedData.getListaDeValores());
+
+        try {
+            configuraValorDoEixoY(resourceMappedData.getListaDeValores());
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        dataSet.setValues(listaDeBarras);
+        barData.addDataSet(dataSet);
+        barChart.setData(barData);
+        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(resourceMappedData.getListaDeMeses()));
+
+        configuraVisibilidadeDeBarras(resourceMappedData.getListaDeValores());
+
+        barChart.animateY(700);
+        barChart.invalidate();
+    }
+
     public interface Callback {
         void clickSelecionandoMes(int mesSelecionado);
+
         void clickRemovendoSelecaoDeMes();
     }
 

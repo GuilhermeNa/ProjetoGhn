@@ -10,8 +10,7 @@
         android:id="@+id/frag_frete_receber_resumo_placa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="OUX5555"
+        tools:text="@tools:sample/lorem"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,7 +40,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Resumo"
+                android:text="@string/resumo"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -55,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Origem"
+                    android:text="@string/origem"
                     android:textSize="16sp" />
 
                 <TextView
@@ -64,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="São Paulo"
+                    tools:text="@tools:sample/cities"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -79,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Destino"
+                    android:text="@string/destino"
                     android:textSize="16sp" />
 
                 <TextView
@@ -88,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Goiânia"
+                    tools:text="@tools:sample/cities"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -103,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Empresa"
+                    android:text="@string/empresa"
                     android:textSize="16sp" />
 
                 <TextView
@@ -112,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Rapido 900"
+                    tools:text="@tools:sample/lorem"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -127,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Carga"
+                    android:text="@string/carga"
                     android:textSize="16sp" />
 
                 <TextView
@@ -136,7 +135,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Amianto"
+                    tools:text="@tools:sample/lorem"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -153,7 +152,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Valores"
+                android:text="@string/valores"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -172,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Frete bruto"
+                        android:text="@string/frete_bruto"
                         android:textSize="16sp" />
 
                     <TextView
@@ -181,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 16.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -196,7 +195,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Frete liquido"
+                        android:text="@string/frete_liquido"
                         android:textSize="16sp" />
 
                     <TextView
@@ -205,7 +204,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 15.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -220,7 +219,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Seguro carga"
+                        android:text="@string/seguro_carga"
                         android:textSize="16sp" />
 
                     <TextView
@@ -229,7 +228,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 100,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -244,7 +243,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Outros Descontos"
+                        android:text="@string/outros_descontos"
                         android:textSize="16sp" />
 
                     <TextView
@@ -253,7 +252,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 900,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -268,7 +267,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Comissao motorista"
+                        android:text="@string/comissao_motorista"
                         android:textSize="16sp" />
 
                     <TextView
@@ -277,7 +276,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 1.700,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -292,7 +291,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recebimentos"
+                android:text="@string/recebimentos"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textStyle="bold"
@@ -313,7 +312,7 @@
                 android:layout_marginVertical="16dp"
                 android:backgroundTint="@color/alizarin"
                 android:padding="15dp"
-                android:text="Adicionar"
+                android:text="@string/adicionar"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"

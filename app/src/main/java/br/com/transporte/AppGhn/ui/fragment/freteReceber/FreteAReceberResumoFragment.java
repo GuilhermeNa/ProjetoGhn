@@ -89,6 +89,7 @@ public class FreteAReceberResumoFragment extends Fragment {
                         break;
                 }
             });
+    private TextView campoEmpresa;
 
     //----------------------------------------------------------------------------------------------
     //                                          On Create                                         ||
@@ -121,7 +122,7 @@ public class FreteAReceberResumoFragment extends Fragment {
     private void observerRecebimentos(Long freteId) {
         viewModel.buscaRecebimentosPorFreteId(freteId).observe(this,
                 lista -> {
-                    if(lista != null){
+                    if (lista != null) {
                         adapter.atualiza(lista);
                     }
                 });
@@ -160,11 +161,13 @@ public class FreteAReceberResumoFragment extends Fragment {
         seguroCargaTxtView = binding.fragFreteReceberResumoSeguroCarga;
         outrosDescontosTxtView = binding.fragFreteReceberResumoOutrosDescontos;
         comissaoMotoristaTxtView = binding.fragFreteReceberResumoComissaoMotorista;
+        campoEmpresa = binding.fragFreteReceberResumoEmpresa;
     }
 
     private void configuraUi() {
-        String placa = FiltraCavalo.localizaPeloId(viewModel.getDataSet_cavalo(), frete.getRefCavaloId()).getPlaca();
+        final String placa = FiltraCavalo.localizaPeloId(viewModel.getDataSet_cavalo(), frete.getRefCavaloId()).getPlaca();
         placaTxtView.setText(placa);
+        campoEmpresa.setText(frete.getEmpresa());
         origemTxtView.setText(frete.getOrigem());
         destinoTxtView.setText(frete.getDestino());
         cargaTxtView.setText(frete.getCarga());
@@ -173,14 +176,15 @@ public class FreteAReceberResumoFragment extends Fragment {
         seguroCargaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getSeguroDeCarga()));
         outrosDescontosTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getDescontos()));
         comissaoMotoristaTxtView.setText(FormataNumerosUtil.formataMoedaPadraoBr(frete.getComissaoAoMotorista()));
+
     }
 
     private void configuraRecycler() {
-        RecyclerView recyclerView = binding.fragFreteReceberResumoRecycler;
+        final RecyclerView recyclerView = binding.fragFreteReceberResumoRecycler;
         adapter = new RecebimentoFretesAdapter(this, new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         adapter.setOnItemClickListener(recebimentoId -> {
@@ -209,13 +213,19 @@ public class FreteAReceberResumoFragment extends Fragment {
         activityResultLauncherEditaFrete.launch(intent);
     }
 
-    public void popBackStack(){
+    public void popBackStack() {
         NavController controlador = Navigation.findNavController(this.requireView());
         controlador.popBackStack();
     }
 
     public void actSolicitaAtualizacao() {
         configuraUi();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
 }

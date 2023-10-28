@@ -30,10 +30,19 @@ public class ParcelaSeguroVidaRepository {
         return mediator;
     }
 
-    public LiveData<Long> edita(final Parcela_seguroVida parcela){
+    public LiveData<Long> edita(final Parcela_seguroVida parcela) {
         final MutableLiveData<Long> liveData = new MutableLiveData<>();
         localDataSource.edita(parcela,
-                () -> liveData.setValue(null));
+                () -> liveData.setValue(null)
+        );
+        return liveData;
+    }
+
+    public LiveData<Void> adicionaLista(final List<Parcela_seguroVida> parcelasDoSeguro) {
+        final MutableLiveData<Void> liveData = new MutableLiveData<>();
+        localDataSource.adicionaLista(parcelasDoSeguro,
+                () -> liveData.setValue(null)
+        );
         return liveData;
     }
 

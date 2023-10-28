@@ -43,4 +43,14 @@ public class DataUtil {
         return !dataDoObjeto.isBefore(dataInicial) && !dataDoObjeto.isAfter(dataFinal);
     }
 
+
+    public static LocalDate longToLocalDate(final Long longValue) {
+        return Instant.ofEpochMilli(Long.parseLong(String.valueOf(longValue)))
+                .atZone(ZoneId.of("America/Sao_Paulo"))
+                .withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.UTC))
+                .toLocalDate();
+    }
+
+
+
 }

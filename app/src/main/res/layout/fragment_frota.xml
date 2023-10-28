@@ -36,37 +36,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_exibe_reboques"
+        <TextView
+            android:id="@+id/fragment_frota_header_reboques"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/midnightblue">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="32dp"
-                android:text="SemiReboques"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/rec_item_sr_seta"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="24dp"
-                android:layout_weight="0.20"
-                android:padding="6dp"
-                android:src="@drawable/ic_sub_menu_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="@string/reboques"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/frag_frota_sr_recycler"
@@ -77,11 +55,12 @@
             tools:listitem="@layout/recycler_item_sr" />
 
         <TextView
+            android:id="@+id/fragment_frota_header_cavalos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Cavalos"
+            android:text="@string/cavalos"
             android:textColor="@color/white"
             android:textSize="18sp" />
 
@@ -102,7 +81,7 @@
             android:layout_marginVertical="10dp"
             android:backgroundTint="@color/alizarin"
             android:padding="15dp"
-            android:text="Cadastra novo"
+            android:text="@string/cadastra_novo"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -131,7 +110,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Não encontrei nada aqui."
+            android:text="@string/nao_encontrei_nada_aqui"
             android:textSize="16sp" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
