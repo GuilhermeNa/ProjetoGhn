@@ -10,7 +10,7 @@
         android:id="@+id/frag_salario_detalhes_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Seguro Compreensivo"
+        android:text="@string/seguro_compreensivo"
         android:textColor="@color/white"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +29,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/shape_categorias_container"
             android:orientation="vertical">
 
@@ -39,8 +39,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
+                android:textColor="@color/black"
                 android:gravity="center"
-                android:text="Informações"
+                android:text="@string/informacoes"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -54,7 +55,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Inicio Vigência"
+                    android:textColor="@color/black"
+                    android:text="@string/inicio_de_vigencia"
                     android:textSize="16sp" />
 
                 <TextView
@@ -63,7 +65,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="20/06/23"
+                    android:textColor="@color/black"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -77,8 +80,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Final Vigência"
+                    android:text="@string/fim_de_vigencia"
                     android:textSize="16sp" />
 
                 <TextView
@@ -86,8 +90,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="20/06/24"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -101,8 +106,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Valor Total"
+                    android:text="@string/valor_total"
                     android:textSize="16sp" />
 
                 <TextView
@@ -110,8 +116,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="R$ 24.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -125,8 +132,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Parcelas"
+                    android:text="@string/parcelas"
                     android:textSize="16sp" />
 
                 <TextView
@@ -135,7 +143,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="12x"
+                    android:textColor="@color/black"
+                    android:text="@string/_12x"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -149,8 +158,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Valor Parcela"
+                    android:text="@string/valor_parcela"
                     android:textSize="16sp" />
 
                 <TextView
@@ -158,8 +168,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="R$ 2.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -173,8 +184,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="Companhia"
+                    android:text="@string/companhia"
                     android:textSize="16sp" />
 
                 <TextView
@@ -182,8 +194,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="SegTruck"
+                    tools:text="@tools:sample/first_names"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -198,7 +211,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="nº Contrato"
+                    android:textColor="@color/black"
+                    android:text="@string/n_contrato"
                     android:textSize="16sp" />
 
                 <TextView
@@ -206,8 +220,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="12315253"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -223,8 +238,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="16dp"
+                android:textColor="@color/black"
                 android:gravity="center"
-                android:text="Coberturas"
+                android:text="@string/coberturas"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -244,8 +260,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="Casco"
+                        android:text="@string/casco"
                         android:textSize="16sp" />
 
                     <TextView
@@ -253,8 +270,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="Valor de mercado"
+                        android:text="@string/valor_de_mercado"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -268,8 +286,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="RC Danos Materiais"
+                        android:text="@string/rc_danos_materiais"
                         android:textSize="16sp" />
 
                     <TextView
@@ -277,8 +296,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="R$ 400.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -292,8 +312,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="RC Danos Corporais"
+                        android:text="@string/rc_danos_corporais"
                         android:textSize="16sp" />
 
                     <TextView
@@ -301,8 +322,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="R$ 400.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -317,7 +339,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="App Morte"
+                        android:textColor="@color/black"
+                        android:text="@string/app_morte"
                         android:textSize="16sp" />
 
                     <TextView
@@ -326,7 +349,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 20.000,00"
+                        android:textColor="@color/black"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -341,7 +365,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="App Invalidez"
+                        android:textColor="@color/black"
+                        android:text="@string/app_invalidez"
                         android:textSize="16sp" />
 
                     <TextView
@@ -349,8 +374,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="R$ 20.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -365,7 +391,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Danos Morais"
+                        android:textColor="@color/black"
+                        android:text="@string/danos_morais"
                         android:textSize="16sp" />
 
                     <TextView
@@ -373,8 +400,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="R$ 10.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -388,17 +416,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:gravity="center"
-                        android:text="Vidros"
+                        android:text="@string/vidros"
                         android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/frag_salario_detalhes_cobertura_vidros"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/black"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Sim"
+                        tools:text="@tools:sample/first_names"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -412,9 +442,10 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/black"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Assistencia 24H"
+                        android:text="@string/assistencia_24h"
                         android:textSize="16sp" />
 
                     <TextView
@@ -423,7 +454,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Sim"
+                        android:textColor="@color/black"
+                        tools:text="@tools:sample/first_names"
                         android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -446,7 +478,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Socios"
+                        android:textColor="@color/black"
+                        android:text="@string/socios"
                         android:textSize="16sp" />
 
                     <TextView
@@ -455,7 +488,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 500.000,00"
+                        android:textColor="@color/black"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -470,16 +504,18 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Motoristas"
+                        android:text="@string/motoristas"
+                        android:textColor="@color/black"
                         android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/frag_salario_detalhes_cobertura_motoristas"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/black"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="R$ 100.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="16sp" />
                 </LinearLayout>
 

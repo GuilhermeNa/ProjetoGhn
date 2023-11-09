@@ -25,7 +25,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView14"
@@ -51,7 +51,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cavalo mecânico"
+                    android:text="@string/cavalo_mecanico"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Cavalo Mecanico"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_cavalo_mecanico"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -84,7 +84,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Placa">
+                    android:hint="@string/placa">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_placa"
@@ -98,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Marca">
+                    android:hint="@string/marca">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_marca"
@@ -112,7 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Versâo">
+                    android:hint="@string/versao">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_versao"
@@ -134,7 +134,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Ano">
+                        android:hint="@string/ano">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_cavalo_ano"
@@ -150,7 +150,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Modelo">
+                        android:hint="@string/modelo">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_cavalo_modelo"
@@ -165,7 +165,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Cor">
+                    android:hint="@string/cor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_cor"
@@ -179,7 +179,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Renavam">
+                    android:hint="@string/renavam">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_renavam"
@@ -194,7 +194,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:hint="Chassi">
+                    android:hint="@string/chassi">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_chassi"
@@ -209,7 +209,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:hint="Comissão % ao motorista">
+                    android:hint="@string/comiss_o_ao_motorista">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_cavalo_comissao"

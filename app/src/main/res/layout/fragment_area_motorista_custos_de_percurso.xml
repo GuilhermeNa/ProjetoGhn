@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
-        android:text="Total Despesas"
+        android:text="@string/total_despesas"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="R$ 3.000,00"
+        tools:text="@tools:sample/us_zipcodes"
         android:textColor="@color/white"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@id/frag_despesa_total_despesas_txt"
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Não encontrei nada aqui."
+                    android:text="@string/nao_encontrei_nada_aqui"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -112,7 +112,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:gravity="center"
-                                android:text="01/01/23"
+                                tools:text="@tools:sample/date/ddmmyy"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -125,18 +125,20 @@
                             android:background="@drawable/shape_retangular_corner_branco"
                             android:backgroundTint="@color/white"
                             android:orientation="horizontal"
+                            android:layout_gravity="center"
                             android:padding="3dp">
 
                             <TextView
                                 android:id="@+id/frag_despesa_mes_dt_final"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="02/05/23"
+                                tools:text="@tools:sample/date/ddmmyy"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                tools:ignore="NestedWeights" />
                         </LinearLayout>
 
                     </LinearLayout>

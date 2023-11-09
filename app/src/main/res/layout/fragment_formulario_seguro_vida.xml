@@ -27,7 +27,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView14"
@@ -53,7 +53,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Seguro"
+                    android:text="@string/seguro"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Seguro"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_seguro"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -87,7 +87,7 @@
                     android:id="@+id/frag_formulario_seguro_layout_data_inicial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Inicio de Vigência"
+                    android:hint="@string/inicio_de_vigencia"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -104,7 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Fim de Vigência"
+                    android:hint="@string/fim_de_vigencia"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -135,10 +135,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="0.5"
-                    android:hint="Valor Total"
+                    android:hint="@string/valor_total"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -161,7 +161,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Parcelas"
+                        android:hint="@string/parcelas"
                         app:suffixText="X ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -178,7 +178,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Valor Parcela"
+                        android:hint="@string/valor_parcela"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -194,7 +194,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Companhia">
+                    android:hint="@string/companhia">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seguro_companhia"
@@ -208,7 +208,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="nº Contrato">
+                    android:hint="@string/n_contrato">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seguro_numero_contrato"
@@ -245,7 +245,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Cobertura Sócios"
+                    android:hint="@string/cobertura_socios"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -261,7 +261,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:hint="Cobertura Motoristas"
+                    android:hint="@string/cobertura_motoristas"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText

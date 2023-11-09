@@ -28,7 +28,7 @@
                 android:layout_height="26dp"
                 android:background="@color/midnightblue"
                 android:gravity="center"
-                android:text="OUX5555"
+                tools:text="@tools:sample/first_names"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
                 android:id="@+id/rec_item_salarios_data"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="17/07/23"
+                tools:text="@tools:sample/date/ddmmyy"
                 android:textColor="@color/white"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +99,7 @@
                         android:id="@+id/rec_item_salarios_pago_titulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Comissão Paga"
+                        android:text="@string/comissao_paga"
                         android:textColor="@color/white"
                         android:textSize="12sp" />
 
@@ -107,7 +107,7 @@
                         android:id="@+id/rec_item_salarios_pago"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 0.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -126,14 +126,14 @@
                         android:id="@+id/rec_item_salarios_descontos_titulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Adiantamentos"
+                        android:text="@string/adiantamentos"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_item_salarios_descontos"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 0.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -151,14 +151,14 @@
                         android:id="@+id/rec_item_salarios_reembolso_titulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Reembolsos"
+                        android:text="@string/reembolsos"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_item_salarios_reembolso"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 0.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -176,14 +176,14 @@
                         android:id="@+id/rec_item_salarios_comissao_devida_titulo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Comissão Devida"
+                        android:text="@string/comissao_devida"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_item_salarios_total"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 0.000,00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textSize="14sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

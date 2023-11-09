@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rec_item_seleciona_cavalo_card"
     android:layout_width="130dp"
     android:layout_height="100dp"
@@ -34,14 +35,15 @@
                 android:id="@+id/rec_item_seleciona_cavalo_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/caminhao_32" />
+                android:src="@drawable/caminhao_32"
+                android:contentDescription="@string/cavalo" />
 
             <TextView
                 android:id="@+id/rec_item_seleciona_cavalo_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
-                android:text="OUX5555"
+                tools:text="@tools:sample/lorem"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
         </LinearLayout>

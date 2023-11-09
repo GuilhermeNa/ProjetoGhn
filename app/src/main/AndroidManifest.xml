@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".GhnApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,72 +12,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppGhn"
         tools:targetApi="31">
+
         <activity
-            android:name=".ui.activity.certificado.CertificadosActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.despesaAdm.DespesasAdmActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.seguro.SegurosActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.comissao.ComissoesActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.freteAReceberActivity.FreteAReceberActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.formulario.FormulariosActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".ui.activity.MainActivity"
+            android:name="br.com.transporte.appGhn.ui.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
         </activity>
 
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+        <activity android:name="br.com.transporte.appGhn.ui.activity.certificado.CertificadosActivity"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.despesaAdm.DespesasAdmActivity"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.seguro.SegurosActivity"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.comissao.ComissoesActivity"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.freteAReceberActivity.FreteAReceberActivity"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.formulario.FormulariosActivity"
+            android:theme="@style/Theme.AppGhn.NoActionBar"
+            android:label="Formulário"/>
+
+        <activity android:name="br.com.transporte.appGhn.ui.activity.areaMotoristaActivity.AreaMotoristaActivity"/>
+
     </application>
 
 </manifest>

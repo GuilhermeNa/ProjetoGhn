@@ -29,7 +29,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/imageView14"
@@ -55,7 +55,7 @@
                         android:id="@+id/textView22"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Abastecimento"
+                        android:text="@string/abastecimento"
                         android:textColor="@color/white"
                         android:textSize="22sp"
                         android:textStyle="bold"
@@ -67,7 +67,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Você está adicionando um novo registro de abastecimento."
+                        android:text="@string/voce_esta_adicionando_um_novo_registro_de_abastecimento"
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -90,7 +90,7 @@
                         android:id="@+id/frag_formulario_abastecimento_layout_data"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="dd/mm/aa"
+                        android:hint="@string/dd_mm_aa"
                         app:startIconDrawable="@drawable/ic_calendar_month_24">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -105,7 +105,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:hint="Posto">
+                        android:hint="@string/posto">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_abastecimento_posto"
@@ -119,7 +119,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:hint="Marcação Km">
+                        android:hint="@string/marcacao_km">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_abastecimento_marcacaoKm"
@@ -140,7 +140,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="4dp"
                             android:layout_weight="0.5"
-                            android:hint="Quantidade Litros">
+                            android:hint="@string/quantidade_litros">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/frag_formulario_abastecimento_qntLitros"
@@ -156,7 +156,7 @@
                             android:layout_marginStart="4dp"
                             android:layout_marginTop="8dp"
                             android:layout_weight="0.5"
-                            android:hint="Valor/Litro"
+                            android:hint="@string/valor_litro"
                             app:prefixText="R$ ">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -172,7 +172,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:hint="Total abastecimento"
+                        android:hint="@string/total_abastecimento"
                         app:errorEnabled="true"
                         app:prefixText="R$ ">
 
@@ -204,7 +204,7 @@
                                 android:layout_marginHorizontal="64dp"
                                 android:layout_marginTop="8dp"
                                 android:gravity="center"
-                                android:text="Abastecimento"
+                                android:text="@string/abastecimento"
                                 android:textColor="@color/white"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
@@ -222,7 +222,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Total"
+                                    android:text="@string/total"
                                     android:textColor="@color/white"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
@@ -242,7 +242,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Parcial"
+                                    android:text="@string/parcial"
                                     android:textColor="@color/white"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />

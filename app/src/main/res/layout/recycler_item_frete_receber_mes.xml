@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/rec_item_frota_placa_card"
@@ -26,7 +26,7 @@
                android:id="@+id/rec_item_frete_receber_mes"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="Fevereiro"
+               tools:text="@tools:sample/lorem"
                android:textColor="@color/white"
                app:layout_constraintStart_toStartOf="parent"
                app:layout_constraintTop_toTopOf="parent"
@@ -38,7 +38,7 @@
                android:id="@+id/rec_item_frete_receber_status"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="Fechado/Aberto"
+               android:text="@string/fechado_aberto"
                android:textColor="@color/cor_documentos"
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintTop_toTopOf="parent"
@@ -59,21 +59,21 @@
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="Frete total:"
+                   android:text="@string/frete_total"
                    android:textColor="@color/white"
                    android:textSize="14sp"/>
 
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="Frete Recebido:"
+                   android:text="@string/frete_recebido"
                    android:textColor="@color/white"
                    android:textSize="14sp"
                    android:layout_marginTop="4dp"/>
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="Frete a receber:"
+                   android:text="@string/frete_a_receber"
                    android:textColor="@color/white"
                    android:textSize="14sp"
                    android:layout_marginTop="4dp"/>
@@ -90,28 +90,25 @@
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="R$ 200.000,00"
+                   tools:text="@tools:sample/us_zipcodes"
                    android:textColor="@color/white"
                    android:textSize="14sp"/>
 
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="R$ 120.000,00"
+                   tools:text="@tools:sample/us_zipcodes"
                    android:textColor="@color/white"
                    android:textSize="14sp"
                    android:layout_marginTop="4dp"/>
                <TextView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:text="R$ 80.000,00"
+                   tools:text="@tools:sample/us_zipcodes"
                    android:textColor="@color/white"
                    android:textSize="14sp"
                    android:layout_marginTop="4dp"/>
            </LinearLayout>
-
-
-
 
        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

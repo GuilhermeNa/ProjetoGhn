@@ -7,16 +7,6 @@
     android:background="@drawable/shape_background_tema_app"
     tools:context=".ui.fragment.home.GerenciamentoFragment">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_formularios" />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,7 +14,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -68,7 +58,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Frete a receber"
+                        android:text="@string/frete_a_receber"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -117,7 +107,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Comissões"
+                        android:text="@string/comissoes"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -206,7 +196,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_certificados_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/certificados" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_certificados_txt"
@@ -216,7 +207,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Certificados"
+                        android:text="@string/certificados"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -264,7 +255,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Seguros"
+                        android:text="@string/seguros"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -303,7 +294,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_manutencao_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/manutencao" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_manutencao_txt"
@@ -313,7 +305,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Manutenção"
+                        android:text="@string/manutencao"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -352,7 +344,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_despesa_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/despesas" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_despesa_txt"
@@ -362,7 +355,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Despesas"
+                        android:text="@string/despesas"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -410,7 +403,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Desempenho"
+                        android:text="@string/desempenho"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -460,7 +453,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Média"
+                        android:text="@string/media"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"

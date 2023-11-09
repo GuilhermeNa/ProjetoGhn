@@ -27,7 +27,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView14"
@@ -53,7 +53,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Seguro"
+                    android:text="@string/seguro"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Seguro"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_seguro"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -87,7 +87,7 @@
                     android:id="@+id/frag_formulario_seguro_layout_ref_caminhao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Referência"
+                    android:hint="@string/referencia"
                     app:endIconMode="dropdown_menu">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -98,14 +98,15 @@
                         android:maxLines="1"
                         android:paddingStart="16dp"
                         android:paddingBottom="16dp"
-                        android:paddingTop="24dp"/>
+                        android:paddingTop="24dp"
+                        tools:ignore="RtlSymmetry" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/frag_formulario_seguro_layout_data_inicial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Inicio de Vigência"
+                    android:hint="@string/inicio_de_vigencia"
                     android:layout_marginTop="8dp"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
@@ -123,7 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Fim de Vigência"
+                    android:hint="@string/fim_de_vigencia"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -154,7 +155,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="0.5"
                     android:hint="@string/valor_total"
@@ -180,7 +181,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Parcelas"
+                        android:hint="@string/parcelas"
                         app:suffixText="X ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -197,7 +198,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Valor Parcela"
+                        android:hint="@string/valor_parcela"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -213,7 +214,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Companhia">
+                    android:hint="@string/companhia">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seguro_companhia"
@@ -227,7 +228,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="nº Contrato">
+                    android:hint="@string/n_contrato">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seguro_numero_contrato"
@@ -262,9 +263,9 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="0.5"
-                    android:hint="Casco">
+                    android:hint="@string/casco">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seguro_cobertura_casco"
@@ -278,7 +279,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Rcf Danos Materiais"
+                    android:hint="@string/rcf_danos_materiais"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -293,7 +294,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Rcf Danos Corporais"
+                    android:hint="@string/rcf_danos_corporais"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -315,7 +316,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="App Morte"
+                        android:hint="@string/app_morte"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -332,7 +333,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="App invalidez"
+                        android:hint="@string/app_invalidez"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -348,7 +349,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Danos Morais"
+                    android:hint="@string/danos_morais"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -371,7 +372,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Vidros">
+                        android:hint="@string/vidros">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_seguro_vidros"
@@ -388,7 +389,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="16dp"
                         android:layout_weight="0.5"
-                        android:hint="Assistencia 24H">
+                        android:hint="@string/assistencia_24h">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_seguro_assistencia_24h"

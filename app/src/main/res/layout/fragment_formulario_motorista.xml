@@ -25,7 +25,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/frag_formulario_motorista_card_foto"
@@ -64,7 +64,7 @@
                     android:id="@+id/frag_formulario_motorista_titulo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Motorista"
+                    android:text="@string/motorista"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo Motorista"
+                    android:text="@string/voce_esta_adicionando_um_novo_motorista"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/frag_formulario_motorista_foto"
@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Informações pessoais"
+                    android:text="@string/informacoes_pessoais"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -106,7 +106,7 @@
                     android:id="@+id/frag_formulario_motorista_layout_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aa"
+                    android:hint="@string/dd_mm_aa"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -123,7 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Nome">
+                    android:hint="@string/nome">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_motorista_nome"
@@ -137,7 +137,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="CPF">
+                    android:hint="@string/cpf">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_motorista_cpf"
@@ -159,7 +159,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="CNH">
+                        android:hint="@string/cnh">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_motorista_cnh"
@@ -176,7 +176,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Validade"
+                        android:hint="@string/validade"
                         app:startIconDrawable="@drawable/ic_calendar_month_24">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -193,7 +193,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:gravity="center"
-                    android:text="Contratação"
+                    android:text="@string/contratacao"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -202,7 +202,7 @@
                     android:id="@+id/frag_formulario_motorista_layout_data_contratacao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aa"
+                    android:hint="@string/dd_mm_aa"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -220,7 +220,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:hint="Salário-Base">
+                    android:hint="@string/salario_base">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_salario_base"

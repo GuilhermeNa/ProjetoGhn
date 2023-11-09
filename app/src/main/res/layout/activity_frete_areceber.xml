@@ -7,12 +7,6 @@
     android:background="@drawable/shape_background_tema_app"
     tools:context=".ui.activity.freteAReceberActivity.FreteAReceberActivity">
 
-   <include
-       android:id="@+id/toolbar_layout"
-       android:layout_height="wrap_content"
-       android:layout_width="fill_parent"
-       layout="@layout/toolbar"/>
-
     <include
         android:id="@+id/date_picker_layout"
         android:layout_height="wrap_content"
@@ -20,7 +14,7 @@
         android:layout_marginHorizontal="64dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintTop_toTopOf="parent"
         layout="@layout/datepicker"/>
 
     <fragment

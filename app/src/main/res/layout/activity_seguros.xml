@@ -7,18 +7,12 @@
     android:background="@drawable/shape_background_tema_app"
     tools:context=".ui.activity.seguro.SegurosActivity">
 
-    <include
-        android:id="@+id/toolbar_layout"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        layout="@layout/toolbar"/>
-
     <fragment
         android:id="@+id/nav_host_fragment_container_seguros"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         android:paddingBottom="30dp"
@@ -72,4 +66,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_seguros_bottomapp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

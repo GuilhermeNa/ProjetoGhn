@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="OUX5555"
+            tools:text="@tools:sample/us_zipcodes"
             android:textColor="@color/white"
             android:textSize="16sp" />
 
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="25dp"
-            android:text="Gildean Freire"
+            tools:text="@tools:sample/first_names"
             android:textColor="@color/white"
             android:textSize="14sp" />
     </LinearLayout>
@@ -75,7 +75,7 @@
                     android:id="@+id/txt_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Adiantamentos"
+                    android:text="@string/adiantamentos"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="R$ 500.00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/txt_1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -118,7 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Data"
+                    android:text="@string/data"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/view_6"
                     app:layout_constraintStart_toStartOf="parent"
@@ -127,7 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Abatido"
+                    android:text="@string/abatido"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/view_1"/>
@@ -135,7 +135,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Resta"
+                    android:text="@string/resta"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@id/view_1"
                     app:layout_constraintStart_toEndOf="@id/view_6"/>
@@ -168,7 +168,7 @@
                     android:id="@+id/txt_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reembolsos"
+                    android:text="@string/reembolsos"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -179,7 +179,7 @@
                     android:id="@+id/total_reembolso"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="R$ 000.00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/txt_2"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -210,7 +210,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Data"
+                    android:text="@string/data"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/view_7"
                     app:layout_constraintStart_toStartOf="parent"
@@ -219,7 +219,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Valor"
+                    android:text="@string/valor"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/view_2" />
@@ -250,7 +250,7 @@
                     android:id="@+id/txt_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fretes"
+                    android:text="@string/fretes"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -262,7 +262,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="R$ 000.00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/txt_3"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -293,7 +293,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Data"
+                    android:text="@string/data"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/view_8"
                     app:layout_constraintStart_toStartOf="parent"
@@ -302,7 +302,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Origem"
+                    android:text="@string/origem"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@id/view_3"
                     app:layout_constraintStart_toEndOf="@id/view_8" />
@@ -310,7 +310,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Comissão"
+                    android:text="@string/comissao"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/view_3" />

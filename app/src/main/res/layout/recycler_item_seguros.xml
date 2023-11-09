@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/rec_item_despesa_seguros_card"
@@ -52,7 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="4dp"
-                android:text="OUX5555"
+                tools:text="@tools:sample/lorem"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +71,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total"
+                    android:text="@string/total"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
 
@@ -78,7 +79,7 @@
                     android:id="@+id/rec_item_despesa_seguros_valor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="R$ 2.000,00"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -97,14 +98,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data inicio"
+                    android:text="@string/data_inicio"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/rec_item_despesa_seguros_data_inicial"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="06/06/23"
+                    tools:text="@tools:sample/us_zipcodes"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -123,14 +124,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data fim"
+                    android:text="@string/data_fim"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/rec_item_despesa_seguros_data_final"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="06/06/23"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -149,14 +150,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Descrição"
+                    android:text="@string/descricao"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/rec_item_despesa_seguros_descricao"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Financiamento frota OUX555"
+                    tools:text="@tools:sample/lorem"
                     android:textSize="14sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,47 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.activity.certificado.CertificadosActivity"
-    android:background="@drawable/shape_background_tema_app">
-
-    <include
-        android:id="@+id/toolbar_layout"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        layout="@layout/toolbar"/>
-
+    android:background="@drawable/shape_background_tema_app"
+    tools:context=".ui.activity.certificado.CertificadosActivity">
 
     <fragment
         android:id="@+id/nav_host_fragment_container_certificados"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph_certificados"
-
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_graph_certificados" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/alizarin"
+        android:contentDescription="@string/floating_action_button"
         android:src="@drawable/ic_baseline_add_24"
         app:elevation="10dp"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/bottom_navigation"
-        android:contentDescription="@string/floating_action_button" />
+        app:layout_constraintTop_toTopOf="@id/bottom_navigation" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_direta"
@@ -52,8 +41,8 @@
         android:tint="@color/white"
         android:visibility="invisible"
         app:fabSize="mini"
-        app:layout_constraintEnd_toStartOf="@id/fab"
-        app:layout_constraintBottom_toTopOf="@id/fab"/>
+        app:layout_constraintBottom_toTopOf="@id/fab"
+        app:layout_constraintEnd_toStartOf="@id/fab" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_indireta"
@@ -65,15 +54,15 @@
         android:visibility="invisible"
         app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@id/fab"
-        app:layout_constraintStart_toEndOf="@id/fab"/>
+        app:layout_constraintStart_toEndOf="@id/fab" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_certificados_bottomapp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/menu_certificados_bottomapp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

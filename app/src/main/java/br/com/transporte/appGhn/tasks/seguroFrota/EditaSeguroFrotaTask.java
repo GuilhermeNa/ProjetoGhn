@@ -1,0 +1,43 @@
+package br.com.transporte.appGhn.tasks.seguroFrota;
+
+import android.os.Handler;
+
+import androidx.annotation.NonNull;
+
+import java.util.concurrent.ExecutorService;
+
+import br.com.transporte.appGhn.database.dao.RoomDespesaComSeguroFrotaDao;
+import br.com.transporte.appGhn.model.despesas.DespesaComSeguroFrota;
+import br.com.transporte.appGhn.tasks.BaseTask;
+import br.com.transporte.appGhn.tasks.TaskCallbackVoid;
+
+public class EditaSeguroFrotaTask extends BaseTask {
+
+    public EditaSeguroFrotaTask(ExecutorService executor, Handler handler) {
+        super(executor, handler);
+    }
+
+    public void solicitaAtualizacao(
+            final RoomDespesaComSeguroFrotaDao dao,
+            final DespesaComSeguroFrota seguro,
+            final TaskCallbackVoid callback
+    ) {
+        executor.execute(
+                () -> {
+                    realizaAtualizacaoSincrona(dao, seguro);
+                    notificaResultado(callback);
+                });
+    }
+
+    private void realizaAtualizacaoSincrona(
+            @NonNull final RoomDespesaComSeguroFrotaDao dao,
+            final DespesaComSeguroFrota seguro
+    ) {
+        dao.substitui(seguro);
+    }
+
+    private void notificaResultado(@NonNull final TaskCallbackVoid callback) {
+        handler.post(callback::finalizado);
+    }
+
+}

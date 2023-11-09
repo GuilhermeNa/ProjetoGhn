@@ -7,14 +7,14 @@
     <item
         android:id="@+id/menu_formulario_apagar"
         android:icon="@drawable/ic_baseline_delete_24"
-        android:title="Apagar"
-        app:showAsAction="always"
+        android:title="@string/apagar"
+        app:showAsAction="ifRoom"
         android:iconTint="@color/white"/>
 
     <item
         android:id="@+id/menu_formulario_editar"
         android:icon="@drawable/ic_baseline_mode_edit_24"
-        android:title="Editar"
+        android:title="@string/editar"
         app:showAsAction="always"
         android:iconTint="@color/white"/>
 
@@ -22,7 +22,7 @@
         android:id="@+id/menu_formulario_salvar"
         android:icon="@drawable/ic_baseline_done_24"
         app:showAsAction="always"
-        android:title="Salvar"
+        android:title="@string/salvar"
         android:iconTint="@color/white"/>
 
 </menu>

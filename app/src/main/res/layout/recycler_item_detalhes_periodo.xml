@@ -10,30 +10,36 @@
 
     <TextView
         android:id="@+id/rec_detalhes_periodo_placa"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rec_detalhes_periodo_motorista"
         tools:text="@tools:sample/lorem" />
 
     <TextView
         android:id="@+id/rec_detalhes_periodo_motorista"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/rec_detalhes_periodo_placa"
         app:layout_constraintBottom_toBottomOf="@id/rec_detalhes_periodo_placa"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@tools:sample/lorem" />
+        tools:text="@tools:sample/lorem"
+        android:maxLines="1"
+        android:ellipsize="end"/>
 
     <TextView
         android:id="@+id/rec_detalhes_periodo_valor"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="8dp"
         android:textColor="@android:color/holo_green_dark"
@@ -42,17 +48,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/rec_detalhes_periodo_placa"
         app:layout_constraintTop_toBottomOf="@id/rec_detalhes_periodo_placa"
+        app:layout_constraintEnd_toStartOf="@id/rec_detalhes_periodo_percentual"
         tools:text="@tools:sample/us_zipcodes" />
 
     <TextView
         android:id="@+id/rec_detalhes_periodo_percentual"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@id/rec_detalhes_periodo_valor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/rec_detalhes_periodo_valor"
-        tools:text="@tools:sample/lorem" />
+        tools:text="@tools:sample/us_zipcodes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

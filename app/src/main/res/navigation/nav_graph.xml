@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/navLogin"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.LoginFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.home.LoginFragment"
         android:label="Login Fragment"
         tools:layout="@layout/fragment_login">
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/navHome"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.HomeFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.home.HomeFragment"
         android:label="Home Fragment"
         tools:layout="@layout/fragment_home">
         <action
@@ -57,17 +57,17 @@
     </fragment>
     <fragment
         android:id="@+id/navMotoristas"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.funcionarios.FuncionariosFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.home.funcionarios.FuncionariosFragment"
         android:label="Motoristas Fragment"
         tools:layout="@layout/fragment_funcionarios" />
     <fragment
         android:id="@+id/navFrota"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.frota.FrotaFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.home.frota.FrotaFragment"
         android:label="Frota Fragment"
         tools:layout="@layout/fragment_frota" />
     <fragment
         android:id="@+id/navGerenciamento"
-        android:name="br.com.transporte.AppGhn.ui.fragment.home.GerenciamentoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.home.GerenciamentoFragment"
         android:label="Gerenciamento Fragment"
         tools:layout="@layout/fragment_gerenciamento" >
         <action
@@ -104,12 +104,12 @@
             app:destination="@id/navMedia" />
     </fragment>
     <fragment android:id="@+id/navImpostosFragment"
-        android:name="br.com.transporte.AppGhn.ui.fragment.ImpostosFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.ImpostosFragment"
         android:label="Impostos Fragment"
         tools:layout="@layout/fragment_impostos" />
     <fragment
         android:id="@+id/navSelecionaCavalo"
-        android:name="br.com.transporte.AppGhn.ui.fragment.selecionaCavalo.SelecionaCavalo"
+        android:name="br.com.transporte.appGhn.ui.fragment.selecionaCavalo.SelecionaCavalo"
         android:label="Seleciona Cavalo"
         tools:layout="@layout/fragment_seleciona_cavalo">
         <action
@@ -121,28 +121,42 @@
             app:popExitAnim="@anim/slide_out_right" />
         <argument
             android:name="tipoDirection"
-            app:argType="br.com.transporte.AppGhn.model.enums.TipoSelecionaCavalo" />
+            app:argType="br.com.transporte.appGhn.model.enums.TipoSelecionaCavalo" />
     </fragment>
     <fragment
         android:id="@+id/navManutencaoDetalhes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.manutencao.ManutencaoDetalhesFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.manutencao.ManutencaoDetalhesFragment"
         android:label="Manutencao Detalhes"
         tools:layout="@layout/fragment_manutencao_detalhes" >
         <argument
             android:name="cavaloId"
             app:argType="long" />
     </fragment>
+    <fragment android:id="@+id/navDesempenho"
+        android:name="br.com.transporte.appGhn.ui.fragment.desempenho.DesempenhoFragment"
+        android:label="Desempenho"
+        tools:layout="@layout/fragment_desempenho"/>
+
+    <fragment
+        android:id="@+id/navMedia"
+        android:name="br.com.transporte.appGhn.ui.fragment.media.MediaFragment"
+        android:label="Media"
+        tools:layout="@layout/fragment_media" />
+
     <include app:graph="@navigation/nav_graph_frete_receber" />
     <include app:graph="@navigation/nav_graph_comissoes" />
     <include app:graph="@navigation/nav_graph_seguros" />
-    <fragment android:id="@+id/navDesempenho"
-        android:name="br.com.transporte.AppGhn.ui.fragment.desempenho.DesempenhoFragment"
-        android:label="Desempenho"
-        tools:layout="@layout/fragment_desempenho"/>
     <include app:graph="@navigation/nav_graph_certificados" />
-    <fragment
-        android:id="@+id/navMedia"
-        android:name="br.com.transporte.AppGhn.ui.fragment.media.MediaFragment"
-        android:label="Media"
-        tools:layout="@layout/fragment_media" />
+
+    <action
+        android:id="@+id/action_global_navLogin"
+        app:destination="@id/navLogin"
+        app:enterAnim="@anim/slide_in_left"
+        app:exitAnim="@anim/slide_out_right"
+        app:launchSingleTop="false"
+        app:popEnterAnim="@anim/slide_in_right"
+        app:popExitAnim="@anim/slide_out_left"
+        app:popUpTo="@id/navLogin"
+        app:popUpToInclusive="true" />
+
 </navigation>

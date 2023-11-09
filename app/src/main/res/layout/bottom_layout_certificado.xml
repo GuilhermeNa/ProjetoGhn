@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +14,8 @@
         android:src="@drawable/horizontal"
         android:layout_gravity="center|top"
         android:scaleType="centerCrop"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:contentDescription="@string/barra_horizontal" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,7 +27,7 @@
             android:id="@+id/createText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Exibição"
+            android:text="@string/exibicao"
 
             android:textColor="@color/white"
             android:textSize="25sp"
@@ -67,7 +69,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:text="Exibir Todos"
+            android:text="@string/exibir_todos"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -106,9 +108,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Selecionar Ano"
+            android:text="@string/selecionar_ano"
             android:textColor="@color/white"
-            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/ImageView6"
             app:layout_constraintTop_toTopOf="parent"
@@ -138,7 +140,7 @@
             android:id="@+id/ano"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2023"
+            tools:text="@tools:sample/us_zipcodes"
             android:textColor="@color/white"
             android:textSize="20sp"
             app:layout_constraintTop_toTopOf="parent"
@@ -154,7 +156,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ano"/>
+            app:layout_constraintEnd_toStartOf="@id/ano"
+            android:contentDescription="@string/seta_esquerda" />
 
         <ImageView
             android:id="@+id/direita"
@@ -164,7 +167,8 @@
             app:layout_constraintStart_toEndOf="@id/ano"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/seta_direita" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,7 +177,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="filtrar"
+        android:text="@string/filtrar"
         android:layout_marginHorizontal="64dp"
         android:layout_gravity="center"
         android:backgroundTint="@color/alizarin"/>

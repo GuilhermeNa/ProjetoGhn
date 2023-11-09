@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navCertificadosDiretos"
-        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosDiretosFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.certificados.CertificadosDiretosFragment"
         android:label="Certificados Diretos Fragment"
         tools:layout="@layout/fragment_certificados_diretos">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/navCertificadosDiretosDetalhes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.certificados.CertificadoDiretosDetalhesFragment"
         android:label="Certificados Diretos Detalhes"
         tools:layout="@layout/fragment_certificados_diretos_detalhes">
         <argument
@@ -24,12 +24,12 @@
             app:argType="long" />
     </fragment>
     <fragment android:id="@+id/navCertificadosIndiretos"
-        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CertificadosIndiretosFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.certificados.CertificadosIndiretosFragment"
         android:label="Certificados Indiretos"
         tools:layout="@layout/fragment_certificados_indiretos" />
     <fragment
         android:id="@+id/navCarregaDadosCertificado"
-        android:name="br.com.transporte.AppGhn.ui.fragment.certificados.CarregandoDadosCertificadoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.certificados.CarregandoDadosCertificadoFragment"
         android:label="Carrega Dados Certificado"
         tools:layout="@layout/fragment_carregando_dados_certificado" >
         <action

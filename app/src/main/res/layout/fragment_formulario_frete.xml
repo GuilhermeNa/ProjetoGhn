@@ -52,7 +52,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Frete"
+                    android:text="@string/frete"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está criando um novo registro de Frete"
+                    android:text="@string/voce_esta_criando_um_novo_registro_de_frete"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -85,7 +85,7 @@
                     android:id="@+id/frag_formulario_frete_layout_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aa"
+                    android:hint="@string/dd_mm_aa"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -101,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Origem">
+                    android:hint="@string/origem">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_frete_origem"
@@ -115,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Destino">
+                    android:hint="@string/destino">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_frete_destino"
@@ -129,7 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Empresa">
+                    android:hint="@string/empresa">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_frete_empresa"
@@ -143,7 +143,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Carga">
+                    android:hint="@string/carga">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_frete_carga"
@@ -157,7 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Peso">
+                    android:hint="@string/peso">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_frete_peso"
@@ -170,8 +170,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
@@ -179,7 +179,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Seguro de Carga"
+                        android:hint="@string/seguro_de_carga"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -196,7 +196,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Outros Descontos"
+                        android:hint="@string/outros_descontos"
                         app:prefixText="R$ ">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -210,11 +210,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="0.5"
                     android:layout_marginBottom="16dp"
-                    android:hint="Frete Bruto"
+                    android:hint="@string/frete_bruto"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText

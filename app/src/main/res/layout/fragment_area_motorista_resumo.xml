@@ -262,6 +262,7 @@
                             android:background="@drawable/shape_retangular_corner_branco"
                             android:backgroundTint="@color/white"
                             android:orientation="horizontal"
+                            android:layout_gravity="center"
                             android:padding="3dp">
 
                             <TextView

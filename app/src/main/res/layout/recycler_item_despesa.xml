@@ -50,7 +50,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="8dp"
-                        android:text="15/04/23"
+                        tools:text="@tools:sample/date/ddmmyy"
                         android:textColor="@color/white"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -71,9 +71,10 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:layout_weight="1"
-                        android:text="Reembolsado:"
+                        android:text="@string/reembolsado"
                         android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        tools:ignore="NestedWeights" />
 
                     <ImageView
                         android:id="@+id/rec_item_despesaXV"
@@ -99,7 +100,8 @@
                     android:layout_gravity="center"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/despesas" />
+                    app:srcCompat="@drawable/despesas"
+                    android:contentDescription="@string/despesas" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -113,7 +115,7 @@
                         android:id="@+id/textView23"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Reembolso"
+                        android:text="@string/reembolso"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@id/imageView9"
@@ -124,7 +126,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Não"
+                        android:text="@string/nao"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -146,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:text="Valor"
+                        android:text="@string/valor"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@id/imageView9"
@@ -157,7 +159,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="R$ 2.400.00"
+                        tools:text="@tools:sample/us_zipcodes"
                         android:textColor="@color/alizarin"
                         android:textSize="16sp"
                         android:textStyle="bold"
@@ -184,7 +186,8 @@
                 <ImageView
                     android:id="@+id/imageView13"
                     android:layout_width="50dp"
-                    android:layout_height="50dp"/>
+                    android:layout_height="50dp"
+                    android:contentDescription="@string/despesas" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -196,7 +199,7 @@
                         android:id="@+id/textView26"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Descrição "
+                        android:text="@string/descricao"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
 
@@ -206,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:maxLines="2"
-                        android:text="Concerto de lona de freio blablabla, casa da lona"
+                        tools:text="@tools:sample/lorem"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold" />

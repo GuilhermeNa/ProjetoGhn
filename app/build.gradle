@@ -55,7 +55,7 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.9.0'
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
     // ViewModel
     def lifecycle_version = "2.6.2"

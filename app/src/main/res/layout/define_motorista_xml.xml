@@ -11,7 +11,7 @@
         android:layout_marginHorizontal="14dp"
         android:layout_marginBottom="14dp"
         android:gravity="center"
-        android:text="Defina um motorista para este Cavalo"
+        android:text="@string/defina_um_motorista_para_este_cavalo"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:completionThreshold="1"
-            android:hint="Nome"
+            android:hint="@string/nome"
             android:inputType="textCapCharacters"
             android:padding="16dp"
             android:popupBackground="@color/alizarin" />

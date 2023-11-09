@@ -25,7 +25,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView14"
@@ -51,7 +51,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Semi Reboque"
+                    android:text="@string/semi_reboque"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Semi Reboque"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_semi_reboque"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -84,7 +84,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Placa">
+                    android:hint="@string/placa">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seemireboque_placa"
@@ -98,7 +98,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Marca">
+                    android:hint="@string/marca">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seemireboque_marca"
@@ -120,7 +120,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginEnd="4dp"
                         android:layout_weight="0.5"
-                        android:hint="Ano">
+                        android:hint="@string/ano">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_seemireboque_ano"
@@ -136,7 +136,7 @@
                         android:layout_marginStart="4dp"
                         android:layout_marginTop="8dp"
                         android:layout_weight="0.5"
-                        android:hint="Modelo">
+                        android:hint="@string/modelo">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/frag_formulario_seemireboque_modelo"
@@ -151,7 +151,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Cor">
+                    android:hint="@string/cor">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seemireboque_cor"
@@ -165,7 +165,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Renavam">
+                    android:hint="@string/renavam">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seemireboque_renavam"
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
-                    android:hint="Chassi">
+                    android:hint="@string/chassi">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_seemireboque_chassi"

@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Detalhes"
+            android:text="@string/detalhes"
             android:textColor="@color/white"
             android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Média"
+            android:text="@string/media"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lucro %"
+            android:text="@string/lucro_perc"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -114,7 +114,7 @@
             android:id="@+id/txt_flag1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Data Inicial"
+            android:text="@string/data_inicial"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -151,7 +151,7 @@
             android:id="@+id/txt_flag2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Data Final"
+            android:text="@string/data_final"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:layout_marginTop="10dp"
@@ -206,7 +206,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Km rodado"
+            android:text="@string/km_rodado"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
@@ -232,7 +232,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Total litros"
+            android:text="@string/total_litros"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
@@ -258,7 +258,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Frete bruto"
+            android:text="@string/frete_bruto"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
@@ -284,7 +284,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Abastecimento"
+            android:text="@string/abastecimento"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
@@ -310,7 +310,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Comissão"
+            android:text="@string/comissao"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 
@@ -336,7 +336,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Custos percurso"
+            android:text="@string/custos_percurso"
             android:textSize="16sp"
             android:textColor="@color/white"/>
 

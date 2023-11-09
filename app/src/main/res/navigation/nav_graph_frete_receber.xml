@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navFreteReceber"
-        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.freteEmAberto.FreteAReceberEmAbertoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.freteReceber.freteEmAberto.FreteAReceberEmAbertoFragment"
         android:label="Frete Receber"
         tools:layout="@layout/fragment_frete_a_receber" >
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/navFreteReceberPago"
-        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberPagosFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.freteReceber.FreteAReceberPagosFragment"
         android:label="Frete Receber Pago"
         tools:layout="@layout/fragment_frete_a_receber_pagos" >
         <action
@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/navFreteAReceberResumo"
-        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.FreteAReceberResumoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.freteReceber.FreteAReceberResumoFragment"
         android:label="Frete a Receber Resumo"
         tools:layout="@layout/fragment_frete_a_receber_resumo" >
         <argument
@@ -42,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/carregandoDadosFreteReceberFragment"
-        android:name="br.com.transporte.AppGhn.ui.fragment.freteReceber.CarregandoDadosFreteReceberFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.freteReceber.CarregandoDadosFreteReceberFragment"
         android:label="fragment_carregando_dados"
         tools:layout="@layout/fragment_carregando_dados_frete_receber" >
         <action

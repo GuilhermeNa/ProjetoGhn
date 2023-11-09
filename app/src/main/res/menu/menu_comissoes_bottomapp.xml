@@ -4,11 +4,11 @@
     <item
         android:id="@+id/navComissoes"
         android:icon="@drawable/ic_ampulheta_24"
-        android:title="Em Aberto" />
+        android:title="@string/em_aberto" />
 
     <item
         android:id="@+id/navComissoesPagas"
         android:icon="@drawable/ic_baseline_done_24"
-        android:title="Pagamentos" />
+        android:title="@string/pagamentos" />
 
 </menu>

@@ -3,10 +3,10 @@
     <item
         android:id="@+id/navSeguroFrota"
         android:icon="@drawable/ic_frete"
-        android:title="Frota" />
+        android:title="@string/frota" />
 
     <item
         android:id="@+id/navSeguroVida"
         android:icon="@drawable/ic_baseline_shield_24"
-        android:title="Demais ramos" />
+        android:title="@string/demais_ramos" />
 </menu>

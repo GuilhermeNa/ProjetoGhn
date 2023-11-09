@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.pagamentoComissoes.ComissoesPagasFragment">
+    tools:context=".ui.fragment.pagamentoComissoes.comissoesPagas.ComissoesPagasFragment">
 
     <include
         android:id="@+id/alerta_layout"

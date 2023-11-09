@@ -14,7 +14,8 @@
         android:layout_gravity="center|top"
         android:scaleType="centerCrop"
         android:src="@drawable/horizontal"
-        app:tint="@color/white" />
+        app:tint="@color/white"
+        android:contentDescription="@string/barra_horizontal" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -58,14 +59,15 @@
             android:src="@drawable/ic_calendar_month_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/calendario" />
 
         <TextView
             android:id="@+id/txtView40"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:text="Ano"
+            android:layout_marginStart="30dp"
+            android:text="@string/ano"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -86,7 +88,7 @@
                 android:id="@+id/ano"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2023"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -98,7 +100,7 @@
                 android:id="@+id/ano_animation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2023"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -115,7 +117,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/ano"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/seta_esquerda" />
 
             <ImageView
                 android:id="@+id/direita"
@@ -125,7 +128,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/ano"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/seta_direita" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -155,7 +159,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:text="Filtrar placa"
+            android:text="@string/filtrar_placa"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

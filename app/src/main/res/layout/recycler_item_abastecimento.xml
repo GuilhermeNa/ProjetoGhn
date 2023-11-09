@@ -32,9 +32,9 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="9dp"
                     android:layout_gravity="center"
+                    android:layout_marginStart="9dp"
+                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <ImageView
@@ -50,9 +50,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginStart="8dp"
-                        android:text="15/04/23"
                         android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        tools:text="@tools:sample/date/ddmmyy" />
 
                 </LinearLayout>
 
@@ -70,8 +70,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:gravity="center"
                         android:layout_weight="1"
+                        android:gravity="center"
                         android:text="Abast. Total:"
                         android:textColor="@color/white"
                         android:textSize="16sp" />
@@ -112,7 +112,7 @@
                         android:id="@+id/textView23"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Posto"
+                        android:text="@string/posto"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@id/imageView9"
@@ -123,12 +123,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="Marajó"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="@id/textView23"
-                        app:layout_constraintTop_toBottomOf="@id/textView23" />
+                        app:layout_constraintTop_toBottomOf="@id/textView23"
+                        tools:text="@tools:sample/cities" />
 
                 </LinearLayout>
 
@@ -145,7 +145,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:text="Valor Total"
+                        android:text="@string/valor_total"
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         app:layout_constraintStart_toEndOf="@id/imageView9"
@@ -156,12 +156,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="R$ 2.400.00"
                         android:textColor="@color/alizarin"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="@id/textView23"
-                        app:layout_constraintTop_toBottomOf="@id/textView23" />
+                        app:layout_constraintTop_toBottomOf="@id/textView23"
+                        tools:text="@tools:sample/us_zipcodess" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -204,7 +204,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Marcação Km "
+                    android:text="@string/marcacao_km"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView12"
@@ -215,13 +215,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="170.000.00"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/textView27"
                     app:layout_constraintStart_toEndOf="@id/viewDivisor"
-                    app:layout_constraintTop_toTopOf="@id/textView27" />
+                    app:layout_constraintTop_toTopOf="@id/textView27"
+                    tools:text="@tools:sample/us_zipcodes" />
 
 
                 <View
@@ -241,7 +241,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Quant. Litros"
+                    android:text="@string/quant_litros"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/textView27"
@@ -252,13 +252,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="500"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/textView28"
                     app:layout_constraintStart_toEndOf="@id/viewDivisor"
-                    app:layout_constraintTop_toTopOf="@id/textView28" />
+                    app:layout_constraintTop_toTopOf="@id/textView28"
+                    tools:text="@tools:sample/us_zipcodes" />
 
                 <View
                     android:id="@+id/view7"
@@ -277,7 +277,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Preço/Litro"
+                    android:text="@string/preco_litro"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@id/textView28"
@@ -288,17 +288,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="4.80"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@id/textView31"
                     app:layout_constraintStart_toEndOf="@id/viewDivisor"
-                    app:layout_constraintTop_toTopOf="@id/textView31" />
+                    app:layout_constraintTop_toTopOf="@id/textView31"
+                    tools:text="@tools:sample/us_zipcodes" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,10 +3,10 @@
     <item
         android:id="@+id/navFreteReceber"
         android:icon="@drawable/ic_ampulheta_24"
-        android:title="Em Aberto" />
+        android:title="@string/em_aberto" />
 
     <item
         android:id="@+id/navFreteReceberPago"
         android:icon="@drawable/ic_baseline_done_24"
-        android:title="Recebidos" />
+        android:title="@string/recebidos" />
 </menu>

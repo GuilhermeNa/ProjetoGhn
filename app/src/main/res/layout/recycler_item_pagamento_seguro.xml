@@ -2,13 +2,14 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="30dp">
+    android:layout_height="30dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/rec_item_parcela_seguro_numero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1"
+        tools:text="@tools:sample/us_zipcodes"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/rec_item_parcela_seguro_data"
@@ -19,7 +20,7 @@
         android:id="@+id/rec_item_parcela_seguro_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00/00/00"
+        tools:text="@tools:sample/date/ddmmyy"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/view_parcela_seguro_1"
@@ -39,7 +40,7 @@
         android:id="@+id/rec_item_parcela_seguro_valor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="R$ 0.000.00"
+        tools:text="@tools:sample/us_zipcodes"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/view_parcela_seguro_2"
@@ -74,7 +75,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/view_parcela_seguro_2"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:contentDescription="@string/checked" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

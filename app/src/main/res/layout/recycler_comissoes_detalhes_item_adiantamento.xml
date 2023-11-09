@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/rec_salario_detalhes_item_adiantamento_cardview"
@@ -45,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="09/06/23"
+                tools:text="@tools:sample/date/ddmmyy"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@id/rec_salario_detalhes_item_adiantamento_view"
@@ -57,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="R$ 1.000,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@id/rec_salario_detalhes_item_adiantamento_view"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,14 +84,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
-                        android:text="Saldo restituido"
+                        android:text="@string/saldo_restituido"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_salario_detalhes_item_adiantamento_descontado_valor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 800,00" />
+                        tools:text="@tools:sample/us_zipcodes" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -105,14 +106,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
-                        android:text="Em Aberto"
+                        android:text="@string/em_aberto"
                         android:textSize="12sp" />
 
                     <TextView
                         android:id="@+id/rec_salario_detalhes_item_adiantamento_em_aberto_valor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="R$ 200,00" />
+                        tools:text="@tools:sample/us_zipcodes" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,7 +128,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
-                        android:text="Descontar"
+                        android:text="@string/descontar"
                         android:textStyle="bold|italic"
                         android:textSize="16sp" />
 
@@ -137,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:textStyle="bold|italic"
                         android:textSize="16sp"
-                        android:text="R$ 200,00" />
+                        tools:text="@tools:sample/us_zipcodes" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

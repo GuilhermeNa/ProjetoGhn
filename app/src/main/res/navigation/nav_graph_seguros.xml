@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navSeguroFrota"
-        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.seguros.seguroFrota.SeguroFrotaFragment"
         android:label="Seguros Fragment"
         tools:layout="@layout/fragment_seguro_frota" >
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/navSeguroInformacoes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroInfo.SegurosInformacoesGeraisFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.seguros.seguroInfo.SegurosInformacoesGeraisFragment"
         android:label="Seguro Resumo"
         tools:layout="@layout/fragment_seguros_informacoes_gerais">
         <argument
@@ -28,11 +28,11 @@
             app:argType="long" />
         <argument
             android:name="tipoSeguro"
-            app:argType="br.com.transporte.AppGhn.ui.fragment.seguros.TipoDeSeguro" />
+            app:argType="br.com.transporte.appGhn.ui.fragment.seguros.TipoDeSeguro" />
     </fragment>
     <fragment
         android:id="@+id/navSeguroVida"
-        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroVida.SeguroVidaFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.seguros.seguroVida.SeguroVidaFragment"
         android:label="Seguro Outros"
         tools:layout="@layout/fragment_seguro_vida" >
         <action
@@ -45,7 +45,7 @@
     </fragment>
     <fragment
         android:id="@+id/navSeguroHome"
-        android:name="br.com.transporte.AppGhn.ui.fragment.seguros.seguroHome.SegurosHomeFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.seguros.seguroHome.SegurosHomeFragment"
         android:label="Seguro Home"
         tools:layout="@layout/fragment_seguros_home" >
         <action

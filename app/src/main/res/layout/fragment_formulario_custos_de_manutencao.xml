@@ -27,7 +27,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageView14"
@@ -53,7 +53,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Manutenção"
+                    android:text="@string/manutencao"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Manutenção"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_manutencao"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -86,7 +86,7 @@
                     android:id="@+id/frag_formulario_manutencao_layout_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aa"
+                    android:hint="@string/dd_mm_aa"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Empresa">
+                    android:hint="@string/empresa">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_manutencao_empresa"
@@ -116,7 +116,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="nº Nota">
+                    android:hint="@string/n_nota">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_manutencao_nota"
@@ -130,7 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Descrição">
+                    android:hint="@string/descricao">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_manutencao_descricao"
@@ -144,11 +144,11 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
                     android:layout_weight="0.5"
-                    android:hint="Valor"
+                    android:hint="@string/valor"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -179,7 +179,7 @@
                             android:layout_marginHorizontal="64dp"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Manutenção"
+                            android:text="@string/manutencao"
                             android:textColor="@color/white"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -197,7 +197,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Periódica"
+                                android:text="@string/periodica"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -217,7 +217,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Extraordinaria"
+                                android:text="@string/extraordinaria"
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />

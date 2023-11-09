@@ -53,7 +53,7 @@
                     android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Despesas"
+                    android:text="@string/despesas"
                     android:textColor="@color/white"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Você está adicionando um novo registro de Despesa"
+                    android:text="@string/voce_esta_adicionando_um_novo_registro_de_despesa"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:layout_constraintStart_toEndOf="@id/imageView14"
@@ -86,7 +86,7 @@
                     android:id="@+id/frag_formulario_despesa_financeira_layout_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aa"
+                    android:hint="@string/dd_mm_aa"
                     app:errorIconDrawable="@drawable/ic_error"
                     app:startIconDrawable="@drawable/ic_calendar_month_24">
 
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Descrição">
+                    android:hint="@string/descricao">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/frag_formulario_despesa_financeira_descricao"
@@ -116,10 +116,10 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginTop="8dp"
                     android:layout_weight="0.5"
-                    android:hint="Valor"
+                    android:hint="@string/valor"
                     app:prefixText="R$ ">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -135,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="Ref. Cavalo"
+                    android:hint="@string/ref_cavalo"
                     app:endIconMode="dropdown_menu"
                     android:visibility="gone">
 
@@ -147,7 +147,8 @@
                         android:maxLines="1"
                         android:paddingStart="16dp"
                         android:paddingBottom="16dp"
-                        android:paddingTop="24dp"/>
+                        android:paddingTop="24dp"
+                        tools:ignore="RtlSymmetry" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>

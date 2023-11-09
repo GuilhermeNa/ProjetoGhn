@@ -1,17 +1,41 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
-    <style name="Theme.AppGhn" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.AppGhn" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimary">@color/midnightblue</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/midnightblue</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/midnightblue</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/midnightblue</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="actionBarTheme">@style/MyActionBar</item>
+    </style>
+
+    <!-- MY ACTION BAR -->
+    <style name="MyActionBar" parent="Widget.MaterialComponents.ActionBar.Solid">
+        <item name="android:background">@color/midnightblue</item>
+    </style>
+
+    <!-- BACKGROUND DO APP -->
+    <style name="BACKGROUND">
+        <item name="android:color">@color/black</item>
+    </style>
+
+    <!-- NO ACTION BAR -->
+    <style name="Theme.AppGhn.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- DIALOG ANIMATION -->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_out</item>
     </style>
 
 </resources>

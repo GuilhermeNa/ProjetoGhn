@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.pagamentoComissoes.ComissoesEmAbertoFragment">
+    tools:context=".ui.fragment.pagamentoComissoes.comissoesEmAberto.ComissoesEmAbertoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint"
@@ -28,7 +28,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Já Pago"
+            android:text="@string/ja_pago"
             android:textColor="@color/white"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@id/pago_valor"
@@ -39,7 +39,7 @@
             android:id="@+id/pago_valor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="R$ 80.000,00"
+            tools:text="@tools:sample/us_zipcodes"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@id/progress_bar"
@@ -60,7 +60,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Total comissão"
+                android:text="@string/total_comissao"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -68,7 +68,7 @@
                 android:id="@+id/total_comissao_valor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="R$ 100.000,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -85,7 +85,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Em aberto"
+                android:text="@string/em_aberto"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -93,7 +93,7 @@
                 android:id="@+id/em_aberto_valor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="R$ 20.000,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>

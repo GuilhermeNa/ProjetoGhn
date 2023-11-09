@@ -5,10 +5,9 @@
     android:id="@+id/nav_graph_comissoes"
     app:startDestination="@id/navComissaoCarregaDados">
 
-
     <fragment
         android:id="@+id/navComissoes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesEmAbertoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.pagamentoComissoes.comissoesEmAberto.ComissoesEmAbertoFragment"
         android:label="Comissoes Fragment"
         tools:layout="@layout/fragment_comissoes" >
         <action
@@ -21,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/navComissoesDetalhes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.pagamentoComissoes.ComissoesDetalhesFragment"
         android:label="Comissoes Detalhes Fragment"
         tools:layout="@layout/fragment_comissoes_detalhes" >
         <argument
@@ -30,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/navComissoesPagas"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.pagamentoComissoes.comissoesPagas.ComissoesPagasFragment"
         android:label="Comissoes Pagas"
         tools:layout="@layout/fragment_comissoes_pagas" >
         <action
@@ -43,7 +42,7 @@
     </fragment>
     <fragment
         android:id="@+id/navComissoesPagasDetalhes"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.pagamentoComissoes.ComissoesPagasDetalhesFragment"
         android:label="Comissoes Pagas Detalhes"
         tools:layout="@layout/fragment_comissoes_pagas_detalhes" >
         <argument
@@ -52,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/navComissaoCarregaDados"
-        android:name="br.com.transporte.AppGhn.ui.fragment.pagamentoComissoes.CarregandoDadosComissaoFragment"
+        android:name="br.com.transporte.appGhn.ui.fragment.pagamentoComissoes.CarregandoDadosComissaoFragment"
         android:label="Carrega dados Fragment"
         tools:layout="@layout/fragment_carregando_dados_comissao" >
         <action

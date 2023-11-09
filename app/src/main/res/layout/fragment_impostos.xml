@@ -7,16 +7,6 @@
     android:background="@drawable/shape_background_tema_app"
     tools:context=".ui.fragment.ImpostosFragment">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_padrao" />
-
     <include
         android:id="@+id/frag_impostos_alerta"
         android:layout_height="wrap_content"
@@ -34,7 +24,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/frag_impostos_total_pago_layout"
@@ -52,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginEnd="16dp"
-                android:text="Total pago"
+                android:text="@string/total_pago"
                 android:textColor="@color/white"
                 android:textSize="12sp" />
 
@@ -61,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="R$ 100.000,00"
+                tools:text="@tools:sample/us_zipcodes"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
@@ -101,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="01/01/23"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -122,10 +112,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="02/05/23"
+                    tools:text="@tools:sample/date/ddmmyy"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="NestedWeights" />
             </LinearLayout>
         </LinearLayout>
 
