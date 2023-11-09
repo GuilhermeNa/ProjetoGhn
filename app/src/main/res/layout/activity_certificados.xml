@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.activity.certificado.CertificadosActivity">
+    tools:context="br.com.transporte.appGhn.ui.activity.certificado.CertificadosActivity">
 
     <fragment
         android:id="@+id/nav_host_fragment_container_certificados"
@@ -17,7 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/nav_graph_certificados" />
+        app:navGraph="@navigation/nav_graph_certificados"
+        tools:ignore="FragmentTagUsage" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -42,7 +43,8 @@
         android:visibility="invisible"
         app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@id/fab"
-        app:layout_constraintEnd_toStartOf="@id/fab" />
+        app:layout_constraintEnd_toStartOf="@id/fab"
+        android:contentDescription="@string/fab_adiciona_certificado_direto" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_indireta"
@@ -54,7 +56,8 @@
         android:visibility="invisible"
         app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@id/fab"
-        app:layout_constraintStart_toEndOf="@id/fab" />
+        app:layout_constraintStart_toEndOf="@id/fab"
+        android:contentDescription="@string/fab_adiciona_certificado_indireto" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

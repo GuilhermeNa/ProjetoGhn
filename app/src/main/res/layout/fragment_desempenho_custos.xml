@@ -26,13 +26,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_frete" />
+                app:srcCompat="@drawable/ic_frete"
+                android:contentDescription="@string/imagem_caminhao" />
 
             <TextView
                 android:id="@+id/textView"
@@ -72,13 +73,14 @@
             app:layout_constraintTop_toBottomOf="@id/percurso_layout"
             app:layout_constraintStart_toStartOf="@id/percurso_layout"
             app:layout_constraintEnd_toEndOf="@id/percurso_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_attach_money_24"/>
+                app:srcCompat="@drawable/ic_baseline_attach_money_24"
+                android:contentDescription="@string/imagem_dinheiro" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -117,13 +119,14 @@
             app:layout_constraintTop_toBottomOf="@id/salarios_layout"
             app:layout_constraintStart_toStartOf="@id/salarios_layout"
             app:layout_constraintEnd_toEndOf="@id/salarios_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/lucro_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_vector_repair" />
+                app:srcCompat="@drawable/ic_vector_repair"
+                android:contentDescription="@string/maleta_manutencao" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -162,14 +165,15 @@
             app:layout_constraintStart_toStartOf="@id/manutencao_layout"
             app:layout_constraintEnd_toEndOf="@id/manutencao_layout"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_abastecimento"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/avatars"
+                android:contentDescription="@string/bomba_combustivel" />
 
             <TextView
                 android:id="@+id/textView3"

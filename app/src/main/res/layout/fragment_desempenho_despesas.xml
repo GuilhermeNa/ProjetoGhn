@@ -26,14 +26,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_warehouse_24"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/avatars"
+                android:contentDescription="@string/despesas_administrativas" />
 
             <TextView
                 android:id="@+id/textView"
@@ -73,14 +74,15 @@
             app:layout_constraintTop_toBottomOf="@id/administrativo_layout"
             app:layout_constraintStart_toStartOf="@id/administrativo_layout"
             app:layout_constraintEnd_toEndOf="@id/administrativo_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_baseline_attach_money_24"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/avatars"
+                android:contentDescription="@string/imagem_dinheiro" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -120,13 +122,14 @@
             app:layout_constraintTop_toBottomOf="@id/certificado_layout"
             app:layout_constraintStart_toStartOf="@id/certificado_layout"
             app:layout_constraintEnd_toEndOf="@id/certificado_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_frete" />
+                app:srcCompat="@drawable/ic_frete"
+                android:contentDescription="@string/imagem_caminhao" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -166,13 +169,14 @@
             app:layout_constraintTop_toBottomOf="@id/frota_layout"
             app:layout_constraintStart_toStartOf="@id/frota_layout"
             app:layout_constraintEnd_toEndOf="@id/frota_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/lucro_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_shield_24" />
+                app:srcCompat="@drawable/ic_baseline_shield_24"
+                android:contentDescription="@string/escudo" />
 
             <TextView
                 android:id="@+id/textView2"
@@ -211,13 +215,14 @@
             app:layout_constraintStart_toStartOf="@id/seguros_layout"
             app:layout_constraintEnd_toEndOf="@id/seguros_layout"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_vector_calculate" />
+                app:srcCompat="@drawable/ic_vector_calculate"
+                android:contentDescription="@string/imagem_impostos" />
 
             <TextView
                 android:id="@+id/textView4"

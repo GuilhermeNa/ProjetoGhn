@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">AppGhn</string>
     <string name="text_categorias">Categorias</string>
     <string name="text_area_do_motorista">Área do Motorista</string>
@@ -70,7 +70,7 @@
     <string name="demais_ramos">Demais Ramos</string>
     <string name="calendario">calendario</string>
     <string name="nao_encontrei_nada_aqui">Não encontrei nada aqui.</string>
-    <string name="carregando_dados">Carregando Dados...</string>
+    <string name="carregando_dados" tools:ignore="TypographyEllipsis">Carregando Dados...</string>
     <string name="floating_action_button">Floating action Button</string>
     <string name="total_a_receber">Total a Receber</string>
     <string name="acumulado">Acumulado</string>
@@ -160,7 +160,7 @@
     <string name="cor">Cor</string>
     <string name="renavam">Renavam</string>
     <string name="chassi">Chassi</string>
-    <string name="comiss_o_ao_motorista">Comissão % ao motorista</string>
+    <string name="comiss_o_ao_motorista" tools:ignore="StringFormatInvalid">Comissão % ao motorista</string>
     <string name="voce_esat_adicionando_um_novo_registro_de_certificado">Você está adicionando um novo registro de Certificado</string>
     <string name="data_expediao">Data Expedição</string>
     <string name="ano_referencia">Ano Referência</string>
@@ -270,4 +270,54 @@
     <string name="banner">Banner</string>
     <string name="imagem_lucro">Imagem lucro</string>
     <string name="imagem_caminhao">Imagem caminhão</string>
+    <string name="fab_adiciona_frete">fab adiciona frete</string>
+    <string name="fab_adiciona_abastecimento">fab adiciona abastecimento</string>
+    <string name="fab_adiciona_despesa">fab adiciona despesa</string>
+    <string name="icone_resumo">icone resumo</string>
+    <string name="icone_frete">icone frete</string>
+    <string name="icone_abastecimento">icone abastecimento</string>
+    <string name="icone_despesa">icone despesa</string>
+    <string name="fab_principal">fab principal</string>
+    <string name="fab_adiciona_certificado_direto">fab adiciona certificado direto</string>
+    <string name="fab_adiciona_certificado_indireto">fab adiciona certificado indireto</string>
+    <string name="fab_adiciona_despesa_direta">fab adiciona despesa direta</string>
+    <string name="fab_adiciona_despesa_indireta">fab adiciona despesa indireta</string>
+    <string name="fab_adiciona_seguro_direto">fab adiciona seguro direto</string>
+    <string name="fab_adiciona_seguro_indireto">fab adiciona seguro indireto</string>
+    <string name="botao_cancelar">botao cancelar</string>
+    <string name="icone_fechar">icone fechar</string>
+    <string name="bolsa_com_dinheiro">bolsa com dinheiro</string>
+    <string name="salario_sendo_pago">salario sendo pago</string>
+    <string name="moeda">moeda</string>
+    <string name="imagem_dinheiro">imagem dinheiro</string>
+    <string name="maleta_manutencao">maleta manutencao</string>
+    <string name="despesas_administrativas">despesas administrativas</string>
+    <string name="escudo">escudo</string>
+    <string name="imagem_impostos">imagem impostos</string>
+    <string name="seta_para_cima">seta para cima</string>
+    <string name="grafico_em_alta">grafico em alta</string>
+    <string name="imagem_adiantamento">imagem adiantamento</string>
+    <string name="chave_de_fenda">chave de fenda</string>
+    <string name="tesoura_cortando_dinheiro">tesoura cortando dinheiro</string>
+    <string name="camera_com_um_fundo_vermelho">camera com um fundo vermelho</string>
+    <string name="moeda_e_seta_para_cima">moeda e seta para cima</string>
+    <string name="escudo_com_um_check">escudo com um check</string>
+    <string name="escudo_com_um_coracao">escudo com um coração</string>
+    <string name="reboque">reboque</string>
+    <string name="uma_pessoa">uma pessoa</string>
+    <string name="uma_lupa">uma lupa</string>
+    <string name="velocimetro_e_um_grafico_em_alta">velocimetro e um grafico em alta</string>
+    <string name="pessoa_sentada_ao_volante">pessoa sentada ao volante</string>
+    <string name="notas_em_uma_gaveta">notas em uma gaveta</string>
+    <string name="pessoa_com_um_predio_ao_fundo">pessoa com um predio ao fundo</string>
+    <string name="fab_adiciona_imposto">fab adiciona imposto</string>
+    <string name="icone_caminhao">icone caminhao</string>
+    <string name="linha_conectando_origem_e_destino">linha conectando origem e destino</string>
+    <string name="icone_de_uma_seta_verde_ou_um_x_vermelho_que_representa_se_tanque_foi_complemtamente_abastecido">icone de uma seta verde ou um x vermelho que representa se tanque foi complemtamente abastecido</string>
+    <string name="icone_com_x_ou_um_check_que_representa_se_ja_foi_pago">icone com X ou um check que representa se ja foi pago</string>
+    <string name="icone_atualizacao">icone atualização</string>
+    <string name="x_ou_v_representando_se_ja_foi_pago">x ou v representando se ja foi pago</string>
+    <string name="icone_pessoa">icone pessoa</string>
+    <string name="imagem_motorista">imagem motorista</string>
+    <string name="ref">Ref:</string>
 </resources>

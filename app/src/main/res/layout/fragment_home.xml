@@ -81,7 +81,8 @@
                         android:layout_height="120dp"
                         android:layout_gravity="end"
                         android:padding="10dp"
-                        android:src="@drawable/img_motorista" />
+                        android:src="@drawable/img_motorista"
+                        android:contentDescription="@string/pessoa_sentada_ao_volante" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <View
@@ -113,7 +114,8 @@
                         android:layout_height="120dp"
                         android:layout_gravity="end"
                         android:padding="10dp"
-                        android:src="@drawable/img_documentos" />
+                        android:src="@drawable/img_documentos"
+                        android:contentDescription="@string/notas_em_uma_gaveta" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <View
@@ -145,7 +147,8 @@
                         android:layout_height="120dp"
                         android:layout_gravity="end"
                         android:padding="10dp"
-                        android:src="@drawable/img_caminhao" />
+                        android:src="@drawable/img_caminhao"
+                        android:contentDescription="@string/imagem_caminhao" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <View
@@ -177,7 +180,8 @@
                         android:layout_height="120dp"
                         android:layout_gravity="end"
                         android:padding="10dp"
-                        android:src="@drawable/img_gerenciamento" />
+                        android:src="@drawable/img_gerenciamento"
+                        android:contentDescription="@string/pessoa_com_um_predio_ao_fundo" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <View

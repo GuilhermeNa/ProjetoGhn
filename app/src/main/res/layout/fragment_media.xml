@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.media.MediaFragment">
+    android:background="@drawable/shape_background_tema_app">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint"
@@ -42,7 +41,8 @@
                     app:layout_constraintBottom_toTopOf="@id/cavalo_placa"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/icone_caminhao" />
 
                 <TextView
                     android:id="@+id/cavalo_placa"

@@ -27,7 +27,8 @@
                 android:src="@drawable/situacao_ok"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_margin="8dp"/>
+                android:layout_margin="8dp"
+                android:contentDescription="@string/x_ou_v_representando_se_ja_foi_pago" />
 
             <View
                 android:id="@+id/rec_item_despesa_seguros_view"

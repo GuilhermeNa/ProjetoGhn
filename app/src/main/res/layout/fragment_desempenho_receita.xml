@@ -27,13 +27,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_vector_up" />
+                app:srcCompat="@drawable/ic_vector_up"
+                android:contentDescription="@string/seta_para_cima" />
 
             <TextView
                 android:id="@+id/textView"
@@ -73,13 +74,14 @@
             app:layout_constraintTop_toBottomOf="@id/frete_bruto_layout"
             app:layout_constraintStart_toStartOf="@id/frete_bruto_layout"
             app:layout_constraintEnd_toEndOf="@id/frete_bruto_layout"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/liquido_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/vector_frete_liquido" />
+                app:srcCompat="@drawable/vector_frete_liquido"
+                android:contentDescription="@string/grafico_em_alta" />
 
             <TextView
                 android:id="@+id/textView1"
@@ -118,7 +120,7 @@
             app:layout_constraintStart_toStartOf="@id/frete_liquido_layout"
             app:layout_constraintEnd_toEndOf="@id/frete_liquido_layout"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:ignore="RtlSymmetry">
+            tools:ignore="RtlSymmetry,UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/lucro_img"

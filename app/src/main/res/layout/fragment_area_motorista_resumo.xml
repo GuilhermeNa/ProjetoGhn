@@ -5,7 +5,7 @@
     android:id="@+id/frag_area_motorista_resumo_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
+    tools:context="br.com.transporte.appGhn.ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
 
     <LinearLayout
         android:id="@+id/frag_resumo_linear"
@@ -82,7 +82,8 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_marginEnd="8dp"
-                            app:srcCompat="@drawable/comissao_total" />
+                            app:srcCompat="@drawable/comissao_total"
+                            android:contentDescription="@string/bolsa_com_dinheiro" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -133,7 +134,8 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:layout_marginEnd="8dp"
-                            app:srcCompat="@drawable/valor_receber" />
+                            app:srcCompat="@drawable/valor_receber"
+                            android:contentDescription="@string/salario_sendo_pago" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -192,13 +194,15 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_gravity="end"
-                    android:src="@drawable/vazio" />
+                    android:src="@drawable/vazio"
+                    android:contentDescription="@string/nao_encontrei_nada_aqui" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -227,7 +231,8 @@
                         android:layout_marginTop="8dp"
                         android:background="@drawable/shape_retangular_corner_branco"
                         android:orientation="horizontal"
-                        android:padding="3dp">
+                        android:padding="3dp"
+                        android:baselineAligned="false">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -235,13 +240,15 @@
                             android:layout_margin="0dp"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:padding="3dp">
+                            android:padding="3dp"
+                            tools:ignore="UseCompoundDrawables">
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_calendar_month_24" />
+                                android:src="@drawable/ic_calendar_month_24"
+                                android:contentDescription="@string/calendario" />
 
                             <TextView
                                 android:id="@+id/frag_resumo_mes_dt_inicial"
@@ -274,7 +281,8 @@
                                 tools:text="@tools:sample/date/ddmmyy"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                tools:ignore="NestedWeights" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -328,7 +336,8 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_marginHorizontal="8dp"
-                                        android:orientation="horizontal">
+                                        android:orientation="horizontal"
+                                        tools:ignore="TooDeepLayout">
 
                                         <TextView
                                             android:id="@+id/textView17"
@@ -446,7 +455,8 @@
                             app:layout_constraintBottom_toBottomOf="@id/frag_resumo_card1"
                             app:layout_constraintEnd_toStartOf="@id/frag_resumo_card1"
                             app:layout_constraintStart_toStartOf="@id/frag_resumo_card1"
-                            app:layout_constraintTop_toTopOf="@id/frag_resumo_card1" />
+                            app:layout_constraintTop_toTopOf="@id/frag_resumo_card1"
+                            android:contentDescription="@string/moeda" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -610,7 +620,8 @@
                             app:layout_constraintEnd_toStartOf="@id/frag_resumo_card2"
                             app:layout_constraintStart_toStartOf="@id/frag_resumo_card2"
                             app:layout_constraintTop_toTopOf="@id/frag_resumo_card2"
-                            app:srcCompat="@drawable/carga" />
+                            app:srcCompat="@drawable/carga"
+                            android:contentDescription="@string/carga" />
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -718,7 +729,8 @@
                                             android:gravity="end"
                                             tools:text="@tools:sample/us_zipcodes"
                                             android:textColor="@color/white"
-                                            android:textSize="14sp" />
+                                            android:textSize="14sp"
+                                            tools:ignore="TooManyViews" />
                                     </LinearLayout>
 
                                     <View
@@ -776,7 +788,8 @@
                             app:layout_constraintEnd_toStartOf="@id/frag_resumo_card3"
                             app:layout_constraintStart_toStartOf="@id/frag_resumo_card3"
                             app:layout_constraintTop_toTopOf="@id/frag_resumo_card3"
-                            app:srcCompat="@drawable/abastecimento" />
+                            app:srcCompat="@drawable/abastecimento"
+                            android:contentDescription="@string/bomba_combustivel" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -944,7 +957,8 @@
                             app:layout_constraintEnd_toStartOf="@id/frag_resumo_card4"
                             app:layout_constraintStart_toStartOf="@id/frag_resumo_card4"
                             app:layout_constraintTop_toTopOf="@id/frag_resumo_card4"
-                            app:srcCompat="@drawable/despesas" />
+                            app:srcCompat="@drawable/despesas"
+                            android:contentDescription="@string/despesa" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

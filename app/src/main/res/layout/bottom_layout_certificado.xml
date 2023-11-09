@@ -43,7 +43,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/cancelButton"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/botao_cancelar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -63,7 +64,8 @@
             android:src="@drawable/ic_resumo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/icone_resumo" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -95,7 +97,6 @@
         android:visibility="invisible"
         android:padding="10dp">
 
-
         <ImageView
             android:id="@+id/ImageView6"
             android:layout_width="wrap_content"
@@ -103,7 +104,8 @@
             android:src="@drawable/ic_calendar_month_24"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="@string/calendario" />
 
         <TextView
             android:layout_width="wrap_content"

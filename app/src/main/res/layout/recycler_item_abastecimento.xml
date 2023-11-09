@@ -27,7 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/midnightblue"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -35,14 +36,16 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="9dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    tools:ignore="UseCompoundDrawables">
 
                     <ImageView
                         android:id="@+id/imageView10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:srcCompat="@drawable/ic_calendar_month_24"
-                        app:tint="@color/white" />
+                        app:tint="@color/white"
+                        android:contentDescription="@string/calendario" />
 
                     <TextView
                         android:id="@+id/rec_item_abastecimento_data"
@@ -63,7 +66,8 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    tools:ignore="UseCompoundDrawables">
 
                     <TextView
                         android:id="@+id/textView7"
@@ -72,16 +76,18 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Abast. Total:"
+                        android:text="@string/abast_total"
                         android:textColor="@color/white"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        tools:ignore="NestedWeights" />
 
                     <ImageView
                         android:id="@+id/rec_item_abastecimentoXV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        app:srcCompat="@drawable/done" />
+                        app:srcCompat="@drawable/done"
+                        android:contentDescription="@string/icone_de_uma_seta_verde_ou_um_x_vermelho_que_representa_se_tanque_foi_complemtamente_abastecido" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -98,7 +104,8 @@
                     android:layout_gravity="center"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/abastecimento" />
+                    app:srcCompat="@drawable/abastecimento"
+                    android:contentDescription="@string/bomba_combustivel" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -161,7 +168,7 @@
                         android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="@id/textView23"
                         app:layout_constraintTop_toBottomOf="@id/textView23"
-                        tools:text="@tools:sample/us_zipcodess" />
+                        tools:text="@tools:sample/us_zipcodes" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -197,7 +204,8 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:importantForAccessibility="no" />
 
                 <TextView
                     android:id="@+id/textView27"

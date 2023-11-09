@@ -71,7 +71,8 @@
                 android:src="@drawable/linha"
                 app:layout_constraintBottom_toBottomOf="@id/rec_salario_detalhes_item_frete_layout_origem_destino"
                 app:layout_constraintEnd_toStartOf="@id/rec_salario_detalhes_item_frete_layout_origem_destino"
-                app:layout_constraintTop_toTopOf="@id/rec_salario_detalhes_item_frete_layout_origem_destino" />
+                app:layout_constraintTop_toTopOf="@id/rec_salario_detalhes_item_frete_layout_origem_destino"
+                android:contentDescription="@string/linha_conectando_origem_e_destino" />
 
             <LinearLayout
                 android:id="@+id/rec_salario_detalhes_item_frete_layout_origem_destino"

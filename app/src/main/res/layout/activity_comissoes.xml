@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.activity.comissao.ComissoesActivity">
+    tools:context="br.com.transporte.appGhn.ui.activity.comissao.ComissoesActivity">
 
     <include
         android:id="@+id/data_layout"
@@ -29,7 +29,8 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/data_layout"
-        app:navGraph="@navigation/nav_graph_comissoes" />
+        app:navGraph="@navigation/nav_graph_comissoes"
+        tools:ignore="FragmentTagUsage" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

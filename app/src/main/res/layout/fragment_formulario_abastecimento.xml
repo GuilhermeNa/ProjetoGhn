@@ -39,7 +39,8 @@
                     android:layout_marginTop="32dp"
                     android:src="@drawable/abastecimento"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/bomba_combustivel" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -132,7 +133,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:baselineAligned="false">
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"

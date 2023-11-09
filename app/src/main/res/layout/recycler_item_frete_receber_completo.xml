@@ -173,7 +173,8 @@
                 android:src="@drawable/linha"
                 app:layout_constraintBottom_toBottomOf="@id/rec_item_frete_receber_completo_layout_loc"
                 app:layout_constraintEnd_toStartOf="@id/rec_item_frete_receber_completo_layout_loc"
-                app:layout_constraintTop_toTopOf="@id/rec_item_frete_receber_completo_layout_loc" />
+                app:layout_constraintTop_toTopOf="@id/rec_item_frete_receber_completo_layout_loc"
+                android:contentDescription="@string/linha_conectando_origem_e_destino" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -186,5 +187,6 @@
         app:layout_constraintEnd_toEndOf="@id/rec_item_frete_receber_completo_card"
         app:layout_constraintTop_toTopOf="@id/rec_item_frete_receber_completo_card"
         android:layout_marginTop="4dp"
-        android:elevation="2dp"/>
+        android:elevation="2dp"
+        android:contentDescription="@string/x_ou_v_representando_se_ja_foi_pago" />
 </androidx.constraintlayout.widget.ConstraintLayout>

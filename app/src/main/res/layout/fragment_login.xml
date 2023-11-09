@@ -25,7 +25,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="300dp"
-            android:src="@drawable/logo_caminhao" />
+            android:src="@drawable/logo_caminhao"
+            android:contentDescription="@string/imagem_caminhao" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

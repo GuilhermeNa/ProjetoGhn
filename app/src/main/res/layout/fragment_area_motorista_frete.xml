@@ -6,7 +6,7 @@
     android:id="@+id/act_area_motorista_constraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
+    tools:context="br.com.transporte.appGhn.ui.activity.areaMotoristaActivity.AreaMotoristaActivity">
 
     <TextView
         android:id="@+id/frag_frete_total_receber_txt"
@@ -57,13 +57,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center"
-                android:visibility="invisible">
+                android:visibility="invisible"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:src="@drawable/vazio"
-                    android:layout_gravity="end"/>
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/nao_encontrei_nada_aqui" />
 
                 <TextView
                     android:layout_marginTop="16dp"
@@ -91,7 +93,8 @@
                         android:layout_marginTop="16dp"
                         android:background="@drawable/shape_retangular_corner_branco"
                         android:orientation="horizontal"
-                        android:padding="3dp">
+                        android:padding="3dp"
+                        android:baselineAligned="false">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -99,13 +102,15 @@
                             android:layout_margin="0dp"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:padding="3dp">
+                            android:padding="3dp"
+                            tools:ignore="UseCompoundDrawables">
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_calendar_month_24" />
+                                android:src="@drawable/ic_calendar_month_24"
+                                android:contentDescription="@string/calendario" />
 
                             <TextView
                                 android:id="@+id/frag_frete_mes_dt_inicial"

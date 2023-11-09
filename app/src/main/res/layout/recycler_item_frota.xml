@@ -37,7 +37,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.15"
-                    android:src="@drawable/condutor_32" />
+                    android:src="@drawable/condutor_32"
+                    android:contentDescription="@string/icone_pessoa" />
 
                 <TextView
                     android:id="@+id/rec_item_frota_motorista_txt"
@@ -61,7 +62,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.15"
-                    android:src="@drawable/caminhao_32" />
+                    android:src="@drawable/caminhao_32"
+                    android:contentDescription="@string/icone_caminhao" />
 
                 <TextView
                     android:id="@+id/rec_item_frota_placa"

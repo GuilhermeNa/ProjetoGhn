@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.ImpostosFragment">
+    android:background="@drawable/shape_background_tema_app">
 
     <include
         android:id="@+id/frag_impostos_alerta"
@@ -69,7 +68,8 @@
             android:padding="3dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/frag_impostos_total_pago_layout">
+            app:layout_constraintTop_toBottomOf="@id/frag_impostos_total_pago_layout"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -77,13 +77,15 @@
                 android:layout_margin="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
-                android:padding="3dp">
+                android:padding="3dp"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_calendar_month_24" />
+                    android:src="@drawable/ic_calendar_month_24"
+                    android:contentDescription="@string/calendario" />
 
                 <TextView
                     android:id="@+id/frag_impostos_mes_dt_inicial"
@@ -130,7 +132,8 @@
             app:layout_constraintBottom_toBottomOf="@id/frag_impostos_data"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/frag_impostos_data"
-            app:layout_constraintTop_toTopOf="@id/frag_impostos_data" />
+            app:layout_constraintTop_toTopOf="@id/frag_impostos_data"
+            android:contentDescription="@string/fab_adiciona_imposto" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView

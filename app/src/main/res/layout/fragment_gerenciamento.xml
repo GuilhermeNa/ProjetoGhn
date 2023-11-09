@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_background_tema_app"
-    tools:context=".ui.fragment.home.GerenciamentoFragment">
+    android:background="@drawable/shape_background_tema_app">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -48,7 +46,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_frete_receber_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/moeda_e_seta_para_cima" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_frete_receber_txt"
@@ -97,7 +96,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_comissoes_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/uma_pessoa" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_comissoes_txt"
@@ -146,7 +146,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_impostos_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/tesoura_cortando_dinheiro" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_impostos_txt"
@@ -156,7 +157,7 @@
                         android:gravity="center"
                         android:padding="10dp"
                         android:paddingHorizontal="20dp"
-                        android:text="Impostos"
+                        android:text="@string/impostos"
                         android:textColor="@color/white"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -245,7 +246,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_provisionamento_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/escudo_com_um_check" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_provisionamento_txt"
@@ -393,7 +395,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_desempenho_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/uma_lupa" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_desempenho_txt"
@@ -443,7 +446,8 @@
                         app:layout_constraintBottom_toTopOf="@id/frag_gerenciamento_media_txt"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:contentDescription="@string/velocimetro_e_um_grafico_em_alta" />
 
                     <TextView
                         android:id="@+id/frag_gerenciamento_media_txt"

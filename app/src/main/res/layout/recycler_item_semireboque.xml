@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -16,11 +17,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.8"
-                android:text="PJB4E33"
+                tools:text="@tools:sample/lorem"
                 android:textSize="16sp"
                 android:textColor="@color/white"
                 android:paddingVertical="8dp"
-                android:paddingStart="16dp"/>
+                android:paddingStart="16dp"
+                tools:ignore="RtlSymmetry" />
 
             <ImageView
                 android:id="@+id/rec_item_semireboque_altera"
@@ -28,7 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.2"
                 android:src="@drawable/ic_change_24"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:contentDescription="@string/icone_atualizacao" />
         </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

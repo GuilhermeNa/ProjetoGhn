@@ -27,21 +27,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/midnightblue"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    tools:ignore="UseCompoundDrawables">
 
                     <ImageView
                         android:id="@+id/imageView10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:srcCompat="@drawable/ic_calendar_month_24"
-                        app:tint="@color/white" />
+                        app:tint="@color/white"
+                        android:contentDescription="@string/calendario" />
 
                     <TextView
                         android:id="@+id/rec_item_frete_data"
