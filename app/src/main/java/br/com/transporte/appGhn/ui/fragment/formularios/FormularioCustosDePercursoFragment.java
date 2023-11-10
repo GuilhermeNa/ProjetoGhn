@@ -1,6 +1,7 @@
 package br.com.transporte.appGhn.ui.fragment.formularios;
 
 import static android.app.Activity.RESULT_OK;
+import static br.com.transporte.appGhn.model.enums.TipoCustoDePercurso.NAO_REEMBOLSAVEL;
 import static br.com.transporte.appGhn.ui.fragment.ConstantesFragment.CHAVE_ID;
 import static br.com.transporte.appGhn.ui.fragment.ConstantesFragment.CHAVE_ID_CAVALO;
 import static br.com.transporte.appGhn.ui.fragment.ConstantesFragment.RESULT_DELETE;
@@ -137,7 +138,7 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         dataEdit.setText(ConverteDataUtil.dataParaString(viewModel.custoArmazenado.getData()));
         valorEdit.setText(viewModel.custoArmazenado.getValorCusto().toPlainString());
         descricaoEdit.setText(viewModel.custoArmazenado.getDescricao());
-        if (viewModel.custoArmazenado.getTipo() == TipoCustoDePercurso.NAO_REEMBOLSAVEL) {
+        if (viewModel.custoArmazenado.getTipo() == NAO_REEMBOLSAVEL) {
             naoBox.setChecked(true);
         } else {
             simBox.setChecked(true);
@@ -170,15 +171,19 @@ public class FormularioCustosDePercursoFragment extends FormularioBaseFragment {
         viewModel.custoArmazenado.setValorCusto(new BigDecimal(formatPriceSave(valorEdit.getText().toString())));
         viewModel.custoArmazenado.setDescricao(descricaoEdit.getText().toString());
 
-         if (simBox.isChecked() && viewModel.custoArmazenado.getTipo() == null) {
-             viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO);
+        if (simBox.isChecked() && viewModel.custoArmazenado.getTipo() == null) {
+            viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO);
+            reembolso.setError(null);
+
+        } else if (simBox.isChecked() && viewModel.custoArmazenado.getTipo() == NAO_REEMBOLSAVEL) {
+            viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.REEMBOLSAVEL_EM_ABERTO);
             reembolso.setError(null);
 
         } else if (simBox.isChecked()) {
-             reembolso.setError(null);
+            reembolso.setError(null);
 
-         }else if (naoBox.isChecked()) {
-             viewModel.custoArmazenado.setTipo(TipoCustoDePercurso.NAO_REEMBOLSAVEL);
+        } else if (naoBox.isChecked()) {
+            viewModel.custoArmazenado.setTipo(NAO_REEMBOLSAVEL);
             reembolso.setError(null);
         }
     }

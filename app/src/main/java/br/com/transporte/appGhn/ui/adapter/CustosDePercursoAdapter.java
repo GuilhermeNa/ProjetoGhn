@@ -21,7 +21,7 @@ import br.com.transporte.appGhn.util.ImagemUtil;
 import br.com.transporte.appGhn.util.OnItemClickListener_getId;
 
 public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercursoAdapter.ViewHolder> {
-    public static final String DRAWABLE_NAO_PRECISA_REEMBOLSO = "nao_precisa_reembolso";
+    public static final String DRAWABLE_NAO_PRECISA_REEMBOLSO = "baseline_block_24";
     public static final String DRAWABLE_UNDONE = "undone";
     public static final String DRAWABLE_DONE = "done";
     private final List<CustosDePercurso> dataSet;
@@ -91,6 +91,7 @@ public class CustosDePercursoAdapter extends RecyclerView.Adapter<CustosDePercur
             case NAO_REEMBOLSAVEL:
                 holder.reembolsoTxtView.setText(R.string.nao);
                 holder.jaFoiReembolsadoImgView.setImageDrawable(ImagemUtil.pegaDrawable(context.requireActivity(), DRAWABLE_NAO_PRECISA_REEMBOLSO));
+
                 break;
             case REEMBOLSAVEL_EM_ABERTO:
                 holder.reembolsoTxtView.setText(R.string.sim);

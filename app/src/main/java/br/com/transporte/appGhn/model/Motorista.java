@@ -1,5 +1,9 @@
 package br.com.transporte.appGhn.model;
 
+import static br.com.transporte.appGhn.ui.activity.ConstantesActivities.TAG;
+
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -24,8 +28,13 @@ public class Motorista implements Serializable {
         final String[] arrayDoNome = nome.split(" ");
 
         final String nome = arrayDoNome[0];
-        final String sobreNome = arrayDoNome[1];
-
+        String sobreNome = null;
+       try {
+           sobreNome = arrayDoNome[1];
+       } catch (ArrayIndexOutOfBoundsException e){
+           Log.d(TAG, ""+e.getMessage());
+       }
+       
         final String nomeESobreNome;
         if(sobreNome != null){
             nomeESobreNome = nome + " " + sobreNome;
