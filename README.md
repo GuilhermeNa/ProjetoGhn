@@ -2,6 +2,6 @@
 
 > Status: V0.01 Lançado.
 
-Desenvolvido com java no Android Studio.
+Desenvolvido em java com Android Studio.
 
 
