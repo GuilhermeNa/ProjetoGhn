@@ -24,9 +24,9 @@ public class LoginFragment extends Fragment {
     public static final String PREENCHA_O_LOGIN = "Preencha o Login.";
     public static final String PREENCHA_A_SENHA = "Preencha a Senha.";
     public static final String A_SENHA_DEVE_TER_NO_MINIMO_6_CARACTERES = "A senha deve ter no minimo 6 caracteres.";
-    public static final String SENHA = "285157";
+    public static final String SENHA = "123456";
     public static final String SENHA_E_OU_USUARIO_INCORRETOS = "Senha e/ou usuário incorretos";
-    public static final String LOGIN = "Anacrizio";
+    public static final String LOGIN = "Usuario";
     private FragmentLoginBinding binding;
     private TextInputEditText campoNome;
 
@@ -46,12 +46,17 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configuraCampoNome();
+        configuraCampoSenha();
         configuraLogin();
     }
 
     private void configuraCampoNome() {
         campoNome = binding.loginEditaNome;
         campoNome.setText(LOGIN);
+    }
+
+    private void configuraCampoSenha() {
+        binding.loginEditaSenha.setText(SENHA);
     }
 
     private void configuraLogin() {
